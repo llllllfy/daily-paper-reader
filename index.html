@@ -97,13 +97,13 @@
   <script>
     (function () {
       var DEFAULT_CDN_BASE = 'https://cdn.zwwen.online';
-      var CDN_PROBE_PATH = 'app/asserts/icon.png';
-      var CDN_TIMEOUT_MS = 1800;
       var ASSET_TIMEOUT_MS = 6000;
       var explicitBase = String(window.DPR_CDN_BASE || '').replace(/\/$/, '');
       var disabled = String(window.DPR_DISABLE_CDN || '').toLowerCase() === '1';
       var candidateBase = disabled ? '' : (explicitBase || DEFAULT_CDN_BASE);
-      var cdnUsablePromise = null;
+      var preferCdn = !!candidateBase;
+      window.DPR_CDN_ACTIVE = preferCdn;
+      window.DPR_ASSET_BASE = preferCdn ? candidateBase : '';
 
       function normalizePath(path) {
         return String(path || '').replace(/^\/+/, '');
@@ -116,41 +116,6 @@
       function cdnUrl(path) {
         if (!candidateBase) return localUrl(path);
         return candidateBase + '/' + normalizePath(path);
-      }
-
-      function probeCdn() {
-        if (!candidateBase) return Promise.resolve(false);
-        if (cdnUsablePromise) return cdnUsablePromise;
-        cdnUsablePromise = new Promise(function (resolve) {
-          var done = false;
-          var img = new Image();
-          var timer = window.setTimeout(function () {
-            if (done) return;
-            done = true;
-            resolve(false);
-          }, CDN_TIMEOUT_MS);
-          img.onload = function () {
-            if (done) return;
-            done = true;
-            window.clearTimeout(timer);
-            resolve(true);
-          };
-          img.onerror = function () {
-            if (done) return;
-            done = true;
-            window.clearTimeout(timer);
-            resolve(false);
-          };
-          img.src = cdnUrl(CDN_PROBE_PATH) + '?dpr_cdn_probe=' + Date.now();
-        }).then(function (ok) {
-          window.DPR_CDN_ACTIVE = !!ok;
-          window.DPR_ASSET_BASE = ok ? candidateBase : '';
-          if (!ok) {
-            console.warn('[DPR] CDN 不可用，静态资源回退本仓库路径。');
-          }
-          return ok;
-        });
-        return cdnUsablePromise;
       }
 
       function appendStylesheet(path, useCdn) {
@@ -250,21 +215,19 @@
       }
 
       window.DPRLoadAssets = function (assets) {
-        return probeCdn().then(function (useCdn) {
-          var styles = [];
-          var scripts = [];
-          assets.forEach(function (asset) {
-            if (asset.type === 'style') styles.push(asset.path);
-            if (asset.type === 'script') scripts.push(asset.path);
-          });
-          scripts.forEach(function (path) {
-            preloadScript(path, useCdn);
-          });
-          return Promise.all(styles.map(function (path) {
-            return appendStylesheet(path, useCdn);
-          })).then(function () {
-            return appendScriptsInOrder(scripts, useCdn);
-          });
+        var styles = [];
+        var scripts = [];
+        assets.forEach(function (asset) {
+          if (asset.type === 'style') styles.push(asset.path);
+          if (asset.type === 'script') scripts.push(asset.path);
+        });
+        scripts.forEach(function (path) {
+          preloadScript(path, preferCdn);
+        });
+        return Promise.all(styles.map(function (path) {
+          return appendStylesheet(path, preferCdn);
+        })).then(function () {
+          return appendScriptsInOrder(scripts, preferCdn);
         });
       };
     })();
