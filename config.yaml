@@ -25,3 +25,65 @@ subscriptions:
     stage: A
     diff_threshold_pct: 15
   keyword_recall_mode: or
+  intent_profiles:
+    - tag: cp
+      description: 查找颜色扰动与语义保持关系
+      enabled: true
+      paper_sources:
+        - arxiv
+      keywords:
+        - keyword: latent space intervention
+          keyword_cn: 潜在空间干预
+          query: intervention techniques applied in the latent space of deep models
+        - keyword: feature disentanglement
+          keyword_cn: 特征解耦
+          query: disentangling color and shape features in representations
+        - keyword: color perturbation
+          keyword_cn: 颜色扰动
+          query: impact of color perturbation on semantic understanding
+        - keyword: semantic preservation
+          keyword_cn: 语义保持
+          query: preserving semantic meaning under color changes
+        - keyword: semantic consistency
+          keyword_cn: 语义一致性
+          query: maintaining semantic consistency after color modification
+        - keyword: adversarial color perturbation
+          keyword_cn: 对抗颜色扰动
+          query: adversarial color attacks on semantic segmentation
+      intent_queries:
+        - query: papers on feature level intervention for color robustness in deep learning
+          query_cn: 关于深度学习中特征层干预提升颜色鲁棒性的论文
+          enabled: true
+          source: manual
+          note: ''
+        - query: methods to edit feature representations to make models robust to color changes
+          query_cn: 编辑特征表示以使模型对颜色变化鲁棒的方法
+          enabled: true
+          source: manual
+          note: ''
+        - query: Methods for preserving semantic consistency under color jittering
+          query_cn: 在颜色抖动下保持语义一致性的方法
+          enabled: true
+          source: manual
+          note: ''
+        - query: Adversarial color perturbations and their effect on semantic robustness
+          query_cn: 对抗性颜色扰动及其对语义鲁棒性的影响
+          enabled: true
+          source: manual
+          note: ''
+      updated_at: '2026-06-02T07:35:50.575Z'
+source_backends:
+  arxiv:
+    papers_table: arxiv_papers
+    use_vector_rpc: true
+    vector_rpc: match_arxiv_papers
+    vector_rpc_exact: match_arxiv_papers_exact
+    use_bm25_rpc: true
+    bm25_rpc: match_arxiv_papers_bm25
+    sync_table: arxiv_sync_status
+    sync_success_value: success
+    schema: public
+    kind: supabase
+    enabled: true
+    url: https://lyucdwgefyfbmaiopjbk.supabase.co
+    anon_key: sb_publishable_lX-oi64Uxyd7SIVv3_w2Uw_MTOojeKq
