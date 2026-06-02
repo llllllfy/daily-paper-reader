@@ -1,0 +1,5150 @@
+Title: Certified Robustness from Approximate Gaussian Mixture Structures in Pretrained Latent Spaces
+
+URL Source: https://arxiv.org/pdf/2605.25352v1
+
+Published Time: Tue, 26 May 2026 01:40:57 GMT
+
+Number of Pages: 38
+
+Markdown Content:
+# Certified Robustness from Approximate Gaussian Mixture Structures in Pretrained Latent Spaces 
+
+Konstantinos Emmanouilidis 
+
+CS & MINDS Johns Hopkins University 
+
+Tianjiao Ding 
+
+CIS University of Pennsylvania 
+
+Nghia Nguyen 
+
+CIS University of Pennsylvania 
+
+Nicolas Loizou 
+
+AMS & MINDS Johns Hopkins University 
+
+René Vidal 
+
+ESE, Radiology & IDEAS University of Pennsylvania 
+
+Abstract 
+
+Deep learning models are vulnerable to adversarial perturbations, raising important concerns for safety-critical deployment. Empirical defenses can achieve strong robustness in practice, but lack formal guarantees, motivating the need for certifi-ably robust classifiers. While certified methods provide formal guarantees, they often yield overly conservative bounds due to their inability to exploit structure in complex data distributions. In this work, we propose a framework for designing certifiably robust classifiers that leverages latent structure in data representations. We first analyze the Gaussian mixture setting, deriving necessary and sufficient conditions for the existence of robust classifiers and constructing a classifier with a closed-form robustness certificate and generalization guarantees. Our main contri-bution is to show that exact structure is not required: we prove that if a pretrained encoder maps inputs to a latent distribution that is ε-close (in KL divergence) to a Gaussian mixture, then certified accuracy degrades gracefully, with an explicit bound relating robustness under the true and approximate distributions. This result enables the direct use of pretrained models without requiring exact distributional assumptions. Empirically, our method achieves state-of-the-art or competitive cer-tified accuracy on CIFAR-10 and ImageNet, while maintaining strong clean perfor-mance and low computational overhead. Overall, our work establishes approximate latent structure as a practical and principled route to certifiable robustness. 
+
+1 Introduction 
+
+Deep learning models are vulnerable to adversarial perturbations, raising fundamental concerns for safety-critical deployment [Szegedy et al., 2014]. A large body of work has sought to address this challenge through two complementary approaches. On the one hand, empirical defenses such as adversarial training, preprocessing, and denoising, can achieve strong robustness in practice [Madry et al., 2017, Shafahi et al., 2019, Wong et al., 2020], but offer no formal guarantees and are often circumvented by adaptive attacks [Athalye et al., 2018, Carlini et al., 2019]. On the other hand, certified defenses provide provable guarantees of robustness, via randomized smoothing, convex relaxations, or interval bound propagation [Cohen et al., 2019, Wong and Kolter, 2018, Gowal et al., 2018]. However, these methods typically yield conservative bounds that fail to capture the structure of real-world data distributions. This gap between empirical robustness and certified guarantees is not merely algorithmic, but fun-damentally statistical. Recent impossibility results show that, without assumptions on the data distribution, certifying robustness is inherently difficult [Dohmatob, 2019, Shafahi et al., 2018]. This 
+
+> Preprint.
+> arXiv:2605.25352v1 [cs.LG] 25 May 2026
+
+Figure 1: Pipeline of the proposed certifiably robust classifier. A pretrained encoder maps inputs to a latent representation whose distribution is well approximated by a Gaussian mixture. We first derive verifiable conditions for robustness in the Gaussian mixture setting and use them to construct the ELLIPS classifier with a closed-form certificate. The resulting pipeline is certifiably robust by combining the local Lipschitzness of the encoder, the certified robustness of ELLIPS, and a graceful degradation guarantee when the latent distribution is only approximately Gaussian-mixture structured. 
+
+has motivated a shift toward structure-aware approaches, where robustness is tied to properties of the underlying distribution. In particular, Pal et al. [2023, 2024] establish necessary and sufficient condi-tions for the existence of robust classifiers based on distributional localization. While conceptually powerful, these results remain difficult to instantiate in practice: the localization sets are implicit, the required parameters are hard to estimate, and the resulting classifiers are not readily scalable to modern datasets. These challenges, motivate the following central question: 
+
+How can we leverage the structure of the data distribution to design classifiers that are certifiably robust and efficient in practice? 
+
+Key idea. In this work, we show that certifiable robustness can be achieved by exploiting approximate structure in pretrained latent data distribitions. Specifically, we demonstrate that it is sufficient for the pretrained latent data distribution to be approximately a Gaussian mixture. This perspective yields a practical and theoretically grounded route to certification: rather than requiring exact distributional assumptions, we can leverage pretrained models whose latent spaces exhibit approximate structure. 
+
+Our approach. We develop this idea in two stages. First, we analyze the Gaussian mixture setting, deriving necessary and sufficient conditions under which robust classifiers exist, and constructing a classifier with a closed-form certificate of robustness. Crucially, these conditions are expressed in terms of explicit geometric quantities, such as means, covariances, and separations, making them practically verifiable. We then extend this framework to arbitrary data distributions by composing it with a locally Lipschitz pretrained encoder. Our central theoretical result shows that exact Gaussianity is not required: if the latent distribution is ε-close (in KL divergence) to a Gaussian mixture, then the certified accuracy degrades gracefully, with an explicit bound relating robustness under the true and approximate distributions. This result enables the direct use of pretrained models, such as CLIP-like encoders, without requiring exact control over the data distribution. 
+
+Contributions. Our contributions are summarized as follows: 1. Verifiable conditions for robustness in Gaussian mixtures. We derive necessary and sufficient conditions for the existence of robust classifiers in Gaussian mixture models, expressed in closed form in terms of the geometry of the distribution (e.g., Gaussian mixture means and covariances). 2. A certifiably robust classifier with closed-form guarantees. We construct a classifier that leverages the geometry of the underlying data distribution and admits an explicit certificate of robustness, along with corresponding generalization bounds. 3. Extension to real-world data via approximate latent structure. We prove that if a locally Lipchitz pretrained encoder maps inputs to a latent distribution that is ε-close to a Gaussian mixture, then certified accuracy degrades gracefully, providing a practical pathway to certification. 4. Empirical validation. We demonstrate competitive or superior certified accuracy on CIFAR-10 and ImageNet, while maintaining strong clean performance. 22 Preliminaries and Background 
+
+In this section we will introduce the setting as well as the required background that will be necessary for presenting our results in the rest of the paper. 
+
+2.1 Setup & Preliminaries 
+
+Consider the canonical setting of a classification problem over the input space X ⊂ Rd and label space Y = {1, ..., K }. Let D be the data distribution over X × Y with joint probability density function p(x, y ) and marginal pi(x) = p(x|y = i)1 for class i ∈ Y . Let [n] denote the set {1, . . . , n }
+
+and B2(x, r ) the ℓ2−ball centered at x with radius r. Given a classifier f : X → Y , the robust risk of 
+
+f under any perturbation bounded in ℓ2-norm by ϵ is defined as 
+
+Rf (ϵ) = P(x,y )∼p (∃x′ ∈ B2(x, ϵ ) : f (x′)̸ = y) . (1) Equipped with the notion of robust risk, we can now provide the definition of a robust classi-fier. 
+
+Definition 2.1 (( ϵ, δ )-robust classifier, [Pal et al., 2024]) . A classifier f is said to be (ϵ, δ )-robust if Rf (ϵ) ≤ δ, i.e., the robust risk against perturbations with ℓ2-norm ϵ is at most δ.Based on the above definition, Pal et al. [2024] examined the conditions that the data distribution should satisfy in order for an (ϵ, δ )-robust classifier to exist. The conditions depend on two notions of localization and strong localization of the data distribution, which we state next. 
+
+Definition 2.2 (Localized Distribution, [Pal et al., 2024]) . A probability distribution p over a domain X ⊆ Rn is said to be (C, ϵ, δ )-localized if there exists a subset S ⊆ X such that 
+
+p(S) ≥ 1 − δ and Vol( S) ≤ C exp( −ϵ). Here, Vol denotes the standard Lebesgue measure on 
+
+Rn, and p(S) denotes the measure of S under p.
+
+Definition 2.3 (Strongly Localized Distribution, [Pal et al., 2024]) . A probability distribu-tion p over a domain X ⊆ Rn is said to be (C, ϵ, δ, γ )-strongly localized with respect to a distance d, if each class conditional distribution pi is (C, ϵ, δ )-localized on the set Si ⊆ X 
+
+and pi
+
+ÄS  
+
+> i′̸=i
+
+S+2 ϵi′
+
+ä ≤ γ, where S+ϵ = {x ∈ X : ∃¯x ∈ S such that d(x, ¯x) ≤ ϵ} is the 
+
+ϵ-expansion of the set S in d.Note we stated the notion of strongly localized distribution with a slight modification in the notation relative to Pal et al. [2024] in order to make explicit the dependence of the defined notion in the constant C. With these concepts established, we, next, provide a summary of the results of Pal et al. [2024] as well as other related works before stating our main results in the next section. 
+
+2.2 Prior Art & Closely Related Works 
+
+In a series of works, Pal et al. [2024, 2023] investigate the necessary and sufficient conditions that enable the existence of a robust classifier under different ℓp-norm bounded attacks. For the case of ℓ2-adversarial perturbations, they provide the following theorem, establishing the existence of a robust classifier for general data distributions. 
+
+Theorem 2.4 (Pal et al. [2024]) . A necessary condition for the existence of an (ϵ, δ )-robust classifier for a data distribution D with balanced classes is that each class-conditional Di be 
+
+(C, ϵ, δ )-localized. Conversely, if the data distribution D is (C, ϵ, δ, γ )-strongly localized, then an (ϵ, δ + γ)-robust classifier exists. The aforementioned theoretical result indicates that if one can determine whether the underlying distribution is strongly localized, and compute the sets where the distribution localizes over, then the     
+
+> 1For notational convenience, we refer in the rest of the paper to Dand p(x, y )interchangeably.
+
+3existence of a robust classifier is guaranteed. Intuitively, the proposed (ϵ, δ + γ)-robust classifier in Pal et al. [2024] is constructed as a nearest neighbour classifier, assigning each data point to the class corresponding to the nearest localization set. Additional related works on certified robustness approaches are provided in Appendix A. The above results shed light on the role of the data distribution in the existence of a robust classifier for a specific classification task. However, they do not specify how one can verify in practice whether a real-world data distribution is strongly localized, find over which sets it localizes and compute its localization parameters in order to construct the proposed robust classifier. This highlights the need for practical conditions that can be utilized to answer the above questions, motivating our theoretical investigation in the next section. 
+
+3 Sufficient Conditions for the Existence of a Robust Classifier for GMMs 
+
+We first consider a setting where the data distribution D is a Gaussian Mixture Model (GMM) with 
+
+K components corresponding to K classes: Di = N (μi, Σi), ∀i ∈ [K]. We examine the necessary conditions under which each class conditional in the given mixture of Gaussians is (C, ϵ, δ )−localized with respect to the ℓ2 distance. Ensuring that each Gaussian marginal Di is localized will satisfy the requirement according to Pal et al. [2023] in showing the existence of a robust classifier. 
+
+Theorem 3.1. Assume that the data distribution D is a d-dimensional GMM and Di =
+
+N (μi, Σi) corresponds to the class conditional of the i−th class. Let Si, ∀i ∈ [K], be the ellipsoid set 
+
+Si = {(x − μi)T Σ−1 
+
+> i
+
+(x − μi) ≤ r2 
+
+> i
+
+}. (2) Then, each Gaussian marginal Di is (C, ϵ, δ )-localized on the corresponding set Si, ∀i ∈ [K], if and only if the parameters ϵ, δ satisfy 
+
+δ ≤ 1 − Fχ2 
+
+> d
+
+(r2 
+
+> i
+
+), ϵ ≤ ln 
+
+Ç Γ   d 
+
+> 2
+
++ 1  Cπd/ 2rdi
+
+pdet (Σ i)
+
+å
+
+, (3) where Fχ2 
+
+> d
+
+(·) is the CDF of the χ2
+
+> d
+
+−distribution and Γ( ·) is the Gamma function. Theorem 3.1 provides the necessary conditions for the class conditionals Di, ∀i ∈ [K], to be (C, ϵ, δ )-localized. More specifically, the established conditions are provided for each localization parameter that if satisfied ensure that the Gaussian marginals localize over the aforementioned sets. Importantly, the localization sets resemble the intuition that most points in a Gaussian marginal concentrate around the mean and the shape of the localization set is dictated by the shape of the corresponding covariance matrix Σi, ∀i ∈ [K].The following theorem provides sufficient conditions under which the data distribution D is 
+
+(C, ϵ, δ, γ )-strongly localized, which consists of a stronger notion of localization. 
+
+Theorem 3.2. The data distribution D is (C, ϵ, δ, γ )-strongly localized with respect to the ℓ2
+
+distance, if each class conditional Di = N (μi, Σi) is (C, ϵ, δ )-localized on an ellipsoid set 
+
+Si = {(x − μi)T Σ−1 
+
+> i
+
+(x − μi) ≤ r2 
+
+> i
+
+} with parameters 
+
+δ ≤ 1 − Fχ2
+
+> d(0)
+
+(r2 
+
+> i
+
+), ϵ ≤ ln 
+
+Ç Γ   d 
+
+> 2
+
++ 1  Cπd/ 2rdi
+
+pdet (Σ i)
+
+å
+
+,
+
+X 
+
+> j̸=i
+
+Fχ2 
+
+> d(wij )
+
+(R2 
+
+> j
+
+) ≤ γ, 
+
+where Fχ2 
+
+> d(w)
+
+is the CDF of the χ2
+
+> d
+
+(w) distribution with d degrees of freedom and centrality parameter w, Γ( ·) is the Gamma function, λmin (Σ) is the smallest eigenvalue of Σ, wij =
+
+∥Σ−1/2 
+
+> j
+
+(μi − μj )∥22 and Rj = 2ϵ√λmin (Σ j ) + rj .4Let us pause to elaborate on the implications of the theoretical results established so far. Based on the recent work of Pal et al. [2024], if the data distribution is (C, ϵ, δ, γ )-strongly localized, then there exists an (ϵ, δ )-robust classifier. However, given that the aforementioned result holds for any distribution D, the previous work of Pal et al. [2024] does not characterize the localization sets nor provides closed-form expressions for each localization parameter. Instead, by focusing on a structured setting instead we are able to define the localization sets Si and provide in Theorem 3.2 practical sufficient conditions for the existence of a provably robust classifier. On the other hand, [Pal et al., 2024] proves that when classes are balanced, a robust classifier exists only if all class-conditionals are localized. Thus, using Theorem 3.1 we can provide a way of testing whether there is an (ϵ, δ )-robust classifier for the underlying data distribution. 
+
+4 A Provably Robust Classifier for ℓ2 Attacks 
+
+In this section, we show how to construct a provably robust classifier against ℓ2 attacks for a Gaussian mixture model utilizing the intuition developed in the previous theoretical results. According to the established results of Section 3, if the underlying Gaussian mixture is strongly localized over the ellipsoid sets Si, then a robust classifier is guaranteed to exist. Intuitively the robust classifier should depend on and leverage the structure of the localization sets in order to classify the inputs correctly. The proposed nearest ellipsoid (ELLIPS) classifier operates on ellipsoids E={E1, E 2, . . . , E K },each one having an associated label yi ∈ { 1, 2, . . . , K } corresponding to the class i, and can be seen as an instantiation of the Bayes classifier for that setting. The ellipsoid Ei is defined by the tuple 
+
+(μi, Σi)i∈[K], where μi, Σi denote the center and covariance matrix of the given ellipsoid. We, also, let Π = ( πi)i∈[K] be the set of priors of the marginal Gaussian distributions. Having access to the sets E, Π, the proposed classifier is given by ELLIPS (x, E, Π) = yi⋆ , (4) where 
+
+i⋆ = argmax i∈[K]{score (x, E i, π i)},
+
+score (x, E i, π i) = −d2 
+
+> M
+
+(x, E i) − log ( det (Σ i)) + 2 log( πi)
+
+and dM (x, E i) denotes the Mahalanobis distance of the input sample x from the i-th ellipsoid. The classifier ELLIPS is a nearest ellipsoid classifier with respect to the dM distance that takes into account two additional terms regarding the shape of the ellipsoid defined by Σi and the prior πi. In this way, the proposed classifier can leverage the geometry of the underlying distribution in order to effectively classify the corresponding input x ∈ X . Notably, the ELLIPS classifier coincides with the well-known in the literature Quadratic Discriminant Analysis (QDA), whose properties in classification are widely analyzed. 
+
+4.1 Certificate of Robustness 
+
+In this section, we provide a certificate of robustness against ℓ2 adversarial attacks for the ELLIPS classifier. In order to establish theoretical guarantees for the certificate, we first need to define the notion of margin. Formally, the margin of the ELLIPS classifier at a point x ∈ X is defined as: 
+
+m(x) = score (x, E i∗ , π i∗ ) − score (x, E i2 , π i2 ),
+
+where i∗ = argmax i∈[K]{score (x, E i, π i)} and i2 = argmax i̸=i∗ {score (x, E i, π i)} are the classes with the highest and second highest score, respectively. The following theorem provides a certificate of robustness for the ELLIPS classifier based on the margin of each point x ∈ X .
+
+Theorem 4.1 (Robustness Certificate) . It holds that ELLIPS (x, E, Π) = ELLIPS (x′, E, Π) 
+
+whenever 
+
+∥x′ − x∥2 ≤ m(x)
+
+»
+
+c2 
+
+> M
+
++ ( −λWi
+
+> min
+
+)+m(x) + cM
+
+(5) 5where λWi 
+
+> min
+
+is the minimum among all eigenvalues of the matrices Wi = Σ −1 
+
+> i
+
+− Σ−1 
+
+> i∗
+
+, ∀i̸ = i∗,
+
+(−λWi
+
+> min
+
+)+ = max( −λWi
+
+> min
+
+, 0) , and cM = max 
+
+> i̸=i∗
+
+∥Σ−1 
+
+> i∗
+
+(x − μi∗ )T − Σ−1 
+
+> i
+
+(x − μi)T ∥2.Theorem 4.1 provides a certificate of robustness for the ELLIPS classifier. More specifically, it establishes that the proposed classifier remains robust for all perturbations ∥x − x′∥2 that satisfy (5). Importantly, the maximum allowed perturbation depends on the margin m(x) and the geometry around the current point x ∈ Rd. Leveraging information about the classifier’s landscape allows for tighter certification based on the local curvature controlling the λWi 
+
+> min
+
+∈ R. Specifically, if λWi 
+
+> min
+
+< 0,the certified radius in (5) corresponds to a second-order certificate, while if λWi 
+
+> min
+
+≥ 0 it resembles a first-order formula for certified radius. 
+
+4.2 Robust Generalization Bound 
+
+In this section, we consider the practical implementation of the ELLIPS classifier and provide a generalization bound for the certificate of robustness of the learnt classifier. So far, we have assumed that the parameters (μi, Σi, π i)i∈[K] of the ellipsoids are known to analyze the robustness of the proposed classifier. Hereinafter, we consider the learnt classifier ELLIPS which uses the sample mean, sample covariance and class proportions for estimating the true parameters of the underlying distribution. Specifically, if {xj }ni 
+
+> j=1
+
+∼ D i are ni samples from the class i ∈ [K], the algorithm uses the following estimates 
+
+ˆμi = 1
+
+niniX
+
+> j=1
+
+xj , ˆΣi = 1
+
+niniX
+
+> j=1
+
+(xj − ˆμi)( xj − ˆμi)T , ˆπi = ni
+
+n ,
+
+where n = PKi=1 ni is the total number of samples. Based on the above estimates, we derive generalization bounds that establish with high probability the robustness of the learnt classifier. More specifically, the following theorem indicates that with high probability the learnt certificate of robustness is close to the true certificate of robustness, thus ensuring the robustness of the learnt classifier ELLIPS. 
+
+Theorem 4.2. For a sample (x, y ), let R(x), ˆR(x) denote the true and learnt radius of robustness respectively. If the number of samples observed from each Gaussian distribution Di, i ∈ [K] is 
+
+n = O
+
+Å d1/4 log ( 1 
+
+> δ
+
+)
+
+> ϵ1/4
+
+ã
+
+, then for any 0 < ϵ < ϵ min it holds with probability at least 1 − δ that 
+
+| ˆR(x) − R (x)| ≤ O (ϵ)
+
+where ϵmin = min {λWi
+
+> min
+
+, λ Σi
+
+> min
+
+, c M }, λ Wi 
+
+> min
+
+is the minimum over all eigenvalues of the matrices 
+
+Wi = Σ −1 
+
+> j
+
+− Σ−1 
+
+> j∗
+
+, ∀j̸ = j∗ and λΣi
+
+> min
+
+, denotes the minimum eigenvalue value of the covariance matrices Σi, ∀i ∈ [K].Theorem 4.2 provides a generalization bound for the certificate of robustness of the ELLIPS classifier. More specifically, it establishes the required number of samples such that the learnt certified radius of robustness is ϵ-close to the true certified radius of robustness. Interestingly, the provided bound accommondates the change in the expression of (5) based on the local geometry induced to take into account both of the closed-form expressions from Theorem 4.1, thus fully characterizing the generalization of the combined formula of certified radius. We note that the O (·) notation hides any dependence on constants, such as the sample difference from the mean ∥x − μi∥2, with respect to the parameters n, d, δ .
+
+5 Generalizing to Complex Real-data Distributions 
+
+In this section, we focus on constructing certifiably robust classifiers for arbitrary input distributions. The previous analysis of robustness in the Gaussian mixture case, as we shall see, is not merely a special case of the more general construction, but rather serves as the fundamental block en route to treating arbitrary, complex data distributions. More specifically, we leverage existing pretrained 6encoders to map the input distribution approximately to a Gaussian mixture and then perform a fine-grained analysis of robustness in the structured setting of the latent space. The intuition behind the aforementioned design paradigm is that one can leverage existing pretrained encoders and then finetune them appropriately in order to be used in the proposed pipeline. Actually, there is a wide range of Visual Language Models, such as CLIP, FARE-4 [Schlarmann et al., 2024], and variants thereof, that can be incorporated in the proposed framework to obtain a certifiably robust classifier on an arbitrary data distribution. We provide the implementation details regarding fine-tuning in Section 6.1. We, next, provide a certificate of robustness for the proposed generalized classifier (G EN ELLIPS) that acts on any arbitrary input distribution and uses an encoder network f that is locally Lipschitz continuous and maps approximately to an Gaussian mixture distribution. Formally, the G EN ELLIPS classifier is defined as GEN ELLIPS (x, f, E, Π) = ELLIPS (f (x), E, Π) , where the parameters 
+
+E, Π are obtained by fitting Gaussians in the latent representations of the data. Denote, also, with 
+
+i∗ = argmax i∈[K]{score (f (x), E i, π i)} the class with the highest score for a point x ∈ X . We this notation at hand, we are ready to present the theorem establishing the certificate of robustness for the GEN ELLIPS classifier. 
+
+Theorem 5.1. Let f be an locally Lipschitz encoder mapping the input distribution Dx to a latent distribution Pz and Qz be a GMM fitted to the latent distribution Pz . If KL( Pz ∥Qz ) ≤ ϵ,then 1. For ϵ = 0 , the certified radius of G EN ELLIPS (x, f, E, Π) at any point x ∈ X is 
+
+R(x) ≤ m(f (x)) 
+
+Lx
+
+»
+
+c2 
+
+> M
+
++ ( −λWi
+
+> min
+
+)+m(x) + cM
+
+where λWi 
+
+> min
+
+is the minimum among all eigenvalues of the matrices Wi = Σ −1 
+
+> i
+
+−Σ−1 
+
+> i∗
+
+, ∀i̸ = i∗,
+
+(−λWi
+
+> min
+
+)+ = max( −λWi
+
+> min
+
+, 0) , and cM = max 
+
+> i̸=i∗
+
+∥Σ−1 
+
+> i∗
+
+(x − μi∗ )T − Σ−1 
+
+> i
+
+(x − μi)T ∥2.2. For ϵ > 0, the certified accuracy of G EN ELLIPS under the true encoded distribution Pz
+
+satisfies 
+
+CertAcc( Pz ) ≥ CertAcc( Qz ) −
+
+… ϵ
+
+2 . (6) Theorem 5.1 provides the certified accuracy of the generalized classifier (G EN ELLIPS). More specifically, if the classifier uses an encoder that maps the input distribution to an approximate GMM, then the theorem guarantees that the certified accuracy under the approximate distribution Pz degrades only by p ϵ 
+
+> 2
+
+from the certified accuracy of the encoder that maps exactly to a GMM distribution 
+
+Qz . On the other hand, in the case that the encoder is exact, Theorem 5.1 provides additionally the closed-form expression of the certified radius of the classifier. In each case, by knowing the distance of the two distributions and the local Lipschitz constant of the encoder, the certified accuracy of the GEN ELLIPS classifier can be computed. It suffices, now, to select an encoder f and utilize a method for estimating the local Lipschitz constant in practice. To instantiate the G EN ELLIPS classifier we leverage a FARE-4 encoder [Schlarmann et al., 2024], and finetune it using an objective promoting isotropy and Gaussianity of the latent distribution. For a detailed description of the loss used we refer the interested reader to Appendix H.1. For estimating the local Lipschitz constant at a sample x, we utilize the CLEVER method [Weng et al., 2018] with . 
+
+6 Experimental Evaluation 
+
+We conduct experiments on both synthetic data and benchmark datasets validating our theoretical results and evaluating the robustness of our proposed classifier in practice. 76.1 Synthetic Experiments Setup. We conduct experiments in the Gaussian mixture setting, where the input distribution is comprised of K classes and each class is distributed according to N (μi, Σi), ∀i ∈ [K]. We run experiments for multiple setups testing for different number of classes K = {2, 3, 5, 10 } with different distances R = {2, 4, 6} between them, as well as isotropic and non-isotropic covariances matrices Σ. We provide further details on our synthetic experiments in Appendix H.1. 
+
+Comparison of Our Method with Pal et al. [2023]. We empirically validate the robustness certificate for the ELLIPS classifier from Theorem 4.1 and compare the certified accuracy of our method with the one of Pal et al. [2024], where the certified accuracy equals to 1 − δ − γ. As shown in Figure 2, our approach consistently provides tighter certified robustness guarantees across all experimental settings, significantly outperforming the method of Pal et al. [2023]. 4 2 0 2 4 6                      
+
+> x1
+> 4
+> 2
+> 0
+> 2
+> 4
+> x2
+> 2D Gaussian Mixture
+> Class 0
+> Class 1
+> Class 2 6420246
+> x1
+> 6
+> 4
+> 2
+> 0
+> 2
+> 4
+> 6
+> x2
+> 2D Gaussian Mixture
+> Class 0
+> Class 1
+> Class 2
+> Class 3
+> Class 4 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00
+> Radius
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> Accuracy
+> Robustness vs Radius
+> Empirical Robust Accuracy (PGD)
+> Certified Accuracy (Ours)
+> Certified Accuracy [Pal et al.] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00
+> Radius
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Accuracy
+> Robustness vs Radius
+> Empirical Robust Accuracy (PGD)
+> Certified Accuracy (Ours)
+> Certified Accuracy [Pal et al.]
+
+Figure 2: Comparison of different certification methods in Gaussian Mixture distributions. The proposed method outperforms the prior certification scheme of Pal et al. [2023], achieving higher robust accuracy against ℓ2 attacks. 
+
+6.2 Experiments on Benchmark Datasets Model Clean Accuracy Certified Accuracy (%) 
+
+ϵ = 0 .25 ϵ = 0 .5 ϵ = 1 .0
+
+SmoothAdv [Salman et al., 2019] 86.2% 81.0% 54.4% 34.8% DRT + MME (Gaussian) [Yang et al., 2022] 81.4% 70.4% 57.8% 34.4% DRT + MME (SmoothAdv) [Yang et al., 2022] 72.6% 67.2% 60.2% 39.4% DRT + WE (SmoothAdv) [Yang et al., 2022] 72.6% 67.0% 60.2% 39.5% 
+
+GEN ELLIPS (Ours) 90.14% 84.5% 78.2% 40.5% 
+
+Table 1: Certified accuracy on CIFAR-10 dataset. The proposed method outperforms the state-of-the-art models in the SoK benchmark, achieving higher robust accuracy without compromising the clean accuracy. 
+
+Results. We compare our method against state-of-the-art certified robustness approaches reported in the SoK benchmark by Li et al. [2023] in the CIFAR-10 and ImageNet dataset. As shown in Table 1, G EN ELLIPS consistently outperforms prior methods in the CIFAR-10 dataset, achieving 8Model ϵ = 1 .0 ϵ = 2 .0
+
+DensePure [Xiao et al., 2022] 67.0% 42.2% 
+
+Denoising with Pre-trained Diffusion Models [Carlini et al., 2023] 54.3% 29.5% Randomized Smoothing and Adversarial Training [Salman et al., 2020] 45.0% 28.0% Ensemble Models and Variance Reduction [Horváth et al., 2022] 44.6% 28.6% Ensemble Models [Yang et al., 2022] 44.4% 30.4% 
+
+GEN ELLIPS [Ours] 45.7% 31.1% Table 2: Certified accuracy on ImageNet dataset. Our approach performs competitively with the models in the SoK benchmark. Demonstrably, it outperforms all state-of-the-art models apart from the ones that use diffusion models, which might be computationally expensive in practice. higher certified accuracy across all perturbation levels ϵ = {0.25 , 0.5, 1.0}. Notably, the classifier simultaneously maintains superior clean accuracy compared to the reported baselines. The presented results highlight the robustness of the proposed pipeline as well as the practical effectiveness of our certification framework. 
+
+Model Wall Time/Image (min) 
+
+DensePure [Xiao et al., 2022] 36.47 Denoising with Pre-trained Diffusion Models [Carlini et al., 2023] 25.599 Randomized Smoothing 3.015 
+
+GEN ELLIPS [Ours] 2.729 Table 3: Wall-clock Time on ImageNet dataset. Our approach is 9x-12x faster than the diffusion-based pipelines, offering a computationally light alternative with competitive certified accuracy. On the ImageNet dataset our method performs competitively against the top baselines for certified accuracy reported in the SoK benchmark. In Table 2, the proposed method outperforms all prior baselines with the only exception the ones that utilize diffusion models and thus incur a significantly higher computation cost for certification. For reference, Table 3 shows that G EN ELLIPS is 9x - 12x times faster than the top diffusion baselines, indicating that our method is a light-weight approach to certified robustness with competitive performance. 
+
+7 Conclusion 
+
+We have proposed a principled framework for leveraging the structure of the data distribution to design classifiers that are both certifiably robust and achieve strong empirical performance. Our theoretical contributions extend prior localization results by providing practical and verifiable conditions for computing localization parameters in Gaussian mixture models, thus ensuring the existence of a robust classifier. Building on the aforementioned results, we introduced a robust classifier that exploits the geometric structure of the underlying distribution and is provably robust against ℓ2-adversarial attacks. To handle complex real-world distributions, we generalized our approach using an encoder network that maps inputs to a structured Gaussian mixture, and established a certifiably robust pipeline for any underlying data distribution. Empirical evaluations demonstrated that our method outperforms state-of-the-art robust pipelines, achieving high certified robustness and simultaneously maintaining strong clean accuracy. 9References 
+
+Hassan Ashtiani, Shai Ben-David, Nicholas J. A. Harvey, Christopher Liaw, Abbas Mehrabian, and Yaniv Plan. Near-optimal sample complexity bounds for robust learning of gaussian mixtures via compression schemes. Journal of the ACM , 67(6), 2020. Anish Athalye, Nicholas Carlini, and David Wagner. Obfuscated gradients give a false sense of security: Circumventing defenses to adversarial examples. In International Conference on Machine Learning , pages 274–283. PMLR, 2018. Nicholas Carlini, Anish Athalye, Nicolas Papernot, Wieland Brendel, Jonas Rauber, Dimitris Tsipras, Ian Goodfellow, Aleksander Madry, and Alexey Kurakin. On evaluating adversarial robustness. 
+
+arXiv preprint arXiv:1902.06705 , 2019. Nicholas Carlini, Florian Tramèr, Krishnamurthy Dj Dvijotham, Leslie Rice, Mingjie Sun, and J. Zico Kolter. (certified!!) adversarial robustness for free!, 2023. Tianzhe Chu, Shengbang Tong, Tianjiao Ding, Xili Dai, Benjamin D. Haeffele, René Vidal, and Yi Ma. Image clustering via the principle of rate reduction in the age of pretrained models. In 
+
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2023. Jeremy Cohen, Elan Rosenfeld, and J. Zico Kolter. Certified adversarial robustness via randomized smoothing. In International Conference on Machine Learning , 2019. Edgar Dobriban, Hamed Hassani, David Hong, and Alexander Robey. Provable tradeoffs in adversar-ially robust classification. IEEE Transactions on Information Theory , 2023. Elvis Dohmatob. Generalized no free lunch theorem for adversarial robustness. In International Conference on Machine Learning , pages 1646–1654. PMLR, 2019. Sven Gowal, Krishnamurthy Dvijotham, Robert Stanforth, Rudy Bunel, Chongli Qin, Jonathan Uesato, Relja Arandjelovi´ c, Timothy Mann, and Pushmeet Kohli. On the effectiveness of interval bound propagation for training verifiably robust models. In Advances in Neural Information Processing Systems , volume 31, 2018. Miklós Z. Horváth, Mark Niklas Müller, Marc Fischer, and Martin Vechev. Boosting randomized smoothing with variance reduced classifiers, 2022. Linyi Li, Tao Xie, and Bo Li. Sok: Certified robustness for deep neural networks. In IEEE Symposium on Security and Privacy . IEEE, 2023. Aleksander Madry, Aleksandar Makelov, Ludwig Schmidt, Dimitris Tsipras, and Adrian Vladu. Towards deep learning models resistant to adversarial attacks. arXiv preprint arXiv:1706.06083 ,2017. K. V. Mardia. Measures of multivariate skewness and kurtosis with applications. Biometrika , 57(3): 519–530, 1970. Ambar Pal, Jeremias Sulam, and René Vidal. Adversarial examples might be avoidable: The role of data concentration in adversarial robustness. In Advances in Neural Information Processing Systems , 2023. Ambar Pal, René Vidal, and Jeremias Sulam. Certified robustness against sparse adversarial perturba-tions via data localization. Transactions on Machine Learning Research , 2024. Muni Sreenivas Pydi and Varun Jog. Adversarial risk via optimal transport and optimal couplings. In 
+
+International Conference on Machine Learning , 2020. Hadi Salman, Jerry Li, Ilya Razenshteyn, Pengchuan Zhang, Huan Zhang, Sébastien Bubeck, and Greg Yang. Provably robust deep learning via adversarially trained smoothed classifiers. In 
+
+Advances in Neural Information Processing Systems , volume 32, 2019. Hadi Salman, Mingjie Sun, Greg Yang, Ashish Kapoor, and J. Zico Kolter. Denoised smoothing: A provable defense for pretrained classifiers. In Advances in Neural Information Processing Systems ,volume 33, pages 21945–21957, 2020. 10 Christian Schlarmann, Naman Deep Singh, Francesco Croce, and Matthias Hein. Robust clip: Unsupervised adversarial fine-tuning of vision embeddings for robust large vision-language models. In International Conference on Machine Learning , 2024. Ali Shafahi, W. Ronny Huang, Christoph Studer, Soheil Feizi, and Tom Goldstein. Are adversarial examples inevitable? In International Conference on Learning Representations , 2018. Ali Shafahi, Mahyar Najibi, Mohammad Amin Ghiasi, Zheng Xu, John Dickerson, Christoph Studer, Larry S. Davis, Gavin Taylor, and Tom Goldstein. Adversarial training for free! In Advances in Neural Information Processing Systems , 2019. Christian Szegedy, Wojciech Zaremba, Ilya Sutskever, Joan Bruna, Dumitru Erhan, Ian Goodfellow, and Rob Fergus. Intriguing properties of neural networks. In International Conference on Learning Representations , 2014. Martin J. Wainwright. High-Dimensional Statistics: A Non-Asymptotic Viewpoint . Cambridge University Press, 2019. Tsui-Wei Weng, Huan Zhang, Pin-Yu Chen, Jinfeng Yi, Dong Su, Yupeng Gao, Cho-Jui Hsieh, and Luca Daniel. Evaluating the robustness of neural networks: An extreme value theory approach, 2018. Eric Wong and J. Zico Kolter. Provable defenses against adversarial examples via the convex outer adversarial polytope. In International Conference on Machine Learning , pages 5283–5292, 2018. Eric Wong, Leslie Rice, and J. Zico Kolter. Fast is better than free: Revisiting adversarial training. In 
+
+International Conference on Learning Representations , 2020. Chaowei Xiao, Zhongzhu Chen, Kun Jin, Jiongxiao Wang, Weili Nie, Mingyan Liu, Anima Anand-kumar, Bo Li, and Dawn Song. Densepure: Understanding diffusion models towards adversarial robustness, 2022. Zhuolin Yang, Linyi Li, Xiaojun Xu, Bhavya Kailkhura, Tao Xie, and Bo Li. On the certified robustness for ensemble models and beyond, 2022. 11 Supplemental Material Contents 
+
+A Additional Related Work on Certified Robustness 13 B Limitations 13 C Proof of Theorem 3.1 14 D Proof of Theorem 3.2 16 E Proof of Theorem 4.1 18 F Proof of Generalization Bound 20 
+
+F.1 Notation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20 F.2 Preparatory Lemmas . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20 F.3 Proof of Theorem 4.2. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31 
+
+G Proof of Theorem 5.1 33 H On Experiments 34 
+
+H.1 Experimental Details . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34 H.2 Additional Experiments . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34 12 A Additional Related Work on Certified Robustness 
+
+There has been a great line of work on methods establishing theoretical guarantees in the field of certified robustness. The closely related ones to our theoretical investigation aim to correlate the properties of the underlying data distribution with the existence of a robust classifier. In Dohmatob [2019], Pydi and Jog [2020], the authors focus on a binary classification setting and provide a lower bound on the robust classification risk that can be attained. The established bound depends on the Wasserstein distance between the two class conditional distributions, showing that the robust risk increases as the class conditional become closer. This intuition is further extended in the general multi-class classification setting in Pal et al. [2024, 2023] by considering the sets where each marginal distribution localizes and measuring their overlap to estimate the robust risk. However, Pal et al. [2024] do not provide a practical method for computing the associated localization sets, thus constraining the applicability of the established method in practice. Our work instead expands the previous results by providing concrete expressions for the localization sets and the associated parameters and proposing a classifier that utilizes the localization sets in order to robustly classify the input points. Given that the proposed ELLIPS classifier consists an instantiation of the Bayes classifier for the GMM setting, we provide additional theoretical studies on the optimal Bayes classifier for the clean and adversarial classifier on that setting. Recent work of Dobriban et al. [2023] uses robust isoperimetry and establishes the closed form expressions of the Bayes optimal classifier for the adversarial classification task for two or three classes. The general case even though a fundamental question to the best of our knowledge remains open. Lastly, a specific examination of the classifier for 
+
+ℓ0 attacks is provided in Ashtiani et al. [2020] establishing an asymptotically optimal robust classifier for the GMM setting. We leave as future work examining whether our approach, that uses an encoder and then a classifier for the GMM setting, can be combined with the robust classifier of Ashtiani et al. [2020] to establish robust high certified accuracy results against ℓ0 adversarial attacks. 
+
+B Limitations 
+
+Since this work is one of first in leveraging the data structure in order to provide classifiers that are efficient and certifiably robust, there is a number of limitations as well as avenues for future research directions. 
+
+Beyond ℓ2 Attacks. One limitation of the current results is that they apply to ℓ2 adversarial attacks. An interesting open problem is to investigate how our framework can be adapted to other adversarial threat models, providing certified classifiers under different ℓp-attacks or even semantic adversarial attacks. 
+
+Alternative Fine-tuning. Another limitation of our work is that the encoder should be fine-tuned in order to map the input distribution to an approximately latent GMM. The level of approximation defines the degradation of the certified accuracy from the certified accuracy of the exact GMM latent distribution. Thus, investigating methods for better fine-tuning the encoder and achieving better approximation in the latent space will provide even better certified accuracy results. 13 C Proof of Theorem 3.1 
+
+Proof. In order to prove that each Di, ∀i ∈ [K], is (C, ϵ, δ ) −localized, we need to show that there is a set Si ⊆ X such that the following hold 
+
+pi(Si) ≥ 1 − δ (7) Vol (Si) ≤ Ce −ϵ (8) where pi is the density function of Di. We, first, define the set Si on which each Gaussian distribution 
+
+Di localizes. To do so, consider the probability density function 
+
+pi(x) = 1
+
+p(2 π)ddet (Σ i) e− 12 (x−μi)T Σ−1 
+
+> i(x−μi)
+
+and the c level-set 
+
+Ac = {x ∈ X : pi(x) ≥ c} (9) for some fixed 0 < c < p i(μi). We want to select c such that at least 1 − δ of the mass is included in this level set, so that inequality (7) holds. Note that for a fixed c the level-set is an ellipsoid, as it holds that 
+
+pi(x) = c
+
+⇐⇒ ln pi(x) = ln c
+
+⇐⇒ (x − μi)T Σ−1 
+
+> i
+
+(x − μi) = − [2 ln( c) + d ln(2 π) + ln( det (Σ i))] 
+
+Letting r2 
+
+> i
+
+= − [2 ln( c) + d ln(2 π) + ln( det (Σ i))] for any 0 < c < p i(μi), the level set in (9) can be equivalently written as 
+
+Si = x ∈ X : ( x − μi)T Σ−1 
+
+> i
+
+(x − μi) ≤ r2
+
+> i
+
+which is the set of points with Mahalanobis distance dM (x, μ i) ≤ ri.In order for (7) to hold, we want to find the level set c of Ac or equivalently the radius ri of the set Si
+
+such that at least 1 − δ of the mass of the Gaussian distribution N (μi, Σi) is included in Si
+
+Z
+
+> Si
+
+pi(x)dx ≥ 1 − δ (10) The integral in (10) is the probability that a sample x ∼ D i lies inside the set Si and thus we get equivalently that the following should hold 
+
+Px∼D i (x ∈ Si) =
+
+Z
+
+> Si
+
+pi(x)dx ≥ 1 − δ (11) By a change of variables y = Σ −1/2 
+
+> i
+
+(x − μi), we can transform the density pi(x) inside the integral to the density of the standard N (0 , I ) Gaussian f (x) = 1√(2 π)d e− 12 ∥y∥22 and thus the set Si can be equivalently written as 
+
+ˆSi = x ∈ X : ∥y∥22 ≤ r2 
+
+> i
+
+.
+
+Hence, inequality (11) after the change of variables y = Σ −1/2 
+
+> i
+
+(x − μi) requires 
+
+Px∼D i
+
+ x ∈ X : ∥y∥22 ≤ r2
+
+> i
+
+ ≤ 1 − δ. (12) Note, now, that since y = Σ −1/2 
+
+> i
+
+(x − μi) follows the standard Gaussian distribution N (0 , I ), the random variable ∥y∥22 follows the chi-squared distribution with d degrees of freedom. Hence, the left hand-side of (12) is exactly the cumulative probability distribution of the χ2 
+
+> d
+
+distribution up to r2 
+
+> i
+
+.Thus, in order for (12) to hold, the r2 
+
+> i
+
+should be the (1 − δ)-quantile of χ2
+
+> d
+
+, i.e. 
+
+Fχ2 
+
+> d
+
+(r2 
+
+> i
+
+) ≤ 1 − δδ ≤ 1 − Fχ2 
+
+> d
+
+(r2 
+
+> i
+
+)
+
+14 where Fχ2 
+
+> d
+
+is the cumulative distribution function of the χ2
+
+> d
+
+.In order for inequality (8) to hold, we have that Vol (Si) ≤ Ce −ϵ
+
+⇐⇒ πd/ 2rdi
+
+Γ   d 
+
+> 2
+
++ 1 
+
+»
+
+det (Σ i) ≤ Ce −ϵ
+
+⇐⇒ ϵ ≤ ln 
+
+Ç Γ   d 
+
+> 2
+
++ 1  Cπd/ 2rdi
+
+pdet (Σ i)
+
+å
+
+(13) where Γ( ·) is the Gamma function. 15 D Proof of Theorem 3.2 
+
+Proof. In order to show that D is (C, ϵ, δ, γ ) −strongly localized, we need to show that for each class conditional Di, ∀i ∈ [K], there is a set Si ⊆ X such that the following hold 
+
+pi(Si) ≥ 1 − δ (14) Vol (Si) ≤ Ce −ϵ (15) 
+
+pi
+
+Ñ
+
+[ 
+
+> j̸=i
+
+S+2 ϵj
+
+é
+
+≤ γ (16) where the set S+ϵi = {x ∈ X : ∃ˆx ∈ Si with ∥x − ˆx∥2 ≤ ϵ} is the ϵ−expansion of the set Si with respect to the ℓ2−distance. By assumption, we have that the conditions (14), (15) hold. The last condition (inequality (16)) requires that the class conditionals are well-separated in the sense that 
+
+pi
+
+ÄS  
+
+> j̸=i
+
+S+2 ϵj
+
+ä , ∀i ∈ [K], is upper bounded. To ensure that, we can apply the union bound to get 
+
+pi
+
+Ñ
+
+[ 
+
+> j̸=i
+
+S+2 ϵj
+
+é
+
+= Px∼Di
+
+Ñ
+
+[ 
+
+> j̸=i
+
+S+2 ϵj
+
+é
+
+≤ X 
+
+> j̸=i
+
+Px∼Di
+
+ÄS+2 ϵj
+
+ä (17) We, next, bound the probability that a sample x ∼ Di belongs to the set S+2 ϵj
+
+Px∼Di
+
+ÄS+2 ϵj
+
+ä = Px∼Di (∃s ∈ Sj : ∥x − s∥2 ≤ 2ϵ)= Px∼Di (∃s ∈ X : dM (s, μ j ) ≤ rj and ∥x − s∥2 ≤ 2ϵ) (18) Since the expression in (18) involves both the Mahalanobis distance and the ℓ2−distance, we will express both conditions dM (s, μ j ) ≤ rj , ∥x − s∥2 ≤ 2ϵ in terms of the Mahalanobis distance 
+
+dM (x, μ j ). Using the triangle inequality for the Mahalanobis distance, we get 
+
+dM (x, μ j ) ≤ dM (x, s ) + dM (s, μ j )
+
+≤ dM (x, s ) + rj
+
+= ∥Σ−1/2 
+
+> j
+
+(x − s)∥2 + rj
+
+≤ ∥Σ−1/2 
+
+> j
+
+∥2∥x − s∥2 + rj
+
+≤ 2ϵ
+
+pλmin (Σ j ) + rj (19) where λmin (Σ j ) is the smallest eigenvalue of Σj . Hence, for x ∼ Di the event Ej = {∃ s ∈X : dM (s, D j ) ≤ rj and ∥x − s∥2 ≤ 2ϵ} is contained in the event {d2 
+
+> M
+
+(x, μ j ) ≤ R2 
+
+> j
+
+}, where 
+
+Rj = 2ϵ√λmin (Σ j ) + rj . Thus, we can bound the probability in inequality (18) by 
+
+P
+
+> x∼Di
+
+ÄS+2 ϵj
+
+ä ≤ P
+
+> x∼Di
+
+ d2 
+
+> M
+
+(x, μ j ) ≤ R2
+
+> j
+
+
+
+= P
+
+> x∼Di
+
+Ä(x − μj )T Σ−1 
+
+> j
+
+(x − μj ) ≤ R2
+
+> j
+
+ä (20) Letting y = Σ −1/2 
+
+> j
+
+(x − μj ), we get from (20) that 
+
+P
+
+> x∼Di
+
+ÄS+2 ϵj
+
+ä ≤ P
+
+> x∼Di
+
+ ∥y∥22 ≤ R2
+
+> j
+
+ (21) Notice that x ∼ D i and thus the distribution of the random variable y will have mean Σ−1/2 
+
+> j
+
+(μi − μj ).Thus, the distribution of ∥y∥2 will be a non-central χ2
+
+> d
+
+−distribution with d degrees of freedom and centrality parameter wij = ∥Σ−1/2 
+
+> j
+
+(μi − μj )∥22. From inequality (21), we get that 
+
+P
+
+> x∼Di
+
+ÄS+2 ϵj
+
+ä ≤ P
+
+> x∼Di
+
+ ∥y∥22 ≤ R2
+
+> j
+
+ = Fχ2 
+
+> d(wij )
+
+(R2 
+
+> j
+
+) (22) where Fχ2 
+
+> d(wij )
+
+(·) is the cumulative density function of the χ2
+
+> d
+
+(wij ) distribution. 16 Substituting inequality (22) into (17), we obtain the following bound 
+
+pi
+
+Ñ
+
+[ 
+
+> j̸=i
+
+S+2 ϵj
+
+é
+
+≤ X 
+
+> j̸=i
+
+P
+
+> x∼Di
+
+ÄS+2 ϵj
+
+ä
+
+≤ X 
+
+> j̸=i
+
+Fχ2 
+
+> d(wij )
+
+(R2 
+
+> j
+
+)
+
+and thus letting γ = P 
+
+> j̸=i
+
+Fχ2 
+
+> d(wij )
+
+(R2 
+
+> j
+
+) finishes the proof. 17 E Proof of Theorem 4.1 
+
+Proof. Consider a sample (x, y ) with positive margin 
+
+m(x) = score (x, E y , π y ) − max 
+
+> i̸=i∗
+
+score (x, E i, π i) > 0 (23) where i∗ = max i∈[K] score (x, E i, π i) = y. 
+
+We want to show that the perturbed sample x′ has also positive margin 
+
+m(x′) = score (x′, E i∗ , π i∗ ) − max 
+
+> i̸=i∗
+
+score (x′, E i, π i) (24) Substituting the definition of score and rearranging the terms, we have 
+
+m(x′) = −(x′ − μi∗ )Σ −1 
+
+> i∗
+
+(x′ − μi∗ )T − log ( det (Σ i∗ )) + 2 log( πi∗ )
+
+− max 
+
+> i̸=i∗
+
+{− (x′ − μi)Σ −1 
+
+> i
+
+(x′ − μi)T − log ( det (Σ i)) + 2 log( πi)}
+
+= min 
+
+> i̸=i∗
+
+n
+
+− (x′ − μi∗ )Σ −1 
+
+> i∗
+
+(x′ − μi∗ )T + ( x′ − μi)Σ −1 
+
+> i
+
+(x′ − μi)T
+
+− log 
+
+Å det (Σ i∗ )
+
+det (Σ i)
+
+ã
+
++ 2 log 
+
+Å πi∗
+
+πi
+
+ã o
+
+(25) For any x, x ′ ∈ X and ∀i ∈ [K], we have that 
+
+(x′ − μi)Σ −1 
+
+> i
+
+(x′ − μi)T = (x′ − x)Σ −1 
+
+> i
+
+(x′ − μi)T + ( x − μi)Σ −1 
+
+> i
+
+(x′ − μi)T
+
+= (x′ − x)Σ −1 
+
+> i
+
+(x′ − x)T + 2( x′ − x)Σ −1 
+
+> i
+
+(x − μi)T
+
++( x − μi)Σ −1 
+
+> i
+
+(x − μi)T (26) Using (26) into (25) for the terms −(x′ − μi∗ )Σ −1 
+
+> i∗
+
+(x′ − μi∗ )T and (x′ − μi)Σ −1 
+
+> i
+
+(x′ − μi)T , we have that 
+
+m(x′) = min 
+
+> i̸=i∗
+
+n
+
+− (x′ − x)Σ −1 
+
+> i∗
+
+(x′ − x)T − 2( x′ − x)Σ −1 
+
+> i∗
+
+(x − μi∗ )T − (x − μi∗ )Σ −1 
+
+> i∗
+
+(x − μi∗ )T
+
++( x′ − x)Σ −1 
+
+> i
+
+(x′ − x)T + 2( x′ − x)Σ −1 
+
+> i
+
+(x − μi)T + ( x − μi)Σ −1 
+
+> i
+
+(x − μi)T
+
+− log 
+
+Å det (Σ i∗ )
+
+det (Σ i)
+
+ã
+
++ 2 log 
+
+Å πi∗
+
+πi
+
+ã o
+
+= min 
+
+> i̸=i∗
+
+n
+
+(x′ − x)(Σ −1 
+
+> i
+
+− Σ−1 
+
+> i∗
+
+)( x′ − x)T + 2( x′ − x)[Σ −1 
+
+> i
+
+(x − μi)T − Σ−1 
+
+> i∗
+
+(x − μi∗ )T ]
+
+−(x − μi∗ )Σ −1 
+
+> i∗
+
+(x − μi∗ )T + ( x − μi)Σ −1 
+
+> i
+
+(x − μi)T
+
+− log 
+
+Å det (Σ i∗ )
+
+det (Σ i)
+
+ã
+
++ 2 log 
+
+Å πi∗
+
+πi
+
+ã o
+
+(27) Given that the matrix Wi = Σ −1 
+
+> i
+
+− Σ−1 
+
+> i∗
+
+is symmetric, as the difference of inverses of symmetric matrices, it holds that (x′ − x)Wi(x′ − x)T ≥ λmin (Wi)∥x′ − x∥22. Using that and Cauchy-Schwarz inequality, we get from (27) 
+
+m(x′) ≥ min 
+
+> i̸=i∗
+
+n
+
+λmin (Wi)∥x′ − x∥22 − 2∥x′ − x∥2∥Σ−1 
+
+> i
+
+(x − μi)T − Σ−1 
+
+> i∗
+
+(x − μi∗ )T ∥2
+
+−(x − μi∗ )Σ −1 
+
+> i∗
+
+(x − μi∗ )T + ( x − μi)Σ −1 
+
+> i
+
+(x − μi)T
+
++ log 
+
+Å det (Σ i)
+
+det (Σ i∗ )
+
+ã
+
++ 2 log 
+
+Å πi∗
+
+πi
+
+ã o
+
+(28) Using the subadditivity of the min operator and the definition of margin m(x) from (23), we get 
+
+m(x′) ≥ m(x) + min 
+
+> i̸=i∗
+
+λmin (Wi)∥x′ − x∥22 − 2∥x′ − x∥2 max 
+
+> i̸=i∗
+
+∥Σ−1 
+
+> i∗
+
+(x − μi∗ )T − Σ−1 
+
+> i
+
+(x − μi)T ∥2
+
+Letting for brevity λmin = min i̸=i∗ {λmin (Wi)} and cM = max 
+
+> i̸=i∗
+
+∥Σ−1 
+
+> i∗
+
+(x−μi∗ )T −Σ−1 
+
+> i
+
+(x−μi)T ∥2,
+
+in order for m(x′) to be non-negative, it suffices that 
+
+m(x) + λmin ∥x′ − x∥22 − 2cM ∥x′ − x∥2 > 0
+
+18 If λmin < 0, then we have that 
+
+∥x′ − x∥2 ≤ cM −
+
+»
+
+c2 
+
+> M
+
+− m(x)λmin 
+
+λmin 
+
+= m(x)
+
+cM +
+
+»
+
+c2 
+
+> M
+
+− m(x)λmin 
+
+(29) If λmin ≥ 0, then it suffices that 
+
+∥x′ − x∥2 ≤ m(x)2cM
+
+. (30) Combining the expressions in (29) and (30), we get the final result. 19 F Proof of Generalization Bound 
+
+We, first, provide some necessary notation and preparatory Lemmas for bounding the associated quantities appearing in the generalization bound and then we provide the proof of Theorem 4.2 in Section F.3. 
+
+F.1 Notation 
+
+For a real matrix A ∈ Rd×d, we denote the minimum eigenvalue of A with λmin (A). We let λΣi
+
+> min
+
+denote the minimum over all eigenvalues of the covariance matrices Σi, ∀i ∈ [K] and λWi 
+
+> min
+
+or for brevity λmin the minimum over all eigenvalues of the matrices Wi = Σ −1 
+
+> j
+
+− Σ−1 
+
+> j∗
+
+, ∀j̸ = j∗.
+
+F.2 Preparatory Lemmas Lemma F.1. For a Gaussian marginal with true mean μ and covariance matrix Σ and empirical mean and covariance ˆμ, ˆΣ satisfying ∥ˆμ − μ∥Σ−1 ≤ ˜O
+
+» dn
+
+
+
+, ∥ ˆΣ − Σ∥op ≤ ˜O
+
+» dn
+
+
+
+, we have that for any point x ∈ X it holds that 
+
+|d2 
+
+> M
+
+(x, μ ) − d2 
+
+> M
+
+(x, ˆμ)| ≤ ˜O
+
+Ç… dn
+
+å
+
+where dM (x, μ ) corresponds to the Mahalanobis distance. 
+
+Proof. We have that 
+
+|d2 
+
+> M
+
+(x, μ ) − d2 
+
+> M
+
+(x, ˆμ)| = (x − μ)T Σ−1(x − μ) − (x − ˆμ)T ˆΣ−1(x − ˆμ)
+
+Adding and subtracting the term (x − ˆμ)T Σ−1(x − ˆμ) and applying the triangle inequality, we get 
+
+|d2 
+
+> M
+
+(x, μ ) − d2 
+
+> M
+
+(x, ˆμ)| = (x − μ)T Σ−1(x − μ) − (x − ˆμ)T Σ−1(x − ˆμ)+( x − ˆμ)T Σ−1(x − ˆμ) − (x − ˆμ)T ˆΣ−1(x − ˆμ)
+
+≤ (x − μ)T Σ−1(x − μ) − (x − ˆμ)T Σ−1(x − ˆμ)
+
+| {z }
+
+> T1
+
++ (x − ˆμ)T Ä ˆΣ−1 − Σ−1ä (x − ˆμ)
+
+| {z }
+
+> T2
+
+(31) We, next, bound the two terms T1, T 2. By rearranging the terms in T1, we get 
+
+T1 = (x − μ)T Σ−1(x − μ) − (x − ˆμ)T Σ−1(x − ˆμ)
+
+= (ˆ μ − μ)T Σ−1x − (x − μ)T Σ−1μ + ( x − ˆμ)T Σ−1 ˆμ
+
+= (ˆ μ − μ)T Σ−1x − (x − μ)T Σ−1μ + ( x − ˆμ)T Σ−1(ˆ μ − μ) + ( x − ˆμ)T Σ−1μ
+
+= 2∆ˆ μT Σ−1(x − μ) + ∆ˆ μT Σ−1∆ˆ μ
+
+≤ 2∥∆ˆ μ∥Σ−1 ∥x − μ∥Σ−1 + ∥∆ˆ μ∥2Σ−1
+
+Using the fact that ∥∆ˆ μ∥Σ−1 = ˜O
+
+» dn
+
+
+
+, we obtain 
+
+T1 ≤ ˜O
+
+Ç… dn
+
+å
+
+(32) We can bound the term T2 using the inequality 
+
+T2 = (x − ˆμ)T Ä ˆΣ−1 − Σ−1ä (x − ˆμ) ≤ ∥ x − ˆμ∥22∥ ˆΣ−1 − Σ−1∥op 
+
+20 Adding and subtracting the true mean μ and utilizing the definition of ∆ˆ μ = ˆ μ − μ, we get 
+
+T2 ≤ ∥x − μ + ∆ˆ μ∥22∥ ˆΣ−1 − Σ−1∥op 
+
+≤ 2  ∥x − μ∥22 + ∥∆ˆ μ∥22
+
+ ∥ ˆΣ−1 − Σ−1∥op 
+
+where at the last step we have applied the inequality ∥a + b∥2 ≤ 2∥a∥2 + 2 ∥b∥2. Using the fact that 
+
+∥∆ˆ μ∥2 = ˜O
+
+» dn
+
+
+
+, ∥ ˆΣ−1 − Σ−1∥op = ˜O
+
+» dn
+
+
+
+, we obtain that 
+
+T2 ≤ ˜O
+
+Ç d3/2
+
+n3/2
+
+å
+
+(33) Substituting inequalities (32), (33) into (31), we have that 
+
+|d2 
+
+> M
+
+(x, μ ) − d2 
+
+> M
+
+(x, ˆμ)| ≤ ˜O
+
+Ç… dn
+
+å
+
++ ˜O
+
+Ç d3/2
+
+n3/2
+
+å
+
+≤ ˜O
+
+Ç… dn
+
+å
+
+Lemma F.2. For any symmetric positive definite matrices A, B with λmin (A) > ∥B − A∥op , it holds that 
+
+| log det (A) − log det (B)| ≤ d∥B − A∥op 
+
+λmin (A) − ∥ B − A∥op 
+
+Proof. From the trace representation, we have that for any two symmetric positive definite matrices 
+
+A, B it holds that 
+
+| log det (A) − log det (B)| = Tr 
+
+ÇZ 10
+
+(A + t(B − A)) −1 (B − A)dt 
+
+å
+
+≤ 1
+
+λmin (A) − ∥ B − A∥op 
+
+∥B − A∥op (34) Using triangle inequality, we get 
+
+| log det (A) − log det (B)| ≤
+
+Z 10
+
+Tr Ä(A + t(B − A)) −1 (B − A)ä dt (35) From Holder’s inequality for trace we have that for any two matrices X, Y it holds that |Tr (XY )| ≤ 
+
+d∥X∥op ∥Y ∥op . Applying that for X = ( A + t(B − A)) −1 and Y = B − A, we obtain 
+
+Tr Ä(A + t(B − A)) −1 (B − A)ä ≤ d∥B − A∥op (A + t(B − A)) −1
+
+> op
+
+(36) Substituting (36) into (35), we obtain 
+
+| log det (A) − log det (B)| ≤ d∥B − A∥op 
+
+Z 10
+
+(A + t(B − A)) −1
+
+> op
+
+dt (37) We, now, bound the operator norm (A + t(B − A)) −1
+
+> op
+
+. Using the fact that 
+
+(A + t(B − A)) −1
+
+> op
+
+≤ 1 
+
+> λmin (A+t(B−A))
+
+and Weyl’s inequality we have that λmin (A + t(B −
+
+A)) ≥ λmin (A) + ∥B − A∥op , ∀t ∈ [0 , 1] . Thus, we get 
+
+(A + t(B − A)) −1
+
+> op
+
+≤ 1
+
+λmin (A) − ∥ B − A∥op 
+
+(38) Substituting (38) into (37), we have 
+
+| log det (A) − log det (B)| ≤ d∥B − A∥op 
+
+Z 10
+
+dt λmin (A) − ∥ B − A∥op 
+
+= d∥B − A∥op 
+
+λmin (A) − ∥ B − A∥op 
+
+21 Lemma F.3. If the number of samples observed from two Gaussian marginals Di∗ , Di′ 
+
+> 2
+
+is at least n > d and ∥Σi∗ − ˆΣi∗ ∥op < λ min (Σ i∗ ), ∥Σi∗ − ˆΣi∗ ∥op < λ min (Σ i′ 
+
+> 2
+
+), the following holds 
+
+| log det (Σ i∗ ) − log det ( ˆΣi∗ )| + | log det (Σ i′ 
+
+> 2
+
+) − log det ( ˆΣi′ 
+
+> 2
+
+)| ≤ ˜O
+
+Ç d3/2
+
+n1/2
+
+å
+
+Proof. From Lemma F.2, for A = Σ i∗ , B = ˆΣi∗ and ϵ = ∥Σi∗ − ˆΣi∗ ∥op , we get 
+
+| log det (Σ i∗ ) − log det ( ˆΣi∗ )| ≤ dϵ λmin (Σ i∗ )(1 − ϵ/λ min (Σ i∗ )) (39) Given that ϵ = ∥Σi∗ − A∥op = ˜O
+
+» dn
+
+
+
+, we get for ϵ < λ min (Σ i∗ ) from the Taylor expansion of the function f (x) = 11−x = P+∞ 
+
+> n=0
+
+xn that 
+
+11 − ϵλmin (Σ i∗ )
+
+≤
+
+> +∞
+
+X
+
+> n=0
+
+Å ϵλmin (Σ i∗ )
+
+ãn
+
+= ˜O (1) (40) Substituting (40) into (39), we get that 
+
+| log det (Σ i∗ ) − log det ( ˆΣi∗ )| ≤ ˜O (dϵ ) = ˜O
+
+Ç d3/2
+
+n1/2
+
+å
+
+(41) where at the last step we have used the fact that ϵ = ∥Σi∗ − A∥op = ˜O
+
+» dn
+
+
+
+. By applying the above steps similarly for A = Σ i′ 
+
+> 2
+
+and B = ˆΣi′ 
+
+> 2
+
+and using the fact that ∥Σi′ 
+
+> 2
+
+− ˆΣi′ 
+
+> 2
+
+∥op = ˜O
+
+» dn
+
+
+
+,we obtain 
+
+| log det (Σ i′ 
+
+> 2
+
+) − log det ( ˆΣi′ 
+
+> 2
+
+)| ≤ ˜O
+
+Ç d3/2
+
+n1/2
+
+å
+
+(42) Adding inequalities (41), (42), we get the final result 
+
+| log det (Σ i∗ ) − log det ( ˆΣi∗ )| + | log det (Σ i′ 
+
+> 2
+
+) − log det ( ˆΣi′ 
+
+> 2
+
+)| ≤ ˜O
+
+Ç d3/2
+
+n1/2
+
+å
+
+Lemma F.4. If the number of samples observed from two Gaussian marginals Di∗ , Di′ 
+
+> 2
+
+is at least n > d and the true priors satisfy πi∗ , π i′ 
+
+> 2
+
+> π min > 0, then it holds that 
+
+| log  ˆπi′
+
+> 2
+
+ − log  πi′
+
+> 2
+
+ | + | log (ˆ πi∗ ) − log ( πi∗ ) | ≤ ˜O
+
+Ç… dn
+
+å
+
+Proof. For a Gaussian component with true prior π and empirical prior bπ, we write 
+
+log 
+
+Å bππ
+
+ã
+
+= log 
+
+Å
+
+1 + bπ − ππ
+
+ã
+
+.
+
+Assume that π is bounded away from zero, namely π ≥ πmin > 0. Since 
+
+|bπ − π| ≤ ˜O
+
+Ç… dn
+
+å
+
+,
+
+we have, for n sufficiently large, 
+
+bπ − ππ ≤ |bπ − π|
+
+πmin 
+
+< 1.
+
+22 Therefore, using the Taylor expansion of log(1 + x)log(1 + x) = 
+
+> +∞
+
+X
+
+> i=1
+
+(−1) i−1
+
+i xi, |x| < 1,
+
+with 
+
+x = bπ − ππ ,
+
+we obtain 
+
+log 
+
+Å bππ
+
+ã
+
+= log 
+
+Å
+
+1 + bπ − ππ
+
+ã
+
+= ˜O
+
+Ç… dn
+
+å
+
+.
+
+Applying the aforementioned statement twice, for πi′ 
+
+> 2
+
+and πi∗ , and summing we obtain the final result. 
+
+Lemma F.5. Let the functions 
+
+m(x) = d2 
+
+> M
+
+(x, μ i′ 
+
+> 2
+
+) − d2 
+
+> M
+
+(x, μ i∗ ) + log 
+
+Ç det  Σi′
+
+> 2
+
+
+
+det (Σ i∗ )
+
+å
+
+− 2 log 
+
+Å πi′
+
+> 2
+
+πi∗
+
+ã
+
+,
+
+ˆm(x) = d2 
+
+> M
+
+(x, ˆμi′ 
+
+> 2
+
+) − d2 
+
+> M
+
+(x, ˆμi∗ ) + log 
+
+Ñ
+
+det Ä ˆΣi′
+
+> 2
+
+ä
+
+det Ä ˆΣi∗
+
+äé
+
+− 2 log 
+
+Å ˆπi′
+
+> 2
+
+ˆπi∗
+
+ã
+
+.
+
+where ˆμj , ˆΣj is the empirical mean and covariance of the Gaussian marginal Dj , ∀j ∈ [K]. If the number of samples observed from each marginal Dj , ∀j ∈ [K] is n > d, then we have that 
+
+| ˆm(x) − m(x)| ≤ ˜O
+
+Ç… dn
+
+å
+
+Proof. Using the expressions of margins and applying the triangle inequality, we have that 
+
+| ˆm(x) − m(x)| = d2 
+
+> M
+
+(x, ˆμi′ 
+
+> 2
+
+) − d2 
+
+> M
+
+(x, μ i′ 
+
+> 2
+
+) − d2 
+
+> M
+
+(x, ˆμi∗ ) + d2 
+
+> M
+
+(x, μ i∗ )+ log 
+
+Ñ
+
+det Ä ˆΣi′
+
+> 2
+
+ä
+
+det Ä ˆΣi∗
+
+äé
+
+− log 
+
+Ç det  Σi′
+
+> 2
+
+
+
+det (Σ i∗ )
+
+å
+
+− 2 log 
+
+Å ˆπi′
+
+> 2
+
+ˆπi∗
+
+ã
+
++ 2 log 
+
+Å πi′
+
+> 2
+
+πi∗
+
+ã
+
+≤ d2 
+
+> M
+
+(x, ˆμi′ 
+
+> 2
+
+) − d2 
+
+> M
+
+(x, μ i′ 
+
+> 2
+
+) + d2 
+
+> M
+
+(x, ˆμi∗ ) − d2 
+
+> M
+
+(x, μ i∗ )
+
+| {z }
+
+> T1
+
++ log Ädet Ä ˆΣi′
+
+> 2
+
+ää − log  det  Σi′
+
+> 2
+
+ + log Ädet Ä ˆΣi∗
+
+ää − log ( det (Σ i∗ )) 
+
+| {z }
+
+> T2
+
++2[ log   ˆπi′
+
+> 2
+
+ − log  πi′
+
+> 2
+
+ + |log ( ˆ πi∗ ) − log ( πi∗ )|
+
+| {z }
+
+> T3
+
+] (43) We, next, bound the three terms T1, T 2, T 3. Applying Lemma F.1 for the Gaussian marginals Di2 , Di∗ ,we have that 
+
+d2 
+
+> M
+
+(x, ˆμi′ 
+
+> 2
+
+) − d2 
+
+> M
+
+(x, μ i′ 
+
+> 2
+
+) ≤ ˜O
+
+Ç… dn
+
+å
+
+(44) 
+
+d2 
+
+> M
+
+(x, ˆμi∗ ) − d2 
+
+> M
+
+(x, μ i∗ ) ≤ ˜O
+
+Ç… dn
+
+å
+
+(45) Adding inequalities (44), (45), we get that 
+
+T1 ≤ ˜O
+
+Ç… dn
+
+å
+
+(46) 23 We, next, bound the term T2 by using Lemma F.3 
+
+T2 ≤ ˜O
+
+Ç d3/2
+
+n1/2
+
+å
+
+(47) For the term T3, we use Lemma F.4 and get 
+
+T3 ≤ ˜O
+
+Ç… dn
+
+å
+
+(48) Substituting inequalities (46), (47), (48) into (43), we obtain 
+
+| ˆm(x) − m(x)| ≤ ˜O
+
+Ç… dn
+
+å
+
++ ˜O
+
+Ç d3/2
+
+n3/2
+
+å
+
++ 2 ˜O
+
+Ç… dn
+
+å
+
+≤ ˜O
+
+Ç… dn
+
+å
+
+Lemma F.6. If the number of samples observed from each marginal Dj , ∀j ∈ [K], is at least 
+
+n ≥ d, then we have that 
+
+λmin − ˆλmin ≤ ˜O
+
+Ç… dn
+
+å
+
+where λmin is the minimum over all eigenvalues of Wi = Σ −1 
+
+> i
+
+− Σ−1 
+
+> i∗
+
+, ∀i̸ = i∗.
+
+Proof. Using the fact that for any two real sequences ai, b i it holds that | min i ai − min i bi| ≤ 
+
+max i |ai − bi|, we have that 
+
+λmin − ˆλmin = min  
+
+> i∈[K]
+
+λmin 
+
+ Wi
+
+ − min  
+
+> i∈[K]
+
+λmin 
+
+  ˆWi
+
+
+
+≤ max  
+
+> i∈[K]
+
+λmin 
+
+ Wi
+
+ − λmin 
+
+  ˆWi
+
+ (49) (50) Using Weyl’s and triangle inequality, we get 
+
+λmin − ˆλmin ≤ max  
+
+> i
+
+Wi − ˆWi op (51) 
+
+= max  
+
+> i
+
+(Σ −1 
+
+> i
+
+− Σ−1 
+
+> ∗
+
+) − ( ˆΣ−1 
+
+> i
+
+− ˆΣ−1 
+
+> ∗
+
+) op (52) 
+
+≤ max 
+
+> i
+
+
+
+∥Σ−1 
+
+> i
+
+− ˆΣ−1 
+
+> i
+
+∥op + ∥Σ−1 
+
+> ∗
+
+− ˆΣ−1 
+
+> ∗
+
+∥op 
+
+
+
+(53) 
+
+≤ max 
+
+> i
+
+
+
+∥Σ−1 
+
+> i
+
+∥2op ∥Σi − ˆΣi∥op + ∥Σ−1 
+
+> ∗
+
+∥2op ∥Σ∗ − ˆΣ∗∥op 
+
+
+
+(54) 
+
+= ˜O
+
+»
+
+d/n 
+
+
+
+(55) where at the last step we used the fact that ∥Σi − ˆΣi∥op = ˜O
+
+» dn
+
+
+
+.
+
+Lemma F.7. If the number of samples observed from each marginal Dj , ∀j ∈ [K], is at least 
+
+n > d and |ˆλmin − λmin | < λ min , then it holds that 
+
+1ˆλmin 
+
+− 1
+
+λmin 
+
+≤ ˜O
+
+Ç… dn
+
+å
+
+where λmin is the minimum over all eigenvalues of Wi = Σ −1 
+
+> i
+
+− Σ−1 
+
+> i∗
+
+, ∀i̸ = i∗.24 Proof. Let ϵλ = ˆλmin − λmin denote the error between the estimate and the true minimum eigenvalue. We have that 
+
+1ˆλmin 
+
+− 1
+
+λmin 
+
+= λmin − ˆλmin 
+
+λmin ˆλmin 
+
+= ϵλ
+
+λmin ˆλmin 
+
+= |ϵλ|
+
+λmin ˆλmin − λmin + λmin 
+
+≤ |ϵλ|
+
+λmin (λmin − | ϵλ|)
+
+≤ |ϵλ|
+
+λ2min (1 − ϵλ 
+
+> λmin
+
+) (56) In order to bound the term 11− ϵλλmin 
+
+, we use the Taylor expansion of the function f (x) = 11−x =
+
+P+∞ 
+
+> n=0
+
+xn and get for ϵλ < λ min that 
+
+11 − ϵλ
+
+> λmin
+
+≤
+
+> +∞
+
+X
+
+> n=0
+
+Å ϵλ
+
+λmin 
+
+ãn
+
+= ˜O (1) (57) Substituting inequality (57) into (56) and using from Lemma F.6 the fact that ϵλ = ˜O
+
+» dn
+
+
+
+, we obtain 
+
+1ˆλmin 
+
+− 1
+
+λmin 
+
+≤ ˜O
+
+Ç… dn
+
+å
+
+Lemma F.8. For a sample (x, y ), let 
+
+cM (x) = max  
+
+> i̸=y
+
+∥Σ−1 
+
+> y
+
+(x − μy )T − Σ−1 
+
+> i
+
+(x − μi)T ∥2
+
+ˆcM (x) = max  
+
+> i̸=y
+
+∥ ˆΣ−1 
+
+> y
+
+(x − ˆμy )T − ˆΣ−1 
+
+> i
+
+(x − ˆμi)T ∥2
+
+and ˆμj , ˆΣj the empirical mean and covariance of the Gaussian marginal Dj , ∀j ∈ [K]. If the number of samples observed from each marginal Dj , ∀j ∈ [K] is n > d and ∥Σj − ˆΣj ∥op < 
+
+> 1
+> ∥Σ−1
+> i∥op
+
+, then we have that 
+
+|cM − ˆcM | ≤ ˜O
+
+Ç… dn
+
+å
+
+Proof. Let αi = Σ −1 
+
+> i
+
+(x − μi)T , ∀i ∈ [K] and ˆαi = ˆΣ−1 
+
+> i
+
+(x − ˆμi)T , ∀i ∈ [K]. Then, we have that 
+
+cM (x) = max  
+
+> i̸=y
+
+∥αy − αi∥2, and ˆcM (x) = max  
+
+> i̸=y
+
+∥ˆαy − ˆαi∥2
+
+Using the fact that for any two arbitrary sequences of real numbers bi, c i it holds that 
+
+max  
+
+> i
+
+bi − max  
+
+> i
+
+ci ≤ max  
+
+> i
+
+|bi − ci|
+
+we have for bi = ∥αy − αi∥2 and ci = ∥ˆαy − ˆαi∥2 that 
+
+|cM − ˆcM | = max  
+
+> i̸=y
+
+∥αy − αi∥2 − max  
+
+> i̸=y
+
+∥ˆαy − ˆαi∥2 ≤ max  
+
+> i̸=y
+
+|∥ αy − αi∥2 − ∥ ˆαy − ˆαi∥2| (58) Applying the triangle inequality on the norm ∥αy − αi∥2 − ∥ ˆαy − ˆαi∥2, we have that ∥αy − αi∥2 −∥ˆαy − ˆαi∥2 ≤ ∥ αy − ˆαy + ˆ αi − αi∥2 we obtain 
+
+|cM − ˆcM | ≤ max  
+
+> i̸=y
+
+|∥ αy − αi∥2 − ∥ ˆαy − ˆαi∥2| ≤ max  
+
+> i̸=y
+
+∥αy − ˆαy ∥2 + ∥αi − ˆαi∥2 (59) 25 We, next, bound the error on the terms ∥αy − ˆαy ∥2 and αi − ˆαi. It holds that 
+
+αi − ˆαi = Σ−1 
+
+> i
+
+(x − μi)T − ˆΣ−1 
+
+> i
+
+(x − ˆμi)T
+
+= Σ−1 
+
+> i
+
+(x − μi)T − Σ−1 
+
+> i
+
+(x − ˆμi)T + Σ −1 
+
+> i
+
+(x − ˆμi)T − ˆΣ−1 
+
+> i
+
+(x − ˆμi)T
+
+= Σ−1 
+
+> i
+
+(ˆ μi − μi)T + (Σ −1 
+
+> i
+
+− ˆΣ−1 
+
+> i
+
+)( x − ˆμi)T
+
+= Σ−1 
+
+> i
+
+(ˆ μi − μi)T + (Σ −1 
+
+> i
+
+− ˆΣ−1 
+
+> i
+
+)( μi − ˆμi)T + (Σ −1 
+
+> i
+
+− ˆΣ−1 
+
+> i
+
+)( x − μi)T
+
+Taking the norm and applying the triangle inequality, we get 
+
+∥αi − ˆαi∥2 ≤ ∥Σ−1 
+
+> i
+
+(ˆ μi − μi)T ∥2 + ∥(Σ −1 
+
+> i
+
+− ˆΣ−1 
+
+> i
+
+)( μi − ˆμi)T ∥2 + ∥(Σ −1 
+
+> i
+
+− ˆΣ−1 
+
+> i
+
+)( x − μi)T ∥2
+
+≤ ∥Σ−1 
+
+> i
+
+∥op ∥ˆμi − μi∥2 + ∥Σ−1 
+
+> i
+
+− ˆΣ−1 
+
+> i
+
+∥op ∥μi − ˆμi∥2 + ∥Σ−1 
+
+> i
+
+− ˆΣ−1 
+
+> i
+
+∥op ∥x − μi∥2 (60) In order to bound inequality (60), we need upper bounds on ∥μi − ˆμi∥2 and ∥Σ−1 
+
+> i
+
+− ˆΣ−1 
+
+> i
+
+∥op . We have that ∥μi − ˆμi∥2 = ˜O
+
+» dn
+
+
+
+, where n is the minimum number of samples observed from each marginal Di, ∀i ∈ [K]. For the term ∥Σ−1 
+
+> i
+
+− ˆΣ−1 
+
+> i
+
+∥op , we get for ∥Σi − ˆΣi∥op < 1 
+
+> ∥Σ−1
+> i∥op
+
+that the following inequality holds 
+
+∥Σ−1 
+
+> i
+
+− ˆΣ−1 
+
+> i
+
+∥op ≤ ∥ Σ−1 
+
+> i
+
+∥2
+
+> op
+
+∥Σi − ˆΣi∥op 
+
+Using the fact that ∥Σi − ˆΣi∥op = ˜O
+
+» dn
+
+
+
+we obtain 
+
+∥Σ−1 
+
+> i
+
+− ˆΣ−1 
+
+> i
+
+∥op ≤ ˜O
+
+Ç… dn
+
+å
+
+(61) Substituting inequality (61) and the fact that ∥μi − ˆμi∥2 = ˜O
+
+» dn
+
+
+
+into (60) 
+
+∥αi − ˆαi∥2 ≤ ∥Σ−1 
+
+> i
+
+∥op ˜O
+
+Ç… dn
+
+å
+
++ ˜O
+
+Å dn
+
+ã
+
++ ˜O
+
+Ç… dn
+
+å
+
+≤ ˜O
+
+Ç… dn
+
+å
+
+(62) Similarly, for i = y we have that 
+
+∥αy − ˆαy ∥2 ≤ ˜O
+
+Ç… dn
+
+å
+
+(63) From (59), (62), (63), we get that 
+
+|cM − ˆcM | ≤ ∥αy − ˆαy ∥2 + max  
+
+> i̸=y
+
+∥αi − ˆαi∥2 ≤ ˜O
+
+Ç… dn
+
+å
+
+Lemma F.9. Let A =
+
+»
+
+c2 
+
+> M
+
+− m(x)λmin and ˆA =
+
+»
+
+ˆc2 
+
+> M
+
+− ˆm(x)ˆλmin . If the minimum number of samples observed from each marginal Dj , ∀j ∈ [K] is n > d and ∥Σj − ˆΣj ∥op < 
+
+> 1
+> ∥Σ−1
+> j∥op
+
+, then we have that 
+
+|A − ˆA| ≤ ˜O
+
+Ç d1/4
+
+n1/4
+
+å
+
+Proof. Using the Holder’s inequality for f (x) = √x, we have that 
+
+A − ˆA =
+
+»
+
+c2 
+
+> M
+
+− m(x)λmin −
+
+»
+
+ˆc2 
+
+> M
+
+− ˆm(x)ˆλmin 
+
+≤
+
+…
+
+c2 
+
+> M
+
+− ˆc2 
+
+> M
+
+− m(x)λmin + ˆ m(x)ˆλmin (64) 26 We, now, express the quantity under the root with respect to ϵc = ˆ cM − cM and ϵλ = ˆλmin − λmin ,
+
+as follows 
+
+c2 
+
+> M
+
+− ˆc2 
+
+> M
+
+− m(x)λmin + ˆ m(x)ˆλmin ≤ (cM − ˆcM )( cM + ˆ cM ) − m(x)λmin + ˆ m(x)ˆλmin 
+
+= ϵc(2 cM + ϵ) − m(x)( λmin − ˆλmin ) + ˆλmin (m(x) − ˆm(x)) = ϵc(2 cM + ϵ) − m(x)( λmin − ˆλmin )+( ˆλmin − λmin )( m(x) − ˆm(x)) + λmin (m(x) − ˆm(x)) (65) Combining (64), (65), using triangle inequality and the concavity of the square root, we get 
+
+A − ˆA ≤
+
+»
+
+ϵc(2 cM + ϵc) + 
+
+…
+
+m(x) λmin − ˆλmin +
+
+…
+
+(ˆλmin − λmin )( m(x) − ˆm(x)) 
+
++
+
+»
+
+|λmin (m(x) − ˆm(x)) |≤
+
+»
+
+ϵc(2 cM + ϵc) + 
+
+»
+
+m(x)ϵλ + √ϵλϵm +
+
+»
+
+|λmin ϵm| (66) From Lemma F.6, F.8, F.5, we have that ϵm = ˜O
+
+» dn
+
+
+
+, ϵ c = ˜O
+
+» dn
+
+
+
+and ϵλ = ˜O
+
+» dn
+
+
+
+and thus 
+
+A − ˆA ≤ ˜O
+
+Ç d1/4
+
+n1/4
+
+å
+
++ ˜O
+
+Ç d1/4
+
+n1/4
+
+å
+
++ ˜O
+
+Ç… dn
+
+å
+
++ ˜O
+
+Ç d1/4
+
+n1/4
+
+å
+
+= ˜O
+
+Ç d1/4
+
+n1/4
+
+å
+
+Lemma F.10. For an input sample (x, y ), with |ˆcM − cM | ≤ cM and number of observed samples from each marginal Dj , ∀j ∈ [K] at least n > d, it holds that 
+
+m(x)2cM
+
+− ˆm(x)2ˆ cM
+
+≤ ˜O
+
+Ç d1/2
+
+n1/2
+
+å
+
+Proof. From triangle inequality, we have that 
+
+m(x)2cM
+
+− ˆm(x)2ˆ cM
+
+= m(x)2cM
+
+− ˆm(x)2cM
+
++ ˆm(x)2cM
+
+− ˆm(x)2ˆ cM
+
+≤ 12cM
+
+|m(x) − ˆm(x)| + ˆm(x)2
+
+1
+
+cM
+
+− 1ˆcM
+
+≤ |m(x) − ˆm(x)|
+
+2cM
+
++
+
+Å m(x)2 + |m(x) − ˆm(x)|
+
+2
+
+ã 1
+
+cM
+
+− 1ˆcM
+
+= |m(x) − ˆm(x)|
+
+2cM
+
++
+
+Å m(x)2cM
+
++ |m(x) − ˆm(x)|
+
+2cM
+
+ã ˆcM − cM
+
+ˆcM
+
+(67) We, next, bound the terms |m(x) − ˆm(x)| and ˆcM −cM 
+
+> ˆcM
+
+. From Lemma F.5, we have that 
+
+| ˆm(x) − m(x)| ≤ ˜O
+
+Ç d1/2
+
+n1/2
+
+å
+
+(68) From Lemma F.8, we have that |ˆcM − cM | ≤ ϵc with ϵc = ˜O Ä d1/2
+
+> n1/2
+
+ä and assuming that ϵc < c M ,
+
+we have that 
+
+ˆcM − cM
+
+ˆcM
+
+≤ ϵc
+
+|ˆcM | ≤ ϵc
+
+cM − | ˆcM − cM | ≤ ϵc
+
+cM − ϵc
+
+= ϵc
+
+cM (1 − ϵc/c M ) (69) In order to bound the term 11− ϵc cM
+
+, we use the Taylor expansion of the function f (x) = 11−x =
+
+P+∞ 
+
+> n=0
+
+xn and get for ϵc < c M that 
+
+11 − ϵc
+
+> cM
+
+≤
+
+> +∞
+
+X
+
+> n=0
+
+Å ϵc
+
+cM
+
+ãn
+
+= ˜O (1) (70) 27 Substituting (70) into (69), we get that 
+
+ˆcM − cM
+
+ˆcM
+
+≤ ˜O (ϵc) ≤ ˜O
+
+Ç d1/2
+
+n1/2
+
+å
+
+(71) Combining (68), (71) with (67), we obtain 
+
+m(x)2cM
+
+− ˆm(x)2ˆ cM
+
+≤ ˜O
+
+Ç d1/2
+
+n1/2
+
+å
+
++
+
+ñ
+
+˜O (1) + ˜O
+
+Ç d1/2
+
+n1/2
+
+åô 
+
+˜O
+
+Ç d1/2
+
+n1/2
+
+å
+
+≤ ˜O
+
+Ç d1/2
+
+n1/2
+
+å
+
+(72) 
+
+Lemma F.11. For an input sample (x, y ) with |ˆλmin − λmin | < λ min , ∥Σj − ˆΣj ∥op < 1 
+
+> ∥Σ−1
+> j∥op
+
+,
+
+and number of observed samples from each marginal Dj , ∀j ∈ [K] at least n > d, then it holds that 
+
+ˆcM −
+
+»
+
+ˆc2 
+
+> M
+
+− ˆm(x)ˆλmin 
+
+ˆλmin 
+
+− ˆm(x)2ˆ cM
+
+≤ ˜O
+
+Ç… dn
+
+å
+
+Proof. We use the Taylor expansion of the function f (x) =
+
+»
+
+ˆc2 
+
+> M
+
+− x =ˆcM
+
+P∞
+
+> n=0
+
+ 1/2
+
+> n
+
+(−1) n
+
+ x
+
+> ˆc2
+> M
+
+n
+
+and get 
+
+»
+
+ˆc2 
+
+> M
+
+− ˆm(x)ˆλmin = ˆcM
+
+> ∞
+
+X
+
+> n=0
+
+Ç1/2
+
+n
+
+å
+
+(−1) n
+
+Ç ˆm(x)ˆλmin 
+
+ˆc2
+
+> M
+
+ån
+
+⇒ ˆcM −
+
+»
+
+ˆc2 
+
+> M
+
+− ˆm(x)ˆλmin 
+
+ˆλmin 
+
+− ˆm(x)2ˆ cM
+
+≤ ˜O
+
+Ç ˆm2(x)ˆλmin 
+
+8ˆ c3
+
+> M
+
+å
+
+(73) Let ϵm = ˆ m(x) − m(x), ϵ c = ˆ cM − cM and ϵλ = ˆλmin − λmin . Then, we have that 
+
+ˆm2(x)ˆλmin 
+
+8ˆ c3
+
+> M
+
+= (m(x) + ϵm)2(λmin + ϵλ)8( cM + ϵc)3 = (m2(x) + 2 ϵmm(x) + ϵ2
+
+> m
+
+)( λmin + ϵλ)8c3 
+
+> M
+
+(1 + ϵc/c M )3 (74) Using the Taylor expansion of f (x) = (1 + 1 
+
+> x
+
+)−3 = P∞
+
+> n=0
+
+(−1) n (n+2)( n+1) 2 x−n, we have for 
+
+ϵc < c M that (1 + ϵc/c M )−3 = 1 − 3 ϵc 
+
+> cM
+
++ 6( ϵc 
+
+> cM
+
+)2 + ... ≤ ˜O (1) and thus 
+
+ˆm2(x)ˆλmin 
+
+8ˆ c3
+
+> M
+
+≤ (m2(x) + 2 ϵmm(x) + ϵ2
+
+> m
+
+)( λmin + ϵλ)8cM
+
+˜O (1) = ˜O  ϵλ + ϵm + ϵ2 
+
+> m
+
++ ϵmϵλ + ϵ2
+
+> m
+
+ϵλ
+
+
+
+= ˜O
+
+Ç… dn
+
+å
+
+(75) where we have used the fact that from Lemmas F.5, F.6, F.8, it holds ϵm, ϵ c, ϵ λ = ˜O
+
+» dn
+
+
+
+. Thus, combining (73), (74), (75), we obtain 
+
+ˆcM −
+
+»
+
+ˆc2 
+
+> M
+
+− ˆm(x)ˆλmin 
+
+ˆλmin 
+
+− ˆm(x)2ˆ cM
+
+≤ ˜O
+
+Ç… dn
+
+å
+
+(76) 28 Lemma F.12. For an input sample (x, y ) with |ˆλmin − λmin | < λmin , ∥Σj − ˆΣj ∥op < 
+
+> 1
+> ∥Σ−1
+> j∥op
+
+, |ˆcM − cM | < c M and number of observed samples from each marginal Dj , ∀j ∈ [K]
+
+at least n > d, it holds that 
+
+ˆcM −
+
+»
+
+ˆc2 
+
+> M
+
+− ˆm(x)ˆλmin 
+
+ˆλmin 
+
+− m(x)2cM
+
+≤ ˜O
+
+Ç… dn
+
+å
+
+Proof. Applying the triangle inequality, we have that 
+
+ˆcM −
+
+»
+
+ˆc2 
+
+> M
+
+− ˆm(x)ˆλmin 
+
+ˆλmin 
+
+− m(x)2cM
+
+≤ ˆcM −
+
+»
+
+ˆc2 
+
+> M
+
+− ˆm(x)ˆλmin 
+
+ˆλmin 
+
+− ˆm(x)2ˆ cM
+
+| {z }
+
+> T1
+
++ ˆm(x)2ˆ cM
+
+− m(x)2cM
+
+| {z }
+
+> T2
+
+(77) We, next, bound the terms T1, T 2 appearing on the right-hand side of (77). From Lemma F.11, we have for ϵc < c M that 
+
+T1 ≤ ˜O
+
+Ç… dn
+
+å
+
+(78) From Lemma F.10, we have that 
+
+T2 ≤ ˜O
+
+Ç… dn
+
+å
+
+(79) Substituting (78), (79) to (77), we get that 
+
+ˆcM −
+
+»
+
+ˆc2 
+
+> M
+
+− ˆm(x)ˆλmin 
+
+ˆλmin 
+
+− m(x)2cM
+
+≤ ˜O
+
+Ç… dn
+
+å
+
+(80) 
+
+Lemma F.13. For an input sample (x, y ) with ˆλmin − λmin < λ min , |ˆcM − cM | < c M and number of observed samples from each marginal Dj , ∀j ∈ [K] at least n > d, it holds that 
+
+cM −
+
+»
+
+c2 
+
+> M
+
+− m(x)λmin 
+
+λmin 
+
+− ˆcM −
+
+»
+
+ˆc2 
+
+> M
+
+− ˆm(x)ˆλmin 
+
+ˆλmin 
+
+≤ ˜O
+
+Ç d1/4
+
+n1/4
+
+å
+
+Proof. Let R(x), ˆR(x) be the true and learnt certificate of robustness from Theorem 4.1. We have that 
+
+| ˆR(x) − R (x)| = cM −
+
+»
+
+c2 
+
+> M
+
+− m(x)λmin 
+
+λmin 
+
+− ˆcM −
+
+»
+
+ˆc2 
+
+> M
+
+− ˆm(x)ˆλmin 
+
+ˆλmin 
+
+= cM −
+
+»
+
+c2 
+
+> M
+
+− m(x)λmin 
+
+λmin 
+
+− cM −
+
+»
+
+c2 
+
+> M
+
+− m(x)λmin 
+
+ˆλmin 
+
++ cM −
+
+»
+
+c2 
+
+> M
+
+− m(x)λmin 
+
+ˆλmin 
+
+− ˆcM −
+
+»
+
+ˆc2 
+
+> M
+
+− ˆm(x)ˆλmin 
+
+ˆλmin 
+
+29 Let A =
+
+»
+
+c2 
+
+> M
+
+− m(x)λmin and ˆA =
+
+»
+
+ˆc2 
+
+> M
+
+− ˆm(x)ˆλmin . By applying the triangle inequality, we get 
+
+| ˆR(x) − R (x)| ≤ cM − Aλmin 
+
+− cM − A
+
+ˆλmin 
+
++ cM − A
+
+ˆλmin 
+
+− ˆcM − ˆA
+
+ˆλmin 
+
+≤ cM − Aλmin 
+
+− cM − A
+
+ˆλmin 
+
++ A − ˆA
+
+ˆλmin 
+
++ cM − ˆcM
+
+ˆλmin 
+
+= |cM − A| 1
+
+λmin 
+
+− 1ˆλmin 
+
++ 1ˆλmin 
+
+
+
+A − ˆA + |cM − ˆcM |
+
+
+
+= |cM − A| 1
+
+λmin 
+
+− 1ˆλmin 
+
++ 1ˆλmin 
+
+− 1
+
+λmin 
+
+
+
+A − ˆA + |cM − ˆcM |
+
+
+
++ 1
+
+λmin 
+
+
+
+A − ˆA + |cM − ˆcM |
+
+
+
+(81) Thus, in order to bound inequality (81) we need to bound the terms 1 
+
+> λmin
+
+− 1ˆλmin 
+
+, A − ˆA and 
+
+|cM − ˆcM |. From Lemmas F.7, F.8, F.9, we have that for ϵλ = ˆλmin − λmin ≤ λmin , ∥Σi − ˆΣi∥op < 
+
+> 1
+> ∥Σ−1
+> i∥op
+
+, it holds that 
+
+1
+
+λmin 
+
+− 1ˆλmin 
+
+≤ ˜O
+
+Ç… dn
+
+å
+
+(82) 
+
+A − ˆA ≤ ˜O
+
+Ç d1/4
+
+n1/4
+
+å
+
+(83) 
+
+|cM − ˆcM | ≤ ˜O
+
+Ç… dn
+
+å
+
+(84) Substituting inequalities (82), (83), (84) into (81), we get 
+
+| ˆR(x) − R (x)| ≤ |cM − A| 1
+
+λmin 
+
+− 1ˆλmin 
+
++ 1ˆλmin 
+
+− 1
+
+λmin 
+
+
+
+A − ˆA + |cM − ˆcM |
+
+
+
++ 1
+
+λmin 
+
+
+
+A − ˆA + |cM − ˆcM |
+
+
+
+≤ ˜O
+
+Ç… dn
+
+å
+
++ ˜O
+
+Ç… dn
+
+å
+
+˜O
+
+Ç d1/4
+
+n1/4
+
+å
+
++ ˜O
+
+Ç d1/4
+
+n1/4
+
+å
+
+≤ ˜O
+
+Ç d1/4
+
+n1/4
+
+å
+
+Lemma F.14. If ˆλmin − λmin < λ min , |ˆcM − cM | < c M , ∥Σj − ˆΣj ∥op < 1 
+
+> ∥Σ−1
+> j∥op
+
+,, the following bound holds 
+
+cM −
+
+»
+
+c2 
+
+> M
+
+− m(x)λmin 
+
+λmin 
+
+− ˆm(x)2ˆ cM
+
+≤ ˜O
+
+Ç d1/4
+
+n1/4
+
+å
+
+30 Proof. From triangle inequality, we have that 
+
+cM −
+
+»
+
+c2 
+
+> M
+
+− m(x)λmin 
+
+λmin 
+
+− ˆm(x)2ˆ cM
+
+≤ cM −
+
+»
+
+c2 
+
+> M
+
+− m(x)λmin 
+
+λmin 
+
+− ˆcM −
+
+»
+
+ˆc2 
+
+> M
+
+− ˆm(x)ˆλmin 
+
+ˆλmin 
+
+| {z }
+
+> T1
+
++ ˆcM −
+
+»
+
+ˆc2 
+
+> M
+
+− ˆm(x)ˆλmin 
+
+ˆλmin 
+
+− ˆm(x)2ˆ cM
+
+| {z }
+
+> T2
+
+(85) From Lemmas F.11, F.13, we have for ϵc = |ˆcM − cM | < c M that 
+
+T1 ≤ ˜O
+
+Ç d1/4
+
+n1/4
+
+å
+
+(86) 
+
+T2 ≤ ˜O
+
+Ç d1/2
+
+n1/2
+
+å
+
+(87) Substituting (86), (87) into (85), we obtain 
+
+cM −
+
+»
+
+c2 
+
+> M
+
+− m(x)λmin 
+
+λmin 
+
+− ˆm(x)2ˆ cM
+
+≤ ˜O
+
+Ç d1/4
+
+n1/4
+
+å
+
+F.3 Proof of Theorem 4.2. 
+
+Proof. Let ˆμi, ˆΣi, ˆπi be the learnt parameters and μi, Σi, π i the true parameters of the Gaussian marginal Di, ∀i ∈ [K]. Denote with ni the number of samples observed from Di and let n =min i∈[K] ni be the minimum number of samples observed from any marginal distribution. Using Gaussian concentration results (Theorem 6.1 Wainwright [2019]), we have that the empirical mean 
+
+ˆμi and empirical covariance ˆΣi of each Gaussian marginal Di, ∀i ∈ [K], satisfy 
+
+∥ˆμi − μi∥Σ−1 ≤ ˜O
+
+Ç… dn
+
+å
+
+, ∥ ˆΣ − Σi∥op ≤ ˜O
+
+Ç… dn
+
+å
+
+where ˜O(·) suppresses logarithmic terms in δ. For samples x1, x 2, ..., x n ∼ Multinomial (π1, ..., π K )
+
+and ˆπi = 1
+
+> n
+
+Pnj=1 I{yj = i}, from the Hoeffding’s bound we get that with probability at least 1 − δ, 
+
+it holds 
+
+∥ˆπi − πi∥2 ≤ ˜O
+
+Ç… 1
+
+n
+
+å
+
+, ∀i ∈ [K],
+
+We denote with λmin for brevity the minimum over all eigenvalues of the matrices Wi = Σ −1 
+
+> j
+
+−
+
+Σ−1 
+
+> j∗
+
+, ∀j̸ = j∗ and with λΣi 
+
+> min
+
+the minimum over all eigenvalues of the covariance matrices Σi, ∀i ∈
+
+[K] and λWi
+
+> min
+
+.Given the above bounds on the distance of the estimated parameters from the true ones, we bound the learnt certificate of robustness ˆR(x) from the true certificate R(x). From (29), (30) in Theorem 4.1, depending on the sign of λmin , there are two cases for the expression of the certified radius, specifically 
+
+R(x) = cM −√c2  
+
+> M−m(x)λmin
+> λmin
+
+or R(x) = m(x)2cM . Similarly, based on whether ˆλmin is positive or negative, there are two cases for the expression of ˆR(x).We, thus, partition the input space X into four disjoint subspaces X1, X2, X3, X4, where 
+
+X1 = {x ∈ X : λmin > 0, ˆλmin > 0}X2 = {x ∈ X : λmin > 0, ˆλmin ≤ 0}X3 = {x ∈ X : λmin ≤ 0, ˆλmin > 0}X4 = {x ∈ X : λmin ≤ 0, ˆλmin ≤ 0}
+
+31 Based on the above partition of X , we have that 
+
+P
+
+> x∼D
+
+î|R (x) − ˆR(x)| ≥ ϵó = X
+
+> i∈[4]
+
+P
+
+> x∼D
+
+[x ∈ X i] P
+
+h
+
+|R (x) − ˆR(x)| ≥ ϵi x ∈ X i
+
+i
+
+≤ X
+
+> i∈[4]
+
+P
+
+> x∼D
+
+[x ∈ X i] δ
+
+≤ δ (88) where δ = P
+
+h
+
+|R (x) − ˆR(x)| ≥ ϵi x ∈ X i
+
+i
+
+. To prove the needed, thus, it suffices to fix a probability 
+
+δ and find the errors ϵi for each of the four cases, and, finally, let ϵ = max  
+
+> i∈[4]
+
+ϵi in (88). 
+
+Case 1 ( X1). We have that R(x) = m(x)2cM and ˆR(x) = ˆm(x)2ˆ cM and thus according to Lemma F.10 for 
+
+ϵ < c M , it holds that 
+
+|R (x) − ˆR(x)| = ˜O
+
+Ç d1/2
+
+n1/2
+
+å
+
+Case 2 ( X2). We have that R(x) = m(x)2cM and ˆR(x) = ˆcM −
+
+√ˆc2  
+
+> M−ˆm(x)ˆλmin
+> ˆλmin
+
+and according to Lemma F.12 for ϵ < min {λmin , λ Σi
+
+> min
+
+, c M }, it holds that 
+
+|R (x) − ˆR(x)| = ˜O
+
+Ç d1/2
+
+n1/2
+
+å
+
+Case 3 ( X3). We have that R(x) = cM −√c2  
+
+> M−m(x)λmin
+> λmin
+
+and ˆR(x) = ˆm(x)2ˆ cM and according to Lemma F.14 for ϵ < min {λmin , λ Σi
+
+> min
+
+, c M }, it holds that 
+
+|R (x) − ˆR(x)| = ˜O
+
+Ç d1/4
+
+n1/4
+
+å
+
+Case 4 ( X4). We have that R(x) = cM −√c2  
+
+> M−m(x)λmin
+> λmin
+
+and ˆR(x) = ˆcM −
+
+√ˆc2  
+
+> M−ˆm(x)ˆλmin
+> ˆλmin
+
+and thus according to Lemma F.13 for ϵ < min {λmin , c M }, it holds that 
+
+|R (x) − ˆR(x)| = ˜O
+
+Ç d1/4
+
+n1/4
+
+å
+
+Combining the above results with (88), we get that with probability at least 1 − δ it holds that 
+
+|R (x) − ˆR(x)| ≤ ˜O
+
+Ç d1/4
+
+n1/4
+
+å
+
+For a fixed error 0 < ϵ < ϵ min = {λΣi
+
+> min
+
+, λ min , c M (x)}, in order to satisfy that 
+
+| ˆR(x) − R (x)| < O (ϵ) ,
+
+we have that number of samples needed are n = ˜O Ä d1/4
+
+> ϵ1/4
+
+ä.32 G Proof of Theorem 5.1 
+
+Proof. Case 1: ϵ = 0 . Denote with x, x ′ the clean and the corresponding adversarially perturbed sample and with z = f (x), z ′ = f (x′) their embeddings in the latent space. Since the encoder network is locally Lx-Lipschitz around the sample x, we have that 
+
+∥z − z′∥2 = ∥f (x) − f (x′)∥2 ≤ Lx∥x − x′∥2 (89) Given that f (x) maps the input distribution to a latent distribution that is a mixture of Gaussians, we have from Theorem 4.1 that the ELLIPS classifier remains robust as long as 
+
+∥z′ − z∥2 ≤ m(z)
+
+λmin 
+
+»
+
+c2 
+
+> M
+
++ ( λmin )+m(z) + cM
+
+ (90) where λmin is the minimum among all eigenvalues of the matrices Wi = Σ −1 
+
+> i
+
+− Σ−1 
+
+> i∗
+
+, ∀i̸ = i∗,
+
+(−λmin )+ = max( −λmin , 0) , and cM = max 
+
+> i̸=i∗
+
+∥Σ−1 
+
+> i∗
+
+(f (x) − μi∗ )T − Σ−1 
+
+> i
+
+(f (x) − μi)T ∥2. Thus, in order for the classifier to remain robust, it suffices that the perturbation in the input space satisfies 
+
+Lx∥x − x′∥2 ≤ m(z)
+
+λmin 
+
+»
+
+c2 
+
+> M
+
++ ( λmin )+m(z) + cM
+
+
+
+⇐⇒ R(x) ≤ m(z)
+
+λmin Lx
+
+»
+
+c2 
+
+> M
+
++ ( λmin )+m(z) + cM
+
+
+
+Case 2: ϵ > 0. Let Pz := f#Dx denote the true latent distribution induced by the encoder, and let 
+
+Qz be the Gaussian mixture fitted to this latent distribution. Let E, Π denote the parameters of Qz ,and let CE,Π be the set of latent points that are certified by the G EN ELLIPS certification rule with respect to E, Π
+
+CE,Π := {z ∈ Z : GEN ELLIPS is certified at z} .
+
+Therefore, by definition, 
+
+CertAcc( Pz ) = Pz (CE,Π), CertAcc( Qz ) = Qz (CE,Π).
+
+Using assumption KL( Pz ∥Qz ) ≤ ϵ and Pinsker’s inequality, we have 
+
+dTV (Pz , Q z ) ≤
+
+… 12 KL( Pz ∥Qz )
+
+≤
+
+… ϵ
+
+2 . (91) By the definition of total variation distance, for every measurable set A ⊆ Z , we have 
+
+|Pz (A) − Qz (A)| ≤ dTV (Pz , Q z ).
+
+Applying this inequality to the certified set A = CE,Π gives 
+
+Pz (CE,Π) ≥ Qz (CE,Π) − dTV (Pz , Q z )
+
+≥ Qz (CE,Π) −
+
+… ϵ
+
+2 . (92) Using the definitions of certified accuracy under Pz and Qz , we obtain 
+
+CertAcc( Pz ) ≥ CertAcc( Qz ) −
+
+… ϵ
+
+2 .
+
+33 H On Experiments 
+
+In Appendix H.1, we provide more details on the experiments presented in the main paper. In Appendix H.2, we provide additional experiments showcasing the performance of the proposed classifier in practice. 
+
+H.1 Experimental Details 
+
+We first describe the experimental setup used and then provide additional synthetic experiments. 
+
+Experiments in Benchmark Datasets. We provide the training details - network architecture, datasets, optimization and hyperparameters for the implementation of the G EN ELLIPS classifier. 
+
+Network Architecture. To construct the proposed classifier we need to apply first an encoder and then the ELLIPS classifier. We take a FARE-4 encoder [Schlarmann et al., 2024] pre-trained and finetune it using a loss that promotes the latent distribution to comprise a mixture of Gaussians. Given that the ImageNet dataset appears to have more classes and be more complex than the CIFAR-10, we have utilized a meticulously constructed loss accustomed to each dataset. Specifically, for CIFAR-10 the used loss combines the MCR 2 objective with a term promoting the Gaussian marginals to be isotropic, ensuring that the eigenvalues of the covariance matrices are well-behaved 
+
+L = LMCR 2 (Z, Y ) + λiso Liso (93) where Liso = PKk=1 Ck − Tr( Ck ) 
+
+> d
+
+Id
+
+> 2
+> F
+
+and 
+
+Z = z1, . . . , z B
+
+⊤, μk = 1
+
+nk
+
+X
+
+> i:yi=k
+
+zi, Ck = 1
+
+nk − 1
+
+X
+
+> i:yi=k
+
+(zi − μk)( zi − μk)⊤
+
+For the ImageNet dataset, given the significantly more complex underlying distribution, we add an additional regularizer, measuring the maximum mean discrepancy of each class conditional from a Gaussian distribution 
+
+L = LMCR 2 + λiso · L iso + λMMD · X
+
+> k
+
+MMD 2(zk, ˜zk), (94) where ˜zk ∼ N (μk, I ) and MMD 2(zk, ˜zk) is a kernel-based distance between two discrete distribu-tions defined as follows MMD 2(zk, ˜zk) = 1
+
+n2
+
+X
+
+> i,j
+
+k(zi, z j ) + 1
+
+m2
+
+X
+
+> i,j
+
+k(˜ zi, ˜zj ) − 2
+
+nm 
+
+X
+
+> i,j
+
+k(zi, ˜zj ) (95) where k(·, ·) is a positive-definite kernel function. The choice of the kernel is the Gaussian Radial Basis Function (RBF) kernel 
+
+k(x, y ) = exp 
+
+Å
+
+− ∥x − y∥2
+
+2σ2
+
+ã
+
+During training, we freeze the FARE-4 backbone and we add, similarly to Chu et al. [2023], a pre-feature layer composed of Linear-BatchNorm-ReLU-Linear-ReLU. For feature head and cluster head, we utilize a Linear layer that maps the hidden to the feature dimension d = 128 .
+
+Optimization, Initialization and Hyperparameters. We initially warmup our pipeline by training the MCR 2 loss and then optimize simultaneously the feature cluster head using the MLC loss. Following Chu et al. [2023], we use the SGD optimizer for both the feature head and cluster head with learning rate equal to 0.0001, momentum set to 0.9 and weight decay set to 0.0001 and 0.005 respectively. All other hyperparameters remain the same to the ones used in Chu et al. [2023], thus referring the interested reader to the aforementioned related work. 
+
+H.2 Additional Experiments Separation of Classes. We visualize the correlation of the latent embeddings of different classes showing the effectiveness of the M CR 2 loss in the CIFAR-10 dataset. As shown in Figure 3, such 34 an encoder trained with the M CR 2 objective maps each class of input samples to points near a low-dimensional subspace, as the singular values of the mapped points drop quickly, while the mapped points from different subspaces tend to be orthogonal. 0 20 40 60 80 100 120 
+
+> Component index
+> 5
+> 10
+> 15
+> 20
+> 25
+> 30
+> Singular value
+> Per-Class Embedding Spectrum
+
+Figure 3: The correlation matrix and minimum eigenvalues of the latent space embeddings for the different classes for CIFAR-10. 
+
+Empirical Validation of Sample Complexity. In order to empirically validate the result of Theorem 4.2, we have first expressed the established sample complexity in terms of logarithms, as follows: from n = ˜O( d9/2 
+
+> ϵ9/2
+
+), we know that there exists a constant C > 0 such that 
+
+n ≤ Cd 9/2
+
+ϵ9/2
+
+⇒ log ϵ ≤ − 29 log n + log d + 29 log C (96) We run multiple experiments for different sample sizes n ∈ { 10 , 100 , 500 , 1000 } and dimensions 
+
+d ∈ { 2, 10 , 100 } and estimate in each experiment the distance of the learned certificate from the true certificate of robustness. We, next perform linear regression to estimate the coefficients α, β, γ in the following equality and compare with the ones of (96). We have found that and , thus validating empirically (1) and hence the sample complexity established in Theorem 4.2. CIFAR-10 We run multiple experiments for different sample sizes and dimensions and estimate in each experiment the distance of the learned certificate from the true certificate of robustness. We, lastly, performed linear regression to estimate the coefficients in the following equality and compared them with the ones in (1). We have found that and , thus validating empirically (1) and hence the sample complexity established in Theorem 4.2. For the same example, we have plotted additionally the difference of the learned certified radius from the true one for different sample sizes and have shown how the certified radius scales with respect to the parameters and . 
+
+On Gaussianity of the Latent Distribution. To empirically validate that the used encoder maps the input distribution to a mixture of Gaussians, we apply Mardia’s statistical normality test [Mardia, 1970], a well-known statistical test that evaluates whether a multivariate dataset departs from a Gaussian distribution. More specifically, Mardia’s test computes two statistics: 1. multivariate skewness, which accounts for asymmetry 2. multivariate kurtosis, which evaluates whether the distribution’s tail behavior matches the one of a Gaussian. Under the null hypothesis, the data follow a multivariate normal distribution. The results show that the embeddings pass this test for all the classes, indicating that the class-conditional distributions are indeed conforming to Gaussians. 
+
+Dataset Mardia’s Average Score Percentage of Classes Passing Normality Test 
+
+CIFAR-10 0.027 100% ImageNet 0.014 100% Table 4: Mardia’s test results validate that the latent distribution of the encoder conforms with a mixture of Gaussian distributions. 35 Synthetic Experiments. We conduct experiments in the Gaussian mixture setting, where the input distribution is comprised of K classes and each class is distributed according to N (μi, Σi), ∀i ∈ [K].We run experiments for multiple setups testing for different number of classes K = {2, 3, 5, 10 } with different distances R = {2, 4, 6} between them, as well as isotropic and non-isotropic covariances matrices Σ. The means are generated to lie in a circle with angle 2πK and radius R = {2, 4, 6} from the center in order to control the intersection between the classes. The covariance matrices Σi are selected to be either isotropic or anisotropic. In the case of isotropic covariances, Σi = I, while in the case of anisotropic covariance matrices the variance in the principal and second principal direction is 
+
+1.5, 0.5 respectively. We compare the certified accuracy of the proposed classifier with the method of Pal et al. [2023]. We plot in Figure 4 the certified accuracy of both methods for the isotropic GMMs and in Figure 5 for anisotropic covariances. As shown in Figure 4 and Figure 5, our method outperforms the one in Pal et al. [2023] and closely approximates the empirical robust accuracy achieved by PGD attack. Additionally, we compare the certified radius of Theorem 4.1 with the archetypal technique of randomized smoothing in different settings. As shown in Figure 6 and Figure 7, our method provides higher certified accuracy than randomized smoothing, indicating the tighter certification of the proposed radius of robustness. 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Accuracy
+
+Robustness vs Radius         
+
+> Empirical Robust Accuracy (PGD)
+> Certified Accuracy (Ours)
+> Certified Accuracy [Pal et al.] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00
+
+Radius 
+
+> 0.65
+> 0.70
+> 0.75
+> 0.80
+> 0.85
+> 0.90
+> 0.95
+> 1.00
+> Accuracy
+
+Robustness vs Radius         
+
+> Empirical Robust Accuracy (PGD)
+> Certified Accuracy (Ours)
+> Certified Accuracy [Pal et al.] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00
+
+Radius 
+
+> 0.65
+> 0.70
+> 0.75
+> 0.80
+> 0.85
+> 0.90
+> 0.95
+> 1.00
+> Accuracy
+
+Robustness vs Radius         
+
+> Empirical Robust Accuracy (PGD)
+> Certified Accuracy (Ours)
+> Certified Accuracy [Pal et al.] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00
+
+Radius 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> Accuracy
+
+Robustness vs Radius         
+
+> Empirical Robust Accuracy (PGD)
+> Certified Accuracy (Ours)
+> Certified Accuracy [Pal et al.] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00
+
+Radius 
+
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> 0.7
+> 0.8
+> 0.9
+> 1.0
+> Accuracy
+
+Robustness vs Radius         
+
+> Empirical Robust Accuracy (PGD)
+> Certified Accuracy (Ours)
+> Certified Accuracy [Pal et al.] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00
+
+Radius 
+
+> 0.5
+> 0.6
+> 0.7
+> 0.8
+> 0.9
+> 1.0
+> Accuracy
+
+Robustness vs Radius         
+
+> Empirical Robust Accuracy (PGD)
+> Certified Accuracy (Ours)
+> Certified Accuracy [Pal et al.] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00
+
+Radius 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Accuracy
+
+Robustness vs Radius         
+
+> Empirical Robust Accuracy (PGD)
+> Certified Accuracy (Ours)
+> Certified Accuracy [Pal et al.] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00
+
+Radius 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Accuracy
+
+Robustness vs Radius         
+
+> Empirical Robust Accuracy (PGD)
+> Certified Accuracy (Ours)
+> Certified Accuracy [Pal et al.] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00
+
+Radius 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Accuracy
+
+Robustness vs Radius 
+
+> Empirical Robust Accuracy (PGD)
+> Certified Accuracy (Ours)
+> Certified Accuracy [Pal et al.]
+
+Figure 4: The proposed approach outperforms the method of Pal et al. [2023] in different Gaussian mixture settings. Each row corresponds to a GMM with isotropic covariances and different number of classes K = {2, 3, 5}, while each column to one with different separation distance R = {2, 4, 5}.36 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+> Accuracy
+
+Robustness vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Certified Accuracy [Pal et al.] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.65 
+
+0.70 
+
+0.75 
+
+0.80 
+
+0.85 
+
+0.90 
+
+0.95 
+
+1.00 
+
+> Accuracy
+
+Robustness vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Certified Accuracy [Pal et al.] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.6 
+
+0.7 
+
+0.8 
+
+0.9 
+
+1.0 
+
+> Accuracy
+
+Robustness vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Certified Accuracy [Pal et al.] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+> Accuracy
+
+Robustness vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Certified Accuracy [Pal et al.] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.4 
+
+0.5 
+
+0.6 
+
+0.7 
+
+0.8 
+
+0.9 
+
+1.0 
+
+> Accuracy
+
+Robustness vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Certified Accuracy [Pal et al.] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.6 
+
+0.7 
+
+0.8 
+
+0.9 
+
+1.0 
+
+> Accuracy
+
+Robustness vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Certified Accuracy [Pal et al.] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.1 
+
+0.2 
+
+0.3 
+
+0.4 
+
+0.5 
+
+0.6 
+
+0.7 
+
+0.8 
+
+> Accuracy
+
+Robustness vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Certified Accuracy [Pal et al.] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+1.0 
+
+> Accuracy
+
+Robustness vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Certified Accuracy [Pal et al.] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+1.0 
+
+> Accuracy
+
+Robustness vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Certified Accuracy [Pal et al.] Figure 5: The proposed method outperforms the method of Pal et al. [2023] in different Gaussian mixtures with anisotropic covariance matrices. Each row corresponds to a GMM with different number of classes K = {2, 3, 5}, while each column to one with different separation distance 
+
+R = {2, 4, 5}.0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+> Accuracy
+
+Certified Accuracy vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Randomized Smoothing n = 1000 
+
+Randomized Smoothing n = 10000 
+
+Randomized Smoothing n = 100000 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+1.0 
+
+> Accuracy
+
+Certified Accuracy vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Randomized Smoothing n = 1000 
+
+Randomized Smoothing n = 10000 
+
+Randomized Smoothing n = 100000 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+1.0 
+
+> Accuracy
+
+Certified Accuracy vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Randomized Smoothing n = 1000 
+
+Randomized Smoothing n = 10000 
+
+Randomized Smoothing n = 100000 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+> Accuracy
+
+Certified Accuracy vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Randomized Smoothing n = 1000 
+
+Randomized Smoothing n = 10000 
+
+Randomized Smoothing n = 100000 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+1.0 
+
+> Accuracy
+
+Certified Accuracy vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Randomized Smoothing n = 1000 
+
+Randomized Smoothing n = 10000 
+
+Randomized Smoothing n = 100000 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+1.0 
+
+> Accuracy
+
+Certified Accuracy vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Randomized Smoothing n = 1000 
+
+Randomized Smoothing n = 10000 
+
+Randomized Smoothing n = 100000 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.1 
+
+0.2 
+
+0.3 
+
+0.4 
+
+0.5 
+
+0.6 
+
+0.7 
+
+> Accuracy
+
+Certified Accuracy vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Randomized Smoothing n = 1000 
+
+Randomized Smoothing n = 10000 
+
+Randomized Smoothing n = 100000 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+1.0 
+
+> Accuracy
+
+Certified Accuracy vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Randomized Smoothing n = 1000 
+
+Randomized Smoothing n = 10000 
+
+Randomized Smoothing n = 100000 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+> Accuracy
+
+Certified Accuracy vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Randomized Smoothing n = 1000 
+
+Randomized Smoothing n = 10000 
+
+Randomized Smoothing n = 100000 
+
+Figure 6: The proposed method achieves competitive robust accuracy in comparison to certified accuracy than randomized smoothing in different Gaussian mixture settings. Each row corresponds to a GMM with isotropic covariances and different number of classes K = {2, 3, 5}, while each column to one with different seperation distance R = {2, 4, 5}.37 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+> Accuracy
+
+Certified Accuracy vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Randomized Smoothing n = 1000 
+
+Randomized Smoothing n = 10000 
+
+Randomized Smoothing n = 100000 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+1.0 
+
+> Accuracy
+
+Certified Accuracy vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Randomized Smoothing n = 1000 
+
+Randomized Smoothing n = 10000 
+
+Randomized Smoothing n = 100000 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+1.0 
+
+> Accuracy
+
+Certified Accuracy vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Randomized Smoothing n = 1000 
+
+Randomized Smoothing n = 10000 
+
+Randomized Smoothing n = 100000 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+> Accuracy
+
+Certified Accuracy vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Randomized Smoothing n = 1000 
+
+Randomized Smoothing n = 10000 
+
+Randomized Smoothing n = 100000 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+1.0 
+
+> Accuracy
+
+Certified Accuracy vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Randomized Smoothing n = 1000 
+
+Randomized Smoothing n = 10000 
+
+Randomized Smoothing n = 100000 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+1.0 
+
+> Accuracy
+
+Certified Accuracy vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Randomized Smoothing n = 1000 
+
+Randomized Smoothing n = 10000 
+
+Randomized Smoothing n = 100000 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.1 
+
+0.2 
+
+0.3 
+
+0.4 
+
+0.5 
+
+0.6 
+
+0.7 
+
+0.8 
+
+> Accuracy
+
+Certified Accuracy vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Randomized Smoothing n = 1000 
+
+Randomized Smoothing n = 10000 
+
+Randomized Smoothing n = 100000 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+1.0 
+
+> Accuracy
+
+Certified Accuracy vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Randomized Smoothing n = 1000 
+
+Randomized Smoothing n = 10000 
+
+Randomized Smoothing n = 100000 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 
+
+Radius 
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+1.0 
+
+> Accuracy
+
+Certified Accuracy vs Radius 
+
+Empirical Robust Accuracy (PGD) 
+
+Certified Accuracy (Ours) 
+
+Randomized Smoothing n = 1000 
+
+Randomized Smoothing n = 10000 
+
+Randomized Smoothing n = 100000 Figure 7: Comparison of our method with randomized smoothing for different mixture of Gaussians with anisotropic covariances. The proposed method performs competitively against randomized smoothing even when less number of Monte Carlo samples are used. 38

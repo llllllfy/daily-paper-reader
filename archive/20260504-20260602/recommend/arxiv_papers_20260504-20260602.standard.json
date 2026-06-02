@@ -1,0 +1,768 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-02T07:47:09.746570+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 14,
+    "deep_cap": 6,
+    "deep_selected": 11,
+    "quick_candidates": 9,
+    "quick_skim_target": 11,
+    "quick_selected": 9
+  },
+  "deep_dive": [
+    {
+      "id": "2605.02583v1",
+      "source": "arxiv",
+      "title": "Stylistic Attribute Control in Latent Diffusion Models",
+      "abstract": "Text-to-image diffusion models have revolutionized image synthesis and editing, but precise control over stylistic attributes remains a challenge, often causing unintended content modifications. We propose an approach for fine-grained parametric control of stylistic attributes in latent diffusion models by learning disentangled editing directions from synthetic datasets. We use guidance composition to close the domain gap between stylistically finetuned and foundation models, preserving the original image semantics while applying stylistic adjustments. To ensure consistent edits, we introduce a training regularization loss and enhance DDIM inversion with optimized null-conditional embeddings for real image editing. We validate our approach by learning from stylistically filtered synthetic datasets varying a range of stylistic attributes, including outlines, local contrast, watercolorization effects, and geometric patterns. Our evaluations demonstrate that compared to current text-based editing techniques, our method offers well-integrated, more precise and continuously adjustable stylistic modifications.",
+      "authors": [
+        "Max Reimann",
+        "Benito Buchheim",
+        "Jürgen Döllner"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-04T13:34:14+00:00",
+      "link": "https://arxiv.org/pdf/2605.02583v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Learning disentangled editing directions for stylistic attributes while preserving semantics",
+      "llm_evidence_cn": "学习解耦的风格属性编辑方向，同时保持语义",
+      "llm_evidence": "学习解耦的风格属性编辑方向，同时保持语义",
+      "canonical_evidence": "学习解耦的风格属性编辑方向，同时保持语义",
+      "llm_tldr_en": "This work enables fine-grained stylistic control in latent diffusion models by learning disentangled directions, preserving original image semantics.",
+      "llm_tldr_cn": "该论文针对扩散模型在风格控制中难以保持图像语义的问题，提出在潜在空间中学习解耦的风格编辑方向。通过合成数据集训练、引导组合和正则化损失，方法实现了细粒度风格调整（如色彩、纹理）的同时，忠实保留原始内容。实验验证了对真实图像进行风格编辑时的高语义一致性，为可控图像生成提供了有效工具，尤其适用于需要精确语义保持的应用场景。",
+      "llm_tldr": "该论文针对扩散模型在风格控制中难以保持图像语义的问题，提出在潜在空间中学习解耦的风格编辑方向。通过合成数据集训练、引导组合和正则化损失，方法实现了细粒度风格调整（如色彩、纹理）的同时，忠实保留原始内容。实验验证了对真实图像进行风格编辑时的高语义一致性，为可控图像生成提供了有效工具，尤其适用于需要精确语义保持的应用场景。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.08193v1",
+      "source": "arxiv",
+      "title": "Normalization Equivariance for Arbitrary Backbones, with Application to Image Denoising",
+      "abstract": "Normalization Equivariance (NE), equivariance to global contrast and brightness transforms, improves robustness to distribution shift in image-to-image prediction. Existing methods enforce this prior by constraining internal layers to NE-compatible families, limiting compatibility with standard components such as attention and LayerNorm, and adding runtime cost. We characterize the full NE function class: a function is NE if and only if it admits a normalize-process-denormalize factorization. This turns exact NE enforcement, for the ideal wrapper, from an internal architectural constraint into an input-output parameterization problem, allowing a parameter-free wrapper (WNE) to enforce NE around any backbone, including transformers. In a single-noise mismatch diagnostic for blind denoising, the wrapper improves CNN and transformer robustness with no measurable GPU overhead; architectural NE baselines incur up to a 1.6x slowdown.",
+      "authors": [
+        "Youssef Saied",
+        "François Fleuret"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-05-05T17:40:52+00:00",
+      "link": "https://arxiv.org/pdf/2605.08193v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "enforces equivariance to global contrast and brightness, preserving semantic content under color changes",
+      "llm_evidence_cn": "强制全局对比度和亮度等变性，在光照变化下保持语义内容",
+      "llm_evidence": "强制全局对比度和亮度等变性，在光照变化下保持语义内容",
+      "canonical_evidence": "强制全局对比度和亮度等变性，在光照变化下保持语义内容",
+      "llm_tldr_en": "The paper introduces a parameter-free wrapper that enforces normalization equivariance to global contrast and brightness transforms around any backbone, improving robustness to distribution shift and preserving semantic meaning under color perturbations.",
+      "llm_tldr_cn": "该论文针对图像到图像预测中全局对比度和亮度变化导致的性能下降问题，提出一种参数自由包装器，强制模型满足归一化等变性，即对输入全局对比度和亮度变换保持输出的一致性。实验证明该方法能即插即用地提升各种骨干网络在去噪等任务上的鲁棒性，保证色彩扰动下的语义保持。",
+      "llm_tldr": "该论文针对图像到图像预测中全局对比度和亮度变化导致的性能下降问题，提出一种参数自由包装器，强制模型满足归一化等变性，即对输入全局对比度和亮度变换保持输出的一致性。实验证明该方法能即插即用地提升各种骨干网络在去噪等任务上的鲁棒性，保证色彩扰动下的语义保持。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.10603v1",
+      "source": "arxiv",
+      "title": "Segment Anything with Robust Uncertainty-Accuracy Correlation",
+      "abstract": "Despite strong zero-shot performance, SAM is unreliable under domain shift due to Mask-level Confidence Confusion (MCC), where a single IoU-based mask score fails to reflect pixel-wise reliability near boundaries. Motivated by the contrast between texture-biased shortcuts in neural networks and shape-centric processing in human vision, we model out-of-domain variation as appearance shifts and non-rigid deformations that jointly stress calibration. We propose Segment Anything with Robust Uncertainty-Accuracy Correlation (RUAC) for robust pixel-wise uncertainty estimation under appearance and deformation shifts. RUAC adds a lightweight uncertainty head, trains it with a collaborative style-deformation attack that jointly perturbs texture and geometry, and applies Uncertainty-Accuracy Alignment to ensure uncertainty consistently highlights erroneous pixels even under adversarial perturbations. Across 23 zero-shot domains, RUAC improves segmentation quality and yields more faithful uncertainty with stronger uncertainty-accuracy correlation. Project page: https://github.com/HongyouZhou/ruac.git.",
+      "authors": [
+        "Hongyou Zhou",
+        "Marc Toussaint",
+        "Ling Shao",
+        "Zihan Ye"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-11T14:04:02+00:00",
+      "link": "https://arxiv.org/pdf/2605.10603v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Trains with a style-deformation attack that perturbs texture to improve robustness under appearance shifts",
+      "llm_evidence_cn": "通过扰动纹理的风格-变形攻击训练以增强外观偏移下的鲁棒性",
+      "llm_evidence": "通过扰动纹理的风格-变形攻击训练以增强外观偏移下的鲁棒性",
+      "canonical_evidence": "通过扰动纹理的风格-变形攻击训练以增强外观偏移下的鲁棒性",
+      "llm_tldr_en": "Proposes RUAC for robust uncertainty estimation in SAM under appearance and deformation shifts, using collaborative style-deformation attacks.",
+      "llm_tldr_cn": "SAM在域偏移下因掩码级置信度混淆而不可靠，其纹理偏置与人类形状中心处理相悖。本文提出RUAC，添加轻量不确定性头，通过联合扰动纹理和几何的风格-变形攻击进行训练，并应用不确定性校准损失，在保持准确性的同时实现像素级可靠不确定性估计。",
+      "llm_tldr": "SAM在域偏移下因掩码级置信度混淆而不可靠，其纹理偏置与人类形状中心处理相悖。本文提出RUAC，添加轻量不确定性头，通过联合扰动纹理和几何的风格-变形攻击进行训练，并应用不确定性校准损失，在保持准确性的同时实现像素级可靠不确定性估计。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "adversarial color attacks on semantic segmentation",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.13889v1",
+      "source": "arxiv",
+      "title": "Physics-Grounded Adversarial Stain Augmentation with Calibrated Coverage Guarantees",
+      "abstract": "Stain variation across hospitals degrades histopathology models at deployment. Existing augmentation methods perturb color spaces with arbitrary hyperparameters, lacking both a principled budget and coverage guarantees for unseen centers. We propose \\textbf{C}alibrated \\textbf{A}dversarial \\textbf{S}tain \\textbf{A}ugmentation (\\textbf{CASA}), which performs adversarial augmentation in the Macenko stain parameter space with a budget calibrated from multi-center statistics via the DKW inequality. On Camelyon17-WILDS (5 seeds), CASA achieves $93.9\\% \\pm 1.6\\%$ slide-level accuracy -- outperforming HED-strong ($88.4\\% \\pm 7.3\\%$), RandStainNA ($85.2\\% \\pm 6.7\\%$), and ERM ($63.9\\% \\pm 11.3\\%$) -- with the highest worst-group accuracy ($84.9\\% \\pm 0.9\\%$) among all 10 compared methods.",
+      "authors": [
+        "Mingi Hong"
+      ],
+      "primary_category": "eess.IV",
+      "categories": [
+        "eess.IV",
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-05-12T04:39:33+00:00",
+      "link": "https://arxiv.org/pdf/2605.13889v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Adversarial augmentation in stain parameter space for robustness to color variation",
+      "llm_evidence_cn": "在染色参数空间中进行对抗增强以提升对颜色变化的鲁棒性",
+      "llm_evidence": "在染色参数空间中进行对抗增强以提升对颜色变化的鲁棒性",
+      "canonical_evidence": "在染色参数空间中进行对抗增强以提升对颜色变化的鲁棒性",
+      "llm_tldr_en": "CASA proposes principled adversarial stain augmentation with calibrated guarantees, achieving state-of-the-art accuracy and worst-group accuracy on histopathology data under stain variation.",
+      "llm_tldr_cn": "CASA提出了一种有原则的对抗染色增强方法，利用多中心统计校准预算，在Camelyon17-WILDS上达到最高准确率和最差组准确率，显著优于现有方法，解决了病理图像跨医院染色差异导致的性能下降问题。",
+      "llm_tldr": "CASA提出了一种有原则的对抗染色增强方法，利用多中心统计校准预算，在Camelyon17-WILDS上达到最高准确率和最差组准确率，显著优于现有方法，解决了病理图像跨医院染色差异导致的性能下降问题。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "Adversarial color perturbations and their effect on semantic robustness",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.16973v1",
+      "source": "arxiv",
+      "title": "SHED: Style-Homogenized Embedding Alignment for Domain Generalization",
+      "abstract": "Domain generalization aims to enhance model robustness against unseen domains with embedding distribution shifts. While large-scale vision-language models like CLIP exhibit strong generalization, their direct image-text embedding alignment suffers from inherent information asymmetry: images encode both class semantics and domain-specific styles, whereas text prompts primarily convey basic class cues. This asymmetry hinders generalization to novel domains in realistic scenarios. To address this, we propose Style-Homogenized Embedding alignment for Domain-generalization (SHED), a novel CLIP-based method that aligns style-homogenized embeddings instead of raw representations from encoders in CLIP. During training, SHED removes domain-specific style centroids from both image embeddings computed per source domains and text embeddings which are averaged across diverse prompt templates and stripped of a global centroid. For inference, considering the lack of target domain information, SHED projects diverse textual domain centroids into the visual space and aggregates predictions via membership weighting. Extensive experiments on five benchmarks show SHED achieves state-of-the-art performance, outperforming prior methods significantly (e.g., +4.0\\% on DomainNet vs. standard fine-tuning).",
+      "authors": [
+        "Kai Gan",
+        "Tong Wei"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-05-16T12:51:38+00:00",
+      "link": "https://arxiv.org/pdf/2605.16973v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "removes domain-specific style centroids from CLIP embeddings, separating style (including color) from semantics",
+      "llm_evidence_cn": "从CLIP嵌入中移除域特定风格中心，分离风格(颜色)与语义",
+      "llm_evidence": "从CLIP嵌入中移除域特定风格中心，分离风格(颜色)与语义",
+      "canonical_evidence": "从CLIP嵌入中移除域特定风格中心，分离风格(颜色)与语义",
+      "llm_tldr_en": "SHED aligns style-homogenized CLIP embeddings by removing domain-specific style centroids, making models robust to style (including color) shifts, improving domain generalization.",
+      "llm_tldr_cn": "该论文针对域泛化中图像风格(如颜色)与语义混淆导致的分布偏移问题，提出SHED方法，在训练时移除CLIP嵌入中的域特定风格中心，实现风格均匀化对齐，使模型在未见域上鲁棒性更强。实验表明该方法在多个视觉任务上有效提升了泛化能力，凸显了分离风格与语义表示的重要性。",
+      "llm_tldr": "该论文针对域泛化中图像风格(如颜色)与语义混淆导致的分布偏移问题，提出SHED方法，在训练时移除CLIP嵌入中的域特定风格中心，实现风格均匀化对齐，使模型在未见域上鲁棒性更强。实验表明该方法在多个视觉任务上有效提升了泛化能力，凸显了分离风格与语义表示的重要性。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "papers on feature level intervention for color robustness in deep learning",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.17827v1",
+      "source": "arxiv",
+      "title": "Content-Style Identification via Differential Independence",
+      "abstract": "Generative analysis often models multi-domain observations as nonlinear mixtures of domain-invariant content variables and domain-specific style variables. Identifying both factors from unpaired domains enables tasks such as domain transfer and counterfactual data generation. Prior work establishes identifiability under (block-wise) statistical independence between content and style, or via sparse Jacobian assumptions on the nonlinear mixing function, but such conditions can be restrictive in practice. In this work, we introduce content-style differential independence (CSDI), an alternative structural condition requiring that infinitesimal variations in content and style induce orthogonal directions on the data manifold, thereby enabling identifiability even when content and style are dependent and the Jacobian is dense. We operationalize this condition through a blockwise orthogonality constraint on the Jacobian subspaces associated with content and style. To support high-dimensional generative models, we design a stochastic regularizer based on numerical Jacobian approximation, enabling scalable training in settings such as high-resolution image generation. Experiments across multiple datasets corroborate the identifiability analysis and demonstrate practical benefits on counterfactual generation and domain translation.",
+      "authors": [
+        "Subash Timilsina",
+        "Hoang-Son Nguyen",
+        "Sagar Shrestha",
+        "Xiao Fu"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-05-18T04:01:38+00:00",
+      "link": "https://arxiv.org/pdf/2605.17827v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Disentangles content and style via differential independence, directly applicable to color/shape separation",
+      "llm_evidence_cn": "通过微分独立性解耦内容与风格，直接适用于颜色/形状分离",
+      "llm_evidence": "通过微分独立性解耦内容与风格，直接适用于颜色/形状分离",
+      "canonical_evidence": "通过微分独立性解耦内容与风格，直接适用于颜色/形状分离",
+      "llm_tldr_en": "The paper proposes content-style differential independence to identify and disentangle content and style factors, enabling domain transfer and robustness to style shifts like color changes.",
+      "llm_tldr_cn": "该论文针对内容-风格解耦的传统独立性假设过强的问题，提出微分独立性（CSDI）条件，要求内容与风格的微小变化在数据流形上诱导正交方向。理论证明了在此宽松条件下即可识别潜在因子，无需稀疏性假设。实验展示了该方法在无监督域迁移和反事实生成中的有效性，为分离形状、颜色等风格与不变语义提供了严谨的理论框架，对需要鲁棒表示的任务（如颜色扰动下的语义保持）具有重要启示。",
+      "llm_tldr": "该论文针对内容-风格解耦的传统独立性假设过强的问题，提出微分独立性（CSDI）条件，要求内容与风格的微小变化在数据流形上诱导正交方向。理论证明了在此宽松条件下即可识别潜在因子，无需稀疏性假设。实验展示了该方法在无监督域迁移和反事实生成中的有效性，为分离形状、颜色等风格与不变语义提供了严谨的理论框架，对需要鲁棒表示的任务（如颜色扰动下的语义保持）具有重要启示。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.18464v1",
+      "source": "arxiv",
+      "title": "PERL: Parameter Efficient Reasoning in CLIP Latent Space",
+      "abstract": "Contrastively trained vision-language models such as CLIP provide strong zero-shot transfer by aligning images and text in a shared embedding space. However, adapting these models to downstream tasks without degrading their open-vocabulary generalization remains challenging. Existing parameter-efficient adaptation methods typically improve task specialization through learned prompts, adapters, or multimodal transformations, where adaptation capacity is primarily expressed through additional trainable parameters. Inspired by recent latent reasoning methods in language models, we investigate a complementary perspective: can adaptation emerge from iterative reasoning on latent representations rather than from increasing parameter count alone? We introduce PERL (Parameter-Efficient Reasoning in CLIP Latent Space), a lightweight adaptation framework that augments a frozen CLIP model with a compact shared reasoning module applied recurrently across refinement steps. At each step, PERL generates a latent reasoning token conditioned on the current representation and injects it into an intermediate encoder layer, progressively refining higher-level semantic representations while preserving CLIP's pretrained multimodal structure. Across 15 benchmarks spanning base-to-novel generalization, cross-dataset transfer, and out-of-distribution ImageNet variants, PERL achieves the best parameter-performance trade-off among the compared methods under a fast-adaptation few-shot setting, combining strong novel-class accuracy and competitive transfer performance with only about 6K trainable parameters, up to 817x fewer than the largest compared approach. Overall, our results suggest that iterative latent reasoning provides a complementary adaptation mechanism to parameter scaling in discriminative vision-language models.",
+      "authors": [
+        "Simone Carnemolla",
+        "Salvatore Calcagno",
+        "Daniela Giordano",
+        "Concetto Spampinato",
+        "Matteo Pennisi"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-18T14:25:25+00:00",
+      "link": "https://arxiv.org/pdf/2605.18464v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Iterative latent reasoning for adaptation in CLIP latent space",
+      "llm_evidence_cn": "在 CLIP 潜在空间中进行迭代推理以实现自适应",
+      "llm_evidence": "在 CLIP 潜在空间中进行迭代推理以实现自适应",
+      "canonical_evidence": "在 CLIP 潜在空间中进行迭代推理以实现自适应",
+      "llm_tldr_en": "PERL adapts CLIP to downstream tasks via iterative reasoning in the latent space without adding many parameters, preserving zero-shot transfer.",
+      "llm_tldr_cn": "该论文针对 CLIP 模型在下游任务适应中易损失开放词汇泛化能力的问题，提出 PERL 方法，通过在潜在空间中进行迭代推理实现参数高效适应。与传统增加可训练参数的方法不同，PERL 利用冻结的 CLIP 编码器，在共享嵌入空间内进行多步潜在状态更新，从而在不牺牲零样本迁移能力的同时提升任务性能。实验结果表明，该方法在多个图像分类和检索基准上达到了与全微调相当甚至更优的效果，且参数量显著减少，为视觉-语言模型的低成本部署提供了有力支持。",
+      "llm_tldr": "该论文针对 CLIP 模型在下游任务适应中易损失开放词汇泛化能力的问题，提出 PERL 方法，通过在潜在空间中进行迭代推理实现参数高效适应。与传统增加可训练参数的方法不同，PERL 利用冻结的 CLIP 编码器，在共享嵌入空间内进行多步潜在状态更新，从而在不牺牲零样本迁移能力的同时提升任务性能。实验结果表明，该方法在多个图像分类和检索基准上达到了与全微调相当甚至更优的效果，且参数量显著减少，为视觉-语言模型的低成本部署提供了有力支持。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.20436v1",
+      "source": "arxiv",
+      "title": "Lighting-aware Unified Model for Instance Segmentation",
+      "abstract": "Foundation models like the Segment Anything Model (SAM) demonstrate impressive zero-shot generalization but frequently degrade under diverse real-world illumination, particularly for instance segmentation. In this work, we address this limitation by developing \\textit{Lighting Convolutional-Attention (\\lca{})}, an adapter module that enhances segmentation robustness without fine-tuning the heavy backbone. \\lca{} employs a dual-branch architecture to process RGB features alongside contrast maps, enabling physically motivated sensitivity to structural changes rather than illumination artifacts. We optimize \\lca{} through a pairwise training strategy, introducing a targeted loss term that explicitly penalizes discrepancies between clean images and their corresponding illumination variants. To evaluate and support this architecture, we conduct a comprehensive empirical study across multiple existing benchmarks and present a novel Unity-based synthetic dataset specifically designed to accurately replicate complex real-world lighting conditions. Extensive experimental results demonstrate that our approach successfully bridges the domain gap, delivering superior lighting-robust segmentation.",
+      "authors": [
+        "Qisai Liu",
+        "Alloy Das",
+        "Zhanhong Jiang",
+        "Joshua R. Waite",
+        "Aditya Balu",
+        "Adarsh Krishnamurthy",
+        "Soumik Sarkar"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-19T19:35:51+00:00",
+      "link": "https://arxiv.org/pdf/2605.20436v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Lighting-aware adapter enhances instance segmentation robustness to illumination changes at feature level",
+      "llm_evidence_cn": "光照感知适配器在特征层面增强实例分割对光照变化的鲁棒性",
+      "llm_evidence": "光照感知适配器在特征层面增强实例分割对光照变化的鲁棒性",
+      "canonical_evidence": "光照感知适配器在特征层面增强实例分割对光照变化的鲁棒性",
+      "llm_tldr_en": "Proposes Lighting Convolutional-Attention (LCA) adapter, a feature-level module that improves segmentation robustness under varying illumination without fine-tuning the backbone, preserving semantic segmentation through structural sensitivity.",
+      "llm_tldr_cn": "针对基础模型在多样化光照下实例分割性能下降的问题，提出光照卷积注意力适配器LCA，通过双分支结构处理RGB特征和对比度图，增强对结构变化的敏感度而非照明伪影。在成对训练策略下，该适配器显式惩罚干净图像与光照图像间的差异，从而在特征层面提升分割鲁棒性。实验表明，LCA能在不微调重型骨干网络的情况下显著改善各种光照条件下的零样本泛化能力。",
+      "llm_tldr": "针对基础模型在多样化光照下实例分割性能下降的问题，提出光照卷积注意力适配器LCA，通过双分支结构处理RGB特征和对比度图，增强对结构变化的敏感度而非照明伪影。在成对训练策略下，该适配器显式惩罚干净图像与光照图像间的差异，从而在特征层面提升分割鲁棒性。实验表明，LCA能在不微调重型骨干网络的情况下显著改善各种光照条件下的零样本泛化能力。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "papers on feature level intervention for color robustness in deep learning",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.25352v1",
+      "source": "arxiv",
+      "title": "Certified Robustness from Approximate Gaussian Mixture Structures in Pretrained Latent Spaces",
+      "abstract": "Deep learning models are vulnerable to adversarial perturbations, raising important concerns for safety-critical deployment. Empirical defenses can achieve strong robustness in practice, but lack formal guarantees, motivating the need for certifiably robust classifiers. While certified methods provide formal guarantees, they often yield overly conservative bounds due to their inability to exploit structure in complex data distributions. In this work, we propose a framework for designing certifiably robust classifiers that leverages latent structure in data representations. We first analyze the Gaussian mixture setting, deriving necessary and sufficient conditions for the existence of robust classifiers and constructing a classifier with a closed-form robustness certificate and generalization guarantees. Our main contribution is to show that exact structure is not required: we prove that if a pretrained encoder maps inputs to a latent distribution that is $\\varepsilon$-close (in KL divergence) to a Gaussian mixture, then certified accuracy degrades gracefully, with an explicit bound relating robustness under the true and approximate distributions. This result enables the direct use of pretrained models without requiring exact distributional assumptions. Empirically, our method achieves state-of-the-art or competitive certified accuracy on CIFAR-10 and ImageNet, while maintaining strong clean performance and low computational overhead. Overall, our work establishes approximate latent structure as a practical and principled route to certifiable robustness.",
+      "authors": [
+        "Konstantinos Emmanouilidis",
+        "Tianjiao Ding",
+        "Nghia Nguyen",
+        "Nicolas Loizou",
+        "René Vidal"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-05-25T02:12:58+00:00",
+      "link": "https://arxiv.org/pdf/2605.25352v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Designing certifiably robust classifiers using latent structure in pretrained representations",
+      "llm_evidence_cn": "利用预训练表示中的潜在结构设计可认证鲁棒分类器",
+      "llm_evidence": "利用预训练表示中的潜在结构设计可认证鲁棒分类器",
+      "canonical_evidence": "利用预训练表示中的潜在结构设计可认证鲁棒分类器",
+      "llm_tldr_en": "This paper exploits latent structure in pretrained representations to construct certified robust classifiers with tighter bounds than previous methods.",
+      "llm_tldr_cn": "该论文针对认证鲁棒分类器通常过于保守的问题，提出利用预训练表示中的潜在数据结构（如近似高斯混合）来设计更紧致的认证边界。通过理论分析高斯混合情况下的鲁棒分类器存在条件，并引入一种从预训练特征中挖掘潜在结构的实用方法，构建出在多个数据集上均达到更优认证性能的分类器。这项工作展示了利用表示空间结构增强安全性的巨大潜力，为安全关键系统提供了更可靠的保障。",
+      "llm_tldr": "该论文针对认证鲁棒分类器通常过于保守的问题，提出利用预训练表示中的潜在数据结构（如近似高斯混合）来设计更紧致的认证边界。通过理论分析高斯混合情况下的鲁棒分类器存在条件，并引入一种从预训练特征中挖掘潜在结构的实用方法，构建出在多个数据集上均达到更优认证性能的分类器。这项工作展示了利用表示空间结构增强安全性的巨大潜力，为安全关键系统提供了更可靠的保障。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.28331v1",
+      "source": "arxiv",
+      "title": "Transfer learning RGB models to hyperspectral images with trainable tensor decompositions",
+      "abstract": "Transfer learning makes it possible to use large vision networks on a variety of domains, by specializing their models' general filters to new tasks. However, these networks assume the input images to have 3 input channels, making them incompatible with multi- or hyperspectral images. Current approaches that mitigate this incompatibility sacrifice information in either the image, or the model. This work proposes a novel approach that preserves the image and spatial information present in the model by using partially trainable tensor decompositions. We create such decompositions of pretrained convolutional filters, separating the filters into spatial and spectral components. The spectral components are then replaced with trainable components of higher channel dimensionality. This creates hyperspectral filters that can specialize to new datasets, while retaining the spatial patterns of the original filter. Experiments on a variety of hyperspectral datasets show that our approach is more accurate and robust than other hyperspectral transfer learning methods.",
+      "authors": [
+        "Mariette Schönfeld",
+        "Laurens Devos",
+        "Wannes Meert",
+        "Hendrik Blockeel"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-27T11:34:27+00:00",
+      "link": "https://arxiv.org/pdf/2605.28331v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "proposes trainable tensor decomposition to separate spatial (shape) and spectral (color) components in convolutional filters for adapting RGB models to hyperspectral images",
+      "llm_evidence_cn": "提出可训练张量分解分离卷积滤波器中的空间（形状）与光谱（颜色）分量，以将RGB模型迁移至高光谱图像",
+      "llm_evidence": "提出可训练张量分解分离卷积滤波器中的空间（形状）与光谱（颜色）分量，以将RGB模型迁移至高光谱图像",
+      "canonical_evidence": "提出可训练张量分解分离卷积滤波器中的空间（形状）与光谱（颜色）分量，以将RGB模型迁移至高光谱图像",
+      "llm_tldr_en": "This paper addresses the incompatibility of pretrained RGB networks with hyperspectral images by decomposing convolutional filters into spatial and spectral components via partially trainable tensor decompositions, allowing shape features to be preserved while adapting color channels.",
+      "llm_tldr_cn": "针对预训练RGB视觉模型无法直接处理高光谱图像的问题，该文提出基于部分可训练张量分解的方法，将卷积滤波器显式分解为空间分量和光谱分量。空间分量保留形状信息，光谱分量由可学习参数替换以适应多通道输入，从而在迁移学习过程中实现颜色与形状特征的解耦，既保留模型空间先验，又灵活应对光谱域差异。实验表明该方法在保持分类性能的同时降低了参数开销，为跨光谱域应用提供了新思路。",
+      "llm_tldr": "针对预训练RGB视觉模型无法直接处理高光谱图像的问题，该文提出基于部分可训练张量分解的方法，将卷积滤波器显式分解为空间分量和光谱分量。空间分量保留形状信息，光谱分量由可学习参数替换以适应多通道输入，从而在迁移学习过程中实现颜色与形状特征的解耦，既保留模型空间先验，又灵活应对光谱域差异。实验表明该方法在保持分类性能的同时降低了参数开销，为跨光谱域应用提供了新思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.00936v1",
+      "source": "arxiv",
+      "title": "One Channel to Rule Them All: Rethinking Input Representation for Visual Place Recognition",
+      "abstract": "Visual Place Recognition (VPR) is fundamental to long-term robot localization and SLAM, yet current systems overwhelmingly rely on RGB input, implicitly assuming color is necessary for global place recognition. We challenge this assumption, investigating the role of chromatic information across training regimes, model architectures and standard benchmarks under real-world appearance variation. We find that grayscale matches RGB performance generally and outperforms it under severe appearance shifts where color invariance is insufficiently learned, while color provides meaningful gains only where persistent and discriminative chromatic cues are present. Across selected benchmarks, a fully gray-trained MixVPR model achieves an average 82.4% Recall@1 compared to 81.2% for its RGB counterpart. In some cases, lightweight grayscale variants with 60% fewer parameters can outperform heavier RGB models. Grayscale further offers practical advantages in storage, bandwidth and alignment with resource-constrained systems. We conclude that for global VPR where scenes vary across illumination, weather, season and setting, color contributes minimally, and grayscale alone is sufficient for reliable place recognition.",
+      "authors": [
+        "Timur Ismagilov",
+        "Shakaiba Majeed",
+        "Michael Milford",
+        "Tan Viet Tuyen Nguyen",
+        "Sarvapali D. Ramchurn",
+        "Shoaib Ehsan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-31T00:30:05+00:00",
+      "link": "https://arxiv.org/pdf/2606.00936v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Studies impact of color removal on visual place recognition; grayscale often outperforms RGB under appearance shifts",
+      "llm_evidence_cn": "研究去除颜色对视觉地点识别的影响；在场景变化下灰度常优于RGB",
+      "llm_evidence": "研究去除颜色对视觉地点识别的影响；在场景变化下灰度常优于RGB",
+      "canonical_evidence": "研究去除颜色对视觉地点识别的影响；在场景变化下灰度常优于RGB",
+      "llm_tldr_en": "The paper finds that grayscale input matches or exceeds RGB performance for visual place recognition under severe appearance changes, challenging the assumption that color is necessary.",
+      "llm_tldr_cn": "该论文挑战了颜色对视觉地点识别不可或缺的假设，发现在严重外观变化下，灰度输入性能匹配甚至超越RGB，颜色仅在存在持续且具区分性的色度线索时提供增益，为输入表示选择提供了见解。",
+      "llm_tldr": "该论文挑战了颜色对视觉地点识别不可或缺的假设，发现在严重外观变化下，灰度输入性能匹配甚至超越RGB，颜色仅在存在持续且具区分性的色度线索时提供增益，为输入表示选择提供了见解。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "impact of color perturbation on semantic understanding",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2605.05012v1",
+      "source": "arxiv",
+      "title": "Chaotic Contrastive Learning for Robust Texture Classification",
+      "abstract": "Texture classification is a pivotal task in computer vision, presenting unique challenges due to high inter-class similarity and the sensitivity of structural patterns to scale and illumination changes. While Convolutional Neural Networks (CNNs) and recent Vision Transformers have set performance benchmarks, they often require extensive labeled datasets or struggle to generalize across domains due to an over-reliance on color and shape features. This paper introduces a novel framework that synergizes Self-Supervised Learning (SSL) with deterministic chaotic dynamics. We propose a chaotic contrastive pre-training strategy, where pixel-wise chaotic maps, specifically Logistic, Tent, and Sine maps, act as non-linear data augmentation techniques. These chaotic perturbations, grounded in ergodic theory, force the network to learn topologically robust features by mimicking complex environmental noise and reflectance variations. Furthermore, we introduce an attention-based feature ensemble that fuses high-level semantic representations from a supervised large backbone with low-frequency structural features from a chaos-pretrained tiny encoder. Experimental results on six texture benchmarks (FMD, UMD, KTH-TIPS2-b, DTD, GTOS, and 1200Tex) demonstrate the superiority of the proposed method, outperforming state-of-the-art approaches and achieving promising accuracies on all the analyzed datasets.",
+      "authors": [
+        "Joao B Florindo"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-06T15:11:28+00:00",
+      "link": "https://arxiv.org/pdf/2605.05012v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "addresses over-reliance on color and shape features by using chaotic augmentations to learn invariant representations, thus disentangling texture from color/shape",
+      "llm_evidence_cn": "通过混沌增强学习不变表示来解决对颜色和形状特征的过度依赖，从而解耦纹理与颜色/形状",
+      "llm_evidence": "通过混沌增强学习不变表示来解决对颜色和形状特征的过度依赖，从而解耦纹理与颜色/形状",
+      "canonical_evidence": "通过混沌增强学习不变表示来解决对颜色和形状特征的过度依赖，从而解耦纹理与颜色/形状",
+      "llm_tldr_en": "To combat over-reliance on color and shape in texture classification, this paper proposes chaotic contrastive pre-training with pixel-wise chaotic maps, forcing models to learn robust texture representations invariant to color and shape changes.",
+      "llm_tldr_cn": "针对纹理分类中模型过度依赖颜色和形状特征导致跨域泛化困难的问题，本文提出混沌对比预训练策略，利用Logistic、Tent、Sine等混沌映射作为非线性的像素级数据增强，迫使模型学习不受颜色和形状变化影响的纹理表征；实验显示该方法在下游任务中提升纹理分类的鲁棒性，为从表示层面解耦颜色与纹理特征提供了新的自监督学习途径。",
+      "llm_tldr": "针对纹理分类中模型过度依赖颜色和形状特征导致跨域泛化困难的问题，本文提出混沌对比预训练策略，利用Logistic、Tent、Sine等混沌映射作为非线性的像素级数据增强，迫使模型学习不受颜色和形状变化影响的纹理表征；实验显示该方法在下游任务中提升纹理分类的鲁棒性，为从表示层面解耦颜色与纹理特征提供了新的自监督学习途径。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.03405v1",
+      "source": "arxiv",
+      "title": "TsallisPGD: Adaptive Gradient Weighting for Adversarial Attacks on Semantic Segmentation",
+      "abstract": "Attacking semantic segmentation models is significantly harder than image classification models because an attacker must flip thousands of pixel predictions simultaneously. Standard pixel-wise cross-entropy (CE) is ill-suited to this setting: it tends to overemphasize already-misclassified pixels, which slows optimization and overstates model robustness. To address these issues, we introduce TsallisPGD, an adversarial attack built on the Tsallis cross-entropy, a generalization of CE parameterized by $q$, which adaptively reshapes the gradient landscape by controlling gradient concentration across pixels. By varying $q$, we steer the attack toward pixels at different confidence levels. We first show that no single fixed-$q$ is universally optimal, as its effectiveness depends on the dataset, model architecture, and perturbation budget. Motivated by this, we propose a dynamic $q$-schedule that sweeps $q$ during optimization. Extensive experiments on Cityscapes, Pascal VOC, and ADE20K show that TsallisPGD, using a single validation-selected schedule, achieves the best average attack rank across all evaluated settings and improves over CEPGD, SegPGD, CosPGD, JSPGD, and MaskedPGD in reducing accuracy and mIoU on both standard and robust models.",
+      "authors": [
+        "Alexander Matyasko",
+        "Xin Lou",
+        "Indriyati Atmosukarto",
+        "Wei Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-05-05T06:23:48+00:00",
+      "link": "https://arxiv.org/pdf/2605.03405v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "proposes a new adversarial attack method for semantic segmentation, potentially applicable with color perturbations",
+      "llm_evidence_cn": "提出了一种新的语义分割对抗攻击方法，可潜在地应用于颜色扰动",
+      "llm_evidence": "提出了一种新的语义分割对抗攻击方法，可潜在地应用于颜色扰动",
+      "canonical_evidence": "提出了一种新的语义分割对抗攻击方法，可潜在地应用于颜色扰动",
+      "llm_tldr_en": "TsallisPGD introduces an adaptive gradient weighting attack for semantic segmentation, using Tsallis cross-entropy to reshape gradient concentration, enabling more effective pixel-wise attacks that could include color-based perturbations.",
+      "llm_tldr_cn": "针对语义分割模型攻击中标准交叉熵损失过度关注已误分类像素的问题，本文提出基于Tsallis交叉熵的自适应梯度攻击TsallisPGD，通过调整参数q控制梯度集中于不同置信度像素，从而更有效地翻转大量像素预测；实验表明该方法评估鲁棒性更准确，为语义分割的对抗攻击提供了新的通用工具，适用于包括颜色扰动在内的多种攻击方式。",
+      "llm_tldr": "针对语义分割模型攻击中标准交叉熵损失过度关注已误分类像素的问题，本文提出基于Tsallis交叉熵的自适应梯度攻击TsallisPGD，通过调整参数q控制梯度集中于不同置信度像素，从而更有效地翻转大量像素预测；实验表明该方法评估鲁棒性更准确，为语义分割的对抗攻击提供了新的通用工具，适用于包括颜色扰动在内的多种攻击方式。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "adversarial color attacks on semantic segmentation",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.19956v1",
+      "source": "arxiv",
+      "title": "Towards Fine-Grained Robustness: Attention-Guided Test-Time Prompt Tuning for Vision-Language Models",
+      "abstract": "Vision-Language Models (VLMs), such as CLIP, have achieved significant zero-shot performance on downstream tasks with various fine-tuning adaptation methods. However, recent studies have proven that adversarial attacks can significantly degrade the inference ability of VLMs, posing substantial risks to their practical applications. Prevalent test-time adaptation methods typically rely on multi-view augmentation to implement various fine-tuning strategies, which struggle to identify semantic information and are prone to destroying discriminative regions in fine-grained scenarios. To address these limitations, we propose Attention-Guided Test-Time Prompt Tuning (A-TPT), a semantics-preserving method designed for test-time adaptation. We first refine the gradient attention rollout mechanism to identify semantically meaningful regions surviving under adversarial attacks. Furthermore, we leverage them to guide the spatially varying augmentation intensities and multi-view ensemble for prompt tuning and inference. Extensive experiments demonstrate that A-TPT outperforms existing test-time adaptation methods on both adversarial and clean data. Codes are available at https://github.com/SEU-VIPGroup/A-TPT .",
+      "authors": [
+        "Jia-Wei Hai",
+        "Yijun Wang",
+        "Xiu-Shen Wei"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-19T15:10:06+00:00",
+      "link": "https://arxiv.org/pdf/2605.19956v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "proposes Attention-Guided Test-Time Prompt Tuning, a semantics-preserving method against adversarial attacks that could extend to color perturbations",
+      "llm_evidence_cn": "提出注意力引导的测试时提示微调，一种应对对抗攻击的语义保持方法，可扩展到颜色扰动",
+      "llm_evidence": "提出注意力引导的测试时提示微调，一种应对对抗攻击的语义保持方法，可扩展到颜色扰动",
+      "canonical_evidence": "提出注意力引导的测试时提示微调，一种应对对抗攻击的语义保持方法，可扩展到颜色扰动",
+      "llm_tldr_en": "The paper introduces A-TPT, an attention-guided test-time prompt tuning method for VLMs that maintains discriminative semantic regions during adversarial attacks, bridging adversarial robustness and semantic preservation.",
+      "llm_tldr_cn": "针对视觉语言模型在对抗攻击下语义容易丢失的问题，该文提出注意力引导的测试时提示微调方法（A-TPT），通过注意力机制在适配过程中保护判别性区域，从而在抵御攻击的同时保持语义一致性。在细粒度分类等多个场景下验证了其有效性和语义保持能力，为模型在扰动下的鲁棒语义理解提供了新路径。",
+      "llm_tldr": "针对视觉语言模型在对抗攻击下语义容易丢失的问题，该文提出注意力引导的测试时提示微调方法（A-TPT），通过注意力机制在适配过程中保护判别性区域，从而在抵御攻击的同时保持语义一致性。在细粒度分类等多个场景下验证了其有效性和语义保持能力，为模型在扰动下的鲁棒语义理解提供了新路径。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.14626v1",
+      "source": "arxiv",
+      "title": "UniTriGen: Unified Triplet Generation of Aligned Visible-Infrared-Label for Few-Shot RGB-T Semantic Segmentation",
+      "abstract": "RGB-T semantic segmentation requires strictly aligned VIS-IR-Label triplets; however, such aligned triplet data are often scarce in real-world scenarios. Existing generative augmentation methods usually adopt cascaded generation paradigms, decomposing joint triplet generation into local conditional processes. As a result, consistency among VIS, IR, and Label in spatial structure, semantic content, and cross-modal details cannot be reliably maintained. To address this issue, we propose UniTriGen, a unified triplet generation framework that directly generates spatially aligned, semantically consistent, and modality complementary VIS-IR-Label triplets under the guidance of text prompts. UniTriGen first introduces a unified triplet generation mechanism, where VIS, IR, and Label are jointly encoded into a shared latent space and modeled with a diffusion process to enforce global cross-modal consistency. Lightweight modality-specific residual adapters are further integrated into this mechanism to accommodate modality-specific imaging characteristics and output formats. To mitigate generation bias caused by imbalanced scene and class distributions in limited paired triplets, UniTriGen also employs a scene-balanced and class-aware few-shot sampling strategy, which induces a more balanced sampling distribution and enhances the scene and class diversity of generated triplets. Experiments show that UniTriGen generates high-quality aligned triplets from limited real paired data, thereby achieving consistent performance improvements across various RGB-T semantic segmentation models.",
+      "authors": [
+        "Ping Zhou",
+        "Haoyu Wang",
+        "Mengmeng Zheng",
+        "Lei Zhang",
+        "Wei Wei",
+        "Chen Ding",
+        "Fei Zhou"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-14T09:39:53+00:00",
+      "link": "https://arxiv.org/pdf/2605.14626v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Generating visible-infrared-label triplets with semantic consistency across color and non-color modalities",
+      "llm_evidence_cn": "在可见光与红外模态间生成语义一致的三元组",
+      "llm_evidence": "在可见光与红外模态间生成语义一致的三元组",
+      "canonical_evidence": "在可见光与红外模态间生成语义一致的三元组",
+      "llm_tldr_en": "Proposes UniTriGen to generate aligned visible, infrared, and label triplets, maintaining spatial structure and semantic content across modalities, useful for training color-robust models.",
+      "llm_tldr_cn": "针对RGB-T语义分割中成对可见光-红外-标签数据稀缺的问题，提出统一三元组生成框架UniTriGen，在文本提示引导下直接生成空间对齐、语义一致且模态互补的三元组。该方法保证了可见光与红外模态间的语义一致性，为训练对颜色变化鲁棒的模型提供高质量数据。实验表明生成的三元组能有效提升少样本场景下的分割性能。",
+      "llm_tldr": "针对RGB-T语义分割中成对可见光-红外-标签数据稀缺的问题，提出统一三元组生成框架UniTriGen，在文本提示引导下直接生成空间对齐、语义一致且模态互补的三元组。该方法保证了可见光与红外模态间的语义一致性，为训练对颜色变化鲁棒的模型提供高质量数据。实验表明生成的三元组能有效提升少样本场景下的分割性能。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.07495v1",
+      "source": "arxiv",
+      "title": "Lightweight Unpaired Smartphone ISP Transfer with Semantic Pseudo-Pairing",
+      "abstract": "Unpaired smartphone ISP is a challenging problem due to the lack of scene and color alignment between RAW and target RGB images. Many existing methods either require paired data or rely heavily on adversarial training, which can become unstable in the unpaired setting. In this work, we present a simple and effective approach developed for the NTIRE 2026 Learned Smartphone ISP Challenge with Unpaired Data. Our method first reconstructs larger images from training patches to recover global context. Then, we extract semantic embeddings with DINOv2, and use fused Gromov-Wasserstein (FGW) optimal transport to build pseudo pairs between RAW and RGB images at both image and patch levels. This semantic matching allows us to partially alleviate the unpairedness of the data and build these pseudo input-target pairs. Based on these pseudo pairs, we train a lightweight CNN with only 7K parameters for color rendering. The network is designed to be compact and focus on color transformation rather than structural change, which helps reduce artifacts and improve training stability. Our challenge submission achieves 22.569 PSNR, 0.675 SSIM, and 8.067 $ΔE$ on the final hidden test set, significantly improving over the baseline and achieving the 3rd best SSIM and $ΔE$ among all challenge entries. Our code is available at github.com/nuniniyujin/Unpaired-ISP .",
+      "authors": [
+        "Yujin Cho",
+        "Flavien Armangeon",
+        "Yanhao Li"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-08T09:32:13+00:00",
+      "link": "https://arxiv.org/pdf/2605.07495v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Semantic pseudo-pairing preserves semantic meaning under color misalignment between RAW and RGB",
+      "llm_evidence_cn": "语义伪配对在RAW和RGB色彩不对齐下保持语义含义",
+      "llm_evidence": "语义伪配对在RAW和RGB色彩不对齐下保持语义含义",
+      "canonical_evidence": "语义伪配对在RAW和RGB色彩不对齐下保持语义含义",
+      "llm_tldr_en": "Proposes using DINOv2 embeddings and optimal transport to build pseudo pairs between RAW and RGB images, maintaining semantic consistency despite color differences for unpaired ISP transfer.",
+      "llm_tldr_cn": "针对非配对智能手机ISP中RAW与RGB图像色彩不对齐的问题，提出利用DINOv2提取语义嵌入，通过融合Gromov-Wasserstein最优传输在图像和块级别构建语义伪配对。该方法部分缓解了色彩不对齐，保持了语义内容的一致性。在NTIRE 2026挑战中展示了轻量级且有效的非配对ISP方案。",
+      "llm_tldr": "针对非配对智能手机ISP中RAW与RGB图像色彩不对齐的问题，提出利用DINOv2提取语义嵌入，通过融合Gromov-Wasserstein最优传输在图像和块级别构建语义伪配对。该方法部分缓解了色彩不对齐，保持了语义内容的一致性。在NTIRE 2026挑战中展示了轻量级且有效的非配对ISP方案。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.20732v1",
+      "source": "arxiv",
+      "title": "Deep Attention Reweighting: Post-Hoc Attention-Based Feature Aggregation in CNNs for Disentangling Core and Spurious Features under Spurious Correlations",
+      "abstract": "Convolutional Neural Networks (CNNs) often exploit spurious correlations in datasets, learning superficially predictive yet causally irrelevant features, leading to poor generalization and fairness issues. Deep Feature Reweighting (DFR) is a post-hoc technique that reduces a trained model's reliance on spurious correlations by retraining its classification head on a target dataset. However, we show that DFR is fundamentally constrained by operating on entangled features, limiting its ability to amplify the core features while simultaneously suppressing the spurious ones. We trace this entanglement to the ubiquitous Global Average Pooling (GAP) layer, which indiscriminately collapses spatially distinct core and spurious features into a single representation. To address this, we propose Deep Attention Reweighting (DAR), a post-hoc attention-based aggregation module that replaces GAP and is retrained jointly with the classification head. DAR computes an adaptive weighting of spatial locations across feature maps, enabling selective suppression of spurious features before the collapse into entangled features. Across various datasets, metrics, and ablations, DAR consistently outperforms DFR, demonstrating that our attention-based aggregation mitigates GAP-induced entanglement and reduces spurious reliance.",
+      "authors": [
+        "Kin Whye Chew",
+        "Jingxian Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-20T05:35:45+00:00",
+      "link": "https://arxiv.org/pdf/2605.20732v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Feature reweighting to disentangle core and spurious features for robustness",
+      "llm_evidence_cn": "特征重赋权以解耦核心与虚假特征，增强鲁棒性",
+      "llm_evidence": "特征重赋权以解耦核心与虚假特征，增强鲁棒性",
+      "canonical_evidence": "特征重赋权以解耦核心与虚假特征，增强鲁棒性",
+      "llm_tldr_en": "Proposes Deep Attention Reweighting, a post-hoc method that uses attention-based feature aggregation to disentangle core and spurious features in CNNs, improving robustness to spurious correlations; applicable to color robustness if color is a spurious feature.",
+      "llm_tldr_cn": "针对CNN中因全局平均池化导致的特征纠缠问题，提出深度注意力重赋权方法，通过后验注意力机制实现特征聚合，解耦核心特征与虚假特征，从而提升模型对虚假相关性的鲁棒性；若将颜色视为虚假特征，该方法可应用于颜色鲁棒性增强。",
+      "llm_tldr": "针对CNN中因全局平均池化导致的特征纠缠问题，提出深度注意力重赋权方法，通过后验注意力机制实现特征聚合，解耦核心特征与虚假特征，从而提升模型对虚假相关性的鲁棒性；若将颜色视为虚假特征，该方法可应用于颜色鲁棒性增强。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "papers on feature level intervention for color robustness in deep learning",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.19613v1",
+      "source": "arxiv",
+      "title": "White-Balance First, Adjust Later: Cross-Camera Color Constancy via Vision-Language Evaluation",
+      "abstract": "Color constancy aims to keep object colors consistent under varying illumination. Cross-camera generalization in color constancy remains challenging because learning-based models often overfit to the color response characteristics of the training camera, resulting in degraded performance on images captured by other cameras. We propose VLM-CC, a feedback-guided framework that formulates color constancy as an iterative refinement process. Instead of directly estimating the illuminant from raw input, VLM-CC performs iterative correction driven by vision-language model (VLM)-based evaluation. At each iteration, the image is white-balanced using the current estimate and converted to pseudo-sRGB. A lightweight LoRA-tuned VLM then assesses the corrected image, identifying the dominant residual color cast and providing qualitative feedback. This feedback is mapped to a residual illumination direction (red, green, or blue) and used to update the illuminant estimate until convergence. Our key idea is to reframe color constancy as an iterative perceptual feedback problem, leveraging VLM evaluation instead of direct RGB regression. By replacing direct RGB estimation with VLM-guided perceptual feedback, VLM-CC achieves state-of-the-art robustness in cross-camera color constancy across multiple datasets. Code will be available at https://github.com/NothingIknow/VLM-CC.",
+      "authors": [
+        "Shuwei Li",
+        "Lei Tan",
+        "Robby T. Tan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-19T09:53:35+00:00",
+      "link": "https://arxiv.org/pdf/2605.19613v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Iterative white-balance correction guided by VLM evaluation to maintain object color consistency across illuminations",
+      "llm_evidence_cn": "VLM评估引导的迭代白平衡校正，保持不同光照下物体颜色一致性",
+      "llm_evidence": "VLM评估引导的迭代白平衡校正，保持不同光照下物体颜色一致性",
+      "canonical_evidence": "VLM评估引导的迭代白平衡校正，保持不同光照下物体颜色一致性",
+      "llm_tldr_en": "VLM-CC reformulates color constancy as iterative refinement with a VLM evaluator, improving generalization across cameras without direct illuminant estimation.",
+      "llm_tldr_cn": "VLM-CC将色彩恒常重构为迭代优化过程，利用轻量级微调VLM评估每次白平衡效果，避免直接估计光源，在跨相机场景中实现更好的泛化，保持物体颜色一致。",
+      "llm_tldr": "VLM-CC将色彩恒常重构为迭代优化过程，利用轻量级微调VLM评估每次白平衡效果，避免直接估计光源，在跨相机场景中实现更好的泛化，保持物体颜色一致。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.10009v1",
+      "source": "arxiv",
+      "title": "Hystar: Hypernetwork-driven Style-adaptive Retrieval via Dynamic SVD Modulation",
+      "abstract": "Query-based image retrieval (QBIR) requires retrieving relevant images given diverse and often stylistically heterogeneous queries, such as sketches, artworks, or low-resolution previews. While large-scale vision--language representation models (VLRMs) like CLIP offer strong zero-shot retrieval performance, they struggle with distribution shifts caused by unseen query styles. In this paper, we propose the Hypernetwork-driven Style-adaptive Retrieval (Hystar), a lightweight framework that dynamically adapts model weights to each query's style. Hystar employs a hypernetwork to generate singular-value perturbations ($ΔS$) for attention layers, enabling flexible per-input adaptation, while static singular-value offsets on MLP layers ensure cross-style stability. To better handle semantic confusions across styles, we design StyleNCE as part of Hystar, an optimal-transport-weighted contrastive loss that emphasizes hard cross-style negatives. Extensive experiments on multi-style retrieval and cross-style classification benchmarks demonstrate that Hystar consistently outperforms strong baselines, achieving state-of-the-art performance while being parameter-efficient and stable across styles.",
+      "authors": [
+        "Yujia Cai",
+        "Boxuan Li",
+        "Chenghao Xu",
+        "Jiexi Yan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-11T05:35:16+00:00",
+      "link": "https://arxiv.org/pdf/2605.10009v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Dynamically adapts model weights to query style via SVD modulation",
+      "llm_evidence_cn": "通过SVD调制动态适应查询样式的模型权重",
+      "llm_evidence": "通过SVD调制动态适应查询样式的模型权重",
+      "canonical_evidence": "通过SVD调制动态适应查询样式的模型权重",
+      "llm_tldr_en": "Proposes Hystar, a lightweight framework that uses a hypernetwork to generate SVD perturbations for style-adaptive image retrieval.",
+      "llm_tldr_cn": "基于查询的图像检索面临风格异构查询的分布偏移挑战。提出Hystar，一个轻量级框架，通过超网络为注意力层生成奇异值扰动，实现每输入自适应，同时用静态奇异值偏移确保跨模态对齐，无需重新训练即可动态适应查询风格。",
+      "llm_tldr": "基于查询的图像检索面临风格异构查询的分布偏移挑战。提出Hystar，一个轻量级框架，通过超网络为注意力层生成奇异值扰动，实现每输入自适应，同时用静态奇异值偏移确保跨模态对齐，无需重新训练即可动态适应查询风格。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "papers on feature level intervention for color robustness in deep learning",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.10603v2",
+      "source": "arxiv",
+      "title": "Segment Anything with Robust Uncertainty-Accuracy Correlation",
+      "abstract": "Despite strong zero-shot performance, SAM is unreliable under domain shift due to Mask-level Confidence Confusion (MCC), where a single IoU-based mask score fails to reflect pixel-wise reliability near boundaries. Motivated by the contrast between texture-biased shortcuts in neural networks and shape-centric processing in human vision, we model out-of-domain variation as appearance shifts and non-rigid deformations that jointly stress calibration. We propose Segment Anything with Robust Uncertainty-Accuracy Correlation (RUAC) for robust pixel-wise uncertainty estimation under appearance and deformation shifts. RUAC adds a lightweight uncertainty head, trains it with a collaborative style-deformation attack that jointly perturbs texture and geometry, and applies Uncertainty-Accuracy Alignment to ensure uncertainty consistently highlights erroneous pixels even under adversarial perturbations. Across 23 zero-shot domains, RUAC improves segmentation quality and yields more faithful uncertainty with stronger uncertainty-accuracy correlation. Project page: https://github.com/HongyouZhou/ruac.git.",
+      "authors": [
+        "Hongyou Zhou",
+        "Marc Toussaint",
+        "Ling Shao",
+        "Zihan Ye"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-11T14:04:02+00:00",
+      "link": "https://arxiv.org/pdf/2605.10603v2",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "targets texture-biased shortcuts and fosters shape-centric processing by perturbing texture/appearance, aligning with color-shape disentanglement",
+      "llm_evidence_cn": "针对纹理偏差捷径并通过扰动纹理/外观来促进以形状为中心的处理，与颜色-形状解耦一致",
+      "llm_evidence": "针对纹理偏差捷径并通过扰动纹理/外观来促进以形状为中心的处理，与颜色-形状解耦一致",
+      "canonical_evidence": "针对纹理偏差捷径并通过扰动纹理/外观来促进以形状为中心的处理，与颜色-形状解耦一致",
+      "llm_tldr_en": "RUAC addresses SAM's unreliability under domain shift by training an uncertainty head with a collaborative style-deformation attack that perturbs texture (appearance) and geometry, encouraging shape-centric representations robust to color/texture variations.",
+      "llm_tldr_cn": "针对分割一切模型在域偏移下因掩码置信度混淆而不可靠的问题，受人类视觉形状中心处理机制启发，本文提出RUAC方法，添加轻量级不确定性头，并采用协同风格-形变攻击联合扰动纹理与几何结构，迫使模型估计像素级不确定性；实验表明该方法在形貌和形变偏移下能准确量化不确定性，促进了对颜色/纹理变化鲁棒的形状中心表征学习。",
+      "llm_tldr": "针对分割一切模型在域偏移下因掩码置信度混淆而不可靠的问题，受人类视觉形状中心处理机制启发，本文提出RUAC方法，添加轻量级不确定性头，并采用协同风格-形变攻击联合扰动纹理与几何结构，迫使模型估计像素级不确定性；实验表明该方法在形貌和形变偏移下能准确量化不确定性，促进了对颜色/纹理变化鲁棒的形状中心表征学习。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
