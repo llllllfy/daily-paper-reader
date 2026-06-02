@@ -1,0 +1,758 @@
+Title: CanonCGT: Reference-Based Color Grading via Canonical Pivot Representation
+
+URL Source: https://arxiv.org/pdf/2606.01638v1
+
+Published Time: Tue, 02 Jun 2026 02:35:53 GMT
+
+Number of Pages: 23
+
+Markdown Content:
+# CanonCGT: Reference-Based Color Grading via Canonical Pivot Representation 
+
+## Jinwon Ko Korea University 
+
+jwko@mcl.korea.ac.kr 
+
+## Keunsoo Ko The Catholic University of Korea 
+
+ksko@catholic.ac.kr 
+
+## Chang-Su Kim *
+
+## Korea University 
+
+changsukim@korea.ac.kr Color -graded images according to the inset reference images Input image 
+
+Figure 1. Our reference-based color grading results. Each input image is color-graded to match the tonal mood and lighting of its reference, yielding photorealistic results that preserve color harmony and scene structure. 
+
+## Abstract 
+
+Reference-based color grading aims to reproduce the tonal mood and lighting of a reference while preserving color harmony and scene structure. Existing photorealistic and filter-based methods often produce unstable tone mappings — over-shifting or inconsistently retaining colors — lead-ing to unnatural results. We propose CanonCGT, a two-stage framework built on a canonical pivot — a style-neutral intermediate representation for stable color map-ping. The first stage canonicalizes the input by remov-ing intrinsic tonal bias, and the second color-grades it to match the reference style. A dual-phase training scheme, DP-CGT, combines supervised preset learning with self-supervised refinement on unpaired photographs. Canon-CGT delivers photorealistic and tonally consistent results across diverse datasets, surpassing state-of-the-art methods in stability and visual fidelity. Our codes are available at https://github.com/Jinwon-Ko/CanonCGT. 
+
+## 1. Introduction 
+
+Color grading — the process of adjusting color, tone, and overall mood to achieve a desired visual impression — is 
+
+> *Corresponding author.
+
+central to professional photo editing and cinematography [32, 54]. It enhances atmosphere, maintains stylistic coher-ence, and ensures visual balance through subtle tonal ad-justments. Manual color grading, however, requires exper-tise and time, as users must precisely tune parameters such as exposure, contrast, and color temperature. Modern tools offer these controls but remain difficult for non-experts. To simplify this process, many applications provide pre-defined filters or lookup tables (LUTs) that emulate specific photographic moods. While convenient, these presets often fail to reflect the user’s intended aesthetic or scene charac-teristics and yield inconsistent outcomes because they ig-nore contextual or pre-existing tonal bias. A more intuitive solution is reference-based color grad-ing, which allows users to specify a desired aesthetic by providing a reference photo. As illustrated in Figure 1, this approach reproduces the reference’s tonal mood and light-ing without manual tuning, offering an accessible frame-work for personalized photo enhancement. Recent photorealistic style transfer methods have ad-vanced this goal, following neural style transfer [11], which first used deep features to represent visual styles. Later approaches [8, 17, 22, 51] transfer styles in feature space by aligning statistics or modulating activations. However, 1          
+
+> arXiv:2606.01638v1 [cs.CV] 1 Jun 2026 (b)
+> Reference image
+> Input image Deep Preset [ 14 ]
+> CanonCGT (Proposed)
+> (a)
+> Reference image CanonCGT (Proposed)
+> PhotoWCT 2[8]Input image Neural Preset [ 17 ]
+> CAP -VST [ 46]Figure 2. Color grading results of existing methods and the proposed CanonCGT. (a) Comparison with recent photorealistic style transfer methods [8, 17, 46], which often cause excessive tonal shifts and texture distortions. (b) Comparison with a filter-based approach [14], which tends to retain or accumulate existing stylistic effects instead of reproducing the reference tone. In contrast, CanonCGT faithfully transfers the reference color grading while preserving structural fidelity and tonal stability.
+
+they often produce exaggerated tonal shifts and texture dis-tortions, as shown in Figure 2(a), making them unsuitable for color grading, which demands subtle tonal control and structural fidelity. Filter style transfer [14, 50] learns subtle, retouching-oriented tone adjustments from paired datasets of natural and filtered images. By modeling low-level color map-pings, these methods produce coherent, visually faithful re-sults. However, their mappings remain limited to natural-to-filtered pairs — when the input already shows a strong stylistic bias, they often retain the original tone instead of adaptively restyling it toward the reference, as shown in Fig-ure 2(b). This limitation calls for a mechanism that neutral-izes pre-existing styles and establishes a canonical represen-tation as a stable basis for reference-based color grading. In this paper, we propose CanonCGT, a reference-based color grading algorithm that addresses these limitations through a canonical pivot — a style-neutral intermediate representation providing a stable basis for adaptive color mapping. CanonCGT operates in two stages: (1) canoni-calization, which maps the input to the canonical domain to remove intrinsic tonal bias, and (2) grading, which transfers the reference tone onto this representation. To train the two-stage pipeline, we develop dual-phase color grading training (DP-CGT). The first, supervised phase learns reliable tone mappings across diverse presets by training on multiple filtered versions of each canon-ical image. The second, self-supervised phase refines CanonCGT on unconstrained photographs by reconstruct-ing locally perturbed regions using nearby grading cues, enabling robust and general color grading beyond preset-defined styles. Extensive experiments show that Canon-CGT achieves superior photorealism and generalization over state-of-the-art photorealistic and filter-based methods. This paper makes the following main contributions: • We introduce the concept of a canonical pivot — a style-neutral representation that provides a stable intermediate domain for reference-based color grading. • We design a two-stage canonicalization-grading frame-work that removes tonal bias and applies reference styles in a decoupled yet complementary manner. • We develop DP-CGT , a dual-phase training strategy com-bining supervised preset learning with self-supervised generalization for robust and adaptive color grading. • CanonCGT surpasses recent photorealistic and filter-based methods [2, 8, 14, 17, 46], consistently achieving high photorealism and tonal stability across datasets. 
+
+## 2. Related Work 
+
+2.1. Style transfer 
+
+Artistic style transfer: Early color transfer methods matched global color statistics between images [36–38], but deep learning later enabled more expressive style manipu-lation. Neural style transfer [11] reproduced artistic effects on natural photos and inspired numerous follow-up studies [5, 9, 10, 27, 55], emphasizing painterly abstraction — ef-fective for artistic creation but undesirable for photographic editing — often yielding unrealistic color reproduction and structural distortion. 
+
+Photorealistic style transfer: Photorealistic style transfer modifies tone and color while preserving scene structure by aligning feature statistics between content and reference im-ages in latent space. Li et al . [21, 22] and Yoo et al . [51] employed the whitening-and-coloring transform (WCT) to match feature distributions, while An et al . [2] and Chiu 
+
+et al . [8] improved efficiency through neural architecture search and block-wise training. Wen et al . [46] enhanced spatial coherence via content-affinity preservation, and Ke 2(a) Grading vector extraction  (c) Color grading conditioned on grading vector 𝑟                  
+
+> (b) Canonicalization conditioned on grading vector 𝑥
+> 𝑇 𝑐
+> Color
+> transform
+> Canonicalizer
+> 𝑥 𝑌 𝑋
+> 𝑇 𝑔
+> Color
+> transform
+> Grader
+> 𝑟 𝑍 𝑌
+> 𝑥
+> 𝑟
+> Shared
+> parameter
+> Grade
+> extractor
+> Grade
+> extractor
+> 𝑋
+> 𝑅 Figure 3. Overview of the CanonCGT framework. The grade extractor derives grading vectors xand rfrom the input Xand reference R.The canonicalizer and grader generate 3D LUTs Tcand Tgto produce the canonical image Yand retouched output Z, respectively.
+
+et al . [17] introduced a neural-preset model that disentan-gles content and style. Despite these advances, photorealistic style transfer of-ten causes excessive tonal shifts or local color bleeding, as shown in Figure 2(a), hindering the precise tone and illumi-nation control required in photographic color grading. 
+
+Filter style transfer and color grading: Recent filter style transfer methods [14, 50] learn low-level color mappings from paired datasets of natural and filtered images to emu-late predefined retouching styles through supervised learn-ing. Yim et al . [50] trained parametric transformations for tone adaptation, and Ho et al . [14] unified multiple styles within a single network. Although these methods produce visually pleasing results, their mappings remain limited to the filter sets used for training and fail to generalize to un-seen references. When applied to already edited images, they often adapt poorly — either retaining the original tone or accumulating existing effects — leading to unbalanced results, as shown in Figure 2(b). To address these limitations, we propose Canon-CGT, which leverages canonical pivot images to stabilize reference-based tone mapping and suppress residual or ac-cumulated styles. CanonCGT reproduces the desired photo-graphic mood and lighting of a reference — without struc-tural deformation, tonal exaggeration, or style accumulation — effectively overcoming the main drawbacks of artistic, photorealistic, and filter style transfer methods. 
+
+2.2. LUT-based color mapping 
+
+A LUT represents a color mapping compactly and inter-pretably by defining explicit correspondences between in-put and output colors. Unlike implicit feature-space trans-formations, LUTs provide deterministic and spatially con-sistent tone adjustments, making them well suited for color grading, where global balance and structural realism are crucial [16]. Recent studies have exploited these advantages for pho-torealistic enhancement. Zeng et al . [52] predicted image-adaptive LUTs for real-time enhancement. Yang et al . [48, 49] improved flexibility and efficiency through adaptive and separable LUTs. Ko et al . [19] employed transformer architectures to predict structured 3D LUTs for image-adaptive color mapping. Other methods integrated LUTs into reference-guided style transfer [6, 20, 26], achiev-ing stable, structure-preserving color adaptation. More re-cently, Shin et al . [41] extended LUT-based color grading to video by generating a diffusion-driven LUT from key-frames. Building on these advances, the proposed Canon-CGT employs LUT-based transformations for both canoni-calization and grading, ensuring reliable tone mapping with high structural fidelity. 
+
+## 3. Proposed Algorithm 
+
+Most photographs undergo in-camera or post-capture pro-cessing, and many are further edited with presets or fil-ters. We collectively refer to these transformations as a grading style, which defines the overall tone and mood of an image. To achieve stable reference-based color grad-ing without style retention or accumulation, we employ a canonicalization-grading framework, as shown in Figure 3. CanonCGT adjusts the color grading of an input image 
+
+X to match that of a reference R. A grade extractor derives grading vectors x and r from X and R, respectively, where a grade denotes a grading vector for brevity. The canon-icalizer removes the latent grade x from X to produce a style-neutral canonical image Y , and the grader applies the reference grade r to Y , generating the retouched output Z.Both modules employ LUT-based color transforms for spa-tially consistent and structure-preserving tone adaptation. 
+
+3.1. CanonCGT 
+
+Grade extractor: The grade extractor encodes the tonal characteristics of an image into a latent representation that defines its grading style. The extracted grade conditions the canonicalizer to remove intrinsic style bias or the grader to impose the reference style. A pretrained MobileNet-v2 [40] 3𝑔          
+
+> 𝑇 𝑖 𝑇 𝑜
+> FFN
+> CA block
+> FFN -FiLM
+> CA block
+> FFN -FiLM
+> CA block
+> FFN -FiLM
+> CA block
+> FFN -FiLM
+> CA block
+> FFN -FiLM
+> CA block
+> FFN -FiLM
+> CA block
+> FFN -FiLM
+> FFN
+> 𝐼 Feature
+> extractor
+> SA block
+> FFN -FiLM
+> SA block
+> FFN -FiLM
+> SA block
+> FFN -FiLM
+> SA block
+> FFN -FiLM
+> SA block
+> FFN -FiLM
+> Decoder block
+> Encoder block
+> 𝑃 0𝑃 1𝑃 2𝑃 3𝑃 4
+> 𝐹 1𝐹 2𝐹 3𝐹 4
+> SA block
+> FFN -FiLM
+> CA block
+> FFN -FiLM
+
+Figure 4. The architecture of the canonicalizer and grader. The network, referred to as the conditioned LUT generator, takes an input image 
+
+I and a condition vector g to modulate the identity LUT Ti, producing an image-adaptive LUT To for color transformation. The vector g
+
+denotes the input grade x when used for canonicalization and the reference grade r when used for stylization. 
+
+serves as a lightweight backbone. Since grading styles are diverse and unlabeled, the em-bedding space is organized through contrastive learning [18] using known presets: images edited with the same pre-set form positive pairs, while those with different presets form negative ones. Each preset defines a consistent tonal transformation, enabling the grade extractor to learn a com-pact, tone-aware latent space, as shown in the supplement. 
+
+Canonicalizer: The canonicalizer predicts a LUT to re-move intrinsic style bias by modeling local color and global tonal context. As shown in Figure 4, it takes the input image 
+
+I and its grading vector g to extract multi-level features that capture spatial and chromatic dependencies. These features are modulated by g through FiLM [35] layers and aggre-gated to produce the LUT. Given a resized input I ∈ RL×L×3, a CNN-based fea-ture extractor produces a feature map F ∈ R L    
+
+> 8×L
+> 8×C
+
+en-coding local color and texture. The map is flattened into a token sequence F1 ∈ R L264 ×C and processed by six encoder blocks that capture global dependencies and build multi-level representations {Fl}4
+
+> l=1
+
+.Each encoder block consists of a self-attention (SA) block and an FFN-FiLM block, as illustrated in Figure 4. In the SA block, queries, keys, and values are linearly pro-jected from Fl and updated by multi-head self-attention [44] with a residual connection: 
+
+F (sa)  
+
+> l
+
+= MHSA( Fl) + Fl, (1) where MHSA( ·) captures long-range color dependencies within the feature representation. The features are then refined by the FFN-FiLM block, illustrated in Figure 5. Given the output F (sa)  
+
+> l
+
+in (1) and the grading vector g, the block applies layer normalization and a feed-forward transform, followed by FiLM-based channel Channel -wise summation Channel -wise multiplication    
+
+> 𝑔
+> Linear
+> Linear
+> 𝐹 𝑙
+> sa Linear GELU Linear LN
+> 𝐹 𝑙
+> film
+> 𝛽
+> 𝛼
+> 𝐹 𝑙
+> out
+
+Figure 5. The architecture of the FFN-FiLM block. 
+
+modulation: 
+
+α = W1g, β = W2g, (2) 
+
+F (film)  
+
+> l
+
+= α ⊙ σ(F (sa)  
+
+> l
+
+W3) + β, (3) 
+
+F (out)  
+
+> l
+
+= F (film)  
+
+> l
+
+W4 + F (sa)  
+
+> l
+
+, (4) where σ(·) denotes GELU [13]. The grading vector g ∈ RC
+
+generates scale and shift parameters α, β ∈ RC′
+
+, while 
+
+W1, W 2 ∈ RC′×C , W3 ∈ RC×C′
+
+, and W4 ∈ RC′×C
+
+are learnable projections. Unlike the original FiLM [35] that conditions on language features, our FFN-FiLM uses a grading vector to modulate feature responses in color and tone. This conditioning is integrated into the FFN through projections ( W3, W4) and a residual path, adapting FiLM for canonicalization or grading. A second encoder block, conditioned on the same g, is then applied to F (out)  
+
+> l
+
+to yield the next-level feature Fl+1 .After extracting multi-level features {Fl}4
+
+> l=1
+
+, we initialize the query tokens P0 ∈ RN 3×C by projecting each grid point of the identity LUT Ti ∈ RN ×N ×N ×3 through a lightweight FFN. These tokens are progressively refined through eight decoder blocks, each composed of a cross-attention (CA) block and an FFN-FiLM block. In the CA block, queries are projected from the LUT to-kens Pl−1, while keys and values are projected from the encoded feature map Fl. The LUT tokens are updated by 4𝐴                    
+
+> 𝐵
+> 𝑡 ~𝒯
+> 𝑡 ~𝒯
+> 𝐴
+> 𝐵
+> 𝐴 ∗
+> 𝐵 ∗
+> ℒrec
+> ℒrec
+> 𝐴
+> 𝐴 ∗
+> 𝐵
+> 𝐴 ∗
+> 𝐵 ∗
+> 𝐴
+> 𝑍 𝐴
+> 𝑍 𝐴 ∗
+> CanonCGT
+> CanonCGT
+> 𝑋
+> 𝑅
+> 𝑋
+> 𝑅 Figure 6. Self-supervised learning phase: Two crops Aand Bare randomly sampled from the same photo and perturbed by color grading transformations t∼ T , producing A∗and B∗. CanonCGT processes (A, B ∗)and (A∗, B )symmetrically, each optimized with a recon-struction loss Lrec .
+
+multi-head cross-attention [44]: 
+
+P (ca)  
+
+> l−1
+
+= MHCA( Pl−1, F l) + Pl−1, (5) where MHCA( ·) captures scene-dependent color correla-tions between the LUT tokens and image features. This operation enables each LUT entry to incorporate contex-tual cues from the encoded representation, adapting its color mapping to the scene’s tonal characteristics. The FFN-FiLM block modulates P (ca)  
+
+> l−1
+
+with the grade g
+
+to produce an intermediate P (out)  
+
+> l−1
+
+, as in (2) ∼(4). A sec-ond decoder block, conditioned on the same Fl and g, is applied to P (out)  
+
+> l−1
+
+to obtain the next-level output Pl. After four such levels (eight decoder blocks in total), the refined tokens P4 are projected through an additional FFN to gener-ate the output LUT To. When operating as a canonicalizer, 
+
+To becomes the canonical LUT Tc, which is applied to X
+
+to produce the canonical image Y .
+
+Grader: The grader employs the same architecture as the canonicalizer but is conditioned on the reference grade r.Conceptually, the canonicalizer performs a many-to-one mapping that normalizes diverse input styles into a canon-ical representation, while the grader performs a one-to-many mapping that transforms the canonical style into tar-get styles. Given the canonical image Y , the grader predicts a grading LUT Tg , which is applied to Y to produce the final output Z, imparting the tonal and chromatic characteristics of the reference. 
+
+3.2. DP-CGT 
+
+CanonCGT is trained with DP-CGT, a dual-phase scheme consisting of a supervised warm-up phase and a self-supervised generalization phase. The first phase uses the MIT-Adobe FiveK dataset [4], where expert C retouchings define the canonical style. Fifty-six additional styles syn-thesized with Lightroom presets introduce diverse tonal and chromatic variations, enabling CanonCGT to learn reliable LUT-based transformations. The second phase refines the model on large-scale photographic collections for broader generalization to real-world grading styles. 
+
+Supervised phase: CanonCGT learns to translate images across preset styles while preserving tonal fidelity through three steps. First, the grade extractor is trained with the supervised contrastive loss Lsupcon [18] to form a discrimi-native embedding space. Second, with the extractor frozen, the canonicalizer and grader are trained using reconstruc-tion losses Lrec that enforce pixel, gradient, and perceptual fidelity — between the input and canonical image for the canonicalizer, and between the graded output and ground truth for the grader. Finally, all modules are jointly fine-tuned end-to-end under the combined objectives, consoli-dating stable canonical mapping and tone reconstruction. 
+
+Self-supervised phase: CanonCGT is further refined on unlabeled photographs to improve generalization. With-out style supervision, the grade extractor is frozen, and the canonicalizer and grader are optimized through self-referential reconstruction. As shown in Figure 6, two crops 
+
+A and B are randomly sampled from the same image and perturbed by color grading transformations t ∼ T , produc-ing A∗ and B∗. CanonCGT processes (A, B ∗) and (A∗, B )
+
+symmetrically, each optimized with a reconstruction loss 
+
+Lrec for the graded output only, since no canonical ground truth exists in this phase. This step extends CanonCGT from discrete preset domains to continuous tonal and chro-matic distributions, enabling adaptive color grading under diverse photographic conditions. Additional details, includ-ing loss terms, transformations T , and hyperparameters, are provided in the supplement. 
+
+## 4. Experiments 
+
+We evaluate CanonCGT’s effectiveness and generalization quantitatively and qualitatively. 
+
+4.1. Datasets 
+
+CanonCGT is trained on both supervised and unsupervised datasets. The supervised dataset, derived from FiveK [4], 5Table 1. Quantitative comparison of color grading results (average performance over all test sets). *Results reproduced by our implemen-tation, as official code is unavailable. The best and second-best results are shown in bold and underline, respectively.                                                             
+
+> Fidelity Content preservation Grading style alignment Method PSNR ↑SSIM ↑∆Eab ↓LPIPS ↓SSIM ED ↑H-Corr ↑H-Chi ↓
+> PhotoNAS [2] 16.71 0.7436 19.40 0.3174 0.6420 0.2547 0.3301 PhotoWCT 2[8] 16.36 0.8130 19.96 0.2256 0.7342 0.3207 0.2869 Neural Preset ∗[17] 18.50 0.8451 17.28 0.2226 0.7174 0.2783 0.3526 CAP-VST [46] 18.00 0.8058 18.60 0.2335 0.7112 0.3249 0.2924 Deep Preset [14] 18.62 0.8582 15.21 0.1750 0.7575 0.2752 0.3185
+> CanonCGT 28.99 0.9608 5.46 0.0665 0.8933 0.5204 0.1785
+
+Table 2. Unsupervised datasets for self-supervised learning.                                
+
+> Dataset Total Train Test Notes Flickr2K [25] 2,650 2,650 0High-quality natural photos LSDIR [23] 84,991 76,991 8,000 Large-scale diverse scenes PPR10K [24] 11,161 8,875 2,286 Expert A version, portraits DIV2K [1] 900 0900 High-resolution benchmark Food-101 [3] 1,010 01,010 Food photography GLD-v2 [47] 8,000 08,000 Landmark scenes Total 108,712 88,516 20,196
+
+establishes a canonical prior and constructs the latent space for grading styles, while the unsupervised datasets support self-supervised generalization. 
+
+Supervised dataset: In the supervised phase, CanonCGT is trained on professionally retouched data providing con-sistent tone and color mappings. We use FiveK [4], which contains 5,000 photos retouched by five experts (A ∼E). Among them, the expert C edits are adopted as the canoni-cal style set, as they exhibit neutral tonal balance and mini-mal stylistic bias. Prior studies [7, 12, 15, 33, 45, 52] have also identified expert C as the most visually consistent and balanced reference among the experts, making this set well suited for defining the canonical domain. From this set, 56 additional styles are synthesized using Lightroom presets — 20 built-in and 36 user-generated — each representing a distinct grading scheme. The 5,000 images are divided into 4,500 for training and 500 for validation across the 56 styles and resized to a shorter side of 480 pixels for efficiency. 
+
+Unsupervised datasets: After establishing the canonical prior, CanonCGT is further refined in the self-supervised phase to enhance robustness and generalization across di-verse photographic domains. We use six public bench-marks covering a wide range of scenes, lighting conditions, and color distributions, as summarized in Table 2. In to-tal, 88,516 images are used for training and 20,196 for test-ing. This large-scale setup enables CanonCGT to generalize beyond preset-defined styles, achieving faithful reference-based color grading across diverse image domains. 
+
+4.2. Evaluation 
+
+Evaluation is conducted on the unsupervised test splits. 
+
+Protocols: Since no dataset provides paired supervision for reference-based color grading, we adopt a self-referential evaluation protocol consistent with the self-supervised training scheme. Each exemplar is divided into two non-overlapping regions, A and B, sharing the same intrinsic tonal characteristics. A random color grading transforma-tion t ∼ T is applied to A to obtain A∗, simulating real tonal variation. During evaluation, the model grades the perturbed input A∗ toward the original reference tone in re-gion B, and the result is compared with the original region 
+
+A. Unlike previous methods relying on unpaired statistics-based metrics, this protocol directly measures tonal fidelity and perceptual quality under realistic conditions. 
+
+Metrics: For quantitative evaluation, we assess three as-pects: fidelity, content preservation, and grading style align-ment. Fidelity reflects pixel-level accuracy, content preser-vation measures perceptual and structural consistency, and grading style alignment evaluates tone matching. For fidelity, we use PSNR, SSIM, and ∆Eab , computed as the L2 distance in CIE LAB space. For content preser-vation, we adopt LPIPS [53] and SSIM ED [17], which mea-sures SSIM between edge responses [43] to capture percep-tual and edge fidelity. For grading style alignment, we com-pute color statistics, including histogram correlation (H-Corr) and chi-squared distance (H-Chi) [34], quantifying tonal distribution similarity. All metrics are computed be-tween each output and its target. 
+
+4.3. Comparative assessment 
+
+CanonCGT is compared with photorealistic and filter-based methods — PhotoNAS [2], PhotoWCT 2 [8], Neural Preset [17], CAP-VST [46], and Deep Preset [14] — using official or reproduced implementations. 
+
+Quantitative comparison: Table 1 summarizes average performance on all unsupervised test datasets. CanonCGT consistently outperforms recent photorealistic and filter-based approaches [2, 8, 14, 17, 46] across all metrics, achieving well-balanced color grading and preserving tonal fidelity and perceptual consistency. Per-dataset results in the supplement show strong performance across domains and also clear gains on DIV2K, Food-101, and GLD-v2 — 6Reference Input  Proposed CAP -VST [ 46]Neural Preset * [17 ]PhotoWCT 2 [8] Deep Preset [ 14 ]PhotoNAS [2]Figure 7. Comparison of color grading results. CanonCGT produces natural and tonally balanced outputs, closely matching reference styles while preserving structural fidelity. Best viewed digitally with zoom for detailed comparison of tonal differences. 
+
+datasets used only for testing — demonstrating reliable gen-eralization beyond training data. 
+
+Qualitative comparison: Figure 7 compares color grad-ing results. Existing methods often show excessive tonal shifts, texture distortions, or unstable color balance. In the 1st, 2nd, 5th, and 7th rows, where the references are rel-atively monotone, PhotoNAS, PhotoWCT 2, Neural Preset, and CAP-VST degrade color harmony, yielding unnatural tones. In the 3rd row, PhotoNAS, PhotoWCT 2, and CAP-VST also distort local textures and edges. Neural Preset al-leviates such artifacts through deterministic color mapping, but its feature switching often introduces tonal inconsis-tency. Deep Preset produces stable tones yet frequently re-tains or accumulates the original style (1st, 3rd, 4th, 5th, and 7th rows). In contrast, CanonCGT generates perceptually balanced, coherent results by decoupling style removal and style adaptation in its two-stage canonicalization-grading framework. For example, CanonCGT faithfully transfers the vivid flower tone (2nd row), the soft mood of the blurred portrait (6th row), and the fruit coloration (last row), ensur-ing both tonal consistency and structural fidelity. 
+
+Comparison with Deep Preset: Figure 8 highlights CanonCGT’s advantage over Deep Preset in style neutral-ity and consistency. In the first row, Deep Preset retains the hazy tone of the input, failing to match the reference. In the second and third rows, the inputs differ but share the same reference; Deep Preset carries over color bias from each input, leading to inconsistent results. In con-trast, CanonCGT first canonicalizes the input into a tone-neutral form, as shown in column (b), and then applies the reference tone in a controlled manner. The final graded re-sults in column (c) faithfully follow the reference and re-main consistent across inputs, validating the stability of the canonicalization-grading framework. 
+
+User study: To complement quantitative evaluation, we conducted a user study under a cross-image setup simi-lar to prior style-transfer work [14, 17, 51]. Twenty-five participants with photography experience compared color-graded results from 50 randomly selected input-reference pairs from DIV2K, Food-101, and GLD-v2, yielding 1,250 trials. Each trial displayed the input, the reference, and re-sults from CAP-VST, Deep Preset, and CanonCGT in ran-7Input / reference  (c ) Grader (b) Canonicalizer (a) Deep Preset Figure 8. Comparison with Deep Preset [14]. (a) Deep Preset results, (b) CanonCGT canonicalized outputs, and (c) final graded results. Table 3. Average ranking scores from 25 participants over 50 input-reference pairs (1,250 evaluations).           
+
+> Method Tonal consistency ↓Perceptual integrity ↓
+> CAP-VST 1.89 2.49 Deep Preset 2.33 1.97 CanonCGT 1.78 1.54
+
+dom order. Participants evaluated two aspects: tonal consis-tency with the reference, measuring how faithfully each re-sult reproduces the target tone and color mood, and percep-tual integrity , assessing naturalness and structural fidelity. Lower ranks indicate higher quality. As summarized in Ta-ble 3, CanonCGT achieves the lowest average ranks in both criteria, demonstrating consistent tonal alignment and su-perb perceptual fidelity. 
+
+4.4. Analysis 
+
+Efficacy of the two-stage pipeline: We compare the two-stage CanonCGT with a one-stage variant that merges the canonicalizer and grader into a single LUT generator con-ditioned on concatenated input and reference grades. As shown in Table 4, the two-stage design performs better across all metrics, especially PSNR and ∆Eab , verifying that decoupling bias removal from grading ensures more stable tone mapping. 
+
+Efficacy of DP-CGT: We compare the model trained only in the supervised phase with the one further refined through the self-supervised phase. Table 5 shows that the second phase substantially improves performance on the unsuper-vised test datasets while maintaining comparable fidelity on the supervised validation set. This confirms that self-supervised phase enhances generalization and tonal stabil-ity under unconstrained style conditions. 
+
+Limitations: As shown in Figure 9, when the reference ex-hibits a strong global tint, CanonCGT transfers the domi-nant hue selectively to preserve overall color balance. In the Input / reference  Proposed CAP -VST [46]Neural Preset * [17 ]
+
+Figure 9. Limitations of CanonCGT. Table 4. Ablation of the two-stage CanonCGT design on the su-pervised validation set (FiveK val.).                
+
+> PSNR ↑SSIM ↑∆Eab ↓LPIPS ↓
+> One-stage 29.43 0.9366 4.53 0.0678 Two-stage 30.29 0.9405 4.25 0.0669
+
+Table 5. Ablation of the dual-phase training framework, DP-CGT.                   
+
+> Dataset Supervised Unsupervised Metric PSNR ↑∆Eab ↓PSNR ↑∆Eab ↓
+> Supervised only 30.29 4.25 19.17 15.07 + Self-supervised phase 29.80 4.42 28.99 5.46
+
+top row, with a reddish reference, it enhances the flower and mirror frames while keeping other regions natural, whereas competing methods apply the tint uniformly across the im-age. In the bottom row, with a black-and-white reference, CanonCGT preserves the dark sky tone rather than enforc-ing a full monochrome look, maintaining photorealism but limiting its ability to follow extreme reference styles. 
+
+## 5. Conclusions 
+
+We presented CanonCGT, a reference-based color grad-ing framework built on a canonical pivot. By decom-posing color grading into canonicalization and grading, CanonCGT removes intrinsic tonal bias and enables sta-ble reference-driven tone mapping. The dual-phase train-ing scheme (DP-CGT) combines supervised preset learn-ing with self-supervised refinement on unconstrained pho-tographs, improving robustness and generalization. Exper-iments demonstrate superior fidelity and perceptual consis-tency over existing photorealistic and filter-based methods. Beyond color grading, the canonicalization-grading formu-lation offers a new paradigm for learning style-aware image transformations. 
+
+## Acknowledgements 
+
+This work was supported by the National Research Foun-dation of Korea (NRF) funded by the Korea Government (MSIT) (No. RS-2024-00397293, RS-2022-NR068986, RS-2025-24523695), and by the AI Computing Infrastruc-ture Enhancement (GPU Rental Support) User Support Pro-gram funded by MSIT (No. RQT-25-090187). 8Supplemental Materials CanonCGT: Reference-Based Color Grading via Canonical Pivot Representation 
+
+## A. Implementation Details 
+
+We use a pretrained MobileNet-v2 [40] as the grade extrac-tor and as the feature backbone for both the canonicalizer and the grader. The canonicalizer and the grader share the same network architecture (Fig. 4) but do not share param-eters. All models are optimized with AdamW [29] using 
+
+β1 = 0 .9, β2 = 0 .999 , and a weight decay of 5×10 −5. The learning rate starts at 2 × 10 −4 and decays to 5 × 10 −5 fol-lowing a cosine annealing schedule [28]. We set L = 224 ,
+
+C = 64 , and N = 17 , which provides a good balance be-tween accuracy and computational cost. Training images are augmented by random cropping and horizontal flipping. In the self-supervised phase, we apply additional color perturbations — brightness, contrast, sat-uration, and hue adjustments — to simulate diverse tonal variations. Each crop is perturbed by a random trans-formation t ∼ T , where the adjustment factors are uni-formly sampled within predefined ranges: ±10 ∼ ± 40% 
+
+for brightness, contrast, and saturation, and ±2 ∼ ± 5% for hue. Figure S-1 shows examples of these perturbations. All experiments run on a single NVIDIA RTX 3090 GPU. Full training of CanonCGT, including both super-vised and self-supervised stages, takes roughly seven days. 
+
+## B. Training Details 
+
+B.1. Loss Functions 
+
+To train CanonCGT, we employ two objectives: a super-vised contrastive loss for the grade extractor and a recon-struction loss for the canonicalizer and the grader. The con-trastive loss encourages compact and discriminative style embeddings, while the reconstruction loss enforces faithful tone reproduction. 
+
+Contrastive loss: To construct a compact and discrimina-tive latent space of grading styles, we adopt the supervised contrastive (SupCon) loss [18]. Consider a batch of B images {Xi}Bi=1 from the super-vised dataset, where each image Xi is synthesized with a preset si and mapped to a grading vector xi. Positive and negative sets are defined according to the applied presets, 
+
+P(i) = {j | sj = si} and N (i) = {k | sk̸ = si}. Then, the SupCon loss is given by 
+
+Lsupcon =
+
+− 1
+
+B
+
+> B
+
+X
+
+> i=1
+
+1
+
+|P (i)|
+
+X
+
+> j∈P (i)
+
+log exp( x⊤ 
+
+> i
+
+xj /τ )
+
+P  
+
+> k∈N (i)
+
+exp( x⊤ 
+
+> i
+
+xk/τ ) , (6)    
+
+> Figure S-1. Examples of color perturbations t∼ T used in the self-supervised training phase. For each pair, the left image is the original and the right is the perturbed version. These perturbations introduce perceptually diverse variations in mood, lighting, and color temperature.
+
+where τ is the temperature. 
+
+Reconstruction loss: The canonicalizer and the grader are trained with a multi-term reconstruction loss 
+
+Lrec = wmLm + wg Lg + wpLp, (7) where Lm, Lg , and Lp denote the MSE loss, the gradient loss [30], and the perceptual loss [53], respectively. These terms jointly enforce pixel-wise accuracy, gradient consis-tency, and perceptual similarity. We set wm = 1 , wg = 1 ,and wp = 0 .05 .The MSE loss Lm between an output image ˆI and its target ˜I is defined as the mean squared error. The gradient loss Lg penalizes discrepancies in horizontal and vertical gradients, 
+
+Lg = ∥∇ x ˆI − ∇ x ˜I∥2 + ∥∇ y ˆI − ∇ y ˜I∥2. (8) 9The perceptual loss Lp measures the difference in a deep feature space, 
+
+Lp = X
+
+> k∈{ 4,9,16 ,23 }
+
+∥fk( ˆI) − fk( ˜I)∥1, (9) where fk(·) denotes the activation of the k-th layer of VGG-16 [42] pretrained on ImageNet [39]. 
+
+B.2. Optimization 
+
+CanonCGT is trained using the dual-phase color grading training (DP-CGT) scheme described in the main paper, consisting of a supervised warm-up phase followed by a self-supervised refinement phase. 
+
+Supervised warm-up phase: In this phase, the grade ex-tractor, canonicalizer, and grader are trained sequentially and then jointly to establish a stable canonical prior. The grade extractor is first trained with the supervised con-trastive loss Lsupcon in (6). After its convergence, the ex-tractor parameters are frozen, and the canonicalizer and grader are optimized using the reconstruction loss Lrec in (7). Finally, all modules are fine-tuned together in an end-to-end manner under the combined objectives, with weights of 0.05, 1, and 1 assigned to the grade extractor, canonical-izer, and grader, respectively. Batch sizes are set to 64 for the grade extractor and 16 for the canonicalizer and grader during their individual training, and 9 during the end-to-end fine-tuning stage. 
+
+Self-supervised refinement phase: Building on the canon-ical prior, CanonCGT is further refined through the self-referential reconstruction described in the main paper. Be-cause the overall tone of unlabeled photographs is not well-defined, the grade extractor is frozen in this phase, and only the canonicalizer and grader are updated using the recon-struction loss Lrec , applied to the graded output only, as no canonical supervision is available. Training is performed on both the supervised and unsupervised datasets, with each batch composed of 9 samples: 6 drawn from the unsuper-vised set and 3 from the supervised set. 
+
+## C. Canonical Style 
+
+We analyze how the choice of the canonical style set in-fluences CanonCGT. For a controlled comparison, only the canonical style set is varied, while all other training config-urations remain identical to those in the main paper. Four canonical style sets are evaluated: • Expert C (Proposed) : Images retouched by expert C in FiveK, exhibiting neutral tonal balance and minimal stylistic bias. • Preset-biased (Warm-Contrast) : Expert C images re-graded with a warm, high-contrast Lightroom preset that increases color temperature and mid-tone contrast.                 
+
+> Table S-1. Comparison of canonical style sets evaluated on the supervised validation split of FiveK.
+> Canonical style set PSNR SSIM ∆Eab
+> Expert C (Proposed) 30.29 0.9405 4.25 Preset-biased (Warm-Contrast) 25.82 0.8923 5.96 Preset-biased (Cool-Matte) 26.71 0.9041 5.58 Preset-mean (56-style) 29.80 0.9375 4.32
+
+• Preset-biased (Cool-Matte) : Expert C images regraded with a cool, desaturated preset that reduces chroma and shifts the white balance toward bluish tones. • Preset-mean (56-style) : The per-image mean appearance computed over all 56 preset-defined styles, serving as a bias-reduced reference domain. The two preset-biased variants impose opposite tonal biases (warm versus cool), while the preset-mean variant provides a style-neutral reference by averaging appearance across all preset-defined styles. As shown in Table S-1, the two preset-biased variants ex-hibit noticeably lower fidelity, indicating that strong stylis-tic shifts compromise the neutrality of the canonical domain and lead to less consistent grading behavior. In contrast, the preset-mean variant performs on par with expert C, suggest-ing that averaging multiple style variants effectively sup-presses preset-specific biases and yields a stable, neutral canonical domain suitable for CanonCGT. 
+
+## D. Component Analysis 
+
+We analyze the three key components of CanonCGT — the grade extractor, canonicalizer, and grader — to understand how the learned grading representations and the LUT-based modules jointly contribute to reliable color grading. 
+
+D.1. Grade Extractor 
+
+Tone-aware latent space: The grade extractor encodes color grading styles into a compact and discriminative la-tent space. As shown in Figure S-2, the t-SNE visualiza-tion [31] on the FiveK validation set reveals clear clusters aligned with the 56 preset-defined styles, indicating that the supervised contrastive objective organizes the embedding space according to tonal semantics. 
+
+Style decoding accuracy: To quantify the separability of the learned embeddings, we evaluate k-NN decoding accu-racy of styles. For each test embedding, we retrieve its k
+
+nearest neighbors and assign a predicted style by majority voting over their labels. As shown in Table S-2, the de-coding accuracy remains consistently high across different values of k, demonstrating that the grading vectors retain strong style-discriminative information. Because the grade extractor is frozen during the self-supervised refinement phase, its decoding performance re-10 Colorful  Cool light   
+
+> Cool matte Sweet tone Figure S-2. t-SNE visualization [31] of grading vectors on the FiveK validation set. Each cluster corresponds to a distinct preset-defined style, with example images illustrating representative tonal characteristics.
+
+mains unchanged from the supervised stage, as expected. The embedding space therefore remains fixed and is used consistently by the canonicalization and grading modules. 
+
+Intra-style coherence and inter-style separation: We an-alyze cosine similarities between grading vectors to exam-ine how the embedding space captures intra-style coher-ence and inter-style separation. Three evaluation modes are employed: (i) Self-referential , between cropped views of the same image; (ii) Intra-style , between different images edited with the same preset; and (iii) Inter-style , between images with different presets. For the self-referential case, each image is randomly cropped multiple times, and simi-larities are averaged for stable measurement. As shown in Table S-3, the similarities exhibit a clear hi-erarchy — highest for self-referential pairs, slightly lower for intra-style pairs, and much lower for inter-style pairs. This trend indicates that the embedding space preserves strong self-consistency while providing meaningful dis-crimination between styles. The high self-referential simi-larity also aligns with the assumption in the self-supervised phase that two cropped views of the same exemplar share the same underlying grading style. 
+
+Continuity of the learned grading space: Figure S-3 illustrates that CanonCGT produces smooth tonal transi-tions when conditioned on interpolated grading vectors be-tween two reference styles. This behavior suggests that the embedding space forms a semantically continuous man-ifold rather than exhibiting discrete jumps across styles. Such continuity ensures stable responses for reference im-ages whose grading vectors lie between well-defined style categories and supports reliable behavior during the self-supervised refinement phase, where the model encounters unpaired and diverse images. 
+
+D.2. Canonicalizer and Grader 
+
+CanonCGT consists of two key components: the canonical-izer, which removes the intrinsic tonal bias of the input, and                 
+
+> Table S-2. k-NN decoding accuracy of the grade embeddings on the FiveK validation set.
+> k= 5 k= 10 k= 20
+> Decoding accuracy (%) 84.47 83.01 82.33
+> Table S-3. Intra-style coherence and inter-style separation of grade embeddings.
+> Mean cosine similarity Relative scale Self-referential 0.8881 ×1.00 Intra-style 0.8533 ×0.96 Inter-style 0.3421 ×0.39
+
+the grader, which applies a target grading vector to synthe-size the final styled output. 
+
+Canonicalizer. We assess canonical reconstruction fidelity on the FiveK validation set, where each preset-styled im-age is paired with its expert C retouching as the canonical ground truth. As shown in Table S-4, the supervised warm-up phase delivers stable reconstruction quality, while the subsequent self-supervised refinement introduces a slight decrease in PSNR, SSIM, and ∆Eab . This is expected, as the refinement phase prioritizes broader generalization rather than strict canonical reconstruction. 
+
+Grader. For grading evaluation, each canonical input A is matched to its ground-truth preset retouching AS . We use CLIP-based retrieval to locate the most similar expert C ex-emplar B, and extract the reference grading vector from its preset-styled version BS . Conditioned on this vector, the grader synthesizes the styled output for A, which is com-pared against AS . As shown in Table S-5, the supervised warm-up phase achieves accurate reconstruction under con-trolled style conditions, while the refinement stage yields slightly lower PSNR, SSIM, and ∆Eab .
+
+Discussion. Although the refinement phase reduces super-vised reconstruction accuracy for both modules, it substan-tially improves robustness under diverse photographic con-ditions, as demonstrated in Table 5 of the main paper. These results indicate that DP-CGT enhances generalization and stabilizes the overall behavior of CanonCGT. 
+
+## E. Ablations 
+
+Table S-6 analyzes the effect of key architectural choices on the supervised validation set (FiveK val.). Each exper-iment varies a single factor while keeping all other com-ponents fixed, allowing us to examine how model capacity influences color fidelity and tonal accuracy. 
+
+Number of query tokens ( N 3): We first evaluate the im-pact of the number of query tokens. The LUT sampling 11 𝛼 = 1𝛼 = 0.75 𝛼 = 0.5𝛼 = 0.25 𝛼 = 0        
+
+> CanonCGT
+> 𝑟 =1−𝛼 𝑟 1+𝛼 𝑟 2
+> Reference 1
+> Reference 2
+> Grade
+> extractor 𝑟 1
+> 𝑟 2
+> Grade
+> extractor
+> Input
+
+Figure S-3. Continuous transition across grading styles. Two reference images provide grading vectors r1 and r2, which are linearly interpolated to obtain r. Conditioned on this interpolated vector, CanonCGT generates smooth tonal transitions between the two styles, demonstrating the continuity of the learned grading space. Table S-4. Reconstruction fidelity of the canonicalizer on the FiveK validation set.             
+
+> Phase PSNR ↑SSIM ↑∆Eab ↓
+> Supervised (warm-up) 28.47 0.8957 5.658
+> Self-supervised (refined) 27.35 0.8931 6.063
+
+Table S-5. Reconstruction fidelity of the grader on the FiveK vali-dation set.             
+
+> Phase PSNR ↑SSIM ↑∆Eab ↓
+> Supervised (warm-up) 30.79 0.9271 4.379
+> Self-supervised (refined) 29.65 0.9224 4.503
+
+grid forms an N × N × N lattice, yielding N 3 tokens that determine the sampling density of both the canonical and grading LUT spaces. As shown in Table S-6, performance improves with larger N , reflecting the benefit of finer sam-pling for color transformation. However, because the num-ber of tokens grows cubically with N and the quadratic cost of cross-attention increases rapidly with token count, we adopt N = 17 as a balanced configuration that provides sufficient precision without excessive overhead. 
+
+Channel dimension ( C): We next examine the effect of the channel dimension, which governs the representational capacity of CanonCGT. Increasing C from 32 to 64 con-sistently improves all metrics, indicating that a wider fea-ture space captures color and tone relationships more ef-fectively. Further increasing C to 96 yields only marginal gains in PSNR and ∆Eab while incurring additional param-eter and memory cost. We therefore adopt C = 64 as a well-balanced setting. 
+
+Number of attention heads: We also analyze how the number of attention heads influences performance. Using only two heads limits cross-channel interaction and slightly 
+
+Table S-6. Ablation of key architectural choices of CanonCGT on the FiveK validation set. The proposed configuration is high-lighted in light gray.                                         
+
+> Setting PSNR SSIM ∆Eab
+> Number of query tokens ( N3)
+> 9329.87 0.9389 4.38
+> 17 330.29 0.9405 4.25
+> 33 330.31 0.9407 4.23
+> Number of channels ( C)32 29.74 0.9372 4.46 64 30.29 0.9405 4.25 96 30.32 0.9408 4.24
+> Number of attention heads 229.68 0.9376 4.43 430.29 0.9405 4.25
+> 830.11 0.9394 4.28 Number of enc./dec. blocks 4/6 29.72 0.9379 4.42 6/8 30.29 0.9405 4.25
+> 8/10 30.17 0.9410 4.27
+
+reduces fidelity, whereas increasing to eight heads provides only marginal improvement while increasing computational complexity. We thus choose four heads as an effective and efficient configuration. 
+
+Encoder–decoder depth: Lastly, we vary the numbers of encoder and decoder blocks to assess the effect of network depth. A shallower structure (4/6) lacks sufficient model-ing capacity to capture fine tonal variations, resulting in lower accuracy. A deeper configuration (8/10) produces only minor gains in SSIM but introduces additional latency and memory usage. The proposed depth of six encoder and eight decoder blocks achieves the best trade-off. 
+
+## F. More Results 
+
+F.1. Complexities 
+
+Table S-7 summarizes the computational efficiency of CanonCGT across resolutions from FHD to 8K. GPU run-time, memory usage, and model size are measured on a ma-12 Table S-7. Comparison of GPU runtime, memory usage, and model size. All results are measured with Float32 precision on an NVIDIA RTX 3090. The numbers in parentheses indicate the exact image resolution. Units: “s” for seconds, “GB” for gigabytes, and “M” for millions of parameters. “OOM” indicates an out-of-memory failure.                                                       
+
+> Method GPU runtime ↓/ Memory ↓Model size ↓
+> FHD
+> (1920 ×1080)
+> 2K
+> (2560 ×1440)
+> 4K
+> (3840 ×2160)
+> 8K
+> (7680 ×4320)
+> Number of parameters PhotoNAS [2] 0.537 s / 15.60GB 0.908 s / 23.87GB OOM OOM 40.24 M PhotoWCT 2[8] 0.277 s / 14.09GB 0.424 s / 19.75GB 1.016 s / 23.79GB OOM 7.05 M Neural Preset ∗[17] 0.013 s / 0.27GB 0.016 s / 0.42GB 0.019 s / 0.88GB 0.037 s / 3.38GB 4.66 M CAP-VST [46] 0.462 s / 4.68GB 0.871 s / 9.96GB 2.116 s / 21.83GB OOM 4.09 M
+> Deep Preset [14] 0.323 s / 8.81GB 0.437 s / 13.21GB 1.114 s / 22.68GB OOM 267.77 M Proposed 0.008 s / 0.26GB 0.009 s / 0.42GB 0.010 s / 0.82GB 0.017 s / 3.04GB 5.01 M
+
+chine equipped with an AMD Ryzen 9 3900X CPU and a single NVIDIA RTX 3090 GPU. All values are averaged over 100 inference iterations using identical I/O pipelines and batch configurations. CanonCGT performs color grading with remarkable ef-ficiency while maintaining high fidelity and tonal stabil-ity. The model requires only 0.26 GB of memory and 8 ms for FHD inference, and scales consistently to 8K resolu-tion with a modest increase in runtime and memory usage. This efficiency primarily stems from its LUT-based formu-lation, which applies global color mapping rather than spa-tially dense convolutional operations. Overall, CanonCGT provides a practical solution suitable for real-time, high-resolution applications. 
+
+F.2. Quantitative Comparisons 
+
+Table S-8 presents quantitative results on the unsuper-vised test datasets, including DIV2K, PPR10K, LSDIR, Food-101, and GLD-v2. For each dataset, we evaluate fi-delity (PSNR, SSIM, ∆Eab ), content preservation (LPIPS, SSIM ED ), and style alignment (H-Corr, H-Chi) to compre-hensively assess the quality of the graded outputs. CanonCGT consistently outperforms existing photoreal-istic and filter-based methods, achieving substantial gains in fidelity and perceptual consistency, with higher PSNR and SSIM and lower ∆Eab and LPIPS. Improvements in H-Corr and H-Chi further indicate that CanonCGT produces tonally aligned results and demonstrates strong generalization and robustness under diverse photographic conditions. 
+
+F.3. Qualitative Comparisons 
+
+Self-referential protocol: Figures S-4 to S-7 show quali-tative results under the self-referential protocol, where the input and reference come from the same exemplar. Com-peting methods [8, 14, 17, 46] often introduce local tonal inconsistencies or regionally unbalanced colors, whereas CanonCGT closely matches the reference tone, lighting, and color temperature. These results align with the quan-titative gains on the unsupervised datasets (see Table S-8 and Table 1 in the main paper), demonstrating CanonCGT’s ability to stabilize tonal bias under self-referential condi-tions. 
+
+Cross-image protocol: Figures S-8 and S-9 present addi-tional examples under the cross-image protocol. Deep Pre-set [14] often retains the input’s original tonal bias, while other photorealistic methods [8, 17, 46] may produce local artifacts or inconsistent color transitions. CanonCGT re-liably transfers the target tone while preserving structural realism and global color harmony, yielding coherent results across diverse scenes. 
+
+F.4. Additional Results of CanonCGT 
+
+Finally, Figure S-10 presents additional examples across di-verse input–reference pairs, showing that CanonCGT pro-duces consistent and photorealistic color grading with sta-ble tonal behavior. The results demonstrate that the model preserves color harmony and scene structure while adapting effectively to a wide range of styles and scene conditions. 13 Table S-8. Quantitative results on the unsupervised datasets. 
+
+Dataset Metric PhotoNAS [2] PhotoWCT 2 [8] Neural Preset ∗ [17] CAP-VST [46] Deep Preset [14] Proposed DIV2K PSNR ↑ 17.35 17.23 19.10 18.95 18.86 29.25 
+
+SSIM ↑ 0.7452 0.8188 0.8461 0.8107 0.8571 0.9572 
+
+∆Eab ↓ 18.30 18.39 16.25 16.96 14.76 5.43 
+
+LPIPS ↓ 0.2921 0.1924 0.1972 0.2013 0.1492 0.0580 
+
+SSIM ED ↑ 0.6538 0.7400 0.7176 0.7207 0.7646 0.8954 
+
+H-Corr ↑ 0.2695 0.3514 0.2913 0.3601 0.2727 0.5154 
+
+H-Chi ↓ 0.2964 0.2500 0.3164 0.2495 0.2896 0.1603 
+
+PPR10K PSNR ↑ 15.81 14.80 17.06 16.48 17.99 29.31 
+
+SSIM ↑ 0.7423 0.7863 0.8379 0.7771 0.8696 0.9589 
+
+∆Eab ↓ 20.41 22.04 19.16 20.41 15.44 4.98 
+
+LPIPS ↓ 0.3613 0.2951 0.2871 0.3148 0.2220 0.1062 
+
+SSIM ED ↑ 0.6584 0.7257 0.7243 0.6935 0.7669 0.8834 
+
+H-Corr ↑ 0.1565 0.2111 0.1656 0.2156 0.1688 0.4314 
+
+H-Chi ↓ 0.3932 0.3444 0.4403 0.3655 0.3880 0.2310 
+
+LSDIR PSNR ↑ 17.23 17.01 19.11 18.72 18.85 29.37 
+
+SSIM ↑ 0.7476 0.8199 0.8457 0.8102 0.8546 0.9586 
+
+∆Eab ↓ 18.83 19.12 16.56 17.74 14.96 5.33 
+
+LPIPS ↓ 0.2935 0.1986 0.1993 0.2068 0.1512 0.0537 
+
+SSIM ED ↑ 0.6551 0.7383 0.7175 0.7187 0.7618 0.8990 
+
+H-Corr ↑ 0.2898 0.3600 0.3052 0.3669 0.2967 0.5364 
+
+H-Chi ↓ 0.2980 0.2552 0.3223 0.2553 0.2916 0.1624 
+
+Food-101 PSNR ↑ 16.68 16.44 18.77 18.09 18.53 27.50 
+
+SSIM ↑ 0.7201 0.7965 0.8428 0.7982 0.8417 0.9444 
+
+∆Eab ↓ 20.92 21.20 18.95 19.94 17.78 7.33 
+
+LPIPS ↓ 0.3763 0.2743 0.2687 0.2600 0.2310 0.0972 
+
+SSIM ED ↑ 0.5726 0.6717 0.6577 0.6632 0.6726 0.8262 
+
+H-Corr ↑ 0.2589 0.3347 0.3192 0.3351 0.3132 0.5517 
+
+H-Chi ↓ 0.3113 0.2616 0.3143 0.2726 0.3032 0.1630 
+
+GLD-v2 PSNR ↑ 16.38 16.06 18.18 17.59 18.54 28.69 
+
+SSIM ↑ 0.7427 0.8153 0.8467 0.8100 0.8608 0.9659 
+
+∆Eab ↓ 19.62 20.22 17.38 18.96 15.12 5.48 
+
+LPIPS ↓ 0.3240 0.2305 0.2246 0.2374 0.1812 0.0650 
+
+SSIM ED ↑ 0.6316 0.7397 0.7229 0.7138 0.7605 0.8986 
+
+H-Corr ↑ 0.2456 0.3075 0.2769 0.3089 0.2796 0.5264 
+
+H-Chi ↓ 0.3503 0.3094 0.3667 0.3160 0.3307 0.1837 
+
+14 GT  Error maps Source image 
+
+GT  Error maps Source image 
+
+GT  Error maps Source image 
+
+GT  Error maps Source image 
+
+GT  Error maps Source image 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [46] Deep Preset [14] Proposed Input / reference 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [ 46 ] Deep Preset [ 14 ] Proposed Input / reference 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [ 46 ] Deep Preset [ 14 ] Proposed Input / reference 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [ 46 ] Deep Preset [ 14 ] Proposed Input / reference 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [ 46 ] Deep Preset [ 14 ] Proposed Input / reference Figure S-4. Qualitative comparison under the self-referential protocol on the unsupervised test set. For each sample, the green and cyan boxes denote the reference and ground-truth (GT) images, respectively; the input is generated by applying a color perturbation t ∼ T to the GT. Results from competing methods [8, 14, 17, 46] and CanonCGT are shown with their corresponding error maps below. 
+
+15 GT  Error maps Source image 
+
+GT  Error maps Source image 
+
+GT  Error maps Source image 
+
+GT  Error maps Source image 
+
+GT  Error maps Source image 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [46] Deep Preset [14] Proposed Input / reference 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [ 46 ] Deep Preset [ 14 ] Proposed Input / reference 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [ 46 ] Deep Preset [ 14 ] Proposed Input / reference 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [ 46 ] Deep Preset [ 14 ] Proposed Input / reference 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [ 46 ] Deep Preset [ 14 ] Proposed Input / reference Figure S-5. Qualitative comparison under the self-referential protocol on the unsupervised test set. 
+
+16 GT  Error maps Source image 
+
+GT  Error maps Source image 
+
+GT  Error maps Source image 
+
+GT  Error maps Source image 
+
+GT  Error maps Source image 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [46] Deep Preset [14] Proposed Input / reference 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [ 46 ] Deep Preset [ 14 ] Proposed Input / reference 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [ 46 ] Deep Preset [ 14 ] Proposed Input / reference 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [ 46 ] Deep Preset [ 14 ] Proposed Input / reference 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [ 46 ] Deep Preset [ 14 ] Proposed Input / reference Figure S-6. Qualitative comparison under the self-referential protocol on the unsupervised test set. 
+
+17 GT  Error maps Source image 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [46] Deep Preset [14] Proposed Input / reference 
+
+GT  Error maps Source image 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [ 46 ] Deep Preset [ 14 ] Proposed Input / reference 
+
+GT  Error maps Source image 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [ 46 ] Deep Preset [ 14 ] Proposed Input / reference 
+
+GT  Error maps Source image 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [ 46 ] Deep Preset [ 14 ] Proposed Input / reference 
+
+GT  Error maps Source image 
+
+PhotoWCT 2 [8] Neural Preset * [17 ] CAP -VST [ 46 ] Deep Preset [ 14 ] Proposed Input / reference Figure S-7. Qualitative comparison under the self-referential protocol on the unsupervised test set. 
+
+18 Input  Reference Proposed CAP -VST [46 ]Neural Preset * [17]PhotoWCT 2 [8] Deep Preset [14]PhotoNAS [2]Figure S-8. Qualitative comparison under the cross-image protocol on the unsupervised test set. 
+
+19 Input  Reference Proposed CAP -VST [46 ]Neural Preset * [17]PhotoWCT 2 [8] Deep Preset [14]PhotoNAS [2]Figure S-9. Qualitative comparison under the cross-image protocol on the unsupervised test set. 
+
+20 Figure S-10. Additional qualitative results of CanonCGT. For each pair, the left image shows the input and the right image shows the color-graded output using the inset reference image. CanonCGT produces photorealistic color grading that matches the tonal mood, lighting, and color temperature of the reference while preserving color harmony and scene structure. 
+
+21 References 
+
+[1] Eirikur Agustsson and Radu Timofte. Ntire 2017 challenge on single image super-resolution: Dataset and study. In Proc. IEEE CVPR Workshops , pages 126–135, 2017. 6 [2] Jie An, Haoyi Xiong, Jun Huan, and Jiebo Luo. Ultrafast photorealistic style transfer via neural architecture search. In 
+
+Proc. AAAI , 2020. 2, 6, 13, 14 [3] Lukas Bossard, Matthieu Guillaumin, and Luc Van Gool. Food-101–mining discriminative components with random forests. In Proc. ECCV , 2014. 6 [4] Vladimir Bychkovsky, Sylvain Paris, Eric Chan, and Fr´ edo Durand. Learning photographic global tonal adjustment with a database of input/output image pairs. In Proc. IEEE CVPR ,2011. 5, 6 [5] Dongdong Chen, Lu Yuan, Jing Liao, Nenghai Yu, and Gang Hua. Stylebank: An explicit representation for neural image style transfer. In Proc. IEEE CVPR , 2017. 2 [6] Yaosen Chen, Han Yang, Yuexin Yang, Yuegen Liu, Wei Wang, Xuming Wen, and Chaoping Xie. Nlut: Neural-based 3d lookup tables for video photorealistic style transfer. arXiv preprint arXiv:2303.09170 , 2023. 3 [7] Yu-Sheng Chen, Yu-Ching Wang, Man-Hsin Kao, and Yung-Yu Chuang. Deep photo enhancer: Unpaired learning for image enhancement from photographs with gans. In Proc. IEEE CVPR , 2018. 6 [8] Tai-Yin Chiu and Danna Gurari. Photowct2: Compact autoencoder for photorealistic style transfer resulting from blockwise training and skip connections of high-frequency residuals. In Proc. IEEE WACV , 2022. 1, 2, 6, 13, 14, 15 [9] Yingying Deng, Fan Tang, Weiming Dong, Chongyang Ma, Xingjia Pan, Lei Wang, and Changsheng Xu. Stytr2: Image style transfer with transformers. In Proc. IEEE CVPR , 2022. 2[10] Vincent Dumoulin, Jonathon Shlens, and Manjunath Kud-lur. A learned representation for artistic style. arXiv preprint arXiv:1610.07629 , 2016. 2 [11] Leon A Gatys, Alexander S Ecker, and Matthias Bethge. Im-age style transfer using convolutional neural networks. In 
+
+Proc. IEEE CVPR , 2016. 1, 2 [12] Jingwen He, Yihao Liu, Yu Qiao, and Chao Dong. Con-ditional sequential modulation for efficient global image re-touching. In Proc. ECCV , 2020. 6 [13] Dan Hendrycks and Kevin Gimpel. Gaussian error linear units (GELUs). arXiv preprint arXiv:1606.08415 , 2016. 4 [14] Man M Ho and Jinjia Zhou. Deep preset: Blending and retouching photos with color style transfer. In Proc. IEEE WACV , 2021. 2, 3, 6, 7, 8, 13, 14, 15 [15] Yuanming Hu, Hao He, Chenxi Xu, Baoyuan Wang, and Stephen Lin. Exposure: A white-box photo post-processing framework. ACM Trans. Graphics , 37(2):1–17, 2018. 6 [16] Hakki Can Karaimer and Michael S Brown. A software plat-form for manipulating the camera imaging pipeline. In Proc. ECCV , 2016. 3 [17] Zhanghan Ke, Yuhao Liu, Lei Zhu, Nanxuan Zhao, and Ryn-son WH Lau. Neural preset for color style transfer. In Proc. IEEE CVPR , 2023. 1, 2, 3, 6, 7, 13, 14, 15 [18] Prannay Khosla, Piotr Teterwak, Chen Wang, Aaron Sarna, Yonglong Tian, Phillip Isola, Aaron Maschinot, Ce Liu, and Dilip Krishnan. Supervised contrastive learning. In Proc. NeurIPS , 2020. 4, 5, 9 [19] Jinwon Ko, Keunsoo Ko, Hanul Kim, and Chang-Su Kim. Lutformer: Lookup table transformer for image enhance-ment. Neurocomputing , 2025. 3 [20] Mujing Li, Guanjie Wang, Xingguang Zhang, Qifeng Liao, and Chenxi Xiao. D-lut: Photorealistic style transfer via dif-fusion process. In Proc. IEEE WACV , 2025. 3 [21] Yijun Li, Chen Fang, Jimei Yang, Zhaowen Wang, Xin Lu, and Ming-Hsuan Yang. Universal style transfer via feature transforms. In Proc. NeurIPS , 2017. 2 [22] Yijun Li, Ming-Yu Liu, Xueting Li, Ming-Hsuan Yang, and Jan Kautz. A closed-form solution to photorealistic image stylization. In Proc. ECCV , 2018. 1, 2 [23] Yawei Li, Kai Zhang, Jingyun Liang, Jiezhang Cao, Ce Liu, Rui Gong, Yulun Zhang, Hao Tang, Yun Liu, Denis Deman-dolx, et al. Lsdir: A large scale dataset for image restoration. In Proc. IEEE CVPR , 2023. 6 [24] Jie Liang, Hui Zeng, Miaomiao Cui, Xuansong Xie, and Lei Zhang. PPR10K: A large-scale portrait photo retouch-ing dataset with human-region mask and group-level consis-tency. In Proc. IEEE CVPR , 2021. 6 [25] Bee Lim, Sanghyun Son, Heewon Kim, Seungjun Nah, and Kyoung Mu Lee. Enhanced deep residual networks for single image super-resolution. In Proc. IEEE CVPR Workshops ,pages 136–144, 2017. 6 [26] Tianwei Lin, Honglin Lin, Fu Li, Dongliang He, Wenhao Wu, Meiling Wang, Xin Li, and Yong Liu. Adacm: adaptive colormlp for real-time universal photo-realistic style transfer. In Proc. AAAI , 2023. 3 [27] Songhua Liu, Tianwei Lin, Dongliang He, Fu Li, Meiling Wang, Xin Li, Zhengxing Sun, Qian Li, and Errui Ding. Adaattn: Revisit attention mechanism in arbitrary neural style transfer. In Proc. IEEE ICCV , 2021. 2 [28] Ilya Loshchilov and Frank Hutter. Sgdr: Stochastic gradient descent with warm restarts. In Proc. ICLR , 2017. 9 [29] Ilya Loshchilov and Frank Hutter. Decoupled weight decay regularization. In Proc. ICLR , 2019. 9 [30] Cheng Ma, Yongming Rao, Yean Cheng, Ce Chen, Jiwen Lu, and Jie Zhou. Structure-preserving super resolution with gradient guidance. In Proc. IEEE CVPR , 2020. 9 [31] Laurens van der Maaten and Geoffrey Hinton. Visualizing data using t-sne. Journal of machine learning research , 9, 2008. 10, 11 [32] Isabelle Magrin-Chagnolleau. The relationship between photo retouching and color grading. Technical report, Chap-man University Presidential Fellows Research, 2022. 1 [33] Sean Moran, Pierre Marza, Steven McDonagh, Sarah Parisot, and Gregory Slabaugh. Deeplpf: Deep local para-metric filters for image enhancement. In Proc. IEEE CVPR ,2020. 6 [34] Greg Pass, Ramin Zabih, and Justin Miller. Comparing im-ages using color coherence vectors. In Proc. ACM Multime-dia , 1997. 6 
+
+22 [35] Ethan Perez, Florian Strub, Harm De Vries, Vincent Du-moulin, and Aaron Courville. Film: Visual reasoning with a general conditioning layer. In Proc. AAAI , 2018. 4 [36] Francois Pitie, Anil C Kokaram, and Rozenn Dahyot. N-dimensional probability density function transfer and its ap-plication to color transfer. In Proc. IEEE ICCV , 2005. 2 [37] Franc ¸ois Piti´ e, Anil C Kokaram, and Rozenn Dahyot. Au-tomated colour grading using colour distribution transfer. 
+
+Comput. Vis. Image Understand. , 107:123–137, 2007. [38] Erik Reinhard, Michael Adhikhmin, Bruce Gooch, and Peter Shirley. Color transfer between images. IEEE CGA , 21:34– 41, 2002. 2 [39] Olga Russakovsky, Jia Deng, Hao Su, Jonathan Krause, San-jeev Satheesh, Sean Ma, Zhiheng Huang, Andrej Karpathy, Aditya Khosla, Michael Bernstein, et al. Imagenet large scale visual recognition challenge. Int. J. Comput. Vis. , 115: 211–252, 2015. 10 [40] Mark Sandler, Andrew Howard, Menglong Zhu, Andrey Zh-moginov, and Liang-Chieh Chen. Mobilenetv2: Inverted residuals and linear bottlenecks. In Proc. IEEE CVPR , 2018. 3, 9 [41] Seunghyun Shin, Dongmin Shin, Jisu Shin, Hae-Gon Jeon, and Joon-Young Lee. Video color grading via look-up table generation. In Proc. IEEE ICCV , 2025. 3 [42] Karen Simonyan and Andrew Zisserman. Very deep convo-lutional networks for large-scale image recognition. Proc. ICLR , 2015. 10 [43] Xavier Soria, Gonzalo Pomboza-Junez, and Angel Domingo Sappa. Ldc: Lightweight dense cnn for edge detection. IEEE Access , 10:68281–68290, 2022. 6 [44] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszko-reit, Llion Jones, Aidan N Gomez, Ł ukasz Kaiser, and Illia Polosukhin. Attention is all you need. In Proc. NeurIPS ,2017. 4, 5 [45] Ruixing Wang, Qing Zhang, Chi-Wing Fu, Xiaoyong Shen, Wei-Shi Zheng, and Jiaya Jia. Underexposed photo enhance-ment using deep illumination estimation. In Proc. IEEE CVPR , 2019. 6 [46] Linfeng Wen, Chengying Gao, and Changqing Zou. Cap-vstnet: Content affinity preserved versatile style transfer. In 
+
+Proc. IEEE CVPR , 2023. 2, 6, 13, 14, 15 [47] Tobias Weyand, Andre Araujo, Bingyi Cao, and Jack Sim. Google landmarks dataset v2-a large-scale benchmark for instance-level recognition and retrieval. In Proc. IEEE CVPR , 2020. 6 [48] Canqian Yang, Meiguang Jin, Xu Jia, Yi Xu, and Ying Chen. Adaint: Learning adaptive intervals for 3d lookup tables on real-time image enhancement. In Proc. IEEE CVPR , 2022. 3[49] Canqian Yang, Meiguang Jin, Yi Xu, Rui Zhang, Ying Chen, and Huaida Liu. Seplut: Separable image-adaptive lookup tables for real-time image enhancement. In Proc. ECCV ,2022. 3 [50] Jonghwa Yim, Jisung Yoo, Won-joon Do, Beomsu Kim, and Jihwan Choe. Filter style transfer between photos. In Proc. ECCV , 2020. 2, 3 [51] Jaejun Yoo, Youngjung Uh, Sanghyuk Chun, Byeongkyu Kang, and Jung-Woo Ha. Photorealistic style transfer via wavelet transforms. In Proc. IEEE ICCV , 2019. 1, 2, 7 [52] Hui Zeng, Jianrui Cai, Lida Li, Zisheng Cao, and Lei Zhang. Learning image-adaptive 3d lookup tables for high perfor-mance photo enhancement in real-time. IEEE Trans. Pattern Anal. Mach. Intell. , 44(4):2058–2073, 2020. 3, 6 [53] Richard Zhang, Phillip Isola, Alexei A Efros, Eli Shechtman, and Oliver Wang. The unreasonable effectiveness of deep features as a perceptual metric. In Proc. IEEE CVPR , 2018. 6, 9 [54] Yifan Zhang and Lei Wang. Research on color management and color grading applications in new media movies. Journal of New Media Arts and Technology , 7(1):45–53, 2025. 1 [55] Yuxin Zhang, Fan Tang, Weiming Dong, Haibin Huang, Chongyang Ma, Tong-Yee Lee, and Changsheng Xu. Do-main enhanced arbitrary image style transfer via contrastive learning. In ACM SIGGRAPH 2022 conference proceedings ,2022. 2 
+
+23

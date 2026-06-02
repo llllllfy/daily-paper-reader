@@ -1,0 +1,569 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-02T21:54:24.340280+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 9,
+    "deep_cap": 6,
+    "deep_selected": 7,
+    "quick_candidates": 7,
+    "quick_skim_target": 11,
+    "quick_selected": 7
+  },
+  "deep_dive": [
+    {
+      "id": "2605.28441v1",
+      "source": "arxiv",
+      "title": "Bayesian Gated Non-Negative Contrastive Learning",
+      "abstract": "While Contrastive Learning (CL) has revolutionized self-supervised representation learning, its latent representations remain highly entangled and opaque, limiting their interpretability in safety-critical applications. We identify that a fundamental cause of this entanglement is the reliance on deterministic similarity measures, which treat all feature dimensions equally. In compositional scenes, this creates an Optimization Conflict: common background features, such as, \"blue sky\", are encouraged to align in positive pairs but simultaneously repelled in negative pairs, causing gradient oscillations that hinder precise semantic disentanglement. To address this, we propose BayesNCL (Bayesian Gated Non-Negative Contrastive Learning). Unlike standard approaches, BayesNCL introduces a probabilistic gating mechanism that dynamically filters out task-irrelevant, high-frequency common features while selectively retaining discriminative semantics. By formalizing feature selection as a variational inference problem with a sparse Bernoulli prior, our method effectively resolves the optimization conflict. Empirical experimental results on Imagenet-100 demonstrate that BayesNCL achieves a remarkable 142.1% improvement in semantic consistency compared to state-of-the-art baselines, yielding highly interpretable representations without compromising downstream task performance. Code is available at https://github.com/Cui-Peng-624/BayesNCL.",
+      "authors": [
+        "Peng Cui",
+        "Jiahao Zhang",
+        "Lijie Hu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-05-27T13:06:05+00:00",
+      "link": "https://arxiv.org/pdf/2605.28441v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Addresses disentanglement of features like 'blue sky' to resolve optimization conflict, directly relevant to color-shape disentanglement.",
+      "llm_evidence_cn": "解决'蓝天'等特征的解耦问题以消除优化冲突，直接涉及颜色-形状特征解耦。",
+      "llm_evidence": "解决'蓝天'等特征的解耦问题以消除优化冲突，直接涉及颜色-形状特征解耦。",
+      "canonical_evidence": "解决'蓝天'等特征的解耦问题以消除优化冲突，直接涉及颜色-形状特征解耦。",
+      "llm_tldr_en": "Proposes BayesNCL, a contrastive learning method using Bayesian gating and non-negativity to disentangle representations, specifically addressing conflicts from common background features like 'blue sky', thus achieving finer semantic disentanglement.",
+      "llm_tldr_cn": "针对对比学习中特征高度纠缠的问题，提出BayesNCL方法，通过贝叶斯门控和非负约束解耦表示，特别针对'蓝天'等常见背景特征造成的梯度振荡，实现更精确的语义解耦，为可解释表示学习提供了新方案。",
+      "llm_tldr": "针对对比学习中特征高度纠缠的问题，提出BayesNCL方法，通过贝叶斯门控和非负约束解耦表示，特别针对'蓝天'等常见背景特征造成的梯度振荡，实现更精确的语义解耦，为可解释表示学习提供了新方案。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.29390v1",
+      "source": "arxiv",
+      "title": "Orthogonal Negative Guidance in Attention Feature Space for Text-to-Image Generation",
+      "abstract": "Text-to-image (T2I) models have become increasingly capable of generating high-quality images. Yet, enforcing the explicit absence of a specified object or attribute remains a fundamentally challenging problem. Existing approaches, including prompt negation, post-hoc editing, and negative guidance, remain insufficient for explicit concept suppression, often failing to remove the target concept or degrading overall image quality. To this end, we propose Orthogonal Negative Guidance in attention feature space, a training-free method that operates in the attention output space of MM-DiT-based T2I transformers. Our method orthogonalizes negative-prompt attention features with respect to positive-prompt features and subtracts only the orthogonal component, suppressing unwanted concepts while preserving desired semantics. Experiments on FLUX-dev and FLUX-schnell show that our method achieves favorable trade-offs between concept suppression, prompt alignment, and image quality. In human evaluation, our method outperforms the second-best baseline by 18.78%. We further show that our method supports multi-concept suppression and adjustable concept suppression.",
+      "authors": [
+        "Jungmin Ko",
+        "Jungwon Park",
+        "Jimyeong Kim",
+        "Changin Choi",
+        "Wonseok Lee",
+        "Wonjong Rhee"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-28T05:43:43+00:00",
+      "link": "https://arxiv.org/pdf/2605.29390v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "performs orthogonal feature subtraction in attention output space for concept suppression, a latent space intervention",
+      "llm_evidence_cn": "在注意力输出空间进行正交特征减除以实现概念抑制，属于潜在空间干预",
+      "llm_evidence": "在注意力输出空间进行正交特征减除以实现概念抑制，属于潜在空间干预",
+      "canonical_evidence": "在注意力输出空间进行正交特征减除以实现概念抑制，属于潜在空间干预",
+      "llm_tldr_en": "Proposes training-free orthogonal negative guidance in attention feature space of T2I transformers to suppress specified concepts without degrading image quality, enabling precise latent intervention.",
+      "llm_tldr_cn": "提出在MM-DiT架构的注意力输出空间中施加正交负向引导，通过正交化负提示特征并减去正交分量，实现无训练的概念抑制，有效提升文本到图像生成中概念移除的精准度。",
+      "llm_tldr": "提出在MM-DiT架构的注意力输出空间中施加正交负向引导，通过正交化负提示特征并减去正交分量，实现无训练的概念抑制，有效提升文本到图像生成中概念移除的精准度。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.30076v1",
+      "source": "arxiv",
+      "title": "UniSteer: Text-Guided Flow Matching in Activation Space for Versatile LLM Steering",
+      "abstract": "Activation-based control steers large language models (LLMs) by intervening on their internal representations during inference, and has emerged as an effective paradigm for controlling behaviors such as persona and style. However, existing methods often rely on fixed steering directions or task-specific intervention modules, making them difficult to adapt to fine-grained concepts and compositional constraints. We propose UniSteer, a text-guided activation flow matching model that learns a conditional distribution over residual-stream activations from natural-language conditions. Instead of fitting a separate intervention for each target behavior, UniSteer learns a universal conditional velocity field in activation space. At inference time, UniSteer performs flow inversion by partially transporting a source activation toward a latent state and regenerating it under a target textual condition before injecting it back into the frozen LLM. The same conditional model supports activation-space classification by selecting the textual label with the lowest reconstruction energy. Experiments on three target LLMs show that UniSteer provides a unified interface across behavioral control, truthfulness steering, fine-grained concept steering, multi-constraint instruction following, and activation-space classification.",
+      "authors": [
+        "Yingdong Shi",
+        "Ruiming Zhang",
+        "Changming Li",
+        "Zhiyu Yang",
+        "Kaixing Zhang",
+        "Jingyi Yu",
+        "Kan Ren"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-05-28T15:23:29+00:00",
+      "link": "https://arxiv.org/pdf/2605.30076v1",
+      "tags": [
+        "keyword:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "UniSteer performs text-guided flow matching in activation space to steer LLM behaviors, a direct latent-space intervention technique.",
+      "llm_evidence_cn": "UniSteer在激活空间进行文本引导的流匹配以操控LLM行为，直接潜在空间干预技术。",
+      "llm_evidence": "UniSteer在激活空间进行文本引导的流匹配以操控LLM行为，直接潜在空间干预技术。",
+      "canonical_evidence": "UniSteer在激活空间进行文本引导的流匹配以操控LLM行为，直接潜在空间干预技术。",
+      "llm_tldr_en": "UniSteer proposes a text-guided flow matching model that learns a conditional distribution over residual-stream activations for versatile LLM steering, enabling fine-grained and compositional behavior control during inference.",
+      "llm_tldr_cn": "现有基于激活的LLM控制方法依赖固定操控方向或任务特定模块，难以适应细粒度概念和组合约束。本文提出UniSteer，一个文本引导的激活流匹配模型，从自然语言条件学习残差流激活的条件分布，学习一个通用条件速度场，在推理时实现多样、可组合的行为操控。",
+      "llm_tldr": "现有基于激活的LLM控制方法依赖固定操控方向或任务特定模块，难以适应细粒度概念和组合约束。本文提出UniSteer，一个文本引导的激活流匹配模型，从自然语言条件学习残差流激活的条件分布，学习一个通用条件速度场，在推理时实现多样、可组合的行为操控。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.31162v1",
+      "source": "arxiv",
+      "title": "Guidance for Low-Level Perceptual Editing in Unconditional Diffusion Models",
+      "abstract": "Unconditional diffusion models offer powerful generative priors, yet steering them toward aesthetically enhanced outputs remains largely unexplored. We show that h-space patching, the dominant paradigm for training-free diffusion editing, systematically fails for global, low-level transformations required for aesthetic and perceptual refinement. We introduce a novel, generalized framework for image-editing in unconditional diffusion models without explicit training. This inference-time mechanism operates on low-level features by extracting degradation concept vectors and combining bottleneck patching with classifier-free guidance to guide sampling away from the degraded manifold, producing consistently improved images without any model retraining.",
+      "authors": [
+        "Shreyansh Modi",
+        "Akshat Tomar",
+        "Aarush Aggarwal"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-05-29T11:11:04+00:00",
+      "link": "https://arxiv.org/pdf/2605.31162v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "introduces a training-free inference-time mechanism that operates on low-level latent features to edit images, directly implementing an intervention technique in the latent space of deep models",
+      "llm_evidence_cn": "提出一种无需训练的推理时机制，通过操作低层次潜在特征编辑图像，直接实现深度模型潜在空间中的干预技术",
+      "llm_evidence": "提出一种无需训练的推理时机制，通过操作低层次潜在特征编辑图像，直接实现深度模型潜在空间中的干预技术",
+      "canonical_evidence": "提出一种无需训练的推理时机制，通过操作低层次潜在特征编辑图像，直接实现深度模型潜在空间中的干预技术",
+      "llm_tldr_en": "This paper introduces a framework for image editing in unconditional diffusion models by extracting degradation concept vectors and using bottleneck patching with classifier-free guidance to steer generation away from degraded manifolds, enabling low-level perceptual enhancements.",
+      "llm_tldr_cn": "本文针对无条件扩散模型中低层次感知编辑难题，提出一种无需训练的推理时编辑框架。通过提取退化概念向量，结合瓶颈层修补与无分类器引导，驱动生成远离退化流形，实现图像美学增强。该方法验证了在潜在空间进行特征干预的有效性，为扩散模型可控编辑提供新工具。",
+      "llm_tldr": "本文针对无条件扩散模型中低层次感知编辑难题，提出一种无需训练的推理时编辑框架。通过提取退化概念向量，结合瓶颈层修补与无分类器引导，驱动生成远离退化流形，实现图像美学增强。该方法验证了在潜在空间进行特征干预的有效性，为扩散模型可控编辑提供新工具。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.31503v1",
+      "source": "arxiv",
+      "title": "How can embedding models bind concepts?",
+      "abstract": "Humans easily determine which color belongs to which shape in multi-object scenes, an ability known as concept binding. Vision-language embedding models such as CLIP struggle with binding: they recognize individual concepts but fail to represent which concepts form which objects. Although CLIP behaves like a bag-of-concepts model in cross-modal retrieval, object information is recoverable from its image and text embeddings separately. We study this tension through the binding function, which maps concepts to scene embeddings. We find that scene embeddings decompose additively into object representations, explaining why uni-modal probes can recover object information. However, CLIP's binding function is high-complexity, which likely prevents the image and text encoders from learning a shared binding mechanism that generalizes to unseen concept combinations. We then ask whether this limitation is fundamental. We show that it is not. In controlled transformer models trained from scratch, binding generalization emerges with sufficient data coverage. These models learn low-complexity binding functions characterized by multiplicative interactions between concepts, enabling systematic generalization. Code is publicly available at https://github.com/oshapio/binding-concepts-complexity.",
+      "authors": [
+        "Arnas Uselis",
+        "Darina Koishigarina",
+        "Seong Joon Oh"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-05-29T16:23:41+00:00",
+      "link": "https://arxiv.org/pdf/2605.31503v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "investigates how CLIP binds color to shape, directly addressing disentanglement",
+      "llm_evidence_cn": "研究CLIP如何绑定颜色与形状，直接涉及解耦",
+      "llm_evidence": "研究CLIP如何绑定颜色与形状，直接涉及解耦",
+      "canonical_evidence": "研究CLIP如何绑定颜色与形状，直接涉及解耦",
+      "llm_tldr_en": "This paper investigates concept binding in CLIP, showing scene embeddings decompose additively into object representations, explaining why color and shape can be recovered separately but not bound. The high-complexity binding function prevents joint learning, offering insights into disentanglement.",
+      "llm_tldr_cn": "本文研究CLIP模型中的概念绑定问题，发现场景嵌入可以分解为物体表示的加性组合，解释了为何颜色和形状信息可被单独恢复却无法正确绑定。高复杂度的绑定函数阻碍了联合学习，为颜色与形状特征的解耦提供了新见解。",
+      "llm_tldr": "本文研究CLIP模型中的概念绑定问题，发现场景嵌入可以分解为物体表示的加性组合，解释了为何颜色和形状信息可被单独恢复却无法正确绑定。高复杂度的绑定函数阻碍了联合学习，为颜色与形状特征的解耦提供了新见解。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.01638v1",
+      "source": "arxiv",
+      "title": "CanonCGT: Reference-Based Color Grading via Canonical Pivot Representation",
+      "abstract": "Reference-based color grading aims to reproduce the tonal mood and lighting of a reference while preserving color harmony and scene structure. Existing photorealistic and filter-based methods often produce unstable tone mappings -- over-shifting or inconsistently retaining colors -- leading to unnatural results. We propose CanonCGT, a two-stage framework built on a canonical pivot -- a style-neutral intermediate representation for stable color mapping. The first stage canonicalizes the input by removing intrinsic tonal bias, and the second color-grades it to match the reference style. A dual-phase training scheme, DP-CGT, combines supervised preset learning with self-supervised refinement on unpaired photographs. CanonCGT delivers photorealistic and tonally consistent results across diverse datasets, surpassing state-of-the-art methods in stability and visual fidelity. Our codes are available at \\href{https://github.com/Jinwon-Ko/CanonCGT}{https://github.com/Jinwon-Ko/CanonCGT}",
+      "authors": [
+        "Jinwon Ko",
+        "Keunsoo Ko",
+        "Chang-Su Kim"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-01T03:42:20+00:00",
+      "link": "https://arxiv.org/pdf/2606.01638v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Preserves scene structure while performing reference-based color grading via canonical pivot.",
+      "llm_evidence_cn": "通过规范枢轴保持场景结构的同时进行参考调色。",
+      "llm_evidence": "通过规范枢轴保持场景结构的同时进行参考调色。",
+      "canonical_evidence": "通过规范枢轴保持场景结构的同时进行参考调色。",
+      "llm_tldr_en": "CanonCGT tackles unstable tone mappings in reference-based color grading by introducing a canonical pivot representation that removes intrinsic tonal bias, then applies reference style, preserving scene structure and semantic meaning under color changes.",
+      "llm_tldr_cn": "该论文针对参考调色中色调映射不稳定、易导致颜色过度偏移或保留不一致的问题，提出CanonCGT框架。第一阶段通过规范枢轴消除输入图像的固有色调偏差，形成风格中性的中间表示；第二阶段再匹配参考风格进行调色。双阶段训练DP-CGT结合监督预设学习与无监督精炼。实验表明，该方法在改变色彩氛围的同时忠实保留场景结构和语义内容，实现了逼真且稳定的调色效果。这对研究颜色扰动下的语义保持具有重要参考价值。",
+      "llm_tldr": "该论文针对参考调色中色调映射不稳定、易导致颜色过度偏移或保留不一致的问题，提出CanonCGT框架。第一阶段通过规范枢轴消除输入图像的固有色调偏差，形成风格中性的中间表示；第二阶段再匹配参考风格进行调色。双阶段训练DP-CGT结合监督预设学习与无监督精炼。实验表明，该方法在改变色彩氛围的同时忠实保留场景结构和语义内容，实现了逼真且稳定的调色效果。这对研究颜色扰动下的语义保持具有重要参考价值。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.01819v1",
+      "source": "arxiv",
+      "title": "Hist2Style: Histogram-Guided Stylization with Bilateral Grids",
+      "abstract": "Photorealistic style transfer aims to match the color and tone of an input image to that of a style target while preserving the content and details of the original scene. Although existing large image models can facilitate these kinds of appearance edits, their high computational demands, potential for hallucinations, and limited user control make them unsuitable for high-resolution, real-time workflows. We introduce Hist2Style, a bilateral-grid formulation for fast, edge-aware stylization that preserves visual fidelity by constraining operations to locally affine transforms in bilateral space. Our model distills a large image editing model into a lightweight network by training on a large supervised corpus generated with language and vision-language models, targeting spatially varying color edits. The network conditions on a histogram-based embedding of the style target to provide an interpretable interface for adjusting the output style by modifying the target color distribution. Overall, Hist2Style maintains content structure by construction, avoids hallucinations, and supports real-time, high-resolution photorealistic stylization with interactive user-controllable color and tone adjustments.",
+      "authors": [
+        "Dekel Galor",
+        "Adam Pikielny",
+        "Zhoutong Zhang",
+        "Ke Wang",
+        "Laura Waller",
+        "Jiawen Chen",
+        "Ilya Chugunov"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "eess.IV"
+      ],
+      "published": "2026-06-01T07:34:10+00:00",
+      "link": "https://arxiv.org/pdf/2606.01819v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Photorealistic style transfer that concurrently matches color/tone while preserving content and details.",
+      "llm_evidence_cn": "真实感风格迁移，在匹配颜色/色调的同时保持内容与细节",
+      "llm_evidence": "真实感风格迁移，在匹配颜色/色调的同时保持内容与细节",
+      "canonical_evidence": "真实感风格迁移，在匹配颜色/色调的同时保持内容与细节",
+      "llm_tldr_en": "Hist2Style proposes a fast, edge-aware stylization method using bilateral grids that preserves visual fidelity by constraining operations to locally affine transforms. It distills a large image editing model into a lightweight network, enabling real-time, high-resolution style transfer that matches color and tone while preserving semantic content, offering an efficient solution for content-preserving color editing.",
+      "llm_tldr_cn": "真实感风格迁移需要在改变颜色和色调的同时保留原始场景的内容与细节，但现有大型图像模型计算成本高、可能产生幻觉且用户控制有限。本文提出Hist2Style，一种基于双边网格的快速边缘感知风格化方法，将操作约束为局部仿射变换以保持视觉保真度。该方法利用语言和视觉语言模型生成的大规模监督语料，从大型图像编辑模型中蒸馏出轻量级网络。实验表明，Hist2Style在高分辨率图像上实现实时风格迁移，精确匹配目标颜色的同时避免了内容失真，为需要语义保持的颜色编辑任务提供了高效实用的方案。",
+      "llm_tldr": "真实感风格迁移需要在改变颜色和色调的同时保留原始场景的内容与细节，但现有大型图像模型计算成本高、可能产生幻觉且用户控制有限。本文提出Hist2Style，一种基于双边网格的快速边缘感知风格化方法，将操作约束为局部仿射变换以保持视觉保真度。该方法利用语言和视觉语言模型生成的大规模监督语料，从大型图像编辑模型中蒸馏出轻量级网络。实验表明，Hist2Style在高分辨率图像上实现实时风格迁移，精确匹配目标颜色的同时避免了内容失真，为需要语义保持的颜色编辑任务提供了高效实用的方案。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2605.25922v1",
+      "source": "arxiv",
+      "title": "Closed-Loop Bidirectional Prompting for Adversarial Robustness of Vision Language Models",
+      "abstract": "Vision Language Models adapt well to downstream tasks but are highly vulnerable to adversarial perturbations that disrupt cross-modal semantic alignment. Existing defenses are largely unidirectional or structural, failing to exploit bidirectional cross-modal complementarity and instance-wise adaptive protection. To overcome the limitations of unidirectional and static defenses in adversarial settings, we propose Closed-Loop Bidirectional Prompting, casting robust adaptation as cross-modal agreement recovery via a dynamic feedback loop on frozen encoders. A Semantic Anchor is introduced as a stable prior to constrain cyclic updates and mitigate perturbation-induced feature corruption. Through anchor-based bootstrapping, textual semantics denoise visual representations, while the refined visuals enable instance-adaptive prompt updating, yielding a rectified and robust consensus. Extensive evaluations across 11 datasets validate state-of-the-art robustness and strong base-to-new generalization, while maintaining a favorable trade-off between computational cost and accuracy.",
+      "authors": [
+        "Xiao Liu",
+        "Jiaxiang Liu",
+        "Boci Peng",
+        "Boren Hu",
+        "Yusong Wang",
+        "Xiwen Chen",
+        "Prayag Tiwari",
+        "Liming Zhang",
+        "Mingkun Xu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-25T15:00:07+00:00",
+      "link": "https://arxiv.org/pdf/2605.25922v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "proposes dynamic bidirectional prompting to maintain cross-modal semantic alignment under adversarial perturbations, directly addressing adversarial color attacks and semantic robustness",
+      "llm_evidence_cn": "提出动态双向提示以在对抗扰动下保持跨模态语义对齐，直接针对对抗性颜色攻击和语义鲁棒性",
+      "llm_evidence": "提出动态双向提示以在对抗扰动下保持跨模态语义对齐，直接针对对抗性颜色攻击和语义鲁棒性",
+      "canonical_evidence": "提出动态双向提示以在对抗扰动下保持跨模态语义对齐，直接针对对抗性颜色攻击和语义鲁棒性",
+      "llm_tldr_en": "This paper addresses adversarial robustness of vision-language models by introducing a closed-loop bidirectional prompting mechanism that recovers cross-modal agreement after perturbations, ensuring semantic consistency. The method uses a semantic anchor to constrain updates and shows improved robustness against adversarial attacks.",
+      "llm_tldr_cn": "本文针对视觉语言模型在对抗扰动下语义对齐易受破坏的问题，提出闭环双向提示机制，通过语义锚点约束循环更新，恢复跨模态一致性。实验表明该方法能有效提升模型在对抗攻击下的语义鲁棒性，为多模态模型安全部署提供支撑。",
+      "llm_tldr": "本文针对视觉语言模型在对抗扰动下语义对齐易受破坏的问题，提出闭环双向提示机制，通过语义锚点约束循环更新，恢复跨模态一致性。实验表明该方法能有效提升模型在对抗攻击下的语义鲁棒性，为多模态模型安全部署提供支撑。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "Adversarial color perturbations and their effect on semantic robustness",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.25442v1",
+      "source": "arxiv",
+      "title": "Enhancing Single-Image Facial Demorphing using Multimodal Large Language Models",
+      "abstract": "Face recognition systems are increasingly vulnerable to morphing attacks, where a composite image is crafted to match multiple identities, enabling unauthorized access and identity fraud. Existing detection methods identify morphed images but cannot recover constituent images or identities, limiting their forensic utility. This paper presents a novel reference-free facial demorphing framework that leverages Multimodal Large Language Models (MLLMs) to guide a coupled diffusion-based reconstruction process. Our key innovation lies in extracting semantic embeddings from intermediate MLLM layers to condition the demorphing, providing high-level reasoning about facial attributes and identity cues that complement low-level pixel information. We formulate demorphing as a coupled conditional generation problem, where both constituent faces are synthesized jointly through a denoising diffusion model operating directly in the RGB domain, ensuring inter-identity consistency while preserving fine-grained perceptual details. Unlike prior approaches that rely on compressed latent representations or assume identity overlap between training and testing sets, our method bypasses lossy text generation-reencoding cycles by directly utilizing MLLM hidden states as conditioning signals, enabling the denoising network to attend to subtle visual cues such as hair, background, and facial textures. Ablation studies further reveal that middle MLLM layers encode more identity-discriminative representations, RGB-domain demorphing outperforms latent-space approaches by 30--40\\% at strict operating points, and full MLLM embeddings provide substantial advantages over raw ViT features through enhanced semantic structuring from multimodal pretraining.",
+      "authors": [
+        "Nitish Shukla",
+        "Arun Ross"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-25T05:40:32+00:00",
+      "link": "https://arxiv.org/pdf/2605.25442v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Uses MLLM semantic embeddings to condition diffusion-based demorphing in latent space.",
+      "llm_evidence_cn": "利用MLLM语义嵌入在潜在空间中引导扩散去变形。",
+      "llm_evidence": "利用MLLM语义嵌入在潜在空间中引导扩散去变形。",
+      "canonical_evidence": "利用MLLM语义嵌入在潜在空间中引导扩散去变形。",
+      "llm_tldr_en": "This paper proposes a reference-free demorphing framework that extracts semantic embeddings from intermediate MLLM layers to condition a diffusion model, intervening in latent space to recover original identities from morphing attacks.",
+      "llm_tldr_cn": "该论文针对面部变形攻击识别后无法恢复原始身份的问题，提出一种无参考去变形框架。该方法利用多模态大语言模型中间层提取的语义嵌入，作为条件引导扩散模型在潜在空间中重建原始面部图像。实验表明，MLLM的高层身份推理信息与扩散模型的像素级重建能力互补，有效恢复了变形图像中的多个原始身份，显著提升了去变形的准确性和法医实用性。该工作展示了在深度视觉模型潜在空间中注入高层语义干预的可行路径。",
+      "llm_tldr": "该论文针对面部变形攻击识别后无法恢复原始身份的问题，提出一种无参考去变形框架。该方法利用多模态大语言模型中间层提取的语义嵌入，作为条件引导扩散模型在潜在空间中重建原始面部图像。实验表明，MLLM的高层身份推理信息与扩散模型的像素级重建能力互补，有效恢复了变形图像中的多个原始身份，显著提升了去变形的准确性和法医实用性。该工作展示了在深度视觉模型潜在空间中注入高层语义干预的可行路径。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.25308v1",
+      "source": "arxiv",
+      "title": "Stabilizing Streaming Video Geometry via Dynamic Feature Normalization",
+      "abstract": "Consistent 3D geometry estimation from streaming RGB input is crucial for real-world applications such as autonomous driving, embodied AI, and large-scale reconstruction. While modern monocular geometry foundation models achieve strong single-image accuracy, they exhibit severe temporal inconsistency on continuous input, notably dominated by scale--shift drifting. Through targeted empirical analysis, we trace this instability to its root cause: fluctuations in latent feature statistics, whose mean and variance directly determine the predicted depth's scale and shift. Building on this insight, we introduce Dynamic Feature Normalization (DyFN), a lightweight, causal recurrent module that dynamically and robustly modulates feature statistics to maintain stable geometry over time. We adapt powerful pretrained monocular geometry models for streaming by finetuning only DyFN, a mere 2\\% additional parameters, while keeping the backbone frozen, thereby achieving temporal consistency without compromising single-image accuracy. Extensive experiments across four benchmarks show that DyFN effectively eliminates temporal artifacts such as disjointed layering and positional jitter, and achieves state-of-the-art temporal stability, improving over prior streaming methods by up to 14\\% and even outperforming heavier non-causal video baselines. Project Page: https://shawlyu.github.io/DyFN",
+      "authors": [
+        "Xiaoyang Lyu",
+        "Muxin Liu",
+        "Xiaoshan Wu",
+        "Ruicheng Wang",
+        "Yi-Hua Huang",
+        "Yang-Tian Sun",
+        "Shaoshuai Shi",
+        "Xiaojuan Qi"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-25T00:13:15+00:00",
+      "link": "https://arxiv.org/pdf/2605.25308v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Modulates latent feature statistics to maintain temporal consistency in depth estimation.",
+      "llm_evidence_cn": "调制潜在特征统计量以保持深度估计的时间一致性。",
+      "llm_evidence": "调制潜在特征统计量以保持深度估计的时间一致性。",
+      "canonical_evidence": "调制潜在特征统计量以保持深度估计的时间一致性。",
+      "llm_tldr_en": "This paper identifies latent feature statistics fluctuations as the cause of scale-shift drifting in streaming depth estimation and proposes Dynamic Feature Normalization (DyFN) to dynamically modulate these statistics, effectively intervening in the latent space to stabilize geometry.",
+      "llm_tldr_cn": "该论文发现流式深度估计中尺度漂移的根源在于潜在特征统计量波动，提出动态特征归一化（DyFN）模块，通过因果循环机制动态调制特征均值与方差，从而在潜在空间进行干预以保持几何一致性。实验证明DyFN显著提升了连续输入下的深度稳定性，且计算开销小。该方法展示了通过特征级干预提升视觉系统鲁棒性的有效途径。",
+      "llm_tldr": "该论文发现流式深度估计中尺度漂移的根源在于潜在特征统计量波动，提出动态特征归一化（DyFN）模块，通过因果循环机制动态调制特征均值与方差，从而在潜在空间进行干预以保持几何一致性。实验证明DyFN显著提升了连续输入下的深度稳定性，且计算开销小。该方法展示了通过特征级干预提升视觉系统鲁棒性的有效途径。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.29826v1",
+      "source": "arxiv",
+      "title": "Towards Localized and Disentangled Knowledge Editing for Multimodal Large Language Models",
+      "abstract": "Existing methods in Multimodal Knowledge Editing (MKE) have advanced the ability to correct outdated or inaccurate knowledge in Multimodal Large Language Models (MLLMs). However, they exhibit a critical limitation: while effectively modifying target factual pairs, they fail to generalize edits to logically related queries and often cause unintended alterations to unrelated but visually or semantically linked information. We identify and formalize two underlying failure modes causing this issue: Causal Misalignment, which confines edits to the specific sample, and Feature Entanglement, which causes unintended alterations to coupled but irrelevant information. To address these issues, we propose Localized and Disentangled Knowledge Editing (LDKE), a new framework that achieves precise and generalized editing by localizing fact-specific model layers and disentangling target-relevant inputs from irrelevant ones. Our approach introduces a Fast Localization module to identify and update critical layers efficiently, along with a Disentanglement Classifier that routes inputs appropriately to preserve unrelated knowledge. Extensive experiments across various benchmarks and MLLMs demonstrate that LDKE achieves superior performance in propagating edits to related contexts while maintaining high locality.",
+      "authors": [
+        "Leijiang Gu",
+        "Zhen Zeng",
+        "Feng Li",
+        "Xinjian Gao",
+        "Zenglin Shi"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL",
+        "cs.AI"
+      ],
+      "published": "2026-05-28T12:06:39+00:00",
+      "link": "https://arxiv.org/pdf/2605.29826v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Localized and disentangled knowledge editing directly intervenes in the latent feature space of MLLMs.",
+      "llm_evidence_cn": "局部化解耦知识编辑直接干预多模态大语言模型的潜在特征空间。",
+      "llm_evidence": "局部化解耦知识编辑直接干预多模态大语言模型的潜在特征空间。",
+      "canonical_evidence": "局部化解耦知识编辑直接干预多模态大语言模型的潜在特征空间。",
+      "llm_tldr_en": "Proposes a method for multimodal knowledge editing that localizes edits and disentangles feature entanglements, enabling precise latent-space interventions that generalize to related queries without collateral alterations.",
+      "llm_tldr_cn": "针对多模态知识编辑中编辑无法泛化且易误改无关信息的问题，提出局部化解耦编辑方法，通过定位编辑区域和解耦特征纠缠，实现精准的潜在空间干预，编辑能泛化且不影响无关信息。",
+      "llm_tldr": "针对多模态知识编辑中编辑无法泛化且易误改无关信息的问题，提出局部化解耦编辑方法，通过定位编辑区域和解耦特征纠缠，实现精准的潜在空间干预，编辑能泛化且不影响无关信息。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.26501v1",
+      "source": "arxiv",
+      "title": "Unveiling the Fragility of Vision-Language Models: Multi-Modal Adversarial Synergy via Texture-Constrained Perturbations and Cross-Modal Optimization",
+      "abstract": "Large Vision-Language Models (LVLMs) have transformed multi-modal understanding, excelling in tasks like image captioning and visual question answering by integrating visual and textual inputs. However, their robustness against adversarial attacks, particularly those exploiting both modalities, remains underexplored, posing risks to critical applications like autonomous driving and content moderation. Existing attacks focus on single modalities or require impractical white-box access, limiting their real-world relevance. In this paper, we introduce Multi-Modal Adversarial Synergy, a groundbreaking framework that crafts universal, black-box multi-modal attacks against LVLMs. MMAS simultaneously generates a texture scale-constrained universal adversarial perturbation for images and a learnable prompt perturbation for text, optimized jointly using only model queries. The image perturbation leverages wavelet-based texture constraints to ensure imperceptibility and robustness across diverse visual inputs. The text perturbation, constrained by an L-norm in the embedding space, maintains semantic coherence while steering outputs toward a target. A novel cross-modal regularization term aligns the perturbations' gradient directions, enhancing their synergistic impact and transferability across tasks and models. Extensive experiments show the strong universal adversarial capabilities of our proposed attack with prevalent LVLMs.",
+      "authors": [
+        "Xiang Fang",
+        "Wanlong Fang",
+        "Changshuo Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-05-26T03:28:28+00:00",
+      "link": "https://arxiv.org/pdf/2605.26501v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "uses texture-constrained adversarial perturbations to test semantic robustness in LVLMs",
+      "llm_evidence_cn": "通过纹理约束的对抗扰动测试视觉-语言模型的语义鲁棒性",
+      "llm_evidence": "通过纹理约束的对抗扰动测试视觉-语言模型的语义鲁棒性",
+      "canonical_evidence": "通过纹理约束的对抗扰动测试视觉-语言模型的语义鲁棒性",
+      "llm_tldr_en": "Introduces a framework for universal black-box multi-modal attacks on LVLMs using texture-constrained perturbations, revealing semantic fragility and linking adversarial color/texture changes to robustness.",
+      "llm_tldr_cn": "提出一种通用的黑盒多模态对抗攻击框架，利用纹理约束扰动跨模态优化，攻击大型视觉-语言模型，揭示其在扰动下的语义脆弱性，关联颜色/纹理变化与语义鲁棒性。",
+      "llm_tldr": "提出一种通用的黑盒多模态对抗攻击框架，利用纹理约束扰动跨模态优化，攻击大型视觉-语言模型，揭示其在扰动下的语义脆弱性，关联颜色/纹理变化与语义鲁棒性。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "Adversarial color perturbations and their effect on semantic robustness",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.00310v1",
+      "source": "arxiv",
+      "title": "Where to Refine, When to Stop: Rethinking Redundancy via Latent Discrepancy for Efficient Visual Autoregressive Generation",
+      "abstract": "Visual Autoregressive (VAR) models deliver high-quality image generation but suffer from significant inference latency at high resolutions. Recent acceleration approaches most rely on heuristic measures with layer features to prune tokens. Such heuristics are sensitive to complex contextual semantics, leading to inaccurate identification of redundant computation and poor adaptability across prompts. We rethink redundancy in VAR from the perspective of its impact on pixel-space generation and introduce Latent Discrepancy. This unified metric quantifies a token's contribution by measuring the change in model states during generation. Our analysis shows that redundancy is more accurately identified when guided by image latent or pixel-space signals. We further observed that in classifier-free guidance (CFG), the convergence trend of the discrepancy between conditional and unconditional branches exhibits high dynamics with different prompts. Based on these findings, we propose LD-Pruning (Latent Discrepancy Pruning), a training-free framework that removes redundancy via latent discrepancy by integrating decoding-free region selection and adaptive unconditional-branch skipping. Extensive experiments show that LD-Pruning substantially reduces inference latency while maintaining high generation quality, achieving up to 2.35x speedup on Infinity-8B.",
+      "authors": [
+        "Changwang Mei",
+        "Peisong Wang",
+        "Zekun Li",
+        "Changsheng Li",
+        "Shuang Qiu",
+        "Qinghao Hu",
+        "Gang Li",
+        "Yifan Zhang",
+        "Zhihui Wei",
+        "Jian Cheng"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-29T19:34:39+00:00",
+      "link": "https://arxiv.org/pdf/2606.00310v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Latent Discrepancy metric quantifies token contribution for pruning in the latent space.",
+      "llm_evidence_cn": "潜在差异度量用于量化令牌贡献并在潜在空间中进行剪枝干预。",
+      "llm_evidence": "潜在差异度量用于量化令牌贡献并在潜在空间中进行剪枝干预。",
+      "canonical_evidence": "潜在差异度量用于量化令牌贡献并在潜在空间中进行剪枝干预。",
+      "llm_tldr_en": "Proposes Latent Discrepancy, a unified metric for token pruning in visual autoregressive models, enabling accurate identification of redundant computation by measuring changes in latent states, thus intervening efficiently in the generation process.",
+      "llm_tldr_cn": "针对视觉自回归模型推理延迟高的问题，提出潜在差异指标，通过衡量生成过程中模型状态的变化来量化令牌贡献，从而精准识别冗余计算并剪枝，实现高效的潜在空间干预，提升生成速度。",
+      "llm_tldr": "针对视觉自回归模型推理延迟高的问题，提出潜在差异指标，通过衡量生成过程中模型状态的变化来量化令牌贡献，从而精准识别冗余计算并剪枝，实现高效的潜在空间干预，提升生成速度。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.01756v1",
+      "source": "arxiv",
+      "title": "EvoCut: Multi-Layer Evolution-Aware Visual Token Compression for Efficient Large Vision-Language Models",
+      "abstract": "Large vision-language models (LVLMs) achieve strong performance on image and video understanding tasks, but their inference efficiency is constrained by the large number of visual tokens produced by vision encoders. Most existing visual token compression methods estimate token importance from attention scores or representation properties at specific layers, overlooking how visual tokens evolve across the vision encoder. Such layer-specific criteria may provide incomplete importance estimates and limit performance preservation after compression. To address this issue, we analyze layer-wise visual token evolution directions and observe that tokens form multiple group evolution directions across vision-encoder layers. Our analysis further shows that informative tokens tend to exhibit persistent deviations from common group evolution directions. Based on this observation, we propose EvoCut, a training-free and attention-free visual token compression method that estimates token importance from multi-layer evolution deviation. Experimental results show that EvoCut can retain only 11.1\\% of the visual tokens on LLaVA-1.5-7B while preserving 94.4\\% of the average performance, demonstrating its effectiveness in balancing efficiency and accuracy.",
+      "authors": [
+        "Hongyu Lu",
+        "Feng Zhang",
+        "Wenwei Jin",
+        "Huanling Hu",
+        "Pengfei Zhang",
+        "Yao Hu",
+        "Jiawei Li",
+        "Shikai Jiang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-01T06:21:28+00:00",
+      "link": "https://arxiv.org/pdf/2606.01756v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Multi-layer evolution-aware token compression intervenes in latent visual token space.",
+      "llm_evidence_cn": "多层演化感知的令牌压缩在潜在视觉令牌空间中进行干预。",
+      "llm_evidence": "多层演化感知的令牌压缩在潜在视觉令牌空间中进行干预。",
+      "canonical_evidence": "多层演化感知的令牌压缩在潜在视觉令牌空间中进行干预。",
+      "llm_tldr_en": "Proposes EvoCut, which analyzes how visual tokens evolve across vision-encoder layers to compress tokens for efficient LVLMs, intervening in the latent space to reduce computation while preserving performance.",
+      "llm_tldr_cn": "针对大型视觉语言模型中视觉令牌冗余问题，提出EvoCut方法，通过分析令牌在视觉编码器各层的演化方向进行压缩，有效减少计算量同时保持模型性能，为潜在空间干预技术提供了新思路。",
+      "llm_tldr": "针对大型视觉语言模型中视觉令牌冗余问题，提出EvoCut方法，通过分析令牌在视觉编码器各层的演化方向进行压缩，有效减少计算量同时保持模型性能，为潜在空间干预技术提供了新思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
