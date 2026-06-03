@@ -1,0 +1,1364 @@
+Title: Latent Geometric Chords for Query-Efficient Decision-Based Adversarial Attacks
+
+URL Source: https://arxiv.org/pdf/2605.31219v1
+
+Published Time: Mon, 01 Jun 2026 01:27:10 GMT
+
+Number of Pages: 14
+
+Markdown Content:
+> LATENT GEOMETRIC CHORDS FOR QUERY-EFFICIENT DECISION-BASED ADVERSARIAL ATTACKS 1
+
+# Latent Geometric Chords for Query-Efficient Decision-Based Adversarial Attacks 
+
+Ei Hmue Khine, Yao Li, Jiebao Sun, Shengzhu Shi, Zhichang Guo, and Boying Wu 
+
+Abstract —While decision-based black-box adversarial attacks present a severe security threat, current methodologies suffer from fundamental limitations. Pixel-wise attacks frequently in-troduce unnatural, high-frequency visual artifacts, while latent-space frameworks are confined by the limited search space of low-dimensional manifolds and inherent reconstruction flaws. To resolve these limitations, we propose Latent Geometric Chords (LGC) for Query-Efficient Decision-Based Adversarial Attacks alongside an variant, LGC-H. At its core, LGC navigates decision boundaries by executing a curvature-aware geometric search within a compressed semantic manifold. To guarantee high visual fidelity and circumvent dimensionality bottlenecks, we introduce a Residual-based Adversarial Generation (RAG) mechanism. RAG isolates semantic perturbations as geometric chords and superimposes them directly onto the original source image. RAG substantially resolves baseline reconstruction flaws and effectively doubles the permissible search space dimensions. Ex-perimental results demonstrate that LGC achieves robust cross-dataset transferability and substantially outperforms state-of-the-art baselines. Notably, our method, LGC, minimizes perturbation magnitudes while achieving state-of-the-art visual fidelity—with a Structural Similarity Index Measure (SSIM) exceeding 0.99 and a Learned Perceptual Image Patch Similarity (LPIPS) below 0.01 at 5000 queries—and sustaining high attack success rates under stringent perceptual constraints, successfully compromising ad-versarially trained robust models. The source code is available at: https://github.com/eihmuekhine/Latent-Geometric-Chords. 
+
+Index Terms —Adversarial Machine Learning (AML), Decision-Based Black-Box Attacks, Latent Space Optimization, Query Efficiency, Semantic Perturbations. 
+
+I. I NTRODUCTION 
+
+# MODERN visual applications rely heavily on deep neural networks (DNNs) for complex tasks including image classification [41], [43]. Despite their empirical success, DNNs remain highly susceptible to adversarial examples—carefully crafted, visually imperceptible perturbations that deceive mod-els into rendering incorrect predictions [1]–[3]. Based on adversary knowledge, attacks are categorized into white-box and black-box settings. White-box methods require full ac-cess to the target model’s internal architecture and gradients, a condition rarely satisfied on real-world deployments [3]. Consequently, black-box attacks present a more realistic threat 
+
+This work was supported in part by the National Natural Science Foundation of China under Grant 12401557, Grant 12371419, Grant 12171123, Grant 12271130, and Grant U21B2075; and in part by the National Key R&D Pro-gram of China under Grant 2023YFC2205900 and Grant 2023YFC2205903. (Corresponding author: Yao Li.) The authors are with the School of Mathematics, Harbin Institute of Technology, Harbin 150001, China (e-mail: eihmuekhine@stu.hit.edu.cn). This work has been submitted to the IEEE for possible publication. Copyright may be transferred without notice, after which this version may no longer be accessible. 
+
+paradigm and are classified into transfer-based, score-based, and decision-based approaches. Transfer-based attacks craft perturbations on a known substitute model to exploit cross-architecture vulnerability, yet success is not guaranteed due to unreliable transferability [5], [7]. Score-based attacks it-eratively refine perturbations by querying the target model’s continuous output probabilities [4], [6], which is often im-practical as commercial APIs typically return only discrete labels. Therefore, decision-based (hard-label) attacks, which optimize perturbations relying exclusively on discrete top-1 class predictions, represent the most profound and practical security threat [8]–[11]. Without gradients or continuous scores, hard-label attackers are completely blind to both the distance and direction of the optimal adversarial path. In a vast, high-dimensional space, they must use inefficient, blind trial-and-error queries to find the decision boundary, requiring thousands of attempts to estimate the available path. To mitigate this excessive query complexity, modern methods introduce geometric ac-celeration techniques—such as normal vector estimation in HSJA [9] and GeoDA [20], and curvature-aware search in CGBA [12]—to guide adversarial trajectories along decision boundaries. Despite these geometric advancements, existing decision-based attacks optimize perturbations directly in the raw pixel domain. In pixel-wise attacks, adversaries systemat-ically alter individual pixel values to manipulate the model’s prediction. Although restricted by rigid ℓp-norm constraints to remain mathematically imperceptible, modifying images at pixel level misaligns with human visual perception and the natural data manifold [14], [15]. These spatial domain manipulations introduce unnatural, semantically meaningless artifacts that deviate from real-world distributions [16] and primarily exploit brittle, high-frequency “non-robust features” that are easily neutralized by robust optimization techniques like adversarial training [25], [29]. Consequently, a transition toward manipulating robust, high-level semantic concepts is critical [24]. To circumvent the limitations of pixel-wise manipulations, recent studies have explored decision-based latent frameworks like Latent-HSJA [28], operating within compressed generative representations. While these approaches improve semantic realism, applying them directly to decision-based black-box settings exposes severe optimization and fidelity drawbacks. First, because the latent dimension k is much smaller than the pixel dimension n (k ≪ n), confining the adversarial search to this strictly low-dimensional generative manifold drastically limits the available directions for adversarial move-ment [35], [36], [38], [39]. Consequently, decision-based latent  
+
+> arXiv:2605.31219v1 [cs.CV] 29 May 2026 LATENT GEOMETRIC CHORDS FOR QUERY-EFFICIENT DECISION-BASED ADVERSARIAL ATTACKS 2
+
+frameworks frequently stall and waste tens of thousands of queries blindly searching for rare boundary intersections [37]. Second, inherent image inversion process inevitably discards high-frequency textures and alters core concepts, producing blurry artifacts and unintended semantic drift that render the resulting images unnatural [26]. Therefore, this paper addresses the following fundamental research question: How can we systematically achieve high query efficiency and eliminate the high-frequency, unnatural visual artifacts prevalent in pixel-wise attacks, while simulta-neously overcoming the low-dimensional manifold constraints and reconstruction errors inherent to latent-space adversarial frameworks? Addressing this challenge is of critical impor-tance. It provide the theoretical and practical foundation neces-sary to achieve the precise geometric query-efficiency of pixel-space optimization while preserving the high visual fidelity of unrestricted adversarial attack methods in strict decision-based black-box scenarios. To address this challenge, we propose Latent Geomet-ric Chords for Query-Efficient Decision-Based Adversarial Attacks (LGC) alongside a highly efficient variant (LGC-H). LGC translates curvature-aware optimization into a com-pressed semantic manifold. Crucially, we introduce a novel Residual-based Adversarial Generation (RAG) mechanism that isolates semantic shifts as “geometric chords” and superim-poses them directly onto the pristine input. This strategy conceptually expands the search space permissible up to di-mensions 2k (as formally proven in Section IV-B), mitigating the dimensionality bottleneck to ensure rapid convergence and maximize query efficiency. Similarly, in RAG, anchoring the perturbation to the original image largely mitigates baseline decoder reconstruction errors, enabling high visual fidelity. Our primary contributions are summarized as follows:  
+
+> •
+
+We propose LGC and LGC-H, translating decision-based black-box adversarial optimization into a compressed semantic manifold. By employing a curvature-guided semicircular search, LGC efficiently navigate highly non-linear decision boundaries to achieve highly competitive query efficiency.  
+
+> •
+
+We introduce the RAG mechanism, isolating semantic perturbations as latent “geometric chords.” RAG expands the search space up to 2k dimensions, while largely mitigating baseline decoder reconstruction errors by an-choring the semantic shift directly to the pristine input.  
+
+> •
+
+Extensive evaluations demonstrate that LGC achieves high visual quality (SSIM > 0.99 , LPIPS < 0.01 ) with minimal query budgets. In targeted attacks on ResNet50, our method reduces perturbation magnitude by a factor of six compared to state-of-the-art approaches while preserving near-perfect structural similarity. Furthermore, our framework, LGC, exhibits strong cross-dataset gen-eralizability—attacking out-of-distribution datasets such as Places365 and CelebAMask-HQ using a single ImageNet-trained autoencoder—and effectively compro-mises adversarially trained robust models. II. R ELATED WORK 
+
+A. Decision-Based Geometric Attacks 
+
+Decision-based adversarial attacks operate under highly restrictive threat models, requiring adversaries to optimize perturbations relying exclusively on top-1 predicted labels. Ex-isting decision-based attacks can be broadly divided into two categories: random search attacks and normal-vector-based attacks. Random search frameworks, such as the Boundary Attack [8], employ rejection sampling to find progressively smaller perturbations along the decision boundary, whereas AHA [17] generates random samples from a normal distri-bution biased by the mean of historical queries. RayS [18] reformulates the attack as a discrete problem of finding the closest boundary, employing a progressive subdivision strategy that iteratively refines blocks of perturbation to enhance search efficiency, Sign-OPT [23] proposes a highly query-efficient approach by computing the sign of the directional derivatives for gradient estimation and Triangle Attack [11] iteratively construct a triangle in a subspace, formed by the spatial relationship between the original benign sample and two con-secutive adversarial examples. Similarly, SurFree [10] explores diverse search directions guided entirely by the geometric characteristics of the classifier’s decision boundary. Conversely, normal-vector-based attacks leverage the local normal vector at the decision boundary to systematically guide the perturbation search. HSJA [9] approximates the gradient direction at the decision boundary point via Monte Carlo sampling. Based on this, QEBA [13] further estimate the gradient within subspaces in spatial, frequency and intrinsic dimensions. By exploiting the observation that decision bound-aries typically have low curvature near data samples, qFool [19] and GeoDA [20] achieve efficient gradient estimation by locally approximating the boundary as a flat linear hyperplane. However, the decision boundaries of modern deep neural networks are highly non-linear, containing narrow regions with sharp curvature where rigid linear approximations inevitably fail. To successfully navigate these complex topologies, re-cent methods such as CGBA [12] have transitioned to non-linear search trajectories. CGBA introduces a highly efficient, normal-guided semicircular search that guarantees boundary intersection regardless of local curvature. Despite these geometric advancements, a fundamental vul-nerability persists in pixel-wise attacks. Modifying images directly at the pixel level disregards human visual perception, introducing unnatural, high-frequency artifacts that structurally degrade image quality and render the attacks easily detectable. To overcome this limitation, our proposed LGC framework adopts the query-efficient, curvature-aware search strategy of CGBA but shifts the entire optimization process into a compressed semantic manifold. By utilizing latent geometric chords instead of raw pixel noise, LGC leverages complex boundary curvature to maintain strong query efficiency while avoiding the visual degradation of pixel-wise attacks. 
+
+B. Unrestricted Adversarial Attacks 
+
+Unrestricted adversarial attacks manipulate semantic at-tributes (e.g., color, rotation, or style) rather than adding small LATENT GEOMETRIC CHORDS FOR QUERY-EFFICIENT DECISION-BASED ADVERSARIAL ATTACKS 3
+
+norm-bounded perturbations, producing perceptually natural images that fool deep neural networks [30], [31]. While these methods successfully deceive classifiers using naturally plausible images [21], extending unrestricted attacks to black-box settings remains challenging. An existing method [31] proposed an image-to-image translation approach but requires hundreds of thousands of queries—impractical for real-world applications. To address these limitations, Latent-HSJA [28] combines HSJA decision-based attacks [9] with StyleGAN2 [32] latent space manipulation. This method achieves query-efficient (un-der 20,000 queries) targeted unrestricted attacks. However, Latent-HSJA suffers from severe dimensionality bottlenecks (constrained to the low-dimensional GAN manifold k ≪
+
+n) and inherent reconstruction errors from GAN inversion, limiting search efficiency and visual fidelity. Furthermore, its reliance on domain-specific generative models (e.g face-specific GANs) restricts its applicability in cross-dataset sce-narios. These weaknesses motivate our Residual-based Ad-versarial Generation (RAG) mechanism, which expands the search space up to 2k dimensions while significantly reducing decoder reconstruction flaws. III. P ROBLEM DEFINITION 
+
+Let C : Rn → RL denote a pre-trained L-class classifier. In a decision-based (hard-label) black-box setting, the adversary aims to craft an adversarial example xadv relying solely on the discrete output predictions ˆy = C(x).In general, this is formulated as an optimization problem in the raw pixel domain. Given a pristine source image 
+
+x0 ∈ [0 , 1] n correctly predicted as its ground-truth label yorig 
+
+by the model C, the objective is to minimize the magnitude (typically the Lp-norm) of a spatial perturbation δx such that the perturbed image x0 + δx causes misclassification: 
+
+min  
+
+> δx∈Rn
+
+∥δx∥p s.t. ϕ(x0 + δx) = 1 , (1) where ϕ(·) ∈ {− 1, 1} is a binary indicator function denoting adversarial success. To solve this efficiently, geometric decision-based attacks such as HSJA [9] and CGBA [12] optimize a specific search direction ˆζ ∈ Rn. By moving in this direction starting at 
+
+x0, the adversary searches for an adversarial image with the minimal possible perturbation. For a queried image xq = x0 +
+
+d(ˆζ), where d(ˆζ) denotes the perturbation vector scaled along direction ˆζ, the objective shifts to minimizing the perturbation magnitude: 
+
+ˆζ∗ = arg min 
+
+> ˆζ∈Rn
+
+∥d(ˆζ)∥2 s.t. ϕ(xq ) = 1 . (2) Conversely, unrestricted adversarial attacks redefine the distance metric to evaluate semantic transformations (e.g., rotation, hue, or high-level styles) rather than strict pixel-wise constraints. Recent latent-space methods in the decision-based setting, such as Latent-HSJA [28], map the input to a lower-dimensional manifold Rk (k ≪ n) using an encoder E and a generative decoder G. This framework suggests that if the 
+
+L2 distance between a pristine latent vector zs = E(x0)     
+
+> Fig. 1. The proposed LGC architecture. The source image x0is encoded into a compact latent baseline zs. Following a curvature-aware geometric optimization (CGBA) in the latent space, the perturbed latent vector is passed through the decoder to generate the high-fidelity adversarial example xfinal ,which is subsequently queried against target black-box models (e.g., ViT, ResNet-50).
+
+and an adversarial latent vector zadv is sufficiently small, the resulting synthesized images will remain perceptually indistinguishable to human observers. Mathematically, this shifts the optimization to: 
+
+min  
+
+> zadv ∈Rk
+
+∥zadv − zs∥2 s.t. ϕ(G(zadv )) = 1 . (3) To synthesize the query efficiency of geometric attacks with the perceptual benefits of semantic attacks, our goal is to find the optimal direction ˆζ∗ ∈ Rk that minimizes the magnitude of the latent perturbation. Translating a semantic baseline zs
+
+along this unit direction yields a candidate adversarial latent vector zadv = zs + d(ˆζ), where d(ˆζ) ∈ Rk denotes the required latent perturbation. To produce the final adversarial example xfinal , the synthesized image G(zadv ) is integrated with the generated semantic baseline G(zs) and the pristine image x0. The overarching optimization is thus formulated as: 
+
+ˆζ∗ = arg min 
+
+> ˆζ∈Rk
+
+∥d(ˆζ)∥2 s.t. ϕ(xfinal ) = 1 , ∥ˆζ∥2 = 1 . (4) Depending on the model, the indicator function ϕ(x) for a 
+
+non-targeted attack is explicitly defined as: 
+
+ϕ(x) = 
+
+(
+
+1, if C(x)̸ = yorig 
+
+−1, otherwise. (5) Conversely, for a targeted attack directed at a specific target class lt, it is defined as: 
+
+ϕ(x) = 
+
+(
+
+1, if C(x) = lt
+
+−1, otherwise. (6) IV. M ETHODOLOGY 
+
+This paper presents a decision-based adversarial method conducted entirely within the latent representations of an autoencoder. Unlike conventional attacks (such as the pixel-based Curvature-aware Geometric Black-Box Attack, CGBA) that directly alter raw pixel values and cause visible noise, our proposed Latent Geometric Chords for Query-Efficient LATENT GEOMETRIC CHORDS FOR QUERY-EFFICIENT DECISION-BASED ADVERSARIAL ATTACKS 4
+
+Decision-Based Attack modifies semantic features. By oper-ating within the latent manifold, LGC leverages a curvature-guided search algorithm of CGBA to effectively map the deci-sion boundary of the target model. Furthermore, to guarantee visual stealth, LGC incorporates a residual-based technique to isolate the pure semantic shift. The isolated difference between the reconstructions of the altered latent vector and the base-line latent vector is directly superimposed onto the original source image. This mechanism ensures that the adversarial noise is successfully injected without deteriorating the natural appearance and high-frequency structures of the source image. Moreover, it can expand the adversarial search space up to 2k
+
+dimensions. 
+
+A. Latent Normal Vector Estimation 
+
+Because our threat model assumes strict black-box access, the internal gradient information ∇xC(x) of the target classi-fier is entirely unavailable. Consequently, we must numerically approximate the geometric properties of the decision boundary directly from the latent manifold, adapting numerical approx-imation techniques from recent literature. Let ztb denote the known boundary intersection at iteration t; we employ Monte Carlo sampling—similar to the approach used in the pixel-wise decision-based adversarial attack CGBA—to estimate the local normal vector ˆnt.By generating N random Gaussian perturbation vectors 
+
+uk ∼ N (0 , I) and querying the classifier, the normal direction can be estimated via: 
+
+ˆnt ≈ 1
+
+N
+
+> N
+
+X
+
+> k=1
+
+ϕ  x0 + G(ztb + σuk) − G(zs) · uk. (7) Here, σ defines the sampling step size, and the binary function 
+
+ϕ(·) returns +1 if the synthesized query crosses into the adversarial region in the image domain, and −1 otherwise. Note that this query image inside the indicator function is constructed using the RAG mechanism (detailed in Section IV-B). This critical approximation process dictates the direc-tion for subsequent boundary exploration within the semantic space. 
+
+B. Residual-Based Adversarial Generation (RAG) 
+
+To construct high-fidelity adversarial examples, we address the geometric limitations of standard latent-space optimization by introducing a chord-based perturbation constrained within a 2k-dimensional space. 
+
+Limitations of Standard Manifold Optimization. Let G :
+
+Rk → Rn (where k ≪ n) be a generator. Its output forms a non-linear manifold M ⊂ Rn [38]: 
+
+M = {G(z) | z ∈ Rk}. (8) Standard generative attacks optimize entirely within the latent space, restricting the adversarial sample xadv = G(z∗) to lie strictly on M [38]. Consequently, the search space is bounded by the intrinsic manifold dimension, dim B (M) ≤ k [35], [36], [38], [39]. Due to this dimensionality bottleneck and inherent reconstruction errors [26], M frequently fails to intersect the target adversarial region within a tight Lp-norm ball Bϵ(x0)
+
+centered around the pristine image x0.
+
+Dimensionality Expansion via the Chord Set. To bypass this k-dimensional restriction, we mathematically redefine the perturbation mechanism. Given an encoder E, a base latent vector zs = E(x0), and a perturbed latent vector z,we isolate the visual modification as a residual vector ∆.Geometrically, ∆ represents a chord connecting two points on M: ∆ = G(z) − G(zs) The space of all such possible perturbations forms the chord set C:
+
+C = {G(y) − G(x) | x, y ∈ Rk} = M + ( −M ). (9) This geometric formulation expands the available perturbation space, as formalized below. Crucially, because the chord set 
+
+C is exclusively constructed from the difference of points on the original manifold M, this 2k-dimensional expansion is not an arbitrary unconstrained space (unlike the raw pixel space Rn or other random dimensional expansions). Instead, it remains strictly coupled to the generative manifold, ensuring that the perturbations within this expanded 2k-dimensional space retain semantic meaning. 
+
+Theorem 1. Assume G : Rk → Rn is a Lipschitz continuous mapping. For the generated manifold M = G(Rk) and its associated chord set C = M + ( −M ), the Hausdorff dimension satisfies dim H (C) ≤ 2k.Proof. A Lipschitz continuous mapping does not increase the Hausdorff dimension of its domain [39, Corollary 2.4]. There-fore, dim H (M) ≤ dim H (Rk) = k. Furthermore, since spatial inversion is an isometry (and thus bi-Lipschitz), it strictly pre-serves dimension, yielding dim H (−M ) = dim H (M) ≤ k.The chord set C corresponds to the Minkowski difference, equivalent to the set addition M + ( −M ). This operation maps the Cartesian product M × (−M ) under the Lipschitz continuous addition function f :
+
+f : M × (−M ) → Rn, f (x, y) = x + y. (10) Applying the standard dimension inequality for Lipschitz mappings and Cartesian products [39, Formula 7.5], we obtain: 
+
+dim H (C) = dim H (f (M × (−M ))) ≤ dim H (M × (−M )) 
+
+≤ dim H (M) + dim H (−M ). (11) Substituting the initial bounds into (11) yields dim H (C) ≤
+
+k + k = 2 k. ■
+
+Adversarial Synthesis. Drawing upon residual learning prin-ciples [41], the final adversarial sample xfinal is synthesized by translating the pristine input x0 by the chord vector ∆:
+
+xfinal = x0 + ∆ . (12) By applying this additive residual, the search space shifts from the heavily constrained k-dimensional manifold M to a richer 
+
+2k-dimensional space x0 + C centered at x0. This enables the direct injection of semantic features, largely mitigating the inherent reconstruction constraints of the autoencoder. Crucially, the RAG mechanism independently addresses two core limitations of standard latent optimization. First, it anchors the semantic shift directly to the pristine input x0LATENT GEOMETRIC CHORDS FOR QUERY-EFFICIENT DECISION-BASED ADVERSARIAL ATTACKS 5
+
+via residual addition, mitigating decoding artifacts to guar-antee visual fidelity. Second, it formulates the perturbation as a geometric chord, expanding the search space up to 2k
+
+dimensions to accelerate boundary navigation and maximize query efficiency, while preserving the semantic meaningful-ness inherently tied to the original manifold. 
+
+Algorithm 1 LGC (Latent Geometric Chords)  
+
+> 1:
+
+Inputs: Source image x0, indicator function ϕ(·), Au-toencoder (E(·), G (·)) , random direction Θ, queries to estimate initial normal vector N0, iteration T . 
+
+> 2:
+
+Output: Adversarial example xfinal . 
+
+> 3:
+
+zs ← E(x0) 
+
+> 4:
+
+Define residual mapping Φ( z) =
+
+clip [0 ,1] n (x0 + G(z) − G(zs))  
+
+> 5:
+
+r ← min 
+
+n
+
+r > 0 : ϕ
+
+
+
+Φ
+
+
+
+zs + r ∗ Θ
+
+> ∥Θ∥2
+
+ 
+
+= 1 
+
+o 
+
+> 6:
+
+zb1 ← BinarySearch 
+
+
+
+zs, zs + r ∗ Θ 
+
+> ∥Θ∥2
+
+, ϕ ◦ Φ
+
+
+
+{Find initial boundary point } 
+
+> 7:
+
+for t = 1 to T do  
+
+> 8:
+
+Generate Nt = N0
+
+√t samples, uk ∼ N (0 , σ 2I) 
+
+> 9:
+
+Estimate ˆnt using uk at zbt by Nt queries via Φ( ·). 
+
+> 10:
+
+ˆvt = zbt −zs  
+
+> ∥zbt−zs∥2
+> 11:
+
+θt = cos −1(ˆ nt · ˆvt), i = 1  
+
+> 12:
+
+while True do  
+
+> 13:
+
+mi = sin θt tan 
+
+ 90 ◦
+
+> 2i
+
+
+
+− cos θt 
+
+> 14:
+
+ˆζt = (ˆ nt + mi ˆvt)/∥ˆnt + mi ˆvt∥2 
+
+> 15:
+
+zq = zs + ∥zbt − zs∥2(ˆζt · ˆvt)ˆζt, i = i + 1  
+
+> 16:
+
+if ϕ(Φ( zq )) = −1 then  
+
+> 17:
+
+break  
+
+> 18:
+
+end if  
+
+> 19:
+
+end while  
+
+> 20:
+
+zbt+1 ← BSSP (zs, zq , zbt , ϕ ◦ Φ) {Find boundary point on semicircular path } 
+
+> 21:
+
+end for  
+
+> 22:
+
+xfinal ← Φ( zbT +1 )
+
+C. LGC 
+
+The entire step-by-step procedure of our proposed LGC is outlined in Algorithm 1. Let zs serve as the origin within the semantic manifold, while ztb denotes the established boundary intersection at step t. We define a normalized directional vector ˆvt pointing from the baseline zs to boundary, computed as ˆvt = (ztb − zs)/∥ztb − zs∥2. Letting ˆnt represent the estimated outward normal at ztb, our strategy executes a tightly constrained search to locate optimal subsequent boundary point zt+1  
+
+> b
+
+in the semantic manifold. This local exploration is dynamically confined to a semicircular arc residing entirely within the 2D geometric plane spanned by {ˆnt, ˆvt}. To ensure directional consistency, the search is restricted to the subspace proximate to ˆnt. The trajectory is geometrically defined by its endpoints, zs and ztb, and is centered at the midpoint: 
+
+c = ztb + zs
+
+2 . (13) The path maintains a constant radius R, defined by the Euclidean distance: 
+
+R = ∥ztb − zs∥2
+
+2 . (14) The search direction ˆζt(m) within this plane is parameter-ized by a scalar factor m:
+
+ˆζt(m) = ˆnt + mˆvt
+
+∥ˆnt + mˆvt∥2
+
+. (15) For a given ˆζt, the corresponding perturbation vector d(ˆζt)
+
+that projects the query onto the semicircular arc is: 
+
+d(ˆζt) = ∥ztb − zs∥2(ˆζt · ˆvt)ˆζt = ∥ztb − zs∥2 cos ψ · ˆζt. (16) where ψ is the angular displacement between ˆζt and ˆvt. Then, the latent adversarial vector zq is generated using the formula 
+
+zq = zs +d(ˆζt). This vector zq is reconstructed into the image space to synthesize the final adversarial image, xfinal , using the Residual-based Adversarial Generation (RAG) method. The final adversarial image is evaluated by the targeted black-box classification model in the image space. Similar to the CGBA method, we query the target model with xfinal to guide the boundary search along the semicircular path within the latent space. The boundary search is seamlessly executed along this semicircular trajectory within the latent domain. Specifically, the process initially identifies two latent vectors—one non-adversarial and one adversarial—residing on the semicircular path. While their adversarial status is evaluated by generating adversarial images via the RAG method in the pixel space, the search process itself is conducted strictly within the latent manifold. Inspired by binary search techniques in the CGBA method, the algorithm iteratively narrows the latent interval between these two vectors. This progressive refinement con-verges upon the subsequent latent boundary point zt+1  
+
+> b
+
+, which mathematically corresponds to the pixel-space boundary point 
+
+xt+1  
+
+> b
+
+.By utilizing the trigonometric identity cot(90 ◦ − α) =tan( α), the multiplication factor mi required to attain the progressively refined search angle is simplified as: 
+
+mi = sin θt tan 
+
+ 90 ◦
+
+2i
+
+
+
+− cos θt, ∀i ∈ Z+. (17) where θt = cos −1(ˆ vt · ˆnt). As i increases, the search angle monotonically increases. By iterating through specific values of mi, a perturbation vector d(ˆζt(mi)) is computed to identify a corresponding non-adversarial candidate point xc such that 
+
+ϕ(xc) = −1. This image-space point is defined by the transformation: 
+
+xc = x0 +
+
+
+
+G(zs + d(ˆζt(mi))) − G(zs)
+
+
+
+. (18) Subsequently, a boundary search is initiated between the non-adversarial latent point zc and the current adversarial can-didate ztb , where zc = zs +d(ˆζt(mi)) . This search utilizes the 
+
+Boundary Search along a Semicircular Path (BSSP) algorithm to isolate zt+1  
+
+> b
+
+along the latent trajectory. Specifically, BSSP operates by evaluating the midpoint of the angular interval between a known adversarial and non-adversarial latent vector. LATENT GEOMETRIC CHORDS FOR QUERY-EFFICIENT DECISION-BASED ADVERSARIAL ATTACKS 6
+
+Based on the classifier’s hard-label feedback at this midpoint, it iteratively halves the search interval, effectively converging to the precise decision boundary point with minimal queries. At the commencement of the BSSP phase for step t, let ˆζadv 
+
+and ˆζc denote the unit directions of ztb and zc relative to zs.The resultant bisecting search direction, ˆζr , is defined as the normalized vector sum: 
+
+ˆζr = ˆζadv + ˆζc
+
+∥ˆζadv + ˆζc∥2
+
+. (19) The BSSP iteratively narrows the angular search space. If the decision function yields ϕ(xr ) = 1 (adversarial), the search interval [ˆζadv , ˆζc] is bisected and reduced to [ˆζr , ˆζc], as the optimal boundary point zt+1  
+
+> b
+
+must lie within this range. Conversely, if ϕ(xr ) = −1 (non-adversarial), the interval is refined to [ˆζadv , ˆζr ], where: 
+
+xr = x0 +
+
+
+
+G(zs + d(ˆζr )) − G(zs)
+
+
+
+. (20) This bisection process continues until zt+1  
+
+> b
+
+is located with a predefined level of precision. A primary mathematical ad-vantage of the BSSP is its ability to guarantee a continuous reduction in perturbation magnitude; specifically, for any query point zq located on the semicircular path, the geometric condition ∥zq − zs∥2 ≤ ∥ ztb − zs∥2 is inherently maintained. 
+
+Algorithm 2 LGC-H  
+
+> 1:
+
+Inputs: Source image x0, target image/random noise xt
+
+(to find initial adversarial class), indicator function ϕ(·),Autoencoder (E(·), G (·)) , queries to find initial normal vector N0, iteration T . 
+
+> 2:
+
+Output: Adversarial example xfinal . 
+
+> 3:
+
+zs ← E(x0) 
+
+> 4:
+
+Define residual mapping Φ( z) =
+
+clip [0 ,1] n (x0 + G(z) − G(zs))  
+
+> 5:
+
+Find initial adversarial latent vector zadv  
+
+> 6:
+
+zb1 ← BinarySearch (zs, zadv , ϕ ◦ Φ) {Find initial bound-ary point } 
+
+> 7:
+
+for t = 1 to T do  
+
+> 8:
+
+Generate Nt = N0
+
+√t samples, uk ∼ N (0 , σ 2I) 
+
+> 9:
+
+Estimate ˆnt using uk at zbt by Nt queries via Φ( ·). 
+
+> 10:
+
+ˆvt = zbt −zs  
+
+> ∥zbt−zs∥2
+> 11:
+
+θt = cos −1(ˆ nt · ˆvt), i = 1  
+
+> 12:
+
+while True do  
+
+> 13:
+
+mi = sin θt cot   θt
+
+> 2i
+
+ − cos θt 
+
+> 14:
+
+ˆζt = (ˆ nt + mi ˆvt)/∥ˆnt + mi ˆvt∥2 
+
+> 15:
+
+zh = zs + ∥zbt − zs∥2(ˆζt · ˆvt)ˆζt, i = i + 1  
+
+> 16:
+
+if ϕ(Φ( zh)) = 1 then  
+
+> 17:
+
+break  
+
+> 18:
+
+end if  
+
+> 19:
+
+end while  
+
+> 20:
+
+zbt+1 ← BinarySearch (zs, zh, ϕ ◦ Φ) {Find boundary point } 
+
+> 21:
+
+end for  
+
+> 22:
+
+xfinal ← Φ( zbT +1 )
+
+D. LGC-H 
+
+While standard geometric searches are effective for low-curvature topologies, targeted attacks frequently produce highly curved boundaries with narrow adversarial regions. To overcome the severe query inefficiency of conventional semicircular sweeps in these scenarios, we propose LGC-H, an accelerated variant designed to rapidly isolate adversarial trajectories within the compressed semantic manifold. The primary contribution of LGC-H is integrating a dynamic angular bisection strategy directly into the latent domain. Although trigonometric bisection has been explored for image-space perturbations [12], applying it to a highly non-linear latent topology typically induces severe reconstruction errors. We resolve this by strictly coupling geometrically bisected latent paths with our Residual-based Adversarial Generation (RAG) mechanism to effectively neutralize decoder distor-tions. Let θt = arccos(ˆ n⊤ 
+
+> t
+
+ˆvt) denote the angle between the estimated latent gradient ˆnt and the baseline projection ˆvt. To dynamically adjust the search resolution without exhaustive fixed-step evaluations, we introduce a scaling coefficient mi:
+
+mi = sin θt cot 
+
+ θt
+
+2i
+
+
+
+− cos θt, ∀i ∈ Z+. (21) This formulation ensures the updated perturbation trajectory 
+
+ˆζt(mi) maintains a precise angular offset of θt/2i relative to 
+
+ˆvt. Incrementing the discrete step parameter i monotonically halves the search space, enabling exponential convergence on viable adversarial subspaces. Once an optimal coefficient mi identifies an adversarial latent coordinate zh = zs + d(ˆζt(mi)) (where ϕ(xh) = 1 ), our RAG module directly overlays the perturbation chord onto the source image to strictly preserve semantic aesthetics: 
+
+xh = x0 + ( G(zh) − G(zs)) . (22) Finally, a localized binary search between the non-adversarial anchor zs and the adversarial candidate zh refines the exact boundary transition zt+1  
+
+> b
+
+. By confining geometric bisection to the latent manifold and leveraging RAG for reconstruction, LGC-H achieves outstanding query efficiency without sacri-ficing structural integrity. 
+
+E. Initialization for Targeted Latent-Space Attacks 
+
+Directly encoding a target image for initialization is ineffec-tive because adding the source image’s residual during RAG reconstruction distorts the intended semantics. To overcome this, we introduce a “pseudo-target” strategy. We first isolate the pixel-space residual R = x0 −G(zs). To effectively cancel out reconstruction artifacts, we subtract this residual from the target image xtarget to synthesize a pseudo-target, which is then mapped to the latent space: 
+
+ztarget = E
+
+
+
+clip [0 ,1] n (xtarget − R)
+
+
+
+. (23) Due to the highly non-linear generative manifold, this vector may occasionally deviate from the intended target class. If this occurs, we briefly fine-tune ztarget via the Adam optimizer (e.g., learning rate of 0.05, up to 50 iterations) to minimize the LATENT GEOMETRIC CHORDS FOR QUERY-EFFICIENT DECISION-BASED ADVERSARIAL ATTACKS 7
+
+TABLE I AVERAGE SSIM / LPIPS VALUES OF PERTURBATION FOR TARGETED AND NON -TARGETED BLACK -BOX ATTACKS UNDER DIFFERENT QUERY BUDGETS .
+
+Non-targeted Targeted Dataset Model Attack 1K 2.5K 5K 10K 1K 2.5K 5K 10K 
+
+> Places365
+
+ResNet50 Sign OPT 0.645 / 0.311 0.735 / 0.244 0.799 / 0.197 0.852 / 0.157 0.390 / 0.582 0.426 / 0.548 0.470 / 0.507 0.516 / 0.464 HSJA 0.764 / 0.212 0.852 / 0.147 0.901 / 0.109 0.939 / 0.077 0.425 / 0.536 0.487 / 0.475 0.561 / 0.405 0.680 / 0.303 CGBA-H 0.757 / 0.270 0.809 / 0.226 0.853 / 0.187 0.902 / 0.138 0.481 / 0.534 0.508 / 0.519 0.540 / 0.499 0.589 / 0.464 CGBA 0.785 / 0.261 0.836 / 0.215 0.880 / 0.170 0.919 / 0.124 0.388 / 0.608 0.367 / 0.627 0.350 / 0.641 0.337 / 0.651 LGC-H 0.978 / 0.043 0.992 / 0.019 0.996 / 0.011 0.997 / 0.008 0.723 / 0.326 0.826 / 0.225 0.897 / 0.149 0.945 / 0.095 LGC 0.980 / 0.039 0.993 / 0.016 0.996 / 0.010 0.998 / 0.008 0.740 / 0.319 0.865 / 0.194 0.933 / 0.116 0.970 / 0.069 
+
+DenseNet161 Sign OPT 0.641 / 0.309 0.742 / 0.235 0.810 / 0.186 0.867 / 0.143 0.389 / 0.575 0.421 / 0.545 0.458 / 0.510 0.501 / 0.469 HSJA 0.755 / 0.219 0.847 / 0.151 0.898 / 0.112 0.937 / 0.079 0.425 / 0.535 0.486 / 0.478 0.563 / 0.406 0.684 / 0.300 CGBA-H 0.752 / 0.273 0.811 / 0.224 0.865 / 0.173 0.911 / 0.124 0.489 / 0.537 0.522 / 0.518 0.561 / 0.492 0.623 / 0.446 CGBA 0.786 / 0.262 0.839 / 0.209 0.889 / 0.158 0.932 / 0.110 0.383 / 0.615 0.364 / 0.631 0.353 / 0.639 0.344 / 0.643 LGC-H 0.976 / 0.046 0.991 / 0.021 0.996 / 0.012 0.997 / 0.008 0.726 / 0.317 0.832 / 0.215 0.907 / 0.135 0.951 / 0.083 LGC 0.979 / 0.042 0.993 / 0.018 0.996 / 0.010 0.997 / 0.008 0.739 / 0.312 0.869 / 0.187 0.938 / 0.108 0.973 / 0.062 ImageNet 
+
+ResNet50 Sign OPT 0.463 / 0.428 0.683 / 0.261 0.846 / 0.143 0.940 / 0.069 0.417 / 0.591 0.449 / 0.562 0.483 / 0.530 0.520 / 0.493 HSJA 0.546 / 0.387 0.739 / 0.241 0.860 / 0.147 0.936 / 0.082 0.449 / 0.547 0.491 / 0.499 0.569 / 0.424 0.726 / 0.290 CGBA-H 0.658 / 0.343 0.735 / 0.284 0.810 / 0.221 0.874 / 0.158 0.506 / 0.525 0.539 / 0.501 0.581 / 0.468 0.634 / 0.422 CGBA 0.682 / 0.342 0.757 / 0.279 0.824 / 0.217 0.892 / 0.147 0.373 / 0.624 0.345 / 0.643 0.330 / 0.652 0.326 / 0.651 LGC-H 0.947 / 0.093 0.980 / 0.042 0.990 / 0.023 0.995 / 0.014 0.698 / 0.355 0.792 / 0.261 0.870 / 0.176 0.930 / 0.105 LGC 0.977 / 0.049 0.993 / 0.023 0.996 / 0.017 0.997 / 0.015 0.701 / 0.358 0.819 / 0.242 0.906 / 0.144 0.960 / 0.075 
+
+DenseNet121 Sign OPT 0.551 / 0.360 0.786 / 0.188 0.914 / 0.091 0.972 / 0.040 0.411 / 0.581 0.457 / 0.535 0.502 / 0.492 0.554 / 0.443 HSJA 0.674 / 0.287 0.854 / 0.153 0.928 / 0.092 0.966 / 0.054 0.404 / 0.563 0.447 / 0.506 0.565 / 0.403 0.743 / 0.261 CGBA-H 0.678 / 0.334 0.763 / 0.262 0.831 / 0.200 0.893 / 0.137 0.509 / 0.539 0.542 / 0.513 0.579 / 0.483 0.634 / 0.435 CGBA 0.694 / 0.336 0.780 / 0.261 0.845 / 0.195 0.909 / 0.126 0.362 / 0.644 0.333 / 0.658 0.320 / 0.662 0.321 / 0.655 LGC-H 0.971 / 0.055 0.991 / 0.021 0.996 / 0.012 0.997 / 0.008 0.730 / 0.323 0.830 / 0.217 0.906 / 0.131 0.955 / 0.074 LGC 0.971 / 0.054 0.992 / 0.019 0.996 / 0.010 0.998 / 0.007 0.732 / 0.327 0.863 / 0.191 0.939 / 0.102 0.977 / 0.051 
+
+VGG16 Sign OPT 0.712 / 0.248 0.873 / 0.130 0.951 / 0.068 0.983 / 0.036 0.424 / 0.585 0.499 / 0.522 0.567 / 0.464 0.628 / 0.410 HSJA 0.801 / 0.198 0.911 / 0.112 0.958 / 0.069 0.981 / 0.044 0.461 / 0.539 0.548 / 0.460 0.658 / 0.368 0.809 / 0.250 CGBA-H 0.819 / 0.209 0.881 / 0.151 0.931 / 0.104 0.967 / 0.062 0.536 / 0.516 0.596 / 0.472 0.667 / 0.414 0.749 / 0.339 CGBA 0.824 / 0.212 0.893 / 0.146 0.937 / 0.099 0.970 / 0.059 0.326 / 0.659 0.302 / 0.672 0.297 / 0.673 0.307 / 0.661 LGC-H 0.977 / 0.051 0.991 / 0.027 0.995 / 0.020 0.997 / 0.017 0.713 / 0.351 0.818 / 0.252 0.895 / 0.173 0.946 / 0.118 LGC 0.949 / 0.089 0.981 / 0.038 0.992 / 0.019 0.996 / 0.012 0.719 / 0.348 0.851 / 0.224 0.932 / 0.140 0.972 / 0.091 
+
+ViT Sign OPT 0.428 / 0.459 0.722 / 0.234 0.886 / 0.118 0.957 / 0.057 0.430 / 0.559 0.468 / 0.516 0.505 / 0.480 0.545 / 0.443 HSJA 0.556 / 0.382 0.778 / 0.214 0.883 / 0.132 0.940 / 0.081 0.429 / 0.513 0.520 / 0.424 0.684 / 0.297 0.847 / 0.172 CGBA-H 0.825 / 0.219 0.944 / 0.092 0.979 / 0.044 0.992 / 0.022 0.620 / 0.445 0.714 / 0.357 0.812 / 0.258 0.896 / 0.158 CGBA 0.827 / 0.225 0.946 / 0.094 0.981 / 0.043 0.993 / 0.019 0.412 / 0.597 0.515 / 0.513 0.677 / 0.374 0.841 / 0.210 LGC-H 0.955 / 0.081 0.986 / 0.031 0.993 / 0.017 0.996 / 0.012 0.804 / 0.241 0.888 / 0.146 0.942 / 0.081 0.973 / 0.043 LGC 0.956 / 0.079 0.988 / 0.027 0.994 / 0.015 0.996 / 0.010 0.813 / 0.236 0.916 / 0.122 0.967 / 0.058 0.988 / 0.029 
+
+cross-entropy loss and guarantee adversarial validity. Finally, a standard binary search between zs and ztarget locates the precise initial boundary point z1
+
+b to commence the semicircular boundary search. V. E XPERIMENTS 
+
+In this section, we conduct experiments to benchmark our proposed method, Latent Geometric Chords for Query-Efficient Decision-Based Attacks, LGC with its variant LGC-H, against current state-of-the-art adversarial attacks. Regard-less of the target classifier or dataset, LGC and LGC-H consistently achieves superior results under both targeted and non-targeted threat models, while demonstrating a remarkable capability to preserve visual realism. 
+
+A. Experimental Setting 
+
+Experiment hardware configuration: Experiments are conducted using an Intel Xeon Platinum 8358P CPU and NVIDIA GeForce RTX 4090 GPU, running PyTorch 2.8.0 and Python 3.12. 
+
+Datasets and Target Models: We assess the effectiveness of LGC and LGC-H by using the ImageNet [33], Places365 [34], and CelebAMask-HQ [40] datasets. For the ImageNet dataset, we make the experiments against pre-trained VGG16 [42], ResNet-50 [41], DenseNet121 [44], and Vision Trans-former (ViT) [43] architectures which are implemented from the standard PyTorch library. For each target model, we ran-domly select 200 images for the non-targeted attack and 200 pairs of images for the targeted attack from the ILSVRC2012 validation set that are correclty classified by the target model. All input images are resized to 3 × 224 × 224 . For evaluations on the Places365 dataset, we consider ResNet-50 [41] and DenseNet161 [44] provided directly by the MIT Places365 as target classifiers. Evaluations are similarly conducted using a randomly chosen 200 correctly classified images for non-targeted attacks and 200 pairs of correclty classified images for targeted attacks. For the CelebAMask-HQ [40] dataset, we consider a ResNet-18 [41] model trained on the CelebAMask-HQ dataset for Identity and Gender Classification. Evaluations are conducted using a randomly chosen 100 correctly classified images for gender classification and 100 pairs of correctly classified images for targeted identity classification. 
+
+Baselines and Hyper-parameters: We compare the per-formance of LGC and LGC-H with existing state-of-the-art attacks, specifically HSJA [9], CGBA [12], and Sign-OPT [23]. For the latent-space representation in LGC, we utilise a pre-trained VGG16-based Autoencoder [45] unless otherwise specified. Crucially, because the VGG16 latent space captures universal visual features and robust structural priors rather than domain-specific concepts, it generalises well beyond its training distribution. This allows us to use a single ImageNet-trained autoencoder to execute attacks on out-of-distribution datasets (e.g., Places365 and CelebAMask-HQ) without domain-specific retraining. For the CGBA baseline, we apply a frequency subspace reduction factor of f = 4 .Furthermore, for both CGBA and our proposed LGC methods, we also set queires to estimate the initial normal vector as 
+
+N0 = 30 and the standard deviation for Gaussian sampling as 
+
+σ = 0 .0002 to estimate the normal vector. 
+
+Evaluation Metrics: We employ the five metrics assessing both attack efficacy and visual stealth of LGC and LGC-H. The 
+
+L2 norm quantifies the mathematical magnitude of adversarial perturbations. Recognizing that mathematical distance often misaligns with human perception, we utilize the Structural Similarity Index Measure (SSIM) and Learned Perceptual LATENT GEOMETRIC CHORDS FOR QUERY-EFFICIENT DECISION-BASED ADVERSARIAL ATTACKS 8
+
+TABLE II AVERAGE (MEDIAN ) L2 NORM OF PERTURBATION FOR TARGETED AND NON -TARGETED BLACK -BOX ATTACKS UNDER DIFFERENT QUERY BUDGETS 
+
+Non-targeted attacks Targeted attacks Dataset Model Attack 1000 QUE 2500 QUE 5000 QUE 10000 QUE 1000 QUE 2500 QUE 5000 QUE 10000 QUE 
+
+> Places365
+
+ResNet50 Sign OPT 22.138(19.489) 15.983(14.442) 12.349(11.452) 9.588(8.993) 89.543(85.536) 78.607(70.366) 69.446(57.076) 60.841(44.985) HSJA 16.331(14.057) 10.907(9.385) 7.983(7.089) 5.799(5.365) 71.591(68.533) 56.261(52.072) 43.233(38.528) 28.351(22.192) CGBA-H 16.539(13.103) 13.489(10.178) 10.909(8.001) 7.999(5.356) 79.347(78.646) 73.404(73.612) 67.186(66.401) 58.135(59.783) CGBA 15.338(13.159) 12.343(9.548) 9.704(6.804) 7.163(4.578) 88.283(86.054) 87.222(85.334) 85.737(83.937) 83.097(81.930) LGC-H 7.393(5.542) 4.351(3.286) 3.069(2.382) 2.465(1.996) 60.885(58.091) 41.365(37.726) 27.362(23.576) 17.088(14.349) LGC 6.938(5.079) 3.906(2.914) 2.892(2.232) 2.401(1.955) 55.609(52.296) 31.574(28.043) 18.035(14.981) 10.185(8.977) 
+
+DenseNet161 Sign OPT 22.706(20.610) 15.833(14.031) 11.885(10.975) 8.883(8.014) 90.605(80.851) 80.487(65.588) 72.732(53.973) 65.214(43.221) HSJA 16.737(14.128) 11.174(9.292) 8.244(6.877) 5.916(5.127) 70.288(69.774) 56.189(55.854) 43.114(40.523) 27.829(23.722) CGBA-H 17.395(13.675) 13.883(11.046) 10.614(6.827) 7.745(4.171) 75.677(73.333) 68.738(66.557) 61.031(58.175) 50.480(46.865) CGBA 15.627(11.713) 12.408(8.698) 9.300(5.912) 6.589(3.913) 87.511(86.447) 85.916(85.533) 83.880(84.073) 80.862(81.957) LGC-H 7.686(5.355) 4.493(3.031) 3.150(2.245) 2.540(1.879) 60.292(59.818) 39.872(37.682) 25.171(22.382) 15.337(13.062) LGC 7.184(5.133) 4.062(2.806) 2.907(2.080) 2.385(1.757) 55.192(54.785) 30.202(27.832) 16.807(14.112) 9.497(8.164) ImageNet 
+
+ResNet50 Sign OPT 40.032(34.904) 20.028(15.578) 10.037(6.851) 4.721(3.102) 87.232(75.958) 80.288(62.784) 74.786(51.486) 69.563(41.110) HSJA 28.999(23.870) 15.359(11.015) 8.577(5.843) 4.664(3.405) 61.895(60.637) 49.585(48.052) 37.004(34.495) 21.634(18.181) CGBA-H 24.009(20.793) 18.743(15.124) 14.209(10.147) 10.205(5.790) 76.479(74.281) 68.805(67.578) 60.142(60.410) 50.432(50.854) CGBA 23.049(19.860) 18.188(14.851) 13.916(9.415) 9.451(5.320) 88.454(87.158) 85.714(84.021) 82.973(80.907) 77.884(74.097) LGC-H 12.246(9.414) 6.807(5.052) 4.578(3.528) 3.435(2.728) 68.444(66.757) 49.950(49.326) 34.482(34.014) 21.561(19.848) LGC 7.311(4.541) 3.858(2.525) 2.846(1.986) 2.383(1.766) 65.933(64.207) 41.853(40.316) 24.295(22.194) 12.846(11.161) 
+
+DenseNet121 Sign OPT 31.931(26.644) 14.182(10.491) 6.626(4.590) 3.245(2.255) 85.794(71.605) 74.501(54.758) 66.925(42.276) 59.846(32.835) HSJA 20.066(16.071) 9.515(7.056) 5.777(4.428) 3.709(3.125) 66.407(63.307) 50.479(48.074) 34.418(30.039) 18.535(15.862) CGBA-H 23.582(18.987) 17.538(13.616) 13.014(8.936) 9.070(4.831) 75.011(70.757) 67.521(62.749) 60.003(56.107) 50.200(47.120) CGBA 22.829(18.981) 16.926(12.677) 12.604(7.776) 8.275(4.190) 89.062(86.657) 85.871(80.925) 82.749(78.499) 77.448(75.387) LGC-H 8.568(6.640) 4.606(3.358) 3.169(2.375) 2.481(1.903) 61.438(60.259) 42.037(41.034) 26.504(24.318) 15.229(13.580) LGC 8.409(6.015) 4.269(2.989) 2.923(2.239) 2.322(1.813) 58.742(57.671) 32.755(30.324) 17.333(15.143) 8.804(7.814) 
+
+VGG16 Sign OPT 19.525(15.472) 8.843(6.367) 4.389(2.918) 2.291(1.520) 89.230(80.593) 74.703(55.650) 63.931(38.204) 55.778(24.796) HSJA 12.723(7.856) 6.448(4.095) 3.938(2.765) 2.550(1.912) 65.946(62.845) 46.969(44.628) 31.434(28.874) 17.303(12.547) CGBA-H 13.573(8.762) 9.665(5.122) 6.474(2.795) 3.934(1.417) 69.810(69.328) 57.296(55.771) 45.569(43.213) 33.085(28.736) CGBA 13.492(9.023) 8.987(4.694) 5.986(2.616) 3.571(1.407) 93.138(89.213) 90.510(86.318) 86.896(84.035) 81.261(77.516) LGC-H 7.522(5.125) 4.301(2.846) 3.145(2.112) 2.577(1.832) 65.728(63.740) 44.508(42.078) 28.558(26.499) 17.281(15.628) LGC 12.046(9.126) 6.369(4.480) 4.093(3.064) 3.081(2.461) 61.726(59.881) 34.545(32.673) 18.625(16.991) 9.995(8.786) 
+
+ViT Sign OPT 45.428(40.483) 17.469(14.328) 8.099(6.720) 4.295(3.429) 83.398(58.814) 74.324(41.987) 69.147(31.701) 64.980(23.601) HSJA 28.578(24.261) 12.982(10.428) 7.504(5.876) 4.608(3.747) 52.157(48.527) 34.929(32.519) 20.661(17.826) 10.715(9.362) CGBA-H 13.131(9.939) 5.585(4.066) 3.051(2.277) 1.833(1.481) 48.580(49.708) 33.431(32.612) 21.661(18.284) 12.850(8.463) CGBA 13.216(10.104) 5.534(4.183) 2.961(2.244) 1.711(1.396) 60.515(61.621) 42.015(40.581) 26.575(21.461) 13.714(8.287) LGC-H 11.359(9.472) 6.046(5.119) 4.211(3.716) 3.322(3.015) 48.271(46.680) 31.258(29.536) 19.101(17.027) 10.971(8.463) LGC 11.041(8.850) 5.583(4.630) 3.885(3.454) 3.104(2.884) 44.215(42.285) 23.328(22.017) 11.965(10.747) 6.337(5.631) 
+
+TABLE III AVERAGE SIM AND LPIPS OF ADVERSARIAL PERTURBATIONS AGAINST 
+
+RES NET -18 ON CELEB AM ASK -HQ FOR IDENTITY AND GENDER CLASSIFICATION ACROSS VARYING QUERY BUDGETS .
+
+Method Metric Model Queries 
+
+1000 3000 5000 10000 
+
+Identity Classification 
+
+HSJA [9] SIM ↑ 0.569 0.663 0.728 0.821 LPIPS ↓ 0.287 0.187 0.132 0.067 Latent-HSJA SIM ↑ 0.719 0.779 0.797 0.811 LPIPS ↓ 0.119 0.072 0.061 0.053 LGC-H (Ours) SIM ↑ 0.9837 0.9961 0.9984 0.9996 LPIPS ↓ 0.0818 0.0253 0.0123 0.0050 LGC (Ours) SIM ↑ 0.9872 0.9985 0.9995 0.9999 
+
+LPIPS ↓ 0.0732 0.0153 0.0068 0.0029 Gender Recognition 
+
+HSJA [9] SIM ↑ 0.621 0.724 0.780 0.840 LPIPS ↓ 0.340 0.181 0.122 0.068 Latent-HSJA SIM ↑ 0.794 0.817 0.821 0.824 LPIPS ↓ 0.052 0.041 0.039 0.037 LGC-H (Ours) SIM ↑ 0.9974 0.9995 0.9997 0.9998 
+
+LPIPS ↓ 0.0950 0.0247 0.0159 0.0105 LGC (Ours) SIM ↑ 0.9944 0.9996 0.9997 0.9998 
+
+LPIPS ↓ 0.1111 0.0217 0.0139 0.0097 
+
+Image Patch Similarity (LPIPS) to validate structural fidelity and visual imperceptibility. Moreover, attack effectiveness and computational efficiency are measured by analyzing the Attack Success Rate (ASR) against the number of model queries and thresholds of SSIM and LPIPS. For CelebAMask-HQ [40] dataset, we also use Structural Similarity (SIM). 
+
+B. Experimental Results 
+
+Conventional adversarial evaluations rely heavily on strict 
+
+L2 mathematical distances, a metric that often fails to reflect human visual perception. Effective adversarial stealth requires preserving natural image qualities. When evaluated on visual fidelity—specifically SSIM and LPIPS—our proposed LGC framework and its variant (LGC-H) consistently outperform all baseline methods on both the ImageNet and Places365 datasets. Table I shows that LGC preserves high structural and perceptual quality across all classifiers. For instance, in the non-targeted ViT scenario, while CGBA-H mathe-matically minimizes the L2 distance, its pixel-level noise causes noticeable structural degradation (SSIM 0.992, LPIPS 0.022). In contrast, LGC exhibits enhanced appearance (SSIM 0.996, LPIPS 0.010). This fidelity gap increases significantly in targeted attacks. For example, on ImageNet (ResNet-50), baselines like CGBA severely degrade the target image to a low SSIM of 0.326, whereas LGC preserves a high SSIM of 0.960 at 10,000 queries. This confirms that our semantic methodology effectively misleads classifiers while preserving the fundamental structure of the image. To assess the practical effectiveness of existing attacks, we evaluate the Attack Success Rate (ASR) under strict perceptual stealth constraints. We plot ASR against the query budget using rigorous quality thresholds: SSIM ≥ 0.99 and LPIPS ≤
+
+0.05 for non-targeted scenarios, and SSIM ≥ 0.75 and LPIPS 
+
+≤ 0.3 for targeted scenarios. Additionally, we plot ASR against progressively stricter perceptual thresholds at a fixed budget of 3,000 queries, effectively penalizing methods that achieve misclassification by sacrificing visual realism. As shown in Fig. 2, under fixed SSIM constraints, LGC rapidly achieves high success rates. The fast convergence of the LGC curve reveals its ability to generate viable, high-fidelity adversarial examples within just 2,000 to 5,000 queries. This efficiency highlights a major limitation in current baselines: in targeted attacks under strict constraints, methods like CGBA and HSJA fail entirely, whereas LGC maintains an ASR of nearly 100%. Furthermore, when evaluating against varying SSIM thresholds at a fixed budget, baseline perfor-mance drops sharply as the requirement approaches perfect LATENT GEOMETRIC CHORDS FOR QUERY-EFFICIENT DECISION-BASED ADVERSARIAL ATTACKS 90             
+
+> 50
+> 100
+> ImageNet-ResNet50
+> ASR (%)
+> Non-targeted
+> (Queries)
+> Targeted
+> (Queries)
+> Non-targeted
+> (Threshold)
+> Targeted
+> (Threshold)
+> 0
+> 50
+> 100
+> ImageNet-VGG16
+> ASR (%)
+> 0
+> 50
+> 100
+> ImageNet-DenseNet121
+> ASR (%)
+> 0
+> 50
+> 100
+> ImageNet-ViT
+> ASR (%)
+> 0
+> 50
+> 100
+> Places365-ResNet50
+> ASR (%)
+> 05000 10000
+> Number of Queries
+> 0
+> 50
+> 100
+> Places365-DenseNet161
+> ASR (%)
+> 05000 10000
+> Number of Queries
+> 0.8 0.9 1.0
+> SSIM Threshold
+> 0.70 0.85 1.00
+> SSIM Threshold
+> Sign_OPT HSJA CGBA CGBA_H LGC LGC_H
+
+Fig. 2. ASR versus queries and SSIM thresholds across various classifiers on ImageNet and Places365. 0             
+
+> 50
+> 100
+> ImageNet-ResNet50
+> ASR (%)
+> Non-targeted
+> (Queries)
+> Targeted
+> (Queries)
+> Non-targeted
+> (Threshold)
+> Targeted
+> (Threshold)
+> 0
+> 50
+> 100
+> ImageNet-VGG16
+> ASR (%)
+> 0
+> 50
+> 100
+> ImageNet-DenseNet121
+> ASR (%)
+> 0
+> 50
+> 100
+> ImageNet-ViT
+> ASR (%)
+> 0
+> 50
+> 100
+> Places365-ResNet50
+> ASR (%)
+> 05000 10000
+> Number of Queries
+> 0
+> 50
+> 100
+> Places365-DenseNet161
+> ASR (%)
+> 05000 10000
+> Number of Queries
+> 0.000 0.075 0.150
+> LPIPS Threshold
+> 0.0 0.2 0.4
+> LPIPS Threshold
+> Sign_OPT HSJA CGBA CGBA_H LGC LGC_H
+
+Fig. 3. ASR versus queries and LPIPS thresholds across various classifiers on ImageNet and Places365. 
+
+TABLE IV AVERAGE (MEDIAN ) L2 NORM OF PERTURBATION FOR TARGETED AND NON -TARGETED BLACK -BOX ATTACKS UNDER DIFFERENT QUERY BUDGETS AGAINST ADVERSARIALLY TRAINED VIT ON IMAGE NET DATASET .
+
+Non-targeted Targeted Dataset Model Attack 1000 2500 5000 10000 1000 2500 5000 10000 ImageNet ViT Sign OPT 24.015(15.368) 14.524(10.275) 8.699(6.301) 5.838(3.959) 77.398(69.043) 75.737(67.648) 74.393(65.937) 72.094(64.080) HSJA 23.112(18.000) 17.519(13.130) 13.914(10.981) 11.196(8.714) 65.655(57.382) 60.680(52.237) 53.809(45.727) 44.681(36.064) CGBA-H 10.192(4.679) 6.039(2.849) 3.819(2.059) 2.841(1.575) 54.159(45.912) 42.785(33.436) 32.868(22.184) 24.611(12.986) CGBA 9.490(4.249) 6.049(2.424) 4.485(1.774) 3.439(1.337) 66.130(55.584) 59.031(47.977) 50.596(37.744) 40.523(20.497) LGC-H 7.464(2.799) 4.715(2.162) 3.805(1.902) 3.379(1.799) 54.847(46.482) 42.277(35.091) 31.830(26.128) 23.104(16.767) LGC 7.915(2.640) 5.299(2.051) 3.817(1.805) 3.297(1.656) 49.846(41.854) 34.496(28.783) 24.125(18.304) 17.129(11.180) 
+
+TABLE V AVERAGE SSIM / LPIPS VALUES OF PERTURBATION FOR TARGETED AND NON -TARGETED BLACK -BOX ATTACKS UNDER DIFFERENT QUERY BUDGETS AGAINST ADVERSARIALLY TRAINED VIT ON IMAGE NET DATASET .
+
+Non-targeted Targeted Dataset Model Attack 1000 2500 5000 10000 1000 2500 5000 10000 ImageNet ViT Sign OPT 0.595 / 0.339 0.711 / 0.252 0.816 / 0.175 0.877 / 0.128 0.436 / 0.622 0.408 / 0.632 0.389 / 0.637 0.378 / 0.636 HSJA 0.574 / 0.349 0.660 / 0.285 0.721 / 0.240 0.775 / 0.201 0.434 / 0.572 0.385 / 0.579 0.362 / 0.572 0.394 / 0.526 CGBA-H 0.862 / 0.174 0.915 / 0.117 0.950 / 0.079 0.968 / 0.056 0.585 / 0.522 0.631 / 0.473 0.693 / 0.408 0.763 / 0.331 CGBA 0.881 / 0.154 0.931 / 0.098 0.953 / 0.070 0.969 / 0.050 0.411 / 0.636 0.409 / 0.620 0.460 / 0.572 0.560 / 0.484 LGC-H 0.969 / 0.046 0.987 / 0.021 0.993 / 0.013 0.995 / 0.008 0.794 / 0.299 0.847 / 0.233 0.889 / 0.174 0.923 / 0.122 LGC 0.966 / 0.048 0.984 / 0.023 0.993 / 0.012 0.996 / 0.007 0.809 / 0.284 0.872 / 0.203 0.914 / 0.140 0.941 / 0.094 
+
+structural fidelity (SSIM → 1.0). In contrast, LGC consistently sustains a high success rate under these strict constraints. Similarly, Fig. 3 confirms this advantage using LPIPS evaluations. Under fixed LPIPS thresholds, LGC rapidly finds successful adversarial paths. When perceptual strictness in-creases (LPIPS → 0.0) at a fixed 3,000-query budget, baseline LATENT GEOMETRIC CHORDS FOR QUERY-EFFICIENT DECISION-BASED ADVERSARIAL ATTACKS 10 
+
+TABLE VI AVERAGE (MEDIAN ) L2 NORM OF PERTURBATION FOR TARGETED AND NON -TARGETED BLACK -BOX ATTACKS UNDER DIFFERENT QUERY BUDGETS AGAINST VIT ON IMAGE NET DATASET USING DIFFERENT AUTOENCODERS .                                            
+
+> Non-targeted Targeted Dataset Model Attack 1000 2500 5000 10000 1000 2500 5000 10000 ImageNet ViT LGC (VGG16 AE) 11.041(8.850) 5.583(4.630) 3.885(3.454) 3.104(2.884) 44.215(42.285) 23.328(22.017) 11.965(10.747) 6.337(5.631)
+> LGC-H (VGG16 AE) 11.359(9.472) 6.046(5.119) 4.211(3.716) 3.322(3.015) 48.271(46.680) 31.258(29.536) 19.101(17.027) 10.971(8.463) LGC (ResNet-50 AE) 11.294(9.052) 5.925(4.728) 4.079(3.545) 3.229(3.007) 52.875(44.156) 31.563(22.065) 18.598(10.412) 10.851(6.181) LGC-H (ResNet-50 AE) 11.174(9.520) 6.401(5.233) 4.440(3.909) 3.523(3.223) 47.925(46.536) 28.076(26.160) 16.712(14.732) 10.744(9.061)
+
+TABLE VII AVERAGE SSIM / LPIPS VALUES OF PERTURBATION FOR TARGETED AND NON -TARGETED BLACK -BOX ATTACKS UNDER DIFFERENT QUERY BUDGETS AGAINST VIT ON IMAGE NET DATASET USING DIFFERENT AUTOENCODERS                                                              
+
+> Non-targeted Targeted Dataset Model Attack 1000 2500 5000 10000 1000 2500 5000 10000 ImageNet ViT LGC (VGG16 AE) 0.956 /0.079 0.988 /0.027 0.994 /0.015 0.996 /0.010 0.813 /0.236 0.916 /0.122 0.967 /0.058 0.988 /0.029
+> LGC-H (VGG16 AE) 0.955 / 0.081 0.986 / 0.031 0.993 / 0.017 0.996 / 0.012 0.804 / 0.241 0.888 / 0.146 0.942 / 0.081 0.973 / 0.043 LGC (ResNet-50 AE) 0.945 / 0.101 0.982 / 0.043 0.992 / 0.025 0.995 / 0.018 0.745 / 0.302 0.839 / 0.206 0.905 / 0.128 0.952 / 0.076 LGC-H (ResNet-50 AE) 0.946 / 0.100 0.980 / 0.048 0.991 / 0.029 0.994 / 0.021 0.802 / 0.249 0.897 / 0.150 0.950 / 0.087 0.976 / 0.055
+
+methods suffer severe performance drops, making them inef-fective for stealthy deployments. LGC effectively overcomes these constraints, ensuring that the generated perturbations remain mathematically functional yet highly imperceptible to human observers. Visual comparisons of the generated adversarial images and normalized perturbation maps at 1,000 and 10,000 queries are illustrated in Fig. 4 and Fig. 5. Evaluated on the ViT (Im-ageNet) and ResNet-50 (Places365) models, these visualiza-tions confirm that LGC eliminates unnatural, high-frequency noise during optimization. By effectively navigating the geo-metric decision boundary, LGC successfully circumvents the local minima that trap existing methods, yielding structurally preserved outcomes. Finally, while prioritizing visual realism, LGC remains highly competitive in traditional L2 norm minimization. As detailed in Table II, LGC achieves state-of-the-art L2 perfor-mance on Places365, reducing the average norm on ResNet-50 and DenseNet161 to 2.401 and 2.385 at 10,000 queries. Crucially, in highly challenging targeted scenarios, LGC sig-nificantly outperforms baselines by escaping local minima. On Places365 (ResNet-50) at 10,000 queries, LGC reduces the perturbation distance to 10.185, while CGBA stagnates at 83.097—an eight times smaller. This strong performance extends to ImageNet; against DenseNet121, LGC achieves an L2 norm of 8.804 compared to CGBA’s 77.448 (around a nine times decrease). In specific non-targeted evaluations (e.g., ViT and VGG16), LGC marginally trails baselines in raw L2 magnitude (e.g., CGBA achieves 1.711 on ViT vs. LGC’s 3.104). However, as demonstrated above, accepting this small mathematical difference provides an optimal balance, preventing the severe structural damage caused by L2-centric techniques. To evaluate our framework, LGC and LGC-H, on struc-turally sensitive tasks, we attack a ResNet-18 model for Identity and Gender Classification using the CelebAMask-HQ dataset. Notably, autoencoders of LGC and LGC-H are pre-trained on ImageNet, underscoring its robust cross-domain transferability. Table III illustrates that LGC and LGC-H consistently outperform HSJA and Latent-HSJA baselines across all budgets. At 10,000 queries, LGC attains near-perfect Structural Similarity (SIM ≥ 0.9999) and ultra-low LPIPS (0.0029), substantially resolving the reconstruction bottlenecks that stall Latent-HSJA near 0.82. Visual results in Fig. 6 cor-roborate these gains; at 1,000 and 5,000 queries, both methods successfully deceive the classifier with minimal perturbations, making the adversarial examples perceptually identical to the source images. 
+
+1) Performance against Adversarially Trained Models: 
+
+Defeating adversarially trained models represents a rigorous test of an attack’s stealth and efficacy. We evaluated our framework against a state-of-the-art defended Vision Trans-former, Mo2022When ViT-B, from the RobustBench library [22]. As shown in Table V, LGC performs highly efficient early optimization in non-targeted settings, achieving high visual quality (SSIM up to 0.996, LPIPS 0.007). This vi-sual advantage is clearly evident in targeted attacks. While baselines severely damage image structure to cross the robust boundary—dropping SSIM scores to 0.378 (Sign OPT), 0.394 (HSJA), and 0.560 (CGBA)—LGC maintains a high SSIM of 0.941 and an LPIPS of 0.094. Fig. 8 shows that under strict visual constraints (SSIM ≥ 0.95/LPIPS ≤ 0.05 for non-targeted, and SSIM ≥ 0.75/LPIPS ≤ 0.3 for targeted), baseline success rates drop to near zero, whereas LGC suc-ceeds reliably. Furthermore, LGC also outperforms baselines in mathematical metrics (Table IV), reducing the targeted L2
+
+norm to 17.129 at 10,000 queries, compared to HSJA (44.681) and (Sign OPT) (72.049). 
+
+2) Ablation Study on the RAG Mechanism: To evaluate the impact of the Residual-based Adversarial Generation (RAG) mechanism, we conduct an ablation study, as shown in Fig. 7. When the RAG module is removed and the generative decoder output ( xf inal = G(z)) is used directly, the generated images exhibit significant blurring, color distortion, and loss of high-frequency details (see Ablation LGC-H and Ablation LGC ). These artifacts highlight the inherent reconstruction errors of standard autoencoders. Conversely, when the proposed RAG mechanism is applied (as formulated in Section IV-B), the isolated semantic shift is superimposed directly onto the pristine source image. As evidenced in the LGC-H and LGC columns, this preserves the original image’s structural integrity. This visually demonstrates LATENT GEOMETRIC CHORDS FOR QUERY-EFFICIENT DECISION-BASED ADVERSARIAL ATTACKS 11 Original Image 
+
+Label: 948 (Granny Smith) 
+
+Original 
+
+L2: 60.28 | SSIM: 0.161 
+
+LPIPS: 0.647 | Queries: 500 
+
+Adv Lbl: 470 (candle) 
+
+HSJA 
+
+L2: 107.19 | SSIM: 0.060 
+
+LPIPS: 0.820 | Queries: 500 
+
+Adv Lbl: 92 (bee eater) 
+
+Sign-OPT 
+
+L2: 19.99 | SSIM: 0.560 
+
+LPIPS: 0.395 | Queries: 500 
+
+Adv Lbl: 956 (custard apple) 
+
+CGBA 
+
+Non-Targeted 
+
+Normalized Perturbation 
+
+(HSJA) 
+
+Normalized Perturbation 
+
+(Sign-OPT) 
+
+Normalized Perturbation 
+
+(CGBA) 
+
+L2: 20.65 | SSIM: 0.540 
+
+LPIPS: 0.410 | Queries: 500 
+
+Adv Lbl: 956 (custard apple) 
+
+CGBA_H 
+
+L2: 13.13 | SSIM: 0.944 
+
+LPIPS: 0.157 | Queries: 500 
+
+Adv Lbl: 945 (bell pepper) 
+
+LGC_H 
+
+L2: 11.84 | SSIM: 0.954 
+
+LPIPS: 0.144 | Queries: 500 
+
+Adv Lbl: 945 (bell pepper) 
+
+LGC 
+
+Normalized Perturbation 
+
+(CGBA_H) 
+
+Normalized Perturbation 
+
+(LGC_H) 
+
+Normalized Perturbation 
+
+(LGC) 
+
+(a) Granny Smith misclassified as arbitrary class (500 queries). Original Image 
+
+Label: 389 (barracouta) 
+
+Original 
+
+L2: 48.90 | SSIM: 0.420 
+
+LPIPS: 0.481 | Queries: 5000 
+
+Adv Lbl: 449 (boathouse) 
+
+HSJA 
+
+L2: 134.00 | SSIM: 0.079 
+
+LPIPS: 0.733 | Queries: 5000 
+
+Adv Lbl: 449 (boathouse) 
+
+Sign-OPT 
+
+L2: 45.18 | SSIM: 0.492 
+
+LPIPS: 0.550 | Queries: 5000 
+
+Adv Lbl: 449 (boathouse) 
+
+CGBA 
+
+Target Image 
+
+Label: 449 (boathouse) 
+
+Normalized Perturbation 
+
+(HSJA) 
+
+Normalized Perturbation 
+
+(Sign-OPT) 
+
+Normalized Perturbation 
+
+(CGBA) 
+
+L2: 31.23 | SSIM: 0.697 
+
+LPIPS: 0.386 | Queries: 5000 
+
+Adv Lbl: 449 (boathouse) 
+
+CGBA_H 
+
+L2: 36.94 | SSIM: 0.867 
+
+LPIPS: 0.167 | Queries: 5000 
+
+Adv Lbl: 449 (boathouse) 
+
+LGC_H 
+
+L2: 26.63 | SSIM: 0.910 
+
+LPIPS: 0.123 | Queries: 5000 
+
+Adv Lbl: 449 (boathouse) 
+
+LGC 
+
+Normalized Perturbation 
+
+(CGBA_H) 
+
+Normalized Perturbation 
+
+(LGC_H) 
+
+Normalized Perturbation 
+
+(LGC) 
+
+(b) Barracouta misclassified as target class boathouse (5,000 queries). 
+
+Fig. 4. Adversarial examples against ViT on ImageNet. 
+
+that RAG effectively circumvents decoder reconstruction er-rors, maintaining high visual fidelity that remains perceptually indistinguishable to human observers. 
+
+3) Impact of Autoencoder Architecture on Semantic Pertur-bations: To assess the influence of the autoencoder [45] back-Original Image 
+
+Label: 48 (beach) 
+
+Original 
+
+L2: 34.25 | SSIM: 0.206 
+
+LPIPS: 0.584 | Queries: 500 
+
+Adv Lbl: 137 (fabric store) 
+
+Sign-OPT 
+
+L2: 25.09 | SSIM: 0.307 
+
+LPIPS: 0.535 | Queries: 500 
+
+Adv Lbl: 137 (fabric store) 
+
+HSJA 
+
+L2: 18.35 | SSIM: 0.484 
+
+LPIPS: 0.556 | Queries: 500 
+
+Adv Lbl: 34 (ball pit) 
+
+CGBA_H 
+
+Non-Targeted 
+
+Normalized Perturbation 
+
+(Sign-OPT) 
+
+Normalized Perturbation 
+
+(HSJA) 
+
+Normalized Perturbation 
+
+(CGBA_H) 
+
+L2: 18.20 | SSIM: 0.501 
+
+LPIPS: 0.541 | Queries: 500 
+
+Adv Lbl: 34 (ball pit) 
+
+CGBA 
+
+L2: 5.19 | SSIM: 0.986 
+
+LPIPS: 0.053 | Queries: 500 
+
+Adv Lbl: 204 (lagoon) 
+
+LGC 
+
+L2: 4.63 | SSIM: 0.989 
+
+LPIPS: 0.044 | Queries: 500 
+
+Adv Lbl: 204 (lagoon) 
+
+LGC_H 
+
+Normalized Perturbation 
+
+(CGBA) 
+
+Normalized Perturbation 
+
+(LGC) 
+
+Normalized Perturbation 
+
+(LGC_H) 
+
+(a) Beach misclassified as arbitrary class (500 queries). Original Image 
+
+Label: 26 (attic) 
+
+Original 
+
+L2: 78.77 | SSIM: 0.419 
+
+LPIPS: 0.574 | Queries: 5000 
+
+Adv Lbl: 2 (airport terminal) 
+
+Sign-OPT 
+
+L2: 58.30 | SSIM: 0.419 
+
+LPIPS: 0.542 | Queries: 5000 
+
+Adv Lbl: 2 (airport terminal) 
+
+HSJA 
+
+L2: 96.99 | SSIM: 0.407 
+
+LPIPS: 0.599 | Queries: 5000 
+
+Adv Lbl: 2 (airport terminal) 
+
+CGBA_H 
+
+Target Image 
+
+Label: 2 (airport terminal) 
+
+Normalized Perturbation 
+
+(Sign-OPT) 
+
+Normalized Perturbation 
+
+(HSJA) 
+
+Normalized Perturbation 
+
+(CGBA_H) 
+
+L2: 136.82 | SSIM: 0.207 
+
+LPIPS: 0.746 | Queries: 5000 
+
+Adv Lbl: 2 (airport terminal) 
+
+CGBA 
+
+L2: 13.81 | SSIM: 0.960 
+
+LPIPS: 0.125 | Queries: 5000 
+
+Adv Lbl: 2 (airport terminal) 
+
+LGC 
+
+L2: 29.50 | SSIM: 0.880 
+
+LPIPS: 0.252 | Queries: 5000 
+
+Adv Lbl: 2 (airport terminal) 
+
+LGC_H 
+
+Normalized Perturbation 
+
+(CGBA) 
+
+Normalized Perturbation 
+
+(LGC) 
+
+Normalized Perturbation 
+
+(LGC_H) 
+
+(b) Attic misclassified as target class airport terminal (5,000 queries). 
+
+Fig. 5. Adversarial examples against ResNet-50 on Places365. 
+
+bone, we compared VGG16 against ResNet-50 on ImageNet using a ViT classifier. Tables VII and VI show that VGG16 consistently outperforms ResNet-50, maximizing structural preservation while minimizing the perturbation magnitude. Fig. 9 further validates that VGG16 achieves a higher ASR with significantly fewer queries under strict constraints (non-LATENT GEOMETRIC CHORDS FOR QUERY-EFFICIENT DECISION-BASED ADVERSARIAL ATTACKS 12 Original Image    
+
+> Label: Female
+> Source Image
+> Queries: 1000 | Adv Lbl: Male
+> L2: 8.58 | SSIM: 0.978
+> SIM: 0.9994 | LPIPS: 0.058
+> LGC (Queries=1000)
+> Queries: 1000 | Adv Lbl: Male
+> L2: 8.74 | SSIM: 0.976
+> SIM: 0.9994 | LPIPS: 0.062
+> LGC_H (Queries=1000)
+> Queries: 5000 | Adv Lbl: Male
+> L2: 4.39 | SSIM: 0.994
+> SIM: 0.9998 | LPIPS: 0.014
+> LGC (Queries=5000)
+> Queries: 5000 | Adv Lbl: Male
+> L2: 4.49 | SSIM: 0.994
+> SIM: 0.9998 | LPIPS: 0.015
+> LGC_H (Queries=5000)
+> Normalized Perturbation Normalized Perturbation Normalized Perturbation Normalized Perturbation
+
+(a) Female misclassified as class male. Original Image    
+
+> Label: 255
+> Source Image
+> Queries: 1000 | Adv Lbl: 124
+> L2: 11.73 | SSIM: 0.977
+> SIM: 0.9992 | LPIPS: 0.011
+> LGC (Queries=1000)
+> Queries: 1000 | Adv Lbl: 124
+> L2: 26.50 | SSIM: 0.927
+> SIM: 0.9960 | LPIPS: 0.044
+> LGC_H (Queries=1000)
+> Queries: 5000 | Adv Lbl: 124
+> L2: 3.51 | SSIM: 0.997
+> SIM: 0.9999 | LPIPS: 0.002
+> LGC (Queries=5000)
+> Queries: 5000 | Adv Lbl: 124
+> L2: 7.63 | SSIM: 0.990
+> SIM: 0.9997 | LPIPS: 0.005
+> LGC_H (Queries=5000)
+> Target Image
+> Label: 124
+> Normalized Perturbation Normalized Perturbation Normalized Perturbation Normalized Perturbation
+
+(b) Class 255 misclassified as target class 124. 
+
+Fig. 6. Adversarial examples generated by the LGC and LGC-H methods against ResNet-18 on the CelebAMask-HQ dataset. Original 
+
+Source 
+
+Image 
+
+Target 
+
+Reference 
+
+Image 
+
+Adversarial 
+
+Image 
+
+(Ablation LGC_H) 
+
+Adversarial 
+
+Image 
+
+(Ablation LGC) 
+
+Adversarial 
+
+Image 
+
+(LGC_H) 
+
+Adversarial 
+
+Image 
+
+(LGC) 
+
+Fig. 7. Ablation study comparing visual quality with and without Residual-based Adversarial Generation (RAG) at a query budget of Q = 10000 .0 5000 10000 
+
+Number of Queries 
+
+> 0
+> 50
+> 100
+> AT ImageNet-ViT
+> ASR (%)
+
+Non-targeted 
+
+(Queries)   
+
+> 05000 10000
+
+Number of Queries 
+
+Targeted 
+
+(Queries)   
+
+> 0.8 0.9 1.0
+
+SSIM Threshold 
+
+Non-targeted 
+
+(Threshold)   
+
+> 0.70 0.85 1.00
+
+SSIM Threshold 
+
+Targeted 
+
+(Threshold)      
+
+> Sign_OPT HSJA CGBA CGBA_H LGC LGC_H
+
+(a) ASR versus queries and SSIM thresholds. 0 5000 10000 
+
+Number of Queries 
+
+> 0
+> 50
+> 100
+> AT ImageNet-ViT
+> ASR (%)
+
+Non-targeted 
+
+(Queries)   
+
+> 05000 10000
+
+Number of Queries 
+
+Targeted 
+
+(Queries)   
+
+> 0.000 0.075 0.150
+
+LPIPS Threshold 
+
+Non-targeted 
+
+(Threshold)   
+
+> 0.0 0.2 0.4
+
+LPIPS Threshold 
+
+Targeted 
+
+(Threshold)      
+
+> Sign_OPT HSJA CGBA CGBA_H LGC LGC_H
+
+(b) ASR versus queries and LPIPS thresholds. 
+
+Fig. 8. ASR results against Adversarially-trained ViT on ImageNet. 
+
+targeted: SSIM ≥ 0.99, LPIPS ≤ 0.05; targeted: SSIM ≥0 5000 10000 
+
+Number of Queries 
+
+> 0
+> 50
+> 100
+> Autoencoder ImageNet-ViT
+> ASR (%)
+
+Non-targeted 
+
+(Varying Queries)   
+
+> 05000 10000
+
+Number of Queries 
+
+Targeted 
+
+(Varying Queries)   
+
+> 0.8 0.9 1.0
+
+SSIM Threshold 
+
+Non-targeted 
+
+(Varying Threshold)   
+
+> 0.70 0.85 1.00
+
+SSIM Threshold 
+
+Targeted 
+
+(Varying Threshold) 
+
+LGC (VGG16 AE) LGC_H (VGG16 AE) LGC (ResNet50 AE) LGC_H (ResNet50 AE) 
+
+(a) ASR versus queries and SSIM thresholds. 0 5000 10000 
+
+Number of Queries 
+
+> 0
+> 50
+> 100
+> Autoencoder ImageNet-ViT
+> ASR (%)
+
+Non-targeted 
+
+(Varying Queries)   
+
+> 05000 10000
+
+Number of Queries 
+
+Targeted 
+
+(Varying Queries)   
+
+> 0.000 0.075 0.150
+
+LPIPS Threshold 
+
+Non-targeted 
+
+(Varying Threshold)   
+
+> 0.0 0.2 0.4
+
+LPIPS Threshold 
+
+Targeted 
+
+(Varying Threshold) 
+
+LGC (VGG16 AE) LGC_H (VGG16 AE) LGC (ResNet50 AE) LGC_H (ResNet50 AE) 
+
+(b) ASR versus queries and LPIPS thresholds. 
+
+Fig. 9. ASR results against ViT varying autoencoder on ImageNet. 
+
+0.90, LPIPS ≤ 0.3). This advantage is rooted in VGG16’s strictly sequential architecture, which creates a feature space strongly aligned with human visual perception [27]. As a result, geometric operations within its latent space—such as LGC’s semicircular trajectories—translate predictably into visually coherent semantic shifts. This predictable mapping improves both search efficiency and visual fidelity. Conversely, ResNet utilizes identity skip connections ( H(x) = F (x) + x)that distribute spatial representations across hierarchical scales [41]. A localized step in ResNet’s latent space simultaneously modifies features across these scales, mapping unpredictably to the pixel domain X . Therefore, navigating ResNet’s highly non-linear latent space requires substantially more queries compared to the sequentially aligned VGG backbone. VI. C ONCLUSION 
+
+This study introduces a novel decision-based black-box framework: Latent Geometric Chords for Query-Efficient Decision-Based Adversarial Attacks (LGC) with its variant, LGC-H. By executing a curvature-aware geometric search within a semantic manifold and generating adversarial images using a Residual-based Adversarial Generation method, LGC expands search dimensionality and significantly reduces gen-erative reconstruction errors. Crucially, we establish a mathe-matical foundation proving that this chord-based formulation effectively expands the adversarial search space to a Hausdorff dimension of up to 2k. This theoretical guarantee underpins the ability of LGC and LGC-H to efficiently bypass the strict dimensionality bottlenecks of standard manifold optimization without falling into suboptimal local minima. Evaluations on the ImageNet, Places365 and CelebAMask-HQ datasets demonstrate that LGC significantly outperforms existing base-lines. In targeted attacks, it reduces the L2 perturbation mag-nitude by a factor of six while preserving near-perfect visual fidelity (SSIM > 0.96 , LPIPS < 0.091 ). Furthermore, LGC exhibits strong cross-dataset transferability and successfully compromises adversarially trained Vision Transformers. These results expose the limitations of current defenses against latent-derived semantic threats. Future work will investigate integrating Latent Geometric Chords into adversarial training LATENT GEOMETRIC CHORDS FOR QUERY-EFFICIENT DECISION-BASED ADVERSARIAL ATTACKS 13 
+
+methods and adapting this methodology for Latent Diffusion Models. REFERENCES [1] C. Szegedy, W. Zaremba, I. Sutskever, J. Bruna, D. Erhan, I. Goodfellow, and R. Fergus, “Intriguing properties of neural networks,” in 2nd International Conference on Learning Representations (ICLR) , Banff, AB, Canada, 2014. [2] I. J. Goodfellow, J. Shlens, and C. Szegedy, “Explaining and harnessing adversarial examples,” in 3rd International Conference on Learning Representations (ICLR) , San Diego, CA, USA, 2015. [3] N. Carlini and D. Wagner, “Towards Evaluating the Robustness of Neural Networks,” in 2017 IEEE Symposium on Security and Privacy (SP) ,2017, pp. 39–57, doi: 10.1109/SP.2017.49. [4] A. Ilyas, L. Engstrom, and A. Madry, “Prior Convictions: Black-Box Adversarial Attacks with Bandits and Priors,” in Proceedings of the 7th International Conference on Learning Representations (ICLR) , New Orleans, LA, USA, 2019. [5] N. Papernot, P. McDaniel, and I. J. Goodfellow, “Transferability in Machine Learning: from Phenomena to Black-Box Attacks using Ad-versarial Samples,” arXiv preprint arXiv:1605.07277 , 2016. [6] P.-Y. Chen, H. Zhang, Y. Sharma, J. Yi, and C.-J. Hsieh, “ZOO: Zeroth Order Optimization Based Black-box Attacks to Deep Neural Networks without Training Substitute Models,” in Proceedings of the 10th ACM Workshop on Artificial Intelligence and Security (AISec) , Dallas, TX, USA, 2017, pp. 15–26, doi: 10.1145/3128572.3140448. [7] D. Wu, Y. Wang, S.-T. Xia, J. Bailey, and X. Ma, “Skip Connections Matter: On the Transferability of Adversarial Examples Generated with ResNets,” in Proceedings of the 8th International Conference on Learning Representations (ICLR) , Addis Ababa, Ethiopia, 2020. [8] W. Brendel, J. Rauber, and M. Bethge, “Decision-Based Adversarial At-tacks: Reliable Attacks Against Black-Box Machine Learning Models,” in Int. Conf. Learn. Represent. (ICLR) , 2018. [9] J. Chen, M. Jordan, and M. Wainwright, “HopSkipJumpAttack: A Query-Efficient Decision-Based Attack,” in 2020 IEEE Sympo-sium on Security and Privacy (SP) , 2020, pp. 1277–1294, doi: 10.1109/SP40000.2020.00045. [10] T. Maho, T. Furon, and E. Le Merrer, “SurFree: a fast surrogate-free black-box attack,” in 2021 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , Nashville, TN, USA, 2021, pp. 10425– 10434, doi: 10.1109/CVPR46437.2021.01029. [11] X. Wang et al. , “Triangle Attack: A Query-Efficient Decision-Based Adversarial Attack,” in Computer Vision – ECCV 2022 , Lecture Notes in Computer Science , vol. 13665, S. Avidan, G. Brostow, M. Ciss´ e, G. M. Farinella, and T. Hassner, Eds. Cham: Springer, 2022, doi: 10.1007/978-3-031-20065-6 10. [12] M. F. Reza, A. Rahmati, T. Wu, and H. Dai, “CGBA: Curvature-aware Geometric Black-box Attack,” in 2023 IEEE/CVF International Conference on Computer Vision (ICCV) , Paris, France, 2023, pp. 124– 133, doi: 10.1109/ICCV51070.2023.00018. [13] H. Li, X. Xu, X. Zhang, S. Yang, and B. Li, “QEBA: Query-Efficient Boundary-Based Blackbox Attack,” in 2020 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , Seattle, WA, USA, 2020, pp. 1218–1227, doi: 10.1109/CVPR42600.2020.00130. [14] J. Chen, H. Chen, K. Chen, Y. Zhang, Z. Zou, and Z. Shi, “Diffusion Models for Imperceptible and Transferable Adversarial Attack,” IEEE Transactions on Pattern Analysis and Machine Intelligence , vol. 47, no. 2, pp. 961–977, Feb. 2025, doi: 10.1109/TPAMI.2024.3480519. [15] X. Chen, X. Gao, J. Zhao, K. Ye, and C.-Z. Xu, “AdvDiffuser: Nat-ural Adversarial Example Synthesis with Diffusion Models,” in 2023 IEEE/CVF International Conference on Computer Vision (ICCV) , Paris, France, 2023, pp. 4539–4549, doi: 10.1109/ICCV51070.2023.00421. [16] H. Xue, A. Araujo, B. Hu, and Y. Chen, “Diffusion-based adversarial sample generation for improved stealthiness and controllability,” in 
+
+Advances in Neural Information Processing Systems , vol. 36, 2023, pp. 2894–2921. [17] J. Li et al. , “Aha! Adaptive History-driven Attack for Decision-based Black-box Models,” in 2021 IEEE/CVF International Conference on Computer Vision (ICCV) , Montreal, QC, Canada, 2021, pp. 16148– 16157, doi: 10.1109/ICCV48922.2021.01586. [18] J. Chen and Q. Gu, “RayS: A ray searching method for hard-label adver-sarial attack,” in Proceedings of the 26th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining , 2020, pp. 1739– 1747. [19] Y. Liu, S. -M. Moosavi-Dezfooli, and P. Frossard, “A Geometry-Inspired Decision-Based Attack,” in Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) , Seoul, Korea (South), 2019, pp. 4889–4897. [20] A. Rahmati, S.-M. Moosavi-Dezfooli, P. Frossard, and H. Dai, “GeoDA: A geometric framework for black-box adversarial attacks,” in Proceed-ings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2020, pp. 8446–8455. [21] Y. Song, R. Shu, N. Kushman, and S. Ermon, “Constructing unrestricted adversarial examples with generative models,” in Advances in Neural Information Processing Systems (NeurIPS) , vol. 31, 2018. [22] F. Croce, M. Andriushchenko, V. Sehwag, N. Flammarion, M. Chiang, P. Mittal, and M. Hein, “RobustBench: a standardized adversarial robustness benchmark,” in Thirty-fifth Conference on Neural Information Processing Systems (NeurIPS) Datasets and Benchmarks Track , 2021. [23] P.-Y. Chen, S. Liu, P. Chen, M. Cheng, C.-J. Hsieh, and S. Singh, “Sign-OPT: A Query-Efficient Hard-label Adversarial Attack,” in 8th International Conference on Learning Representations (ICLR) , 2020. [Online]. Available: https://hdl.handle.net/1783.1/114686 [24] N. Inkawhich, W. Wen, H. H. Li, and Y. Chen, “Feature Space Perturba-tions Yield More Transferable Adversarial Examples,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2019, pp. 7066–7074. [25] A. Ilyas, S. Santurkar, D. Tsipras, L. Engstrom, B. Tran, and A. Madry, “Adversarial Examples Are Not Bugs, They Are Features,” in Advances in Neural Information Processing Systems , vol. 32, 2019. [26] W. Xia, Y. Zhang, Y. Yang, J.-H. Xue, B. Zhou, and M.-H. Yang, “GAN Inversion: A Survey,” IEEE Transactions on Pattern Analysis and Machine Intelligence , vol. 45, no. 3, pp. 3121–3138, March 2023, doi: 10.1109/TPAMI.2022.3181070. [27] R. Zhang, P. Isola, A. A. Efros, E. Shechtman, and O. Wang, “The Unreasonable Effectiveness of Deep Features as a Perceptual Metric,” in 2018 IEEE/CVF Conference on Computer Vision and Pattern Recog-nition (CVPR) , pp. 586–595, 2018. [28] D. Na, S. Ji, and J. Kim, “Unrestricted Black-Box Adversarial Attack Using GAN with Limited Queries,” in Computer Vision – ECCV 2022 Workshops , 2022, pp. 467–482. [29] A. Madry, A. Makelov, L. Schmidt, D. Tsipras, and A. Vladu, “Towards Deep Learning Models Resistant to Adversarial Attacks,” in Proceedings of the 6th International Conference on Learning Representations (ICLR) ,Vancouver, BC, Canada, 2018. [30] O. Poursaeed, T. Jiang, Y. Goshu, H. Yang, S. Belongie, and S. N. Lim, “Fine-grained synthesis of unrestricted adversarial examples,” arXiv preprint arXiv:1911.09058 , 2019. [31] K. Kakizaki and K. Yoshida, “Adversarial image translation: Unre-stricted adversarial examples in face recognition systems,” in Proceed-ings of the Workshop on Artificial Intelligence Safety, co-located with 34th AAAI 2020 , 2020. [32] T. Karras, S. Laine, M. Aittala, J. Hellsten, J. Lehtinen, and T. Aila, “Analyzing and Improving the Image Quality of StyleGAN,” in 2020 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pp. 8107–8116, 2020. [33] J. Deng et al. , “ImageNet: A Large-Scale Hierarchical Image Database,” in Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , 2009, pp. 248–255, doi: 10.1109/CVPR.2009.5206848. [34] B. Zhou, A. Lapedriza, A. Khosla, A. Oliva, and A. Torralba, “Places: A 10 Million Image Database for Scene Recognition,” IEEE Transactions on Pattern Analysis and Machine Intelligence , vol. 40, no. 6, pp. 1452– 1464, June 2018, doi: 10.1109/TPAMI.2017.2723009. [35] A. Jalal, A. Ilyas, C. Daskalakis, and A. G. Dimakis, “The Robust Manifold Defense: Adversarial Training using Generative Models,” 
+
+arXiv preprint arXiv:1712.09196 , 2017. [36] P. Samangouei, M. Kabkab, and R. Chellappa, “Defense-GAN: Protect-ing Classifiers Against Adversarial Attacks Using Generative Models,” in 6th International Conference on Learning Representations (ICLR) ,Vancouver, BC, Canada, 2018. [37] U. Jang, S. Jha, and S. Jha, “On the Need for Topology-Aware Gener-ative Models for Manifold-Based Defenses,” in 8th International Con-ference on Learning Representations (ICLR) , Addis Ababa, Ethiopia, 2020. [38] M. Arjovsky and L. Bottou, “Towards Principled Methods for Training Generative Adversarial Networks,” in 5th International Conference on Learning Representations (ICLR) , Toulon, France, 2017. [39] K. Falconer, Fractal Geometry: Mathematical Foundations and Appli-cations , 3rd ed. John Wiley & Sons, 2014. LATENT GEOMETRIC CHORDS FOR QUERY-EFFICIENT DECISION-BASED ADVERSARIAL ATTACKS 14 
+
+[40] C. H. Lee, Z. Liu, L. Wu, and P. Luo, “MaskGAN: Towards diverse and interactive facial image manipulation,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2020. [41] K. He, X. Zhang, S. Ren, and J. Sun, “Deep Residual Learning for Image Recognition,” in 2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , Las Vegas, NV, USA, 2016, pp. 770–778, doi: 10.1109/CVPR.2016.90. [42] K. Simonyan and A. Zisserman, “Very deep convolutional networks for large-scale image recognition,” arXiv preprint arXiv:1409.1556 , 2014. [43] A. Dosovitskiy et al. , “An image is worth 16x16 words: Transformers for image recognition at scale,” arXiv preprint arXiv:2010.11929 , 2020. [44] G. Huang, Z. Liu, L. Van Der Maaten, and K. Q. Weinberger, “Densely Connected Convolutional Networks,” in 2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , Honolulu, HI, USA, 2017, pp. 2261–2269, doi: 10.1109/CVPR.2017.243. [45] Horizon2333, “imagenet-autoencoder: AutoEncoder trained on Ima-geNet,” GitHub repository , 2022. [Online]. Available: https://github. com/Horizon2333/imagenet-autoencoder. Accessed on: May 2, 2026.

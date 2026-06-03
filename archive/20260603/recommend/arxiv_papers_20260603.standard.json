@@ -1,0 +1,249 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-03T22:25:07.234752+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 5,
+    "deep_cap": 6,
+    "deep_selected": 5,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2605.30705v1",
+      "source": "arxiv",
+      "title": "Equivariant Latent Alignment via Flow Matching under Group Symmetries",
+      "abstract": "Geometry-aware generative models and novel view synthesis approaches have shown strong potential in visual fidelity and consistency. In parallel, equivariant representation learning has emerged as a powerful framework for constructing latent spaces where analytically known group transformations could act directly, capturing geometric structure in data and enhancing both interpretability and generalization in novel view synthesis. However, we identify that existing approaches often suffer from latent misalignment, a discrepancy between the intended group action and the actually required transformations in the latent space. Consequently, the learned latents often fail to consistently preserve the equivariant relations imposed by the underlying group symmetry. To address this, we propose Residual Latent Flow, a flow-based framework that corrects the misaligned latents, thereby improving compliance with the underlying equivariance relation. Our comprehensive experiments show that our method significantly reduces latent misalignment and improves novel view synthesis quality, under rotation groups SO(n).",
+      "authors": [
+        "Sunghyun Kim",
+        "Jaehoon Hahm",
+        "Jeongwoo Shin",
+        "Joonseok Lee"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-05-29T00:57:13+00:00",
+      "link": "https://arxiv.org/pdf/2605.30705v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Proposes a method for aligning latent representations under group transformations, directly intervening in the latent space to enforce equivariance.",
+      "llm_evidence_cn": "提出在潜在空间中对齐表示以强制等变性的方法，直接干预深度模型的潜在空间。",
+      "llm_evidence": "提出在潜在空间中对齐表示以强制等变性的方法，直接干预深度模型的潜在空间。",
+      "canonical_evidence": "提出在潜在空间中对齐表示以强制等变性的方法，直接干预深度模型的潜在空间。",
+      "llm_tldr_en": "Proposes flow matching to align latent representations with group symmetries, addressing latent misalignment and enabling consistent group actions in the latent space for improved interpretability and generalization.",
+      "llm_tldr_cn": "现有等变表示学习方法常出现潜在空间不对齐问题，导致期望的群变换与实际所需变换存在差异。本文提出使用流匹配（flow matching）在潜在空间中对齐表示，强制群对称性，确保学习到的潜在变量能一致地反映数据的几何结构。实验表明该方法能有效解决潜在不对齐，提升新颖视图合成中的一致性和泛化能力，为几何感知生成模型提供了新思路。",
+      "llm_tldr": "现有等变表示学习方法常出现潜在空间不对齐问题，导致期望的群变换与实际所需变换存在差异。本文提出使用流匹配（flow matching）在潜在空间中对齐表示，强制群对称性，确保学习到的潜在变量能一致地反映数据的几何结构。实验表明该方法能有效解决潜在不对齐，提升新颖视图合成中的一致性和泛化能力，为几何感知生成模型提供了新思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.31266v1",
+      "source": "arxiv",
+      "title": "Envisioning Beyond the Few: Disentangled Semantics and Primitives for Few-Shot Atypical Layout-to-Image Generation",
+      "abstract": "The layout-to-image (L2I) task enables fine-grained control over image generation via object categories and spatial layouts. However, existing L2I methods yield fragmented and distorted generations under few-shot atypical settings. We term this failure as representation fragmentation, arising from a granularity mismatch that entangles semantic identity with visual details. To address this issue, we propose a representation-driven framework that disentangles semantics from primitives for robust few-shot adaptation. Specifically, Semantic Anchoring aggregates categorical semantics into anchors for stable identity, while Primitive Imbuing models recomposable primitives for robust local detail modeling. Conceptual Steering further regulates optimization with a saliency-aware objective to preserve foreground semantic consistency. Extensive experiments demonstrate consistent improvements in the 5-shot regime over state-of-the-art L2I methods in both visual fidelity and alignment across diverse atypical domains. The source code is publicly available at https://github.com/iCVTEAM/DSP.",
+      "authors": [
+        "Nan Bao",
+        "Yifan Zhao",
+        "Wenzhuang Wang",
+        "Jia Li"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-05-29T13:00:00+00:00",
+      "link": "https://arxiv.org/pdf/2605.31266v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Disentangles semantics from recomposable visual primitives to prevent fragmentation, directly relevant to feature disentanglement",
+      "llm_evidence_cn": "解耦语义与可组合视觉基元以防止碎片化，直接相关于特征解耦",
+      "llm_evidence": "解耦语义与可组合视觉基元以防止碎片化，直接相关于特征解耦",
+      "canonical_evidence": "解耦语义与可组合视觉基元以防止碎片化，直接相关于特征解耦",
+      "llm_tldr_en": "Proposes a framework that disentangles semantic identity from visual primitives for robust few-shot layout-to-image generation, solving representation fragmentation by separating high-level semantics from low-level details.",
+      "llm_tldr_cn": "提出一个框架，将语义身份与视觉基元解耦，以实现鲁棒的少样本布局到图像生成，通过分离高层语义和低层细节解决了表示碎片化问题。",
+      "llm_tldr": "提出一个框架，将语义身份与视觉基元解耦，以实现鲁棒的少样本布局到图像生成，通过分离高层语义和低层细节解决了表示碎片化问题。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.30596v1",
+      "source": "arxiv",
+      "title": "Improving Relative Representations with Learned Anchors and Whitened Inner Products",
+      "abstract": "Independently trained neural models typically converge to incompatible latent representations, creating a fundamental barrier to highly modular AI systems. While Relative Representations (RR) address this by mapping absolute coordinates to a shared space defined by similarities to common anchor points, traditional implementations rely on randomly sampled anchors and cosine similarity, which frequently fail to capture the anisotropic geometries of modern architectures like Transformers. In this work, we propose a robust framework for cross-model communication based on two improvements. We learn anchors as robust semantic prototypes and utilize a geometry-aware similarity metric which preserves discriminative magnitude information and is invariant to affine shifts. Our approach demonstrates significant gains in performance and consistency across vision and language tasks. Notably, it enables nearly lossless information transfer and stable zero-shot communication even between highly heterogeneous architectures, such as small language models of varying scales.",
+      "authors": [
+        "Oscar Thorsted Svendsen",
+        "Nikolaj Holst Jakobsen",
+        "Fabian Mager",
+        "Hiba Nassar"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-28T21:43:53+00:00",
+      "link": "https://arxiv.org/pdf/2605.30596v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Improves Relative Representations, a latent space intervention, with learned anchors and whitened inner products",
+      "llm_evidence_cn": "通过学习的锚点和白化内积改进相对表示，一种潜在空间干预技术",
+      "llm_evidence": "通过学习的锚点和白化内积改进相对表示，一种潜在空间干预技术",
+      "canonical_evidence": "通过学习的锚点和白化内积改进相对表示，一种潜在空间干预技术",
+      "llm_tldr_en": "Proposes improvements to Relative Representations for cross-model communication by learning semantic anchor prototypes and using a geometry-aware similarity metric, enhancing alignment of incompatible latent spaces in Transformers.",
+      "llm_tldr_cn": "针对独立训练模型潜在空间不兼容问题，提出改进的相对表示方法：通过学习语义原型锚点和几何感知相似度度量，提升跨模型通信的对齐效果，在Transformer等现代架构上展现了更强的适应性，为模块化AI系统提供了关键的表示同步技术。",
+      "llm_tldr": "针对独立训练模型潜在空间不兼容问题，提出改进的相对表示方法：通过学习语义原型锚点和几何感知相似度度量，提升跨模型通信的对齐效果，在Transformer等现代架构上展现了更强的适应性，为模块化AI系统提供了关键的表示同步技术。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.31219v1",
+      "source": "arxiv",
+      "title": "Latent Geometric Chords for Query-Efficient Decision-Based Adversarial Attacks",
+      "abstract": "While decision-based black-box adversarial attacks present a severe security threat, current methodologies suffer from fundamental limitations. Pixel-wise attacks frequently introduce unnatural, high-frequency visual artifacts, while latent-space frameworks are confined by the limited search space of low-dimensional manifolds and inherent reconstruction flaws. To resolve these limitations, we propose Latent Geometric Chords (LGC) for Query-Efficient Decision-Based Adversarial Attacks alongside a variant, LGC-H. At its core, LGC navigates decision boundaries by executing a curvature-aware geometric search within a compressed semantic manifold. To guarantee high visual fidelity and circumvent dimensionality bottlenecks, we introduce a Residual-based Adversarial Generation (RAG) mechanism. RAG isolates semantic perturbations as geometric chords and superimposes them directly onto the original source image. RAG substantially resolves baseline reconstruction flaws and effectively doubles the permissible search space dimensions. Experimental results demonstrate that LGC achieves robust cross-dataset transferability and substantially outperforms state-of-the-art baselines. Notably, our method, LGC, minimizes perturbation magnitudes while achieving state-of-the-art visual fidelity--with a Structural Similarity Index Measure (SSIM) exceeding 0.99 and a Learned Perceptual Image Patch Similarity (LPIPS) below 0.01 at 5000 queries--and sustaining high attack success rates under stringent perceptual constraints, successfully compromising adversarially trained robust models. The source code is available at: https://github.com/eihmuekhine/Latent-Geometric-Chords.",
+      "authors": [
+        "Ei Hmue Khine",
+        "Yao Li",
+        "Jiebao Sun",
+        "Shengzhu Shi",
+        "Zhichang Guo",
+        "Boying Wu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.CR",
+        "cs.LG"
+      ],
+      "published": "2026-05-29T12:25:15+00:00",
+      "link": "https://arxiv.org/pdf/2605.31219v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Proposes a decision-based adversarial attack method that operates within a compressed semantic latent manifold, directly intervening in the latent space to generate adversarial examples.",
+      "llm_evidence_cn": "提出在压缩语义潜在流形中操作的决策基对抗攻击方法，直接干预潜在空间生成对抗样本。",
+      "llm_evidence": "提出在压缩语义潜在流形中操作的决策基对抗攻击方法，直接干预潜在空间生成对抗样本。",
+      "canonical_evidence": "提出在压缩语义潜在流形中操作的决策基对抗攻击方法，直接干预潜在空间生成对抗样本。",
+      "llm_tldr_en": "Presents Latent Geometric Chords (LGC), a latent-space attack that navigates decision boundaries using curvature-aware geometric search, achieving query efficiency and high visual fidelity.",
+      "llm_tldr_cn": "现有决策基黑盒对抗攻击存在像素级伪影和低维潜空间受限等问题。本文提出潜在几何弦（LGC）方法，在压缩语义潜在流形内通过曲率感知的几何搜索沿决策边界移动，生成高逼真度的对抗样本。引入残差基础结构克服维度瓶颈，实验证明LGC在查询效率、攻击成功率和视觉质量上均优于现有方法，为潜在空间对抗攻击提供了新范式。",
+      "llm_tldr": "现有决策基黑盒对抗攻击存在像素级伪影和低维潜空间受限等问题。本文提出潜在几何弦（LGC）方法，在压缩语义潜在流形内通过曲率感知的几何搜索沿决策边界移动，生成高逼真度的对抗样本。引入残差基础结构克服维度瓶颈，实验证明LGC在查询效率、攻击成功率和视觉质量上均优于现有方法，为潜在空间对抗攻击提供了新范式。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.03871v1",
+      "source": "arxiv",
+      "title": "Visual Instruction Tuning Aligns Modalities through Abstraction",
+      "abstract": "Visual instruction tuning effectively adapts a pre-trained Large Language Model (LLM) to process image information alongside text. Yet, it remains unclear how visual features are embedded into the layer-wise hierarchy of abstractions of the LLM backbone. Across a diverse set of vision-language architectures, we show that instruction tuning primarily serves as a bridge, embedding visual features directly into the intermediate semantic layers of the LLM, bypassing the early layers devoted to unimodal processing. With probing analyses and causal interventions, we show that these intermediate layers are the semantic core of vision-language processing and play a critical role in the performance on a broad set of multimodal benchmarks. In addition, by comparing the geometry of semantically equivalent visual and textual representations, we find that fine-tuning extends and strengthens the existing abstraction phase, aligning visual features with pre-existing textual ones. Finally, we confirm the functional role of this localized alignment by restricting fine-tuning to intermediate layers alone: this strategy preserves the performance of full fine-tuning on vision-centric benchmarks while reducing training time. Our results suggest that multimodal integration is a localized phenomenon driven by the repurposing of the internal abstraction engine of the LLM.",
+      "authors": [
+        "Luis Palacios",
+        "Lorenzo Basile",
+        "Diego Doimo",
+        "Alberto Cazzaniga"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "published": "2026-06-02T16:42:21+00:00",
+      "link": "https://arxiv.org/pdf/2606.03871v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Uses causal interventions in LLM intermediate layers to probe visual-semantic integration",
+      "llm_evidence_cn": "使用因果干预探究LLM中间层的视觉-语义融合",
+      "llm_evidence": "使用因果干预探究LLM中间层的视觉-语义融合",
+      "canonical_evidence": "使用因果干预探究LLM中间层的视觉-语义融合",
+      "llm_tldr_en": "Visual instruction tuning embeds visual features into intermediate semantic layers of LLMs; causal interventions identify these layers as the semantic core, crucial for multimodal performance.",
+      "llm_tldr_cn": "视觉指令微调将视觉特征嵌入大型语言模型的中间语义层，因果干预揭示这些层是语义核心，对多模态性能至关重要。",
+      "llm_tldr": "视觉指令微调将视觉特征嵌入大型语言模型的中间语义层，因果干预揭示这些层是语义核心，对多模态性能至关重要。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.03730v1",
+      "source": "arxiv",
+      "title": "Beyond False Stability: High-Noise Drift Gating for Test-Time Adversarial Defenses in Vision-Language Models",
+      "abstract": "Vision-language models (VLMs) such as CLIP show strong zero-shot generalization but remain highly vulnerable to adversarial attacks. Adversarial training improves robustness but is computationally expensive, motivating test-time defenses. Recent approaches exploit how CLIP's visual representations respond to stochastic perturbations: aggregating predictions across noisy views, constructing Gaussian noise-averaged anchors and interpolating features toward them, or applying counter-perturbations. These strategies improve robustness but often degrade clean accuracy, yielding an unfavorable clean-robust trade-off. We revisit stochastic test-time defenses and identify an underexplored noise-regime transition in CLIP's representation space. Prior work explored perturbations mainly in the weak-noise regime, where adversarial examples can appear unusually stable (false stability). Our analysis shows this reverses as perturbation strength grows: beyond the weak-noise regime, adversarial representations become markedly more unstable than clean ones, giving a clearer separation signal. The transition is consistent across uniform and Gaussian noise, photometric and geometric transforms, datasets, and diverse attacks. It largely disappears in adversarially trained models, suggesting it is tied to the fragile local-basin geometry of adversarial representations in non-robust CLIP. We propose a training-free, plug-in drift-gated mechanism that uses high-noise feature drift as a lightweight gating signal to trigger existing test-time defenses only when adversarial-like instability is detected. Across 13 datasets it consistently improves the clean-robust trade-off. On eight fine-grained datasets, mean clean+adversarial accuracy rises from 65.7% to 71.4% for counterattack defenses and 68.4% to 73.2% for noise-anchoring; on ImageNet and four shifted variants, from 56.1% to 66.2% and 62.1% to 67.6%.",
+      "authors": [
+        "Hashmat Shadab Malik",
+        "Muzammal Naseer",
+        "Salman Khan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-02T14:49:04+00:00",
+      "link": "https://arxiv.org/pdf/2606.03730v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "test-time defense by interpolating towards noise-averaged anchors in the latent space",
+      "llm_evidence_cn": "通过向噪声平均锚点插值的潜在空间测试时防御",
+      "llm_evidence": "通过向噪声平均锚点插值的潜在空间测试时防御",
+      "canonical_evidence": "通过向噪声平均锚点插值的潜在空间测试时防御",
+      "llm_tldr_en": "This paper identifies a noise-regime transition in CLIP's visual representations and proposes high-noise drift gating, a test-time defense that interpolates features toward Gaussian noise-averaged anchors, improving adversarial robustness without sacrificing clean accuracy.",
+      "llm_tldr_cn": "针对视觉-语言模型在对抗攻击下的脆弱性，本文提出了一种测试时防御方法，通过高噪声漂移门控，在CLIP的视觉表示中向高斯噪声平均化的锚点进行特征插值。利用CLIP在高噪声状态下的表示特性，该方法在不损失清洁准确率的前提下，显著提升了对抗鲁棒性，解决了现有随机防御方法清洁-鲁棒权衡不佳的问题。",
+      "llm_tldr": "针对视觉-语言模型在对抗攻击下的脆弱性，本文提出了一种测试时防御方法，通过高噪声漂移门控，在CLIP的视觉表示中向高斯噪声平均化的锚点进行特征插值。利用CLIP在高噪声状态下的表示特性，该方法在不损失清洁准确率的前提下，显著提升了对抗鲁棒性，解决了现有随机防御方法清洁-鲁棒权衡不佳的问题。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
