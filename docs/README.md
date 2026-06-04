@@ -6,40 +6,40 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-03
-- 运行时间：2026-06-03 22:34:22 UTC
+- 最新运行日期：2026-06-04
+- 运行时间：2026-06-04 20:58:36 UTC
 - 运行状态：成功
 - 本次总论文数：6
-- 精读区：5
-- 速读区：1
+- 精读区：2
+- 速读区：4
 
 ### 今日简报（AI）
-今日精读两篇9分论文，分别聚焦群对称下的等变流匹配潜对齐与少样本非典型布局生成的语义解耦，速读一则视觉语言模型抗噪防御。  
-最具看点的结论是：利用群对称性可显著提升流匹配对齐精度，而解耦语义与基元能突破少样本布局生成的多样性瓶颈。  
-建议读者若做生成模型，不妨尝试将等变思路融入你的对称场景，或借鉴语义解耦来优化少样本合成效果。
-- 详情：[/202606/03/README](/202606/03/README)
+今日精选视频生成精确引导与模型知识安全擦除两大方向，速读还覆盖视觉幻觉缓解、高保真条件生成与可解释性新解。
+评分最高的精读揭示：降阶线性最优控制能让视频生成“听话”，而精准嵌入编辑可稳健抹除模型不该记住的内容。
+建议开发者动手复现
+- 详情：[/202606/04/README](/202606/04/README)
 
 ### 精读区论文标签
-1. [Equivariant Latent Alignment via Flow Matching under Group Symmetries](/202606/03/2605.30705v1-equivariant-latent-alignment-via-flow-matching-under-group-symmetries)  
+1. [Activation Steering of Video Generation Models via Reduced-Order Linear Optimal Control](/202606/04/2606.04775v1-activation-steering-of-video-generation-models-via-reduced-order-linear-optimal-control)  
+   标签：评分：10.0/10、query:cp
+   evidence：通过最优控制方法在潜在空间进行激活引导以实现T2V干预
+2. [Don't Forget Your Embeddings: Robust Knowledge Erasure via Precise Editing of Embeddings](/202606/04/2606.03695v1-dont-forget-your-embeddings-robust-knowledge-erasure-via-precise-editing-of-embeddings)  
    标签：评分：9.0/10、query:cp
-   evidence：提出在潜在空间中对齐表示以强制等变性的方法，直接干预深度模型的潜在空间。
-2. [Envisioning Beyond the Few: Disentangled Semantics and Primitives for Few-Shot Atypical Layout-to-Image Generation](/202606/03/2605.31266v1-envisioning-beyond-the-few-disentangled-semantics-and-primitives-for-few-shot-atypical-layout-to-image-generation)  
-   标签：评分：9.0/10、query:cp
-   evidence：解耦语义与可组合视觉基元以防止碎片化，直接相关于特征解耦
-3. [Improving Relative Representations with Learned Anchors and Whitened Inner Products](/202606/03/2605.30596v1-improving-relative-representations-with-learned-anchors-and-whitened-inner-products)  
-   标签：评分：8.0/10、query:cp
-   evidence：通过学习的锚点和白化内积改进相对表示，一种潜在空间干预技术
-4. [Latent Geometric Chords for Query-Efficient Decision-Based Adversarial Attacks](/202606/03/2605.31219v1-latent-geometric-chords-for-query-efficient-decision-based-adversarial-attacks)  
-   标签：评分：8.0/10、query:cp
-   evidence：提出在压缩语义潜在流形中操作的决策基对抗攻击方法，直接干预潜在空间生成对抗样本。
-5. [Visual Instruction Tuning Aligns Modalities through Abstraction](/202606/03/2606.03871v1-visual-instruction-tuning-aligns-modalities-through-abstraction)  
-   标签：评分：8.0/10、query:cp
-   evidence：使用因果干预探究LLM中间层的视觉-语义融合
+   evidence：提出EMBER方法，精确编辑令牌嵌入以擦除知识
 
 ### 速读区论文标签
-1. [Beyond False Stability: High-Noise Drift Gating for Test-Time Adversarial Defenses in Vision-Language Models](/202606/03/2606.03730v1-beyond-false-stability-high-noise-drift-gating-for-test-time-adversarial-defenses-in-vision-language-models)  
+1. [YARD: Y-Architecture Register Decoding for Efficient Hallucination Mitigation in Large Vision-Language Models](/202606/04/2605.31429v1-yard-y-architecture-register-decoding-for-efficient-hallucination-mitigation-in-large-vision-language-models)  
    标签：评分：7.0/10、query:cp
-   evidence：通过向噪声平均锚点插值的潜在空间测试时防御
+   evidence：提出YARD，一个通过干预LVLMs中间层来减轻幻觉的解码框架
+2. [COLLAR: Cascaded Object-Level Latent Refinement for High-Fidelity Conditional Generation](/202606/04/2606.00954v1-collar-cascaded-object-level-latent-refinement-for-high-fidelity-conditional-generation)  
+   标签：评分：7.0/10、query:cp
+   evidence：提出COLLAR，一种免训练的潜在优化框架，在扩散变压器中干预对象级特征
+3. [Interpretability Without Tradeoffs: Disentangling Polysemanticity At Equal Predictive Performance](/202606/04/2605.31304v1-interpretability-without-tradeoffs-disentangling-polysemanticity-at-equal-predictive-performance)  
+   标签：评分：6.0/10、query:cp
+   evidence：提供将多义潜变量解耦为单义子单元的方法以支持潜空间干预
+4. [Equilibrated Diffusion: Frequency-aware Textual Embedding for Equilibrated Image Customization](/202606/04/2606.02129v1-equilibrated-diffusion-frequency-aware-textual-embedding-for-equilibrated-image-customization)  
+   标签：评分：6.0/10、query:cp
+   evidence：频率驱动的概念特征解耦可应用于分离颜色和形状
 
 
 <div class="dpr-home-promo-card">

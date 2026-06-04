@@ -1,0 +1,255 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-04T20:49:28.565850+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 4,
+    "quick_skim_target": 11,
+    "quick_selected": 4
+  },
+  "deep_dive": [
+    {
+      "id": "2606.04775v1",
+      "source": "arxiv",
+      "title": "Activation Steering of Video Generation Models via Reduced-Order Linear Optimal Control",
+      "abstract": "Text-to-video (T2V) models trained on large-scale web data can generate undesired content, motivating interventions that reduce harmful outputs without sacrificing visual quality. Activation steering offers an attractive mechanistic alternative to finetuning and prompt filtering, but existing T2V steering methods remain limited, typically applying coarse, non-anticipative interventions that can lead to oversteering and content degradation. To close this gap, we propose Latent Activation Linear-Quadratic Regulator (LA-LQR), a reduced-order optimal control framework for minimally invasive T2V steering. LA-LQR formulates T2V inference as a dynamical system and computes closed-loop feedback interventions that steer activations toward desired feature setpoints while penalizing unnecessary perturbations. To make optimal control feasible for high-dimensional video activations, we project activations onto a low-dimensional, task-relevant subspace derived from contrastive prompt pairs, estimate local linear dynamics in this latent space, and solve a latent LQR problem to obtain timestep- and layer-specific steering signals. We provide theoretical bounds relating latent setpoint tracking to raw activation-space feature control, and empirically validate the fidelity of the reduced latent dynamics. On concept steering and video safety benchmarks, LA-LQR reduces unsafe generations relative to baselines, while preserving prompt fidelity and visual quality.",
+      "authors": [
+        "Jihoon Hong",
+        "Alice Chan",
+        "Qiyue Dai",
+        "Julian Skifstad",
+        "Glen Chou"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.CV",
+        "eess.SY",
+        "math.OC"
+      ],
+      "published": "2026-06-03T11:58:56+00:00",
+      "link": "https://arxiv.org/pdf/2606.04775v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "proposes latent activation steering via optimal control for T2V intervention",
+      "llm_evidence_cn": "通过最优控制方法在潜在空间进行激活引导以实现T2V干预",
+      "llm_evidence": "通过最优控制方法在潜在空间进行激活引导以实现T2V干预",
+      "canonical_evidence": "通过最优控制方法在潜在空间进行激活引导以实现T2V干预",
+      "llm_tldr_en": "Introduces LA-LQR, a latent activation steering method using reduced-order linear optimal control for minimally invasive content filtering in video generation.",
+      "llm_tldr_cn": "针对文本到视频模型生成有害内容的问题，提出LA-LQR降阶最优控制框架，通过对潜在激活进行闭环反馈干预实现内容调控，同时保持视觉质量。实验表明该方法能有效减少有害输出，优于粗粒度干预。贡献在于提供了一种精细化、非侵入式的视频生成模型引导机制。",
+      "llm_tldr": "针对文本到视频模型生成有害内容的问题，提出LA-LQR降阶最优控制框架，通过对潜在激活进行闭环反馈干预实现内容调控，同时保持视觉质量。实验表明该方法能有效减少有害输出，优于粗粒度干预。贡献在于提供了一种精细化、非侵入式的视频生成模型引导机制。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.03695v1",
+      "source": "arxiv",
+      "title": "Don't Forget Your Embeddings: Robust Knowledge Erasure via Precise Editing of Embeddings",
+      "abstract": "As language models are increasingly deployed in real-world applications, the ability to erase specific knowledge from them becomes critical for safety and compliance. Prominent methods seek persistent removal by updating the model's parameters, yet the target knowledge often can be recovered through adversarial prompting or relearning. In this work, we hypothesize this limitation stems in part from existing methods overlooking the embedding layer. To address this, we introduce EMBedding ERasure (EMBER), a plug-n-play erasure module that leverages Sparse Matrix Factorization for precise erasure of concept-related features from token embeddings. Through comprehensive evaluations across diverse concepts on Gemma-2-2B-it and Llama-3.1-8B-Instruct, we find that augmenting existing methods with EMBER consistently improves erasure efficacy and specificity across task formats, with minimal coherence loss. Moreover, it dramatically improves robustness to relearning, reducing regained accuracy by up to 50%, limiting it to 35% on Llama compared to 70%-76% for prior methods. Further analysis shows that the coherence cost is localized, affecting only a small set of concept-exclusive tokens. Our work establishes that precise embedding-level intervention is necessary for robust concept erasure, and demonstrates that existing methods can benefit from such augmentation.",
+      "authors": [
+        "Clara Haya Suslik",
+        "Or Shafran",
+        "Mor Geva"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-02T14:15:25+00:00",
+      "link": "https://arxiv.org/pdf/2606.03695v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Proposes EMBER, a method for precise editing of token embeddings to erase knowledge",
+      "llm_evidence_cn": "提出EMBER方法，精确编辑令牌嵌入以擦除知识",
+      "llm_evidence": "提出EMBER方法，精确编辑令牌嵌入以擦除知识",
+      "canonical_evidence": "提出EMBER方法，精确编辑令牌嵌入以擦除知识",
+      "llm_tldr_en": "The paper introduces EMBER, which uses sparse matrix factorization to precisely erase concept-related features from token embeddings, achieving robust knowledge erasure in language models.",
+      "llm_tldr_cn": "现有方法在擦除语言模型知识时，常因忽略嵌入层而导致知识可被恢复。本文提出EMBER，利用稀疏矩阵分解精确编辑令牌嵌入中的概念相关特征，实现对特定知识的鲁棒擦除。在Gemma-2-2B-it和Llama-3.1-8B上对多种概念的评估表明，该方法能有效防止知识通过对抗提示或重新学习恢复，为模型安全部署提供了可靠的干预手段。",
+      "llm_tldr": "现有方法在擦除语言模型知识时，常因忽略嵌入层而导致知识可被恢复。本文提出EMBER，利用稀疏矩阵分解精确编辑令牌嵌入中的概念相关特征，实现对特定知识的鲁棒擦除。在Gemma-2-2B-it和Llama-3.1-8B上对多种概念的评估表明，该方法能有效防止知识通过对抗提示或重新学习恢复，为模型安全部署提供了可靠的干预手段。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2605.31429v1",
+      "source": "arxiv",
+      "title": "YARD: Y-Architecture Register Decoding for Efficient Hallucination Mitigation in Large Vision-Language Models",
+      "abstract": "Contrastive decoding (CD) seeks to mitigate hallucinations in Large Vision-Language Models (LVLMs) by contrasting the output distributions of a standard model and a visually degraded model. However, existing training-free CD methods suffer from sub-optimal degraded branches: completely dropping visual tokens is too extreme and induces language hallucinations, while corrupting input images offers coarse control over visual evidence and suffers from high inference latency due to requiring two full forward passes. To address these dilemmas, we propose YARD, a training-free Y-Architecture Register Decoding framework. Motivated by the observation that reliable text-to-vision grounding predominantly emerges in the middle decoder layers, YARD constructs the degraded branch internally by sharing shallow-layer computations and branching exactly at this critical stage. For the degraded branch, YARD replaces patch-level visual tokens with register tokens, which preserve global image semantics but lack fine-grained local evidence. This image-aware yet locally under-grounded design provides a faithful contrastive signal without extreme modality mismatch, while the Y-architecture strictly avoids a costly second forward pass. Extensive experiments on generative and discriminative hallucination benchmarks demonstrate that YARD consistently achieves state-of-the-art hallucination mitigation across multiple LVLMs, alongside a significant reduction in inference latency.",
+      "authors": [
+        "Ting Chen",
+        "Geng Li",
+        "Guohao Chen",
+        "Yu Hu",
+        "Guan Huang",
+        "Mai Chen",
+        "Langsheng Lei",
+        "Jun Du"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-29T15:23:39+00:00",
+      "link": "https://arxiv.org/pdf/2605.31429v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Proposes YARD, a decoding framework that intervenes in middle layers of LVLMs to mitigate hallucinations",
+      "llm_evidence_cn": "提出YARD，一个通过干预LVLMs中间层来减轻幻觉的解码框架",
+      "llm_evidence": "提出YARD，一个通过干预LVLMs中间层来减轻幻觉的解码框架",
+      "canonical_evidence": "提出YARD，一个通过干预LVLMs中间层来减轻幻觉的解码框架",
+      "llm_tldr_en": "YARD is a training-free decoding method that introduces a register to store intermediate features from the middle layers, enabling contrastive decoding that better controls visual grounding and reduces hallucinations in LVLMs.",
+      "llm_tldr_cn": "对比解码通过弱化视觉分支来减轻幻觉，但现有退化分支不理想。YARD利用观察发现可靠的图文对齐主要出现在中间层，提出在中间层存储特征作为寄存器，构建对比分支，高效控制视觉证据并减轻幻觉。该方法无需训练，在多个LVLM上显著降低了幻觉率，同时保持生成质量。",
+      "llm_tldr": "对比解码通过弱化视觉分支来减轻幻觉，但现有退化分支不理想。YARD利用观察发现可靠的图文对齐主要出现在中间层，提出在中间层存储特征作为寄存器，构建对比分支，高效控制视觉证据并减轻幻觉。该方法无需训练，在多个LVLM上显著降低了幻觉率，同时保持生成质量。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.31304v1",
+      "source": "arxiv",
+      "title": "Interpretability Without Tradeoffs: Disentangling Polysemanticity At Equal Predictive Performance",
+      "abstract": "Deep neural networks (DNNs) are widely used, but interpreting what they actually learn remains difficult. A major obstacle is that individual neurons often encode multiple unrelated concepts, obscuring the decision process of the network. While prior work, such as sparse autoencoders, can separate these mixed signals into more meaningful, \"monosemantic\" features, this typically requires altering the model in ways that can degrade downstream performance. To overcome this, we introduce ELUDe (explicit, lossless, unsupervised disentanglement), a method for improving the interpretability of DNNs while preserving their functional equivalence. ELUDe breaks latent representations into clear, inspectable sub-units that behave like interpretable features, while guaranteeing that the model's outputs remain exactly the same. It requires no explicit training, no labels, and can be applied to pretrained models. ELUDe works by reorganizing how information flows between layers, re-routing concept-specific contributions while preserving the original computation by construction. Across several vision models, including DINOv2 and supervised ViT-B/16, ELUDe improves interpretability, keeps downstream accuracy unchanged, runs efficiently, and supports practical uses such as steering model representations. In short, ELUDe offers interpretability (almost) without a tradeoff: clearer, scalable, and actionable model insights with no loss in performance.",
+      "authors": [
+        "Doğukan Bağcı",
+        "Bernt Schiele",
+        "Simone Schaub-Meyer",
+        "Jonas Fischer",
+        "Robin Hesse"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.CV"
+      ],
+      "published": "2026-05-29T13:39:09+00:00",
+      "link": "https://arxiv.org/pdf/2605.31304v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "provides method to disentangle polysemantic latent features into monosemantic sub-units for latent space intervention",
+      "llm_evidence_cn": "提供将多义潜变量解耦为单义子单元的方法以支持潜空间干预",
+      "llm_evidence": "提供将多义潜变量解耦为单义子单元的方法以支持潜空间干预",
+      "canonical_evidence": "提供将多义潜变量解耦为单义子单元的方法以支持潜空间干预",
+      "llm_tldr_en": "Introduces ELUDe, a method to restructure latent representations into clear monosemantic features while preserving functional equivalence, enabling more interpretable and editable neural networks.",
+      "llm_tldr_cn": "针对深度网络神经元编码多概念导致难以解释的问题，提出ELUDe方法，在不改变模型输出的前提下将潜表征分解为可检查的单义子单元，实现功能等价的无损解耦，为模型编辑和干预提供了新手段。实验表明ELUDe可有效分离缠绕的信号，且不影响下游任务精度。",
+      "llm_tldr": "针对深度网络神经元编码多概念导致难以解释的问题，提出ELUDe方法，在不改变模型输出的前提下将潜表征分解为可检查的单义子单元，实现功能等价的无损解耦，为模型编辑和干预提供了新手段。实验表明ELUDe可有效分离缠绕的信号，且不影响下游任务精度。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.00954v1",
+      "source": "arxiv",
+      "title": "COLLAR: Cascaded Object-Level Latent Refinement for High-Fidelity Conditional Generation",
+      "abstract": "Achieving high-fidelity object-level control in Diffusion Transformers remains a significant challenge despite the introduction of structural priors like depth and Canny maps. Current object-level conditional generation methods frequently suffer from visual artifacts and struggle to maintain precise control over objects within small localized regions. To address these limitations, we propose Cascaded Object-Level Latent Refinement (COLLAR), a training-free framework that progressively optimizes object-level features via the Field-of-View (FoV) expansion. First, we propose the Cross-Scale Semantic Alignment (CSSA) module to address spatial-semantic gaps by injecting object-level features into extended-FoV branches via attention mechanisms. To further optimize these features, the Cyclic Feature Injection (CFI) module introduces a reciprocal background feedback mechanism. It leverages a frequency-based adaptive strategy to selectively update the global backbone with context-aligned local information. Finally, the extended-FoV branch serves as a hub for feature optimization, ensuring that object-level features are integrated into the global generation process without compromising final image quality. Extensive experiments on the COCO-MIG and COCO-POS benchmarks demonstrate that our approach consistently outperforms state-of-the-art methods across semantic alignment, image quality, and spatial fidelity.",
+      "authors": [
+        "Xinlong Zhang",
+        "Jia Wei",
+        "Xiaoyu Zhang",
+        "Teng Zhou",
+        "Chengyu Lin",
+        "Yongchuan Tang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-31T02:10:34+00:00",
+      "link": "https://arxiv.org/pdf/2606.00954v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Proposes COLLAR, a training-free latent refinement framework that intervenes on object-level features in diffusion transformers",
+      "llm_evidence_cn": "提出COLLAR，一种免训练的潜在优化框架，在扩散变压器中干预对象级特征",
+      "llm_evidence": "提出COLLAR，一种免训练的潜在优化框架，在扩散变压器中干预对象级特征",
+      "canonical_evidence": "提出COLLAR，一种免训练的潜在优化框架，在扩散变压器中干预对象级特征",
+      "llm_tldr_en": "COLLAR progressively optimizes object-level features in the latent space of diffusion transformers via field-of-view expansion and cross-scale semantic alignment, improving object-level control without training.",
+      "llm_tldr_cn": "扩散变压器在对象级条件生成中易出现视觉伪影且难以精确控制小区域。COLLAR提出免训练的级联对象级潜在优化，通过视场扩展和跨尺度语义对齐将对象特征注入扩展视场分支，逐步优化对象表示。实验表明该方法能有效减少伪影，提升对象级控制精度，在多个基准上超过了现有方法。",
+      "llm_tldr": "扩散变压器在对象级条件生成中易出现视觉伪影且难以精确控制小区域。COLLAR提出免训练的级联对象级潜在优化，通过视场扩展和跨尺度语义对齐将对象特征注入扩展视场分支，逐步优化对象表示。实验表明该方法能有效减少伪影，提升对象级控制精度，在多个基准上超过了现有方法。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.02129v1",
+      "source": "arxiv",
+      "title": "Equilibrated Diffusion: Frequency-aware Textual Embedding for Equilibrated Image Customization",
+      "abstract": "Image customization learns target subjects from reference concept images and generates conditioned images per text prompts, mainly modifying styles or backgrounds. Prevailing methods adopt fine-tuning to pack diverse concept attributes into a unified latent embedding, yet entangled attributes hinder elimination of irrelevant disturbances from style and background. To address this issue, we propose Equilibrated Diffusion, a frequency-driven approach that disentangles tangled concept features for balanced customization and consistent text-visual matching. Unlike conventional methods learning full concepts with shared embeddings and unified tuning, our work utilizes the inherent link between image frequency components and semantics: low frequencies represent subject content and high frequencies correspond to styles. We decompose concepts in frequency space and optimize each embedding independently. This separate optimization enables the denoiser to capture style detached from subject identity and generalize better to unseen stylistic prompts. Merging multi-frequency embeddings preserves the model's original spatial customization ability. We further deploy mask-guided diffusion to restrict irrelevant background changes and boost text alignment. Residual Reference Attention (RRA) is inserted into spatial attention to retain subject structure and identity consistency. Experiments prove Equilibrated Diffusion exceeds mainstream baselines on subject fidelity and text adherence, verifying our method's superiority.",
+      "authors": [
+        "Liyuan Ma",
+        "Xueji Fang",
+        "Guo-Jun Qi"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-01T11:57:10+00:00",
+      "link": "https://arxiv.org/pdf/2606.02129v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Frequency-driven disentanglement of concept features could be applied to separate color and shape",
+      "llm_evidence_cn": "频率驱动的概念特征解耦可应用于分离颜色和形状",
+      "llm_evidence": "频率驱动的概念特征解耦可应用于分离颜色和形状",
+      "canonical_evidence": "频率驱动的概念特征解耦可应用于分离颜色和形状",
+      "llm_tldr_en": "Equilibrated Diffusion disentangles concept features by exploiting image frequency components, enabling balanced image customization without irrelevant disturbances, which could inspire color-shape disentanglement methods.",
+      "llm_tldr_cn": "针对图像定制中属性纠缠导致风格和背景干扰的问题，本文提出频率驱动的方法，利用图像频率与语义的关联来解耦概念特征，实现平衡的定制化和一致的图文匹配。该思路可迁移至颜色与形状特征的分离任务。",
+      "llm_tldr": "针对图像定制中属性纠缠导致风格和背景干扰的问题，本文提出频率驱动的方法，利用图像频率与语义的关联来解耦概念特征，实现平衡的定制化和一致的图文匹配。该思路可迁移至颜色与形状特征的分离任务。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
