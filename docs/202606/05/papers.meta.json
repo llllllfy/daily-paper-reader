@@ -1,0 +1,69 @@
+{
+  "label": "2026-06-05",
+  "date": "2026-06-05",
+  "generated_at": "2026-06-05T21:07:11",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202606/05/2606.04060v1-weakly-supervised-incremental-segmentation-via-semantic-anchors-and-spatial-arbitration",
+      "section": "deep",
+      "title_en": "Weakly Supervised Incremental Segmentation via Semantic Anchors and Spatial Arbitration",
+      "authors": "Zhonggai Wang, Kai Fang, Guangyu Gao",
+      "date": "2026-06-02",
+      "pdf": "https://arxiv.org/pdf/2606.04060v1",
+      "score": "9.0",
+      "evidence": "在表示空间中引入语义锚点作为刚性类别级参考，以保持语义身份，是一种潜在空间干预技术。",
+      "tldr": "弱监督增量语义分割（WILSS）中，噪声标注不断引入，逐渐腐蚀类级表征，导致严重灾难性遗忘。本文提出SASA（语义锚点与空间仲裁）框架，引入可学习语义锚点作为刚性类别参考，维持长期语义一致性，并通过弹性残差适应实现实例级灵活调整；同时设计空间标签仲裁机制，利用几何先验滤除不可靠监督。在Pascal VOC、COCO等数据集上，SASA一致超越现有方法，尤其在多步增量场景下显著遏制特征漂移。",
+      "tags": "query:cp",
+      "abstract_en": "Weakly Incremental Learning for Semantic Segmentation (WILSS) suffers from the continuous introduction of noisy supervision, which progressively corrupts class-level representations, leading to severe feature drift and semantic corruption, thereby causing newly learned classes to overwrite old ones. To address these issues, we propose a drift-resilient WILSS approach, named SASA, designed to stabilize semantic learning via Semantic Anchors and Spatial Arbitration. Specifically, at the representation level, we introduce semantic anchors of learnable tokens as rigid class-level references to preserve long-term semantic identity. Complementary to this, an elastic residual adaptation facilitates controlled, instance-specific refinement, ensuring a stable yet flexible learning trajectory. At the supervision level, we develop a Spatial Label Arbitration mechanism that performs geometry-aware decisions to directly filter unreliable signals and enforce a strict \"one object, one class\" constraint. By synergistically stabilizing representations and improving supervision reliability, SASA effectively mitigates feature drift under weak supervision. Extensive experiments on standard benchmarks demonstrate that our approach consistently outperforms existing state-of-the-art methods, particularly in challenging multi-step incremental settings. The code is available at https://github.com/ZhonggaiWang/SASA.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/05/2606.03730v2-beyond-false-stability-high-noise-drift-gating-for-test-time-adversarial-defenses-in-vision-language-models",
+      "section": "deep",
+      "title_en": "Beyond False Stability: High-Noise Drift Gating for Test-Time Adversarial Defenses in Vision-Language Models",
+      "authors": "Hashmat Shadab Malik, Muzammal Naseer, Salman Khan",
+      "date": "2026-06-02",
+      "pdf": "https://arxiv.org/pdf/2606.03730v2",
+      "score": "8.0",
+      "evidence": "测试时防御通过噪声平均锚点和特征插值在CLIP的潜在空间中操纵特征",
+      "tldr": "视觉语言模型CLIP等在对抗攻击下脆弱，现有测试时防御虽提升鲁棒性却降低干净准确率。本文发现噪声增强时对抗表征变得比干净表征更不稳定，据此提出高噪声漂移门控机制，仅在检测到对抗不稳定性时触发防御，显著改善干净-鲁棒权衡。在13个数据集上平均准确率提升5-10个百分点，实现即插即用、无需训练的测试时防御。",
+      "tags": "query:cp",
+      "abstract_en": "Vision-language models (VLMs) such as CLIP show strong zero-shot generalization but remain highly vulnerable to adversarial attacks. Adversarial training improves robustness but is computationally expensive, motivating test-time defenses. Recent approaches exploit how CLIP's visual representations respond to stochastic perturbations: aggregating predictions across noisy views, constructing Gaussian noise-averaged anchors and interpolating features toward them, or applying counter-perturbations. These strategies improve robustness but often degrade clean accuracy, yielding an unfavorable clean-robust trade-off. We revisit stochastic test-time defenses and identify an underexplored noise-regime transition in CLIP's representation space. Prior work explored perturbations mainly in the weak-noise regime, where adversarial examples can appear unusually stable (false stability). Our analysis shows this reverses as perturbation strength grows: beyond the weak-noise regime, adversarial representations become markedly more unstable than clean ones, giving a clearer separation signal. The transition is consistent across uniform and Gaussian noise, photometric and geometric transforms, datasets, and diverse attacks. It largely disappears in adversarially trained models, suggesting it is tied to the fragile local-basin geometry of adversarial representations in non-robust CLIP. We propose a training-free, plug-in drift-gated mechanism that uses high-noise feature drift as a lightweight gating signal to trigger existing test-time defenses only when adversarial-like instability is detected. Across 13 datasets it consistently improves the clean-robust trade-off. On eight fine-grained datasets, mean clean+adversarial accuracy rises from 65.7% to 71.4% for counterattack defenses and 68.4% to 73.2% for noise-anchoring; on ImageNet and four shifted variants, from 56.1% to 66.2% and 62.1% to 67.6%.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/05/2606.06186v1-adversarial-attacks-already-tell-the-answer-directional-bias-guided-test-time-defense-for-vision-language-models",
+      "section": "deep",
+      "title_en": "Adversarial Attacks Already Tell the Answer: Directional Bias-Guided Test-time Defense for Vision-Language Models",
+      "authors": "Liangsheng Liu, Si Chen, Jiamin Wu, Weiwei Feng, Zhixin Cheng, Xiaotian Yin, Wenfei Yang, Tianzhu Zhang",
+      "date": "2026-06-04",
+      "pdf": "https://arxiv.org/pdf/2606.06186v1",
+      "score": "8.0",
+      "evidence": "测试时防御沿CLIP潜在空间中主导防御方向移动特征",
+      "tldr": "视觉语言模型（如CLIP）虽展现强大零样本泛化，但极易受到对抗扰动攻击，严重威胁实际应用。本文观察到对抗图像在CLIP特征空间中沿一致方向偏移，提出方向偏置引导的测试时防御框架（DBD）。DBD估计该防御方向，并通过双流重建策略恢复鲁棒表征。在15个数据集上，DBD取得最佳对抗鲁棒性并保持干净精度，甚至对抗精度超越干净精度。这表明对抗攻击本身编码了真实决策边界的先验方向，为无需重训练的高效防御提供了新范式。",
+      "tags": "query:cp",
+      "abstract_en": "Vision-Language Models (VLMs), such as CLIP, have shown strong zero-shot generalization but remain highly vulnerable to adversarial perturbations, posing serious risks in real-world applications. Test-time defenses for VLMs have recently emerged as a promising and efficient approach to defend against adversarial attacks without requiring costly large-scale retraining. In this work, we uncover a surprising phenomenon: under diverse input transformations, adversarial images in CLIP's feature space consistently shift along a dominant direction, in contrast to the dispersed patterns of clean images. We hypothesize that this dominant shift, termed the Defense Direction, opposes the adversarial shift, pointing features back toward their correct class centers. Building on this insight, we propose Directional Bias-guided Defense (DBD), a test-time framework that estimates the Defense Direction and employs a DB-score-based two-stream reconstruction strategy to recover robust representations. Experiments on 15 datasets demonstrate that DBD not only achieves SOTA adversarial robustness while preserving clean accuracy, but also reveals the counterintuitive result that adversarial accuracy can even surpass clean accuracy. This demonstrates that adversarial perturbations inherently encode directional priors about the true decision boundary.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/05/2605.30437v1-mitigating-content-shift-and-hallucination-in-genai-image-editing-via-structural-refinement",
+      "section": "quick",
+      "title_en": "Mitigating Content Shift and Hallucination in GenAI Image Editing via Structural Refinement",
+      "authors": "Luxi Zhao, Michael S. Brown",
+      "date": "2026-05-28",
+      "pdf": "https://arxiv.org/pdf/2605.30437v1",
+      "score": "6.0",
+      "evidence": "提出了一种后处理框架来强制图像编辑后的结构忠实度，有助于在颜色等修改下保持语义一致性",
+      "tldr": "当前生成式AI图像编辑工具（如Nano Banana）虽能通过文本提示生成视觉吸引的效果，但常导致空间错位、纹理失真及内容幻觉，严重损害像素级保真度。为此，提出一种结构保持的GenAI融合后处理框架，先建立粗粒度空间与光度对应，再通过融合传递增强并抑制幻觉。与风格迁移和图像融合方法相比，本方法在维持输入分辨率下更好地平衡了美学质量与结构一致性。该工作为黑盒GenAI编辑器提供了无需模型介入的高效后处理方案，拓展了其在像素级精确任务中的应用。",
+      "tags": "query:cp",
+      "abstract_en": "Generative AI (GenAI) image editors, such as Nano Banana, produce visually compelling results for retouching tasks, enabling non-experts to edit images through text prompts alone. However, the generative nature of these models often introduces spatial misalignment, texture distortion, and content hallucination, all of which are detrimental to downstream workflows that require pixel-level fidelity. We identify a problem setting we call \"structure-preserving GenAI fusion\" for black-box GenAI image retouching: retain the perceptual enhancements of a GenAI output while enforcing structural faithfulness to the original input image. To address this problem, we propose a post-processing framework that fuses an input image with its GenAI-enhanced counterpart by first establishing coarse spatial and photometric correspondences, then performing a fusion stage that transfers desired enhancements while suppressing hallucinated content. In the absence of direct prior work in this setting, we evaluate our framework against representative methods from photorealistic style transfer and image fusion. Our experiments demonstrate that our method better preserves aesthetic quality while maintaining pixel-level structural consistency and the input resolution.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

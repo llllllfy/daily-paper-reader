@@ -6,40 +6,34 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-04
-- 运行时间：2026-06-04 20:58:36 UTC
+- 最新运行日期：2026-06-05
+- 运行时间：2026-06-05 21:06:49 UTC
 - 运行状态：成功
-- 本次总论文数：6
-- 精读区：2
-- 速读区：4
+- 本次总论文数：4
+- 精读区：3
+- 速读区：1
 
 ### 今日简报（AI）
-今日精选视频生成精确引导与模型知识安全擦除两大方向，速读还覆盖视觉幻觉缓解、高保真条件生成与可解释性新解。
-评分最高的精读揭示：降阶线性最优控制能让视频生成“听话”，而精准嵌入编辑可稳健抹除模型不该记住的内容。
-建议开发者动手复现
-- 详情：[/202606/04/README](/202606/04/README)
+今日精读3篇前沿论文，聚焦弱监督分割、视觉语言模型对抗防御与生成式图像编辑反幻觉。  
+最值得关注的是用语义锚点与空间仲裁实现弱监督增量分割（9.0分），以及通过高噪声漂移门控打破测试时虚假稳定性的对抗防御新思路（8.0分）。  
+普通读者可优先追踪弱监督分割在数据流场景的落地，或留意图像编辑中结构细化如何抑制内容漂移与幻觉。
+- 详情：[/202606/05/README](/202606/05/README)
 
 ### 精读区论文标签
-1. [Activation Steering of Video Generation Models via Reduced-Order Linear Optimal Control](/202606/04/2606.04775v1-activation-steering-of-video-generation-models-via-reduced-order-linear-optimal-control)  
-   标签：评分：10.0/10、query:cp
-   evidence：通过最优控制方法在潜在空间进行激活引导以实现T2V干预
-2. [Don't Forget Your Embeddings: Robust Knowledge Erasure via Precise Editing of Embeddings](/202606/04/2606.03695v1-dont-forget-your-embeddings-robust-knowledge-erasure-via-precise-editing-of-embeddings)  
+1. [Weakly Supervised Incremental Segmentation via Semantic Anchors and Spatial Arbitration](/202606/05/2606.04060v1-weakly-supervised-incremental-segmentation-via-semantic-anchors-and-spatial-arbitration)  
    标签：评分：9.0/10、query:cp
-   evidence：提出EMBER方法，精确编辑令牌嵌入以擦除知识
+   evidence：在表示空间中引入语义锚点作为刚性类别级参考，以保持语义身份，是一种潜在空间干预技术。
+2. [Beyond False Stability: High-Noise Drift Gating for Test-Time Adversarial Defenses in Vision-Language Models](/202606/05/2606.03730v2-beyond-false-stability-high-noise-drift-gating-for-test-time-adversarial-defenses-in-vision-language-models)  
+   标签：评分：8.0/10、query:cp
+   evidence：测试时防御通过噪声平均锚点和特征插值在CLIP的潜在空间中操纵特征
+3. [Adversarial Attacks Already Tell the Answer: Directional Bias-Guided Test-time Defense for Vision-Language Models](/202606/05/2606.06186v1-adversarial-attacks-already-tell-the-answer-directional-bias-guided-test-time-defense-for-vision-language-models)  
+   标签：评分：8.0/10、query:cp
+   evidence：测试时防御沿CLIP潜在空间中主导防御方向移动特征
 
 ### 速读区论文标签
-1. [YARD: Y-Architecture Register Decoding for Efficient Hallucination Mitigation in Large Vision-Language Models](/202606/04/2605.31429v1-yard-y-architecture-register-decoding-for-efficient-hallucination-mitigation-in-large-vision-language-models)  
-   标签：评分：7.0/10、query:cp
-   evidence：提出YARD，一个通过干预LVLMs中间层来减轻幻觉的解码框架
-2. [COLLAR: Cascaded Object-Level Latent Refinement for High-Fidelity Conditional Generation](/202606/04/2606.00954v1-collar-cascaded-object-level-latent-refinement-for-high-fidelity-conditional-generation)  
-   标签：评分：7.0/10、query:cp
-   evidence：提出COLLAR，一种免训练的潜在优化框架，在扩散变压器中干预对象级特征
-3. [Interpretability Without Tradeoffs: Disentangling Polysemanticity At Equal Predictive Performance](/202606/04/2605.31304v1-interpretability-without-tradeoffs-disentangling-polysemanticity-at-equal-predictive-performance)  
+1. [Mitigating Content Shift and Hallucination in GenAI Image Editing via Structural Refinement](/202606/05/2605.30437v1-mitigating-content-shift-and-hallucination-in-genai-image-editing-via-structural-refinement)  
    标签：评分：6.0/10、query:cp
-   evidence：提供将多义潜变量解耦为单义子单元的方法以支持潜空间干预
-4. [Equilibrated Diffusion: Frequency-aware Textual Embedding for Equilibrated Image Customization](/202606/04/2606.02129v1-equilibrated-diffusion-frequency-aware-textual-embedding-for-equilibrated-image-customization)  
-   标签：评分：6.0/10、query:cp
-   evidence：频率驱动的概念特征解耦可应用于分离颜色和形状
+   evidence：提出了一种后处理框架来强制图像编辑后的结构忠实度，有助于在颜色等修改下保持语义一致性
 
 
 <div class="dpr-home-promo-card">
