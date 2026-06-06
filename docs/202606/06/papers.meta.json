@@ -1,0 +1,54 @@
+{
+  "label": "2026-06-06",
+  "date": "2026-06-06",
+  "generated_at": "2026-06-06T20:45:59",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202606/06/2606.04310v1-latent-anchor-driven-test-generation-for-deep-neural-networks",
+      "section": "quick",
+      "title_en": "Latent Anchor-Driven Test Generation for Deep Neural Networks",
+      "authors": "Bin Duan, Matthew B. Dwyer, Guowei Yang",
+      "date": "2026-06-03",
+      "pdf": "https://arxiv.org/pdf/2606.04310v1",
+      "score": "7.0",
+      "evidence": "利用VQ-VAE潜在空间锚定并生成测试输入，对潜在空间进行干预",
+      "tldr": "深度神经网络在安全关键应用中需要严格测试，现有潜在空间测试方法在探索可控性、故障多样性和语义偏移间难以平衡。本文提出Latte框架，利用VQ-VAE编码种子输入，并以跨类锚点引导单步潜向量突变，生成语义贴近、多样且能触发故障的测试用例。在5个数据集和10个模型上的实验表明，Latte在相同测试预算下显著提升故障暴露率和行为多样性，单模型场景中还能保持较低的种子相对语义偏移，为黑盒DNN测试提供了更高效可控的方案。",
+      "tags": "query:cp",
+      "abstract_en": "Deep Neural Networks (DNNs) are increasingly being deployed in security-critical and safety-sensitive applications, which makes rigorous testing essential to identify and mitigate model weaknesses. Existing DNN testing approaches explore either the input space or a learned latent space. While latent-space generation can better maintain plausibility than direct input-space mutation, current methods still face a trade-off among exploration controllability, failure diversity, and seed-relative semantic drift. To overcome these limitations, we propose Latte, a black-box testing framework that generates semantically proximate, diverse, and fault-revealing test cases by leveraging the latent space. Specifically, Latte encodes each input seed with a pre-trained VQ-VAE and performs a seed-centered, one-step latent mutation along directions defined by anchors sampled from alternative classes, followed by quantization and decoding back to the input space. This explores local neighborhoods around each seed within the learned latent manifold, resulting in a larger number and broader diversity of oracle-triggering prediction discrepancies under the same budget. We evaluated Latte on 5 datasets and 10 DNN models in single-model and multi-model testing scenarios. Across the evaluated datasets and models, Latte improves fault exposure and behavioral diversity under matched testing budgets. Under the single-model setting, it also maintains low seed-relative semantic drift with respect to the source seeds.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/06/2606.04767v1-measuring-model-robustness-via-fisher-information-spectral-bounds-theoretical-guarantees-and-practical-algorithms",
+      "section": "quick",
+      "title_en": "Measuring Model Robustness via Fisher Information: Spectral Bounds, Theoretical Guarantees, and Practical Algorithms",
+      "authors": "Chong Zhang, Xiang Li, Jia Wang, Qiufeng Wang, Xiaobo Jin",
+      "date": "2026-06-03",
+      "pdf": "https://arxiv.org/pdf/2606.04767v1",
+      "score": "7.0",
+      "evidence": "提出基于Fisher信息的度量，测量对包含色彩在内的扰动的最坏敏感度",
+      "tldr": "深度神经网络鲁棒性评估至关重要，但现有方法常依赖特定攻击且缺乏可解释性。本文提出基于Fisher信息矩阵谱范数的攻击无关度量，量化模型在输入扰动下输出分布的最坏情况敏感性，并从理论上证明该度量等于输入雅可比矩阵方差，为VGG、ResNet、DenseNet和Transformer等架构推导闭式鲁棒性排序。开发幂迭代和Hutchinson估计算法实现白盒与黑盒高效评估。在CIFAR、ImageNet和医学图像上的实验表明，该度量与对抗脆弱性高度相关，成为可解释诊断工具，指导更鲁棒模型设计。",
+      "tags": "query:cp",
+      "abstract_en": "The robustness of deep neural networks is crucial for safety-critical deployments, yet existing evaluation methods are often attack-dependent and lack interpretability. We propose a principled, attack-agnostic robustness metric based on the spectral norm of the Fisher Information Matrix (FIM), which quantifies the worst-case sensitivity of the model's output distribution to input perturbations. Theoretically, we establish that the FIM equals the variance of the input Jacobian and derive closed-form spectral bounds for common architectures, including VGG, ResNet, DenseNet, and Transformer, providing the first theoretical robustness ranking. To enable scalable evaluation, we develop efficient algorithms, including power iteration and Hutchinson-based estimation, that support both white-box and black-box settings. Extensive experiments across multiple datasets, including CIFAR, ImageNet, and medical images, and across multiple architectures show a strong correlation between our metric and adversarial vulnerability. Our framework serves as an interpretable diagnostic tool that complements attack-based evaluations, offering insights into architectural sensitivity and guiding the design of more robust models. Code is available at: https://github.com/franz-chang/SRP/.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/06/2606.03654v1-graph-regularized-non-negative-reduced-biquaternion-matrix-factorization-for-color-image-recognition",
+      "section": "quick",
+      "title_en": "Graph Regularized Non-negative Reduced Biquaternion Matrix Factorization for Color Image Recognition",
+      "authors": "Hailang Wu, Yonghe Liu, Bingxuan Yu, Chaoqian Li",
+      "date": "2026-06-02",
+      "pdf": "https://arxiv.org/pdf/2606.03654v1",
+      "score": "6.0",
+      "evidence": "图正则化双四元数分解保持局部几何，有助于分离颜色与形状特征",
+      "tldr": "非负约化双四元数矩阵分解(NRBMF)忽略了图像数据的局部几何结构，限制了特征判别性。为此，提出图正则化非负约化双四元数矩阵分解(GNRBMF)模型，在系数矩阵上加入图拉普拉斯正则项，以保持原始空间中邻近样本在特征空间的相似性，同时保留非负性。实验表明，GNRBMF在彩色图像识别中取得有竞争力或更优的性能，有效提升了特征判别能力。",
+      "tags": "query:cp",
+      "abstract_en": "Non-negative reduced biquaternion matrix factorization (NRBMF) uses the product of reduced biquaternion (RB) matrices to incorporate the non-negativity constraints of color image pixels into the factorization process. However, NRBMF mainly focuses on reconstruction accuracy and does not exploit the local geometric structure of image data, which may limit the discriminative ability of the learned low-dimensional features. To address this issue, we propose a graph regularized non-negative reduced biquaternion matrix factorization (GNRBMF) model for color image recognition. The proposed model incorporates a graph Laplacian regularizer into the reduced biquaternion coefficient matrix, encouraging nearby samples in the original space to have similar representations in the learned feature space. Meanwhile, GNRBMF retains the non-negativity-preserving property of NRBMF in the reduced biquaternion domain. To solve the optimization problem, a component-wise alternating projected gradient algorithm is derived, and its convergence properties are analyzed. Experimental results demonstrate that the proposed GNRBMF model achieves competitive or superior recognition performance in some tested settings.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

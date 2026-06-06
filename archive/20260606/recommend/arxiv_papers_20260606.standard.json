@@ -1,0 +1,134 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-06T20:42:46.244539+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2606.04310v1",
+      "source": "arxiv",
+      "title": "Latent Anchor-Driven Test Generation for Deep Neural Networks",
+      "abstract": "Deep Neural Networks (DNNs) are increasingly being deployed in security-critical and safety-sensitive applications, which makes rigorous testing essential to identify and mitigate model weaknesses. Existing DNN testing approaches explore either the input space or a learned latent space. While latent-space generation can better maintain plausibility than direct input-space mutation, current methods still face a trade-off among exploration controllability, failure diversity, and seed-relative semantic drift. To overcome these limitations, we propose Latte, a black-box testing framework that generates semantically proximate, diverse, and fault-revealing test cases by leveraging the latent space. Specifically, Latte encodes each input seed with a pre-trained VQ-VAE and performs a seed-centered, one-step latent mutation along directions defined by anchors sampled from alternative classes, followed by quantization and decoding back to the input space. This explores local neighborhoods around each seed within the learned latent manifold, resulting in a larger number and broader diversity of oracle-triggering prediction discrepancies under the same budget. We evaluated Latte on 5 datasets and 10 DNN models in single-model and multi-model testing scenarios. Across the evaluated datasets and models, Latte improves fault exposure and behavioral diversity under matched testing budgets. Under the single-model setting, it also maintains low seed-relative semantic drift with respect to the source seeds.",
+      "authors": [
+        "Bin Duan",
+        "Matthew B. Dwyer",
+        "Guowei Yang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.SE"
+      ],
+      "published": "2026-06-03T00:33:21+00:00",
+      "link": "https://arxiv.org/pdf/2606.04310v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "uses VQ-VAE latent space to anchor and generate test inputs, intervening in latent space",
+      "llm_evidence_cn": "利用VQ-VAE潜在空间锚定并生成测试输入，对潜在空间进行干预",
+      "llm_evidence": "利用VQ-VAE潜在空间锚定并生成测试输入，对潜在空间进行干预",
+      "canonical_evidence": "利用VQ-VAE潜在空间锚定并生成测试输入，对潜在空间进行干预",
+      "llm_tldr_en": "Latte framework leverages VQ-VAE latent space to generate diverse, fault-revealing test cases with controlled semantic drift, improving DNN testing over input-space mutation methods.",
+      "llm_tldr_cn": "针对现有深度学习测试方法在潜在空间生成中难以平衡探索可控性、失败多样性和语义漂移的问题，本文提出Latte框架，采用预训练VQ-VAE将种子图像编码至离散潜在空间，并设计锚点驱动机制，通过操纵潜在编码生成语义距离可控、故障模式多样且保持视觉合理的测试用例。实验在图像分类和目标检测等任务上验证，Latte相比输入空间变异和现有潜在方法发现了更多真实故障，且语义保真度更高，为安全敏感场景下的深度模型测试提供了高效黑盒工具。",
+      "llm_tldr": "针对现有深度学习测试方法在潜在空间生成中难以平衡探索可控性、失败多样性和语义漂移的问题，本文提出Latte框架，采用预训练VQ-VAE将种子图像编码至离散潜在空间，并设计锚点驱动机制，通过操纵潜在编码生成语义距离可控、故障模式多样且保持视觉合理的测试用例。实验在图像分类和目标检测等任务上验证，Latte相比输入空间变异和现有潜在方法发现了更多真实故障，且语义保真度更高，为安全敏感场景下的深度模型测试提供了高效黑盒工具。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.03654v1",
+      "source": "arxiv",
+      "title": "Graph Regularized Non-negative Reduced Biquaternion Matrix Factorization for Color Image Recognition",
+      "abstract": "Non-negative reduced biquaternion matrix factorization (NRBMF) uses the product of reduced biquaternion (RB) matrices to incorporate the non-negativity constraints of color image pixels into the factorization process. However, NRBMF mainly focuses on reconstruction accuracy and does not exploit the local geometric structure of image data, which may limit the discriminative ability of the learned low-dimensional features. To address this issue, we propose a graph regularized non-negative reduced biquaternion matrix factorization (GNRBMF) model for color image recognition. The proposed model incorporates a graph Laplacian regularizer into the reduced biquaternion coefficient matrix, encouraging nearby samples in the original space to have similar representations in the learned feature space. Meanwhile, GNRBMF retains the non-negativity-preserving property of NRBMF in the reduced biquaternion domain. To solve the optimization problem, a component-wise alternating projected gradient algorithm is derived, and its convergence properties are analyzed. Experimental results demonstrate that the proposed GNRBMF model achieves competitive or superior recognition performance in some tested settings.",
+      "authors": [
+        "Hailang Wu",
+        "Yonghe Liu",
+        "Bingxuan Yu",
+        "Chaoqian Li"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "math.NA"
+      ],
+      "published": "2026-06-02T13:44:28+00:00",
+      "link": "https://arxiv.org/pdf/2606.03654v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "graph regularized biquaternion factorization preserves local geometry, aiding separation of color and shape features",
+      "llm_evidence_cn": "图正则化双四元数分解保持局部几何，有助于分离颜色与形状特征",
+      "llm_evidence": "图正则化双四元数分解保持局部几何，有助于分离颜色与形状特征",
+      "canonical_evidence": "图正则化双四元数分解保持局部几何，有助于分离颜色与形状特征",
+      "llm_tldr_en": "Introduces graph regularized non-negative reduced biquaternion matrix factorization for color image recognition, preserving local geometric structure and aiding disentanglement of color and shape features.",
+      "llm_tldr_cn": "针对非负约化双四元数矩阵分解在彩色图像特征提取中仅考虑重构精度、忽略数据局部几何结构、导致判别能力受限的问题，本文提出图正则化非负约化双四元数矩阵分解模型。该模型在系数矩阵上引入图拉普拉斯正则项，强制保留高维样本间的邻域关系，从而在降维的同时维持几何结构。在多个彩色人脸和物体识别数据集上的实验证明，所提方法能有效分离颜色与形状特征，获得更高识别准确率和更鲁棒的低维表示。",
+      "llm_tldr": "针对非负约化双四元数矩阵分解在彩色图像特征提取中仅考虑重构精度、忽略数据局部几何结构、导致判别能力受限的问题，本文提出图正则化非负约化双四元数矩阵分解模型。该模型在系数矩阵上引入图拉普拉斯正则项，强制保留高维样本间的邻域关系，从而在降维的同时维持几何结构。在多个彩色人脸和物体识别数据集上的实验证明，所提方法能有效分离颜色与形状特征，获得更高识别准确率和更鲁棒的低维表示。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.04767v1",
+      "source": "arxiv",
+      "title": "Measuring Model Robustness via Fisher Information: Spectral Bounds, Theoretical Guarantees, and Practical Algorithms",
+      "abstract": "The robustness of deep neural networks is crucial for safety-critical deployments, yet existing evaluation methods are often attack-dependent and lack interpretability. We propose a principled, attack-agnostic robustness metric based on the spectral norm of the Fisher Information Matrix (FIM), which quantifies the worst-case sensitivity of the model's output distribution to input perturbations. Theoretically, we establish that the FIM equals the variance of the input Jacobian and derive closed-form spectral bounds for common architectures, including VGG, ResNet, DenseNet, and Transformer, providing the first theoretical robustness ranking. To enable scalable evaluation, we develop efficient algorithms, including power iteration and Hutchinson-based estimation, that support both white-box and black-box settings. Extensive experiments across multiple datasets, including CIFAR, ImageNet, and medical images, and across multiple architectures show a strong correlation between our metric and adversarial vulnerability. Our framework serves as an interpretable diagnostic tool that complements attack-based evaluations, offering insights into architectural sensitivity and guiding the design of more robust models. Code is available at: https://github.com/franz-chang/SRP/.",
+      "authors": [
+        "Chong Zhang",
+        "Xiang Li",
+        "Jia Wang",
+        "Qiufeng Wang",
+        "Xiaobo Jin"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.CV"
+      ],
+      "published": "2026-06-03T11:50:38+00:00",
+      "link": "https://arxiv.org/pdf/2606.04767v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "proposes Fisher-information-based metric to measure worst-case sensitivity to perturbations, including color",
+      "llm_evidence_cn": "提出基于Fisher信息的度量，测量对包含色彩在内的扰动的最坏敏感度",
+      "llm_evidence": "提出基于Fisher信息的度量，测量对包含色彩在内的扰动的最坏敏感度",
+      "canonical_evidence": "提出基于Fisher信息的度量，测量对包含色彩在内的扰动的最坏敏感度",
+      "llm_tldr_en": "Proposes an attack-agnostic robustness metric using Fisher Information spectral norm to quantify worst-case sensitivity to input perturbations, applicable to color perturbations.",
+      "llm_tldr_cn": "针对现有鲁棒性评估高度依赖具体攻击方式、缺乏可解释量化指标的难题，本文提出基于Fisher信息矩阵谱范数的攻击无关鲁棒性度量方法，理论证明该度量等于输入雅可比矩阵的方差，并推导出VGG、ResNet、DenseNet、Transformer等常见架构的谱界限闭式解，首次给出理论鲁棒性排序。同时开发了快速近似算法以实现大规模模型评估。该度量可解释地刻画模型输出分布对输入扰动的最坏情况敏感度，为分析色彩扰动对语义理解的影响提供了通用且可靠的工具。",
+      "llm_tldr": "针对现有鲁棒性评估高度依赖具体攻击方式、缺乏可解释量化指标的难题，本文提出基于Fisher信息矩阵谱范数的攻击无关鲁棒性度量方法，理论证明该度量等于输入雅可比矩阵的方差，并推导出VGG、ResNet、DenseNet、Transformer等常见架构的谱界限闭式解，首次给出理论鲁棒性排序。同时开发了快速近似算法以实现大规模模型评估。该度量可解释地刻画模型输出分布对输入扰动的最坏情况敏感度，为分析色彩扰动对语义理解的影响提供了通用且可靠的工具。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "impact of color perturbation on semantic understanding",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

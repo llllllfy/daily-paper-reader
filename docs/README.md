@@ -6,34 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-05
-- 运行时间：2026-06-05 21:06:49 UTC
+- 最新运行日期：2026-06-06
+- 运行时间：2026-06-06 20:45:44 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：3
-- 速读区：1
+- 本次总论文数：3
+- 精读区：0
+- 速读区：3
 
 ### 今日简报（AI）
-今日精读3篇前沿论文，聚焦弱监督分割、视觉语言模型对抗防御与生成式图像编辑反幻觉。  
-最值得关注的是用语义锚点与空间仲裁实现弱监督增量分割（9.0分），以及通过高噪声漂移门控打破测试时虚假稳定性的对抗防御新思路（8.0分）。  
-普通读者可优先追踪弱监督分割在数据流场景的落地，或留意图像编辑中结构细化如何抑制内容漂移与幻觉。
-- 详情：[/202606/05/README](/202606/05/README)
+今日速读三篇前沿论文，聚焦AI测试、模型鲁棒性度量与图像识别新方法。  
+最值得关注的是：用潜在锚点自动生成DNN测试用例，以及用Fisher信息谱界量化模型鲁棒性，这两个方向给出了实用算法。  
+建议读者若从事AI工程化，可重点关注自动化测试与鲁棒性评估的落地实践。
+- 详情：[/202606/06/README](/202606/06/README)
 
 ### 精读区论文标签
-1. [Weakly Supervised Incremental Segmentation via Semantic Anchors and Spatial Arbitration](/202606/05/2606.04060v1-weakly-supervised-incremental-segmentation-via-semantic-anchors-and-spatial-arbitration)  
-   标签：评分：9.0/10、query:cp
-   evidence：在表示空间中引入语义锚点作为刚性类别级参考，以保持语义身份，是一种潜在空间干预技术。
-2. [Beyond False Stability: High-Noise Drift Gating for Test-Time Adversarial Defenses in Vision-Language Models](/202606/05/2606.03730v2-beyond-false-stability-high-noise-drift-gating-for-test-time-adversarial-defenses-in-vision-language-models)  
-   标签：评分：8.0/10、query:cp
-   evidence：测试时防御通过噪声平均锚点和特征插值在CLIP的潜在空间中操纵特征
-3. [Adversarial Attacks Already Tell the Answer: Directional Bias-Guided Test-time Defense for Vision-Language Models](/202606/05/2606.06186v1-adversarial-attacks-already-tell-the-answer-directional-bias-guided-test-time-defense-for-vision-language-models)  
-   标签：评分：8.0/10、query:cp
-   evidence：测试时防御沿CLIP潜在空间中主导防御方向移动特征
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Mitigating Content Shift and Hallucination in GenAI Image Editing via Structural Refinement](/202606/05/2605.30437v1-mitigating-content-shift-and-hallucination-in-genai-image-editing-via-structural-refinement)  
+1. [Latent Anchor-Driven Test Generation for Deep Neural Networks](/202606/06/2606.04310v1-latent-anchor-driven-test-generation-for-deep-neural-networks)  
+   标签：评分：7.0/10、query:cp
+   evidence：利用VQ-VAE潜在空间锚定并生成测试输入，对潜在空间进行干预
+2. [Measuring Model Robustness via Fisher Information: Spectral Bounds, Theoretical Guarantees, and Practical Algorithms](/202606/06/2606.04767v1-measuring-model-robustness-via-fisher-information-spectral-bounds-theoretical-guarantees-and-practical-algorithms)  
+   标签：评分：7.0/10、query:cp
+   evidence：提出基于Fisher信息的度量，测量对包含色彩在内的扰动的最坏敏感度
+3. [Graph Regularized Non-negative Reduced Biquaternion Matrix Factorization for Color Image Recognition](/202606/06/2606.03654v1-graph-regularized-non-negative-reduced-biquaternion-matrix-factorization-for-color-image-recognition)  
    标签：评分：6.0/10、query:cp
-   evidence：提出了一种后处理框架来强制图像编辑后的结构忠实度，有助于在颜色等修改下保持语义一致性
+   evidence：图正则化双四元数分解保持局部几何，有助于分离颜色与形状特征
 
 
 <div class="dpr-home-promo-card">

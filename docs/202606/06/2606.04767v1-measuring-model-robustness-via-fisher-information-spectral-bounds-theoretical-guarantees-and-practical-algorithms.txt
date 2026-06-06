@@ -1,0 +1,3052 @@
+Title: Measuring Model Robustness via Fisher Information: Spectral Bounds, Theoretical Guarantees, and Practical Algorithms
+
+URL Source: https://arxiv.org/pdf/2606.04767v1
+
+Published Time: Thu, 04 Jun 2026 00:59:07 GMT
+
+Number of Pages: 35
+
+Markdown Content:
+# Measuring Model Robustness via Fisher Information: Spectral Bounds, Theoretical Guarantees, and Practical Algorithms 
+
+Chong Zhang 1 Xiang Li 2 Jia Wang 1 Qiufeng Wang 1 Xiaobo Jin 1
+
+## Abstract 
+
+The robustness of deep neural networks is crucial for safety-critical deployments, yet existing evalu-ation methods are often attack-dependent and lack interpretability. We propose a principled, attack-agnostic robustness metric based on the spectral norm of the Fisher Information Matrix (FIM) ,which quantifies the worst-case sensitivity of the model’s output distribution to input perturbations. Theoretically, we establish that the FIM equals the variance of the input Jacobian and derive closed-form spectral bounds for common archi-tectures (VGG, ResNet, DenseNet, Transformer), providing the first theoretical robustness ranking. To enable scalable evaluation, we develop effi-cient algorithms—including power iteration and Hutchinson-based estimation—that support both white-box and black-box settings. Extensive ex-periments across multiple datasets (CIFAR, Im-ageNet, and medical images) and architectures show a strong correlation between our metric and adversarial vulnerability. Our framework serves as an interpretable diagnostic tool that comple-ments attack-based evaluations, offering insights into architectural sensitivity and guiding the de-sign of more robust models. Code is avalilable at: https://github.com/franz-chang/SRP/. 
+
+## 1. Introduction 
+
+While deep neural networks achieve remarkable perfor-mance, their vulnerability to adversarial perturbations poses a serious threat to safety-critical applications. However, existing robustness evaluation methods fall into two cate-gories, each with significant limitations. Attack-dependent metrics (e.g., PGD, AutoAttack (Croce & Hein, 2020)) rely on specific adversarial algorithms (Madry et al., 2019), making them computationally expensive, hyperparameter-
+
+> 1
+
+Xi’an Jiaotong-Liverpool University 2The Chinese Uni-versity of Hong Kong. Correspondence to: Xiaobo Jin <Xi-aobo.Jin@xjtlu.edu.cn >.
+
+Pre-Print. Under Review. Previous Methods                                  
+
+> uHigh attack dependency
+> uLack of theoretical explanation
+> uHigh computational cost
+> uFragmented perspective
+> Our Methods
+> uUnified geometric and probabilistic perspectives
+> uFIM -based theoretical metrics
+> uEfficient and scalable algorithms
+> uApplicable to both white -box and black -box
+> evaluation
+> Theoretical Contributions
+> uKL Divergence ≈!
+> "𝛿 #𝐹𝛿 ,𝐹𝐼𝑀 =𝑣𝑎𝑟 (𝐽 )
+> uAnalysis of the upper bound of |F|"
+> uSpectral norm ordering of architecture
+> Algorithm Contributions
+> uEigenvalue decomposition (small -scale)
+> uPower iteration (medium -scale)
+> uHutchinson approximation (large -scale)
+> uBlack -box finite difference estimation
+> Experimental Verification
+> uHigh consistency with Lipschitz/CLEVER
+> uRobust ranking consistent with theory
+> uWhite -box/black -box results consistent
+> uComputational efficiency superior to
+> attack methods
+> Practical Impact & Applications
+> uApplications in the Security Field
+> uModel Selection and Benchmarking
+> uExplainable AI and Increased Transparency
+> uFacilitating Robust Model Design
+> A Unified Information -Geometric Framework for Robustness Evaluation in Deep Learning
+
+Figure 1. Overview of our work: motivation and contributions. 
+
+sensitive, and unable to reveal intrinsic model properties. 
+
+Theoretically-derived bounds (e.g., Lipschitz constants (Shi et al., 2022) and CLEVER scores (Weng et al., 2018)), while attack-agnostic, often lack probabilistic interpretation and are difficult to scale to modern architectures like Trans-formers (Vaswani et al., 2023). Crucially, neither paradigm provides a unified, interpretable framework that connects geometric sensitivity with statistical uncertainty—a gap our work aims to bridge. Recent studies have explored Fisher Information Matrix (FIM) in robustness contexts, but primarily in two limited directions: defense-oriented training (e.g., suppressing FIM eigenvalues (Shen et al., 2019)) and manifold analysis 
+
+(e.g., geometric properties via partial isometry (Shi-Garrier et al., 2024)). However, none have established FIM spec-tral norm as a directly computable, attack-agnostic ro-bustness metric with theoretical guarantees and scalable algorithms for architecture-level comparison. Our work fills this gap by proposing the first unified FIM-based robust-ness evaluation framework that not only diagnoses model sensitivity but also enables cross-architecture theoretical ranking. In this work, we bridge information-theoretic geometry 
+
+with practical robustness evaluation by establishing that the FIM equals the variance of the input Jacobian (Theo-rem 2). This fundamental connection allows us to propose 
+
+the spectral norm of FIM —or its reciprocal—as a princi-pled, attack-agnostic robustness metric that quantifies the 1
+
+> arXiv:2606.04767v1 [cs.LG] 3 Jun 2026 Submission and Formatting Instructions for ICML 2026
+
+worst-case sensitivity of the model’s output distribution. Our framework not only provides a diagnostic tool for model vulnerability but also derives theoretical robustness rank-ings across architectures, offering insights beyond empirical attack-based evaluations. Our key contributions are: 1. We propose the first FIM spectral norm-based ro-bustness metric that is attack-agnostic, interpretable, and probabilistically grounded, providing a direct measure of worst-case sensitivity. 2. We derive closed-form spectral bounds for common architectural components (ReLU, convolution, attention) and provide the first theoretical robustness ranking of VGG, ResNet, DenseNet, and Transformer. 3. We design scalable algorithms (power iteration, Hutchin-son estimation) that support both white-box and black-box evaluation, enabling application to large-scale models. 4. We extensively validate our metric across multiple datasets and architectures, showing strong correlation with attack-based robustness while emphasizing its role as a di-agnostic tool complementary to empirical benchmarks like RobustBench .Our experiments verify the correlation of this metric with adversarial vulnerability across datasets (CIFAR-10, Ima-geNet, medical images) and demonstrate its practicality in robustness-aware model selection. By unifying geometric sensitivity and probabilistic uncertainty, this work provides a principled toolkit for evaluating and designing robust deep learning models. 
+
+## 2. Related Work 
+
+2.1. Robustness Metrics in Deep Learning Adversarial Attack-Based Metrics Empirical robust-ness is usually evaluated through adversarial attacks (e.g., PGD (Madry et al., 2019) and C&W (Carlini & Wagner, 2017b)), which create perturbations to induce misclassifi-cation. While these methods are effective in exposing vul-nerabilities, they are computationally expensive and attack-dependent — their results may not generalize to unknown threat models or real-world noise. 
+
+Lipschitz and Jacobian Norms Theoretical approaches use Lipschitz continuity (Szegedy et al., 2014) or Jacobian matrix norms (Sokolic et al., 2016) to bound model sen-sitivity. However, these methods lack probabilistic inter-pretation and are difficult to scale to complex architectures (e.g., Transformer) due to fuzzy boundaries or exponential computational complexity. 
+
+Information Theoretic Perspective KL divergence and mutual information have been used to quantify robustness (Alemi et al., 2019), but previous studies have failed to link these metrics to the geometry of the input space. Our work bridges this gap by linking KL divergence to Fisher infor-mation, unifying probabilistic and geometric perspectives. 
+
+2.2. Fisher Information in Deep Learning Classic Foundations The Fisher Information Matrix (FIM) is central to statistical estimation and natural gradient de-scent (Amari, 1998). In deep learning, it has been used for optimization and uncertainty quantification (e.g., K-FAC (Martens & Grosse, 2020)), but these studies focus on pa-rameter space properties rather than robustness in the input space. 
+
+FIM for Adversarial Robustness Recent studies have used FIM for adversarial detection (Zhao et al., 2019) or robust training (Martin & Elster, 2019), but none of them has es-tablished a direct relationship between FIM eigenvalues and the inherent robustness of the model. Our key insight—that the largest FIM eigenvalue encodes the worst-case sensitiv-ity—provides a novel, theoretically supported robustness metric. 
+
+2.3. Spectral Analysis and Efficient Computation Spectral Methods in Deep Learning Spectral normaliza-tion (Miyato et al., 2018) can regulate model complexity, but their applications are mainly limited to generative models. Different from these studies, we analyze the spectral proper-ties of discriminative architectures (e.g., CNN, Transformer) from the perspective of FIM. 
+
+Randomized Algorithms Hutchinson estimator (Hutchin-son, 1989) and power iteration (Golub & Loan, 2013) are widely used for large-scale matrix computation. We adapt these algorithms to the special structure of FIM matrices to efficiently estimate λmax (F ) with provable convergence, thus enabling scalability to modern architectures. 
+
+## 3. Methodology 
+
+3.1. Problem Formulation Robustness as KL-Divergence Maximization For any model, the cluster of posterior probability distributions of the model output relative to the input x forms a statistical manifold 
+
+P = {p(y|x; θ)|x ∈ X}, (1) where each input x corresponds to a point on the manifold and θ is a parameter of the model. In adversarial training, the input sample x is mapped to a point p(y|x) on the man-ifold by the model, and the perturbation x → x + δ will correspond to a trajectory on the manifold. We try to maxi-mize the distance between two model output points on the 2Submission and Formatting Instructions for ICML 2026 
+
+manifold 
+
+x′∗ = arg max 
+
+> x′
+
+D(p(y|x; θ), p (y|x′; θ)) , (2) where D(·, ·) represents the distance between the outputs of the two distribution functions. 
+
+Fisher Information and Robustness Metric For the con-venience of discussion, we ignore the model parameter θ.We will introduce the following Theorem 1 as our starting point: The KL divergence between any two conditional dis-tributions p(y|x) and p(y|x′) is approximately equal to half of the Mahalanobis distance between x and x′, where the co-variance parameter matrix is the inverse of the Fisher infor-mation matrix (FIM). App. B and C analyze the rationality of the approximation theoretically and experimentally. 
+
+Theorem 1. For any two conditional distributions p(y|x)
+
+and p(y|x′), where x and x′ are the inputs of the model and 
+
+y is the class label of the model output, we have KL (p(y|x), p (y|x′)) ≈ 12 (x′−x)T F (x)( x′−x) = 12 δT F (x)δ, 
+
+(3) 
+
+where F (x) is the Fisher information matrix defined as follows 
+
+F (x) = Ep(y|x)[∇x log p(y|x)∇x log p(y|x)T ]. (4) 
+
+F (x) geometrically represents the curvature of the proba-bility distribution manifold at point x. From Theorem 1, it is not difficult to see that the perturbation direction δ
+
+(∥δ∥2 = 1 ) in adversarial training is approximately equal to the principal eigenvector of the Fisher information matrix. 
+
+Interpretation of Stochasticity in FIM The Fisher Infor-mation Matrix F (x) is defined as an expectation over the model’s own predictive distribution p(y|x), not over random weights or inputs. This means the “randomness” in F (x)
+
+comes from the probabilistic uncertainty of the model’s output, which assigns different weights to gradient direc-tions ∇x log p(y = k|x) based on the predicted probability 
+
+p(y = k|x). This property allows F (x) to capture not only the geometric sensitivity (Jacobian) but also the statistical confidence of the model—a key advantage over determinis-tic Lipschitz or Jacobian norms (see App. D for proof). 
+
+Theorem 2. For a deep learning model whose last layer uses a softmax function to implement classification tasks, where the input vector of softmax is f (x), the Fisher infor-mation matrix is 
+
+F (x) = var (Jf (x)) , (5) 
+
+where Jf (x) is the gradient matrix (Jacobian matrix) of the vector f (x) with respect to the input x and var represents the variance of the matrix random variable. 
+
+Physical Meaning of Theorem 2 The equality F (x) = var( Jf (x)) reveals that the FIM measures the dispersion of gradient directions weighted by the model’s confidence. If the model is highly confident ( p(y = c|x) ≈ 1), the variance is small, indicating a stable and robust region. Conversely, if the model is uncertain ( p(y|x) nearly uniform), the variance is large, indicating a region where small perturbations can easily flip the prediction—the essence of adversarial vulner-ability. This statistical reweighting of Jacobian columns by 
+
+p(y|x) is what distinguishes our metric from pure gradient-based measures. The experimental results in App. J.3 verify how the variance of the gradient tends to the FIM matrix as the number of samples increases. Given an input x, when δ is the principal eigenvector of 
+
+F (x), the KL divergence between the two posterior proba-bilities is maximum, that is, at this time δ corresponds to the worst-case perturbation to the model, and λmax (F (x)) (or 
+
+∥F (x)∥2) bounds the worst-case perturbation impact. So for the dataset S, we define the following robustness mea-sure based on the spectral norm ( |S| represents the number of elements in set S): 
+
+Rspec (S) = 1
+
+|S|
+
+X
+
+> x∈S
+
+1
+
+∥F (x)∥2
+
+, Rnorm (S) = 1
+
+|S|
+
+X
+
+> x∈S
+
+∥F (x)∥2.
+
+(6) App. A provides the relationship between our metric and several classical measures and further discussion. 
+
+3.2. Theoretical Analysis General Analysis Given any classifier based on deep learn-ing model, we will discuss how to estimate the upper bound of the spectral norm ∥F (x)∥2, where the Fisher informa-tion matrix of x for the discrete variable y is defined as (pk = p(yk|x))
+
+F (x) =
+
+> K
+
+X
+
+> k=1
+
+p(yk|x)[ ∇x log p(yk|x)∇x log p(yk|x)T ]=
+
+> K
+
+X
+
+> k=1
+
+pk[∇x log pk∇x log pTk ]. (7) For any network structures, we further estimate ∥F (x)∥2 by the following theorem, where the proof is in App. E. 
+
+Theorem 3. For any deep network-based classifier h : x →
+
+softmax (f (x)) , where softmax is the softmax function, the spectral norm ∥F (x)∥2 of its Fisher information matrix with respect with the input x has the following upper bound 
+
+∥F (x)∥2 = max  
+
+> ∥v∥2=1
+
+vT F (x)v ≤ max  
+
+> k
+
+pk(1 − pk)∥Jf (x)∥22,
+
+(8) 
+
+where Jf (x) is the Jacobian matrix of the output f (x) ∈RK with respect to the input x ∈ R d.
+
+3Submission and Formatting Instructions for ICML 2026 
+
+In a deep neural network, the model f (x) is essentially a composite of m functions 
+
+f (x) = fm ◦ fm−1 ◦ · · · ◦ f1(x), (9) where the Jacobian matrix of each function fi : Rni →
+
+Rni+1 is Ji, then we have (by chain rule) ∂f ∂x =
+
+JmJm−1 · · · J1. Then, according to the property of the norm ∥AB ∥2 ≤ ∥A∥2∥B∥2, we immediately have 
+
+∥Jf ∥2 ≤ Qmi=1 ∥Ji∥2. Finally, we get 
+
+∥F (x)∥2 ≤ max  
+
+> k
+
+pk(1 − pk)
+
+> m
+
+Y
+
+> i=1
+
+∥Ji∥22. (10) Therefore, the spectral norm analysis of deep network mod-els can be reduced to the analysis of its basic components. 
+
+Spectral Norm ∥Ji∥2 of Basic Components We theoreti-cally analyze the upper bounds of the spectral norms of the basic components of deep neural networks in Table 1 (see App. F for details). We can see that 1) The spectral norm of ReLU and Max Pooling is strictly 1, indicating that they have equidistant propagation of input perturbations; 2) The spectral return of Average Pooling decreases as the kernel increases, which has a certain gradient smoothing effect; 3) BN and LN can actively amplify or suppress perturba-tions through scaling factors; 4) When the spectral norm of Softmax is close to 0, it may suppress the propagation of perturbations, and the spectral norm of the concatenation operation is proportional to the sum of the squares of the spectral norms of the input tensor, which may implicitly introduce gradient expansion; 5) The spectral norm of the linear change layer (convolution or full connection) is the main source of perturbation amplification. 
+
+Analysis of Deep Neural Networks We analyzed the fol-lowing four classic deep network structures, including VGG, Densenet, Resnet and Transformer (ViT), and the specific results are as shown in Table 2 (see App. G for more details). In Table 1, since the spectral norm of the linear change layer (convolution or fully connected) is the main source of per-turbation amplification, we only estimate the upper bound in the form of the spectral norm of the convolution or fully connected layer. Analyzing the results in Table 2, we take the most clas-sic models among the four models to compare their struc-tural complexity: VGG16 ( L = 13 , M = 3 ), DenseNet121 (L = 59 ), ResNet18 ( L = 12 ), ViT-B-16 ( L = 12 ). There-fore, based on the derived upper bounds of ∥Jf (x)∥2, we conclude the following theoretical trend in robustness: DenseNet121 ≲ VGG16 ≲ ResNet18 ≲ ViT-B-16 ,
+
+(11) where ≲ denotes a trend derived from spectral norm up-per bounds, not necessarily strict inequality in practice. Theoretical vs. Experimental Ranking The above rank-ing is derived from architectural upper bounds (Table 2) and reflects the intrinsic sensitivity trend due to design choices (e.g., residual connections, attention mechanisms). 
+
+In practice , the actual ranking on a specific dataset (e.g., Table 4) may differ due to: a) weight values and train-ing dynamics; b) data-dependent curvature of F (x); c) approximation errors in spectral norm estimation. 
+
+Our experiments show that the theoretical trend is largely consistent with empirical rankings (see Table 4, where DenseNet121 is least robust, ViT-B-16 among the most robust). 
+
+3.3. Practical Algorithms with White-box Settings 
+
+Since in the theoretical analysis, we only approximately estimated the upper bound of the model, ignoring the ac-tual spectral norm values of each component, and we also ignored the fact that the spectral norm also depends on the input of the model. Therefore, below we will evaluate the robustness of the model on a certain data set by solving the spectral norm of F (x).Let qk = ∇x log p(yk|x) and λk = p(yk|x), we can write the Fisher information matrix in a more compressed form 
+
+F (x) = QΛQT , (12) where Q = q1 q2 · · · qK
+
+ and Λ =
+
+diag (λ1, λ 2, · · · , λ K ).
+
+Low-Rank Structure of FIM Enables Scalability The FIM F (x) = QΛQT has rank at most K (number of classes), where K ≪ d (input dimension). This low-rank structure allows us to avoid explicit construction of the 
+
+d × d matrix, reducing space complexity from O(d2) to 
+
+O(dK ) and time complexity from O(d3) to O(dK 2 + K3)
+
+for eigendecomposition, and to O(T dK ) for power iteration (see Appendix J for details). Thus, concerns about O(n2)
+
+complexity for dense matrices do not apply here—our algo-rithms are designed to exploit this structure for scalability. 
+
+Direct Eigendecomposition Considering the properties of the spectral norm ∥AB ∥2 = ∥BA ∥2, we can get 
+
+∥F (x)∥2 = ∥P ∥2, where P = Λ 1/2QT QΛ1/2 is a sym-metric matrix. The time complexity and space complexity of solving ∥P ∥2 directly through eigenvalue decomposi-tion are O(dK 2 + K3) and O(dK ) respectively, which is suitable for cases where K is small. 
+
+Power Iteration The power iteration algorithm (as shown in Algorithm 1 of App. I) is a simple algorithm for finding the leading eigenvalue of a matrix and its associated eigen-vector. Although the most time-consuming operation of the algorithm is the matrix multiplication, the matrix F (x) has a special form of eigenvalue decomposition, and we can calculate F (x)bt very efficiently. Note that the initial value 4Submission and Formatting Instructions for ICML 2026 
+
+Table 1. Spectral norm of the basic components 
+
+Name Function ∥J∥2
+
+ReLU max(0 , x ) = 1 
+
+Max Pooling max (m,n )∈Nk (i,j ) xm,n,c = 1 
+
+Average Pooling 1
+
+> k2
+
+P  
+
+> (m,n )∈Nk(i,j )
+
+xm,n,c = 1
+
+> k
+
+Convolutional Pk−1
+
+> i=0
+
+Pk−1
+
+> j=0
+
+PCin  
+
+> c=1
+
+Wi,j,c,c ′ Xh′+i,w ′+j,c ≈ ∥ W ∥2
+
+Fully Connected W x + b = ∥W ∥2
+
+Batch Normalization γ(c) x(c)−μ(c)
+
+√(σ(c))2+ϵ + β(c) = max c |γ(c)|
+
+√(σ(c))2+ϵ
+
+Layer Normalization γ ⊙ x−μ√σ2+ϵ + β ≤ max i |γ(i)|√σ2+ϵ
+
+Softmax σ(x)i = exi  
+
+> Pnj=1 exj
+
+≤ 2 max k σ(x)k(1 − σ(x)k)
+
+Concatenation X1 · · · Xn
+
+ ≤ pP ni=1 ∥Xi∥22
+
+Table 2. Analysis of spectral norm of deep network structure ( h is the number of attention heads) 
+
+DNN Estimation of Upper bound of ∥J∥2 Structural complexity VGG QLi=1 ∥Wi∥2 · QMj=1 ∥Uj ∥2 O(L + M )
+
+ResNet 12 ∥Wcov ∥2
+
+QLl=1 (1 + ∥Wl, 1∥2∥Wl, 2∥2)∥U ∥2 O(L)
+
+DenseNet ∥WL∥2
+
+QL−1 
+
+> k=1
+
+(1 + ∥Wk∥2) O(L)
+
+Transformer QLl=1 (1 + √h max i ∥W Vi ∥2∥W O ∥2 + ∥Wl1∥2∥Wl2∥2) O(L)
+
+is set to the approximate value to accelerate the iterative al-gorithm’s convergence process. Due to the special structure of QΛQT , we can obtain the time complexity and space complexity of the power iteration algorithm as O(T dK )
+
+and O(dK ) respectively. Note that when the iteration error 
+
+∥λt − λprev ∥)/∥λt∥2 < ϵ , where ϵ is a given threshold, the algorithm will exit midway. 
+
+Hutchinson Approximation Algorithm We adopt Hutchinson algorithm (as shown in Alg. 2 of the App. I) (Hutchinson, 1989) to estimate the principal eigenvalue of the matrix λmax 
+
+∥F (x)∥2 = λmax (F (x)) ≈ max 
+
+> i
+
+zTi F (x)zi
+
+zTi zi
+
+, (13) where zi is a random vector (such as a Rademacher vector with elements of ±1) or a Gaussian variable. 
+
+Theorem 4. (Hutchinson, 1989) Let R(A, x i) =   
+
+> xTiAx i
+> xTixi
+
+, given M independent random vectors x1, · · · , x M
+
+(Rademacher vectors or Gaussian variables), when M →∞, then ˆλmax = max mi=1 R(A, x i) will converge to 
+
+λmax (A) with high probability. For any given δ value, when 
+
+M ≥ log 1
+
+> δ
+
+pϵ
+
+, (14) 
+
+then 
+
+P (ˆλmax ≥ λ(A) − ϵ) = 1 − (1 − pϵ)M ≥ 1 − δ, (15) 
+
+where pϵ = P (R(A, x i) ≥ λmax (A) − ϵ).
+
+Theorem 2 shows that even if the probability pϵ of a single sample falling into the target interval is very low, we can still ensure high probability convergence to λmax (A) by moderately increasing M .
+
+Theorem 5. (Hutchinson, 1989) Let u, v ∈ Rn, where u is a random unit vector and v is a fixed unit vector (such as the principal eigenvector of a matrix), then the probability that 
+
+u is aligned with v decays exponentially with n. Specifically, we have 
+
+P (|uT v| ≥ t) ≤ 2 exp  −cnt 2 , (16) 
+
+where c is a universal constant. 
+
+Theorem 5 shows that when the dimension of the random vector grows, the probability of the random vector aligning with λmax will decay exponentially. If the random vector generated by F (x) = QΛQT as the input of Hutchinson is in a high-dimensional space of d dimensions, then the probability of it aligning with the spectral norm will be very low. Therefore, as with direct eigenvalue decomposition, we also consider using P = Λ 1/2QT QΛ1/2 as the input of Hutchinson. The time complexity of Hutchinson algorithm for calculating the spectral norm of FIM is O(M dK ), and Hutchinson algorithm can be highly parallelized since each random vector is independent of each other. The theoretical analysis in Appendix I and experimental verification in Appendix J show that we can significantly reduce the space complexity and approximation error of the model by indirectly estimating ∥F ∥2 through P .5Submission and Formatting Instructions for ICML 2026 
+
+3.4. Practical Algorithms with Black-box Settings 
+
+Below we will use Hutchinson’s algorithm and finite dif-ferences to estimate the robustness measure ∥F (x)∥2 in a black-box setting. For any Gaussian random vector v ∼ N (0 , I ), the direc-tional derivative of the gradient ∇x log p(y|x) can be ap-proximated by symmetric difference ( u = v/ ∥v∥2)
+
+uT ∇x log p(y|x) ≈ log p(y|x + hu ) − log p(y|x − hu )2h ,
+
+(17) where h is a small positive constant (such as 10 −3). The quadratic form uT F (x)u of FIM can be decomposed into 
+
+uT F (x)u = uT Ep(y|x)[∇x log p(y|x)∇x log p(y|x)T ]u
+
+= Ep(y|x)[( uT ∇x log p(y|x)) 2], (18) where uT ∇x log p(y|x) can be estimated using first-order finite differences (Eqn. (17)). 
+
+## 4. Experiments 
+
+4.1. Experimental Design Philosophy 
+
+Our experiments are designed to validate the correlation and diagnostic capability of our proposed metric, not to provide absolute robustness rankings under the strongest possible attacks. We follow established practices in adver-sarial robustness literature ( see J.1 and J.2 for more details on datasets and evaluation metrics ): 
+
+Sample size (500) : This provides statistically stable es-timates (see variance analysis in Appendix J.3) while re-maining computationally feasible for spectral norm esti-mation—a common trade-off in gradient-based intrinsic robustness evaluation (e.g., CLEVER (Weng et al., 2018), Lipschitz estimation (Shi et al., 2022)). 
+
+Attack strength (20-step PGD/CW) : We use standard con-figurations ( ϵ = 8 /255 , 20 steps) widely adopted in foun-dational works (e.g., (Madry et al., 2019)) and recent top conferences. This ensures consistent and reproducible 
+
+relative comparisons across models. 
+
+Model selection : We include architectures spanning CNN (VGG, ResNet, DenseNet) and Transformer (ViT) paradigms, trained on datasets ranging from simple (MNIST) to complex (ImageNet) and domain-specific (med-ical images). This diversity ensures our conclusions are not biased toward a single architecture or data domain. Our goal is to demonstrate that our metric reliably cap-tures relative robustness trends and provides interpretable insights complementary to attack-based evaluation. 
+
+4.2. Positioning Relative to Traditional Metrics 
+
+Our proposed metrics Rnorm and Rspec are not intended to replace attack-based metrics such as AutoAttack accuracy or PGD success rate. Instead, they serve as interpretable diagnostic tools that answer different questions: 
+
+Attack-based metrics : “How robust is the model under a specific attack?” 
+
+Our FIM-based metric : “Why is the model (in)vulnerable? What is its intrinsic geometric sensitivity?” Thus, our metrics provide complementary insights —they correlate with attack success rates (as shown in Tables 3–5) but also reveal architectural sensitivities independent of attack choice. 
+
+4.3. Reasonableness of Our Robustness Metric 
+
+We use the clean model Mclean (ResNet18) as the benchmark and use CW adversarial training to obtain a model MCW .Based on our intuition, MCW should be more robust than 
+
+Mclean . Since the Lipschitz constant L(x), CLEVER, CW, PGD and spectral norm ∥F (x)∥2 are positively correlated, the value of MCW on the above indicators should be smaller than the corresponding value of M . We counted the percent-age reduction of the metric on the model MCW compared to the metric on Mclean , and the results are shown in Table 3 with 500 samples. As can be seen from Table 3, the reduction value of our spectral norm metric ∥F (x)∥2 is very close to the CW es-timate. It is worth noting that the attack success rate on PGD decreases the least, because we use CW to perform adversarial attacks in training, but use PGD to implement attacks in testing, which shows that the CW metric is not transferable. At the same time, the estimated values of L(x)
+
+and CLEVER are relatively close. Comparing the results in Table 3, we can see that the es-timated values of ∥F (x)∥2, L(x), and CLEVER are very stable when the size of the data set changes, while the fluctu-ations of CW and PGD are relatively large. This is because CW and PGD are essentially discrete functions of the in-put x, where accuracy functions are not differentiable with respect to the input. 
+
+4.4. Robustness Analysis of Models 
+
+We use CIFAR10 as a benchmark to analyze how the six metrics rank the models (as shown in Table 4). We sort the four metrics in descending order of L(x), and we can see that our spectral norm ∥F (x)∥2 obtains the same ranking results as L(x) and CLEVER, while the results of CW are exactly the same as our Rspec . This shows that the two met-rics ∥F (x)∥2 and Rspec we proposed can replace CLEVER 6Submission and Formatting Instructions for ICML 2026     
+
+> Table 3. Robustness comparison using adversarial training model MCW and clean model Mclean
+
+Model L(x) CLEVER CW PGD Rnorm Rspec 
+
+None-Attack ( Mclean ) 0.50 3.52 93.64 99.24 2.38 46.46 CW-Attack ( MCW ) 0.29 2.02 29.60 86.67 0.82 186.46 Reduction (%) 42.00 42.61 68.39 12.67 65.55 -and CW respectively to some extent. PGD uses different attack methods in training and testing, so the results are not referenceable (See App. J.6 for more comparisons on large-scale datasets). Comparing the robustness of the same model across multiple datasets (in Tab. 5) shows that our metrics and other metrics produce consistent results for Medical Data and CIFAR100: CIFAR100 > Medical Data. However, the data distribution in ImageNet varies significantly, leading to inconsistent results when compared with other datasets. The results show that ImageNet is as difficult to attack as CIFAR100. 
+
+4.5. Connection to RobustBench 
+
+While our experiments focus on canonical architectures (VGG, ResNet, DenseNet, ViT) as prototypes, our frame-work is theoretically applicable to any differentiable model , including those on RobustBench (e.g., WRN-34-10, ConvNeXt). The reason we do not report a full RobustBench leaderboard is twofold: 
+
+Purpose : RobustBench ranks models by empirical attack performance ; our metric provides geometric diagnostics 
+
+for why a model ranks highly (e.g., low FIM spectral norm indicates smoother decision boundaries). 
+
+Computational cost : Estimating F (x) for hundreds of large-scale models is prohibitive; our goal is to validate the metric’s correlation and diagnostic value, not to reproduce an existing benchmark. 
+
+Our results on ViT-B-16 (a Transformer architecture similar to models on RobustBench) demonstrate that our method scales to modern architectures and provides consistent in-sights. 
+
+4.6. Robustness comparison between black-box setting and white-box setting 
+
+To compare the robustness metrics under two different set-tings, we use only the model output p(yk|x) in the black-box setting and explicitly use the model gradient ∇ log p(yk|x)
+
+in the white-box setting. The results for both settings are shown in Table 6. We can draw the following conclusions: 1) Since the dimensionality of the vectors in the black-box setting is higher than that in the white-box setting (data com-parison coefficient), and since we indirectly compute the matrix P in the white-box setting, the estimated eigenvalues are an order of magnitude lower than those in the white-box setting; 2) Our metrics yield consistent conclusions in both settings: for the ResNet-18 model, the robustness comparison across datasets is CIFAR100 > Medical Data. 
+
+Practical Implication for Model Deployment The consis-tency between black-box and white-box estimates (Table 6) demonstrates that our metric can be applied even when model gradients are inaccessible —a common scenario in real-world deployment (e.g., evaluating third-party APIs or proprietary models). This black-box capability enhances the practical utility of our framework for model auditing and selection in security-sensitive applications. 
+
+4.7. Comparison of Running Times 
+
+We use the adversarial training model MCW on CIFAR100 to test 5 metrics and run them 5 times on 500 samples to calculate the average running time of the 5 metrics, as shown in Tab. 7. Since CLEVER greatly approximates the gradient of the loss function, the maximum eigenvalue of the gradient can be easily solved, so it has the fastest running time. Our Rnorm and Lipschitz constant L(x) are both based on the gradient of the model, but Rnorm calculate the spectral norm of F (x) instead of the spectral norm of the gradient, which takes more time than the estimation of 
+
+L(x). Although we can achieve fast estimation of ∥F (x)∥2
+
+through parallel sampling of the Hutchinson algorithm, due to the limitations of the GPU memory , we have to convert large-scale batch sampling into multiple batches of small-scale sampling, which makes our algorithm slightly slower. 
+
+Trade-off: Computation vs. Information Richness While our metric incurs higher computational cost than Lipschitz or CLEVER estimates (Table 7), it provides significantly richer information :
+
+Lipschitz/CLEVER : First-order gradient norm (local slope). 
+
+Our FIM metric : Second-order curvature + probabilistic weighting (local shape + uncertainty). This additional information enables deeper insights into 
+
+why a model is vulnerable (e.g., high variance in gradi-ent directions) and is valuable for diagnostic and design purposes—just as computing a covariance matrix is more informative than computing a mean, albeit more expensive. 7Submission and Formatting Instructions for ICML 2026  
+
+> Table 4. Comparison of ranking results of 4 models on 6 metrics on the CIFAR10 dataset
+
+Models L(x) CLEVER CW PGD Rnorm Rspec 
+
+DenseNet121 0.47 2.93 54.55 94.81 2.18 5.16 ResNet18 0.29 1.99 22.97 89.19 0.77 124.61 ViT B 16 0.25 1.35 39.39 96.97 0.61 77.36 VGG16 0.07 1.11 14.29 55.95 0.09 97685.6  
+
+> Table 5. Comparison of robustness ranking results of ResNet18 using 6 metrics on 3 datasets
+
+Dataset L(x) CLEVER CW PGD Rnorm ↓ Rspec 
+
+Medical Data 0.57 5.43 37.08 98.88 5.95 36.28 ImageNet 0.17 2.29 95.24 100.0 1.11 1.44 CIFAR100 0.29 1.81 62.07 94.83 0.73 5.69  
+
+> Table 6. Comparison of robustness ranking results of ResNet18 using 6 metrics on 3 datasets
+
+Dataset Rnorm (white) ˆRnorm (black) Medical Data 5.95 0.0056 CIFAR100 0.73 0.0032 
+
+## 5. Conclusion 
+
+This paper proposes a unified information-theoretic frame-work to quantify the robustness of deep neural networks using Fisher information. Building on the connection be-tween the KL divergence of the posterior probability and the Fisher Information Matrix (FIM), we propose the maxi-mum eigenvalue of the FIM, or its inverse, as a principled and interpretable robustness metric. We analyze the con-nections and differences between our metric and several classical metrics. We further analyze upper bounds on the spectral norms of common architectural components (e.g., ReLU and convolution) and compare the robustness of pop-ular architectures, including VGG, ResNet, DenseNet, and Transformer. To achieve scalable computation, we use three algorithms to compute the spectral norm of the FIM, making it applicable to scenarios of various scales. Furthermore, we propose a new algorithm that implements robustness estima-tion in the black-box setting with the Hutchinson algorithm and finite differences. Extensive experiments on datasets of varying sizes and types validate our theoretical results. Overall, our metric is well-founded, independent of attack algorithms, and applicable to both white-box and black-box settings ( see the limitations in App. K ). 
+
+## 6. Impact Statement 
+
+This work advances the theoretical understanding and prac-tical evaluation of model robustness and will have impacts in multiple areas: 
+
+Safety-critical applications: By providing a principled metric to quantify robustness that does not rely on adver-sarial attacks, our framework can help design more reliable models for high-risk applications (e.g., autonomous sys-tems, healthcare, and finance). Improved robustness metrics may help reduce the risk of catastrophic failures caused by adversarial perturbations or distribution shifts. 
+
+Transparency and interpretability: Our theoretical con-nections between Fisher information, Jacobian variance, and robustness provide interpretable insights into model behav-ior. This is in line with the growing demand for explainable AI, especially in regulated industries where understanding model vulnerabilities is critical for certification and deploy-ment. 
+
+Model selection and benchmarking: The proposed met-ric ∥F (x)∥2 (or 1/∥F (x)∥2) provides an interpretable tool for comparing different architectures (e.g., VGG vs. Trans-former) and selecting models with inherent robustness, re-ducing reliance on empirical adversarial testing. 
+
+Efficiency of robustness evaluation: The scalable algo-rithms (e.g., power iteration, Hutchinson approximation) enable efficient robustness evaluation of large models, re-ducing the computational barrier compared to attack-based evaluation. This can make robustness testing more accessi-ble to resource-constrained researchers and practitioners. 8Submission and Formatting Instructions for ICML 2026  
+
+> Table 7. Comparison of running times of two models on CIFAR100 with multiple metrics
+
+Model L(x) CLEVER CW PGD Rnorm (white) ˆRnorm (black) ResNet18 131.09 24.65 96.12 83.48 267.13 66.16 ViT B 16 494.74 41.19 172.08 233.70 309.73 379.22 
+
+## References 
+
+Alemi, A. A., Fischer, I., Dillon, J. V., and Murphy, K. Deep variational information bottleneck, 2019. Amari, S.-i. Natural Gradient Works Efficiently in Learning. 
+
+Neural Computation , 10(2):251–276, 1998. ISSN 0899-7667. Carlini, N. and Wagner, D. Towards evaluating the robust-ness of neural networks. In 2017 ieee symposium on security and privacy (sp) , pp. 39–57. Ieee, 2017a. Carlini, N. and Wagner, D. Towards Evaluating the Robust-ness of Neural Networks, 2017b. Cohen, J. M., Rosenfeld, E., and Kolter, J. Z. Certified adversarial robustness via randomized smoothing, 2019. URL https://arxiv.org/abs/1902.02918 .Croce, F. and Hein, M. Reliable evaluation of adversarial robustness with an ensemble of diverse parameter-free attacks, 2020. URL https://arxiv.org/abs/ 2003.01690 .Golub, G. H. and Loan, C. F. V. Matrix Computations . JHU Press, 2013. ISBN 978-1-4214-0859-0. Grenander, U. and Szego, G. Toeplitz Forms and Their Applications. In Toeplitz Forms and Their Applications .University of California Press, 1958. ISBN 978-0-520-35540-8. Hutchinson, M. F. A stochastic estimator of the trace of the influence matrix for laplacian smoothing splines. Com-munications in Statistics-Simulation and Computation ,18(3):1059–1076, 1989. Krizhevsky, A. Learning multiple layers of features from tiny images. Technical report, Citeseer, 2009. LeCun, Y., Bottou, L., Bengio, Y., and Haffner, P. Gradient-based learning applied to document recognition. Proceed-ings of the IEEE , 86(11):2278–2324, 1998. Madry, A., Makelov, A., Schmidt, L., Tsipras, D., and Vladu, A. Towards deep learning models resistant to adversarial attacks. In International Conference on Learn-ing Representations , 2018. Madry, A., Makelov, A., Schmidt, L., Tsipras, D., and Vladu, A. Towards Deep Learning Models Resistant to Adversarial Attacks, 2019. Martens, J. and Grosse, R. Optimizing Neural Networks with Kronecker-factored Approximate Curvature, 2020. Martin, J. and Elster, C. Inspecting adversarial examples using the fisher information, 2019. Milman, V. D. and Schechtman, G. Asymptotic Theory of Finite Dimensional Normed Spaces . Springer, 1986. ISBN 978-0-387-16769-5. Miyato, T., Kataoka, T., Koyama, M., and Yoshida, Y. Spec-tral Normalization for Generative Adversarial Networks, 2018. Shen, C., Peng, Y., Zhang, G., and Fan, J. Defending against adversarial attacks by suppressing the largest eigenvalue of fisher information matrix, 2019. URL https:// arxiv.org/abs/1909.06137 .Shi, Z., Wang, Y., Zhang, H., Kolter, Z., and Hsieh, C.-J. Efficiently computing local lipschitz constants of neural networks via bound propagation, 2022. URL https: //arxiv.org/abs/2210.07394 .Shi-Garrier, L., Bouaynaya, N., and Delahaye, D. Adversar-ial robustness with partial isometry. Entropy , 26:103, 01 2024. doi: 10.3390/e26020103. Sokolic, J., Giryes, R., Sapiro, G., and Rodrigues, M. R. D. Robust Large Margin Deep Neural Networks, May 2016. Szegedy, C., Zaremba, W., Sutskever, I., Bruna, J., Erhan, D., Goodfellow, I., and Fergus, R. Intriguing properties of neural networks, 2014. Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, L., and Polosukhin, I. Attention is all you need, 2023. URL https://arxiv.org/ abs/1706.03762 .Weng, T.-W., Zhang, H., Chen, P.-Y., Yi, J., Su, D., Gao, Y., Hsieh, C.-J., and Daniel, L. Evaluating the robustness of neural networks: An extreme value theory approach. 
+
+arXiv preprint arXiv:1801.10578 , 2018. Zhao, C., Fletcher, P. T., Yu, M., Peng, Y., Zhang, G., and Shen, C. The adversarial attack and detection under the fisher information metric, 2019. 9Submission and Formatting Instructions for ICML 2026 
+
+## A. Connections and Differences with Other Work 
+
+A.1. Spectral norm of FIM and Lipchitz constant 
+
+We define the Lipschitz constant L(x) in the neighborhood B2(x, r ) = {y|∥ y − x∥2 < r } of point x: Suppose function 
+
+f : Rn → Rm, for a neighborhood of point x ∈ Rn, if there exists a constant L(x) > 0 such that y, z ∈ B(x, r ), then 
+
+∥f (y) − f (z)∥ ≤ L(x)∥y − z∥. (19) For a differentiable function f , according to the mean value theorem, for any y, z ∈ B2(x, r ), there exists ξ on the line connecting y and z such that 
+
+f (y) − f (z) = ∇f (ξ)T (y − z). (20) According to the properties of the spectral norm, we have 
+
+∥f (y) − f (z)∥2 ≤ ∥∇ f (ξ)∥2∥y − z∥2 ≤ sup 
+
+> ξ∈B2(x,r )
+
+∥∇ f (ξ)∥2∥y − z∥2. (21) By the definition of local Lipschitz continuity, the Lipschitz constant L(x) at a point x is 
+
+L(x) = sup 
+
+> ξ∈B2(x,r )
+
+∥∇ f (ξ)∥2. (22) Let Jf (x) = ∇f (x), then by Eqn. (68), we have 
+
+F (x) ≤ ∥ B∥2∥Jf (x)∥22 ≤ ∥ B∥2 sup 
+
+> ξ∈B2(x,r )
+
+∥∇ f (ξ)∥2
+
+!2
+
+= ∥B∥2L(x)2. (23) where B = diag (p) − pp T and L(x) is the the Lipschitz constant. 
+
+A.2. Spectral norm of FIM and CLEVER score 
+
+In the CLEVER algorithm (Weng et al., 2018) (Algorithm 1), we assume that the classifier output is f (x), then the probability output p(y|x) = softmax (f (x)) . Let the true category of sample x be j, and the category predicted by the model be c, then we can define the function 
+
+g(x) = fc(x) − fj (x). (24) Next we calculate the posterior probability of the class yp(y|x) = efy (x)
+
+P 
+
+> i
+
+efi(x) = efy (x)−max k fk (x)
+
+P 
+
+> i
+
+efi(x)−max k fk (x) = efy (x)−fc(x)
+
+P 
+
+> i
+
+efi(x)−fc(x) . (25) When fc(x) ≫ fi(x), i ̸ = c, then we have P 
+
+> i
+
+efi(x)−fc(x) ≈ 1, we can approximately calculate p(j|x)
+
+p(j|x) ≈ efj (x)−fc(x) = e−g(x), p(c|x) ≈ 1. (26) So the cross entropy loss at a point x is − log p(j|x) ≈ g(x). Therefore, the CLEVER algorithm approximates the gradient norm of the cross entropy loss function with respect to the input ∥∇ g(x)∥, which is the CLEVER score of the point x.In practice, the CLEVER algorithm calculates the Lipchitz constant L(x) of the cross entropy loss at point x according to Eqn. (22) by sampling points in the neighborhood Np(x) (defined with p-norm) of x (1/q + 1 /q = 1 )
+
+L(x) = max  
+
+> z∈N p(x)
+
+∥∇ g(z)∥q ≈ ∥∇ g(x)∥q , (27) Usually we take p = q = 2 .10 Submission and Formatting Instructions for ICML 2026 
+
+When the loss function optimizes the model, it will cause the posterior probability of the true label p(j|x) to be as large as possible, so p(j|x) will be equal to p(c|x) or its value is second only to p(c|x), so we only consider the two terms in FIM (notice that p(j|x) ≈ e−g(x) and p(c|x) ≈ 1)
+
+F (x) =
+
+> K
+
+X
+
+> y=1
+
+p(y|x) ∇ log p(y|x)∇ log p(y|x)T 
+
+≈ p(j|x)∇ log p(j|x)∇ log p(j|x)T + p(c|x)∇ log p(c|x)∇ log p(c|x)T
+
+≈ e−g(x)∇g(x)∇g(x)T . (28) At this time, the principal eigenvector of F (x) is ∇g(x), and the maximum eigenvalue is the Rayleigh Quotient 
+
+∥F (x)∥2 = λmax (F (x)) ≈ e−g(x)∇gT (x)∇g(x)∇g(x)T ∇g(x)
+
+∇g(x)T ∇g(x) = e−g(x)∥∇ g(x)∥22, (29) where ∥∇ g(x)∥2 is an approximate estimate of the CLEVER score. 
+
+A.3. Spectral norm of FIM and Randomized Smoothing Algorithm 
+
+The randomized smoothing algorithm (Cohen et al., 2019) explicitly assumes that the perturbation noise follows a Gaussian distribution ϵ ∼ N (0 , σ 2I) (see Theorem 1) 
+
+p(ϵ) ∝ exp 
+
+
+
+− ∥ϵ∥22
+
+σ2
+
+
+
+(30) This assumption allows the authors to devise adversarial attacks against the l2 norm. Furthermore, we can establish a connection between l∞-norm attacks and the multivariate uniform distribution, and between l1-norm attacks and the Laplace distribution. Thus, the use of randomized smoothing relies on the assumption of the perturbed probability distribution (Gaussian distribution) , which generally works better against adversarial attacks on the l2-norm. We now present the relationship between random smoothing and our FIM-based metric ∥F (x)∥2 : In the random smoothing method, the certification radius is defined as follows ( Φ−1 is the inverse CDF of the standard normal distribution) 
+
+r = σ
+
+2 [Φ −1(pA) − Φ−1(pB )] , pA = P (f (x + δ) = cA), pB = max 
+
+> c̸=cA
+
+P (f (x + δ) = c) (31) We present the proof as follows: 
+
+Probability Difference : Let pA = p(y|x) and pB = p(y|x + δ), according to Pinsker’s inequality, we have 
+
+pA − pB ≤
+
+r 12 DKL (pA|| pB ) (32) Since the sqrt function is a concave function, using the Jensen inequality we have 
+
+Eδ (pA − pB ) ≤ Eδ
+
+r 12 DKL (pA|| pB ) ≤
+
+r 12 Eδ DKL (pA|| pB ). (33) For Gaussian perturbations δ ∼ N(0 , σ 2I), we have approximately 
+
+Eδ [DKL (pA|| pB )] ≈ σ2
+
+2 ∥F (x)∥2. (34) 
+
+Taylor Expansion : By Taylor expansion of the inverse CDF at point p = 0 .5, we have 
+
+Φ−1(pA) − Φ−1(pB ) ≈ √2π(pA − pB ). (35) Finally we have 
+
+Eδ [r] = σ
+
+2 E[Φ −1(pA) − Φ−1(pB )] ≈√2πσ 
+
+2 E[pA − pB ] ≤√2πσ 2
+
+4
+
+p∥F (x)∥2 (36) 11 Submission and Formatting Instructions for ICML 2026 
+
+A.4. Summary on the relationship between the three metrics 
+
+All three metrics are directly related to the gradient norm, which is used to measure the local sensitivity and stability of the model. Specifically, we list the differences between our method and the norm constraint-based method and the random smoothing method as follows  
+
+> Table 8. The differences between our metric and other types of metrics
+
+Method Random Smoothing Norm Constraints Our ∥F (x)∥2
+
+Starting Point Centrality of Probability Worst-case analysis Information Geometry Theoretical guarantee Probabilistic Guarantee Deterministic Guarantee Expectation Sensitivity Assumptions Gaussian distribution Maximizing the loss Any distribution At the same time, the relationship between them is as follows: • Spectral norm ∥F (x)∥2 of FIM and the Lipschitz constant L(x) of the model :
+
+∥F (x)∥2 ≤ B(x)∥L(x)∥2. (37) • Spectral norm ∥F (x)∥2 of FIM and the CLEVER score max z∈N p(x) ∥∇ g(z)∥2 (p(c|x) ≈ 1): 
+
+∥F (x)∥2 ≈ e−g(x)∥∇ g(x)∥22. (38) • The Lipschitz constant L(x) of the model and the CLEVER score The former is the Lipschitz constant of the model f (x), while CLEVER is the Lipschitz constant of the cross-entropy loss function. • Certification radius r of the random smoothing and the spectral norm ∥F (x)∥2 of the FIM : ∥F (x)∥2 limits the upper bound of the expectation of rEδ [r] ≤√2πσ 2
+
+4
+
+p∥F (x)∥2. (39) 
+
+## B. Proof on KL Divergence under General Discrete Distribution 
+
+Theorem 6. For any two class confidence distributions p(y|x) and p(y|x′), where x and x′ are the inputs of the model and 
+
+y is the class label of the model output, we have KL (p(y|x), p (y|x′)) ≈ 12 (x′ − x)T F (x)( x′ − x) = 12 δT F (x)δ, (40) 
+
+where F (x) is the Fisher information matrix defined as follows 
+
+F (x) = Ep(y|x)[∇x log p(y|x)∇x log p(y|x)T ]. (41) For any two discrete probability distributions p(y|x) and p(y|x′), we have KL (p(y|x), p (y|x′)) ≈ 12 (x′ − x)T F (x)( x′ − x), (42) where 
+
+F (x) = Ep(y|x)[∇x log p(y|x)∇x log p(y|x)T ]. (43) First, we perform Taylor’s second-order expansion of the function log p(y|x′) at point x
+
+log p(y|x′) ≈ log p(y|x) + ( ∇x log p(y|x)) T (x′ − x)+ 12 (x′ − x)T ∇2 
+
+> x
+
+log p(y|x)( x′ − x) + o(∥x′ − x∥3), (44) 12 Submission and Formatting Instructions for ICML 2026 
+
+then substitute it into the KL divergence 
+
+KL (p(y|x)|| p(y|x′)) = 
+
+> K
+
+X
+
+> i=1
+
+p(yi|x)[log p(yi|x) − log p(yi|x′)] 
+
+to get 
+
+KL (p(y|x)|| p(y|x′)) = −(x′ − x)TKX
+
+> i=1
+
+p(yi|x)∇ log p(yi|x)
+
+− 12 (x′ − x)T
+
+> K
+
+X
+
+> i=1
+
+p(yi|x)∇2 log p(yi|x)
+
+!
+
+(x′ − x)
+
+−o(∥x′ − x∥3), (45) where o(∥x′ − x∥3) is the approximate error term. For the first term above, we have 
+
+> K
+
+X
+
+> i=1
+
+p(yi|x)∇ log p(yi|x) = ∇
+
+> K
+
+X
+
+> i=1
+
+p(yi|x) = 0 . (46) For the second term above, we have 
+
+∇x log p(yi|x) = ∇xp(yi|x)/p (yi|x),
+
+∇2 
+
+> x
+
+log p(yi|x) = p(yi|x)∇2
+
+> x
+
+p(yi|x) − ∇ xp(yi|x)∇xp(yi|x)T
+
+p(yi|x)2
+
+= ∇2
+
+> x
+
+p(yi|x)
+
+p(yi|x) − ∇ x log p(yi|x)∇x log p(yi|x)T . (47) Further we get 
+
+> K
+
+X
+
+> i=1
+
+p(yi|x)∇2 
+
+> x
+
+log p(yi|x)=
+
+> K
+
+X
+
+> i=1
+
+{∇ 2
+
+> x
+
+p(yi|x) − p(yi|x)[ ∇x log p(yi|x)∇x log p(yi|x)T ]},
+
+= ∇2
+
+> xK
+
+X
+
+> i=1
+
+p(yi|x) − Ep(y|x)[∇x log p(y|x)∇x log p(y|x)T ],
+
+= −Ep(y|x)[∇x log p(y|x)∇x log p(y|x)T ] = −F. (48) Finally, we arrive at our conclusion. 
+
+## C. Analysis of KL Divergence Approximation Error 
+
+C.1. Theoretical analysis 
+
+We express the approximation error as third-order remainder R3(δ, x ).KL (p(y|x), p (y|x′)) = 12 δT F (x)δ + R3(δ, x ), (49) where δ = x′ − x. Assume there exists a constant M > 0 such that 
+
+∂3KL (p(y|x)∥p(y|x + δ)) 
+
+∂δ i∂δ j ∂δ k
+
+≤ M, ∀i, j, k, (50) 13 Submission and Formatting Instructions for ICML 2026 
+
+Then the upper bound of the remainder is 
+
+|R3(δ, x )| ≤ M
+
+6
+
+X
+
+> i,j,k
+
+|δiδj δk|. (51) Below we use the perturbation l∞ norm and l2 norm to represent the upper bound of the approximation error respectively. 
+
+l∞ upper bound : We have 
+
+|R3(δ, x )| ≤ M
+
+6
+
+X
+
+> i,j,k
+
+|δiδj δk| ≤ M d 3
+
+6 ∥δ∥3
+
+> ∞
+
+. (52) 
+
+l2 upper bound : We have 
+
+|R3(δ, x )| ≤ M
+
+6
+
+X
+
+> i,j,k
+
+|δiδj δk| ≤ M
+
+6
+
+X
+
+> i
+
+|δi|
+
+!3
+
+= M
+
+6 ∥δ∥31 ≤ M
+
+6
+
+√d∥δ∥2
+
+3
+
+= M d 3/2
+
+6 ∥δ∥32. (53) Then we can conclude that 
+
+|R3(δ, x )| ≤ M d 3
+
+6 ∥δ∥3
+
+> ∞
+
+, |R3(δ, x )| ≤ M d 3/2
+
+6 ∥δ∥32. (54) Since we usually consider robustness on the entire dataset, we can replace ∥δ∥2 or ∥δ∥∞ in the upper bound with its upper bound θ.For the given dataset, we can replace ∥δ∥2 or ∥δ∥∞ in the above formula with its upper bound θ .
+
+C.2. Experimental estimation 
+
+We randomly sample 500 samples on CIFAR10 using four classic models with CW adversarial training, where ∥δ∥∞ ≤ θ,as shown in Table 9. Table 10 shows the results of ResNet18 on three datasets.  
+
+> Table 9. Approximation error of multiple models on CIFAR10
+
+Model R3(δ, x ) ∥F (x)∥2 R3(δ,x )  
+
+> ∥F(x)∥2
+
+θ
+
+ViT B 16 2.7e-5 0.61 4.4e-5 8/255 
+
+ResNet18 6.8e-4 0.77 8.8e-4 8/255 
+
+VGG16 5.8e-5 0.09 6.4e-4 8/255 
+
+DenseNet121 1.7e-3 2.18 7.7e-4 8/255  
+
+> Table 10. Approximation error of multiple datasets on the ResNet18 model
+
+Dataset R3(δ, x ) ∥F (x)∥2 R3(δ,x )  
+
+> ∥F(x)∥2
+
+θ
+
+Tiny-Imagenet 1.7e-3 0.51 3.3e-3 4/255 
+
+MNIST 3.3e-5 0.01 3.3e-3 76 /255 
+
+CIFAR10 6.8e-4 0.77 8.8e-4 8/255 
+
+The results in both tables show that the approximation error and the proportionality coefficient of both are very small. Therefore, in practice, the approximation error can be ignored. 
+
+## D. Fisher Information Matrix and Jacobian matrix 
+
+Theorem 7. For a deep learning model whose last layer uses a softmax function to implement classification tasks, where the input vector of softmax is f (x), the Fisher information matrix is 
+
+F (x) = var (J(x)) , (55) 
+
+where J(x) is the gradient matrix (Jacobian matrix) of the vector f (x) with respect to the input x and var represents the variance of the matrix random variable. 
+
+14 Submission and Formatting Instructions for ICML 2026 
+
+Source of Stochasticity The randomness in F (x) arises from the model’s own predictive distribution p(y|x), not from 
+
+f (x) itself (which is deterministic). We treat the Jacobian columns ∇xfk(x) as deterministic vectors, but reweight them by the probabilistic weights p(y = k|x) to compute the covariance—a statistical summary of gradient directions reflecting model uncertainty. According to Theorem 1, the Fisher information matrix F measures the sensitivity of the model output distribution p(y|x)
+
+to the input x. For classification tasks, F is defined as 
+
+F (x) = Ep(y|x)[∇x log p(y|x)∇x log p(y|x)T ]. (56) Next we need to estimate the maximum eigenvalue of the Fisher information matrix for some models. For classification, we assume the model outputs k probabilities yi
+
+yi = p(y = i|x) = efi(x)
+
+PKk=1 efk (x) , (57) then 
+
+log p(y = i|x) = fi(x) − log 
+
+> K
+
+X
+
+> k=1
+
+efk (x). (58) Its gradient with respect to the input x is (let fi = fi(x))
+
+∇x log p(y = i|x) = ∇xfi −
+
+> K
+
+X
+
+> k=1
+> K
+
+X
+
+> k=1
+
+efk
+
+!−1
+
+efi ∇xfi
+
+= ∇xfi −
+
+> K
+
+X
+
+> k=1
+
+p(y = k|x)∇xfk
+
+=
+
+> K
+
+X
+
+> k=1
+
+(1 k=i − pk)∇xfk, (59) where pk = p(y = k|x) and 1i=k is the indicator function. 15 Submission and Formatting Instructions for ICML 2026 
+
+We obtain the Fisher information matrix is 
+
+F (x) = Ep(y|x)[∇x log p(y|x)∇x log p(y|x)T ]=
+
+> K
+
+X
+
+> k=1
+
+pk[∇x log p(y = k|x)∇x log p(y = k|x)T ]=
+
+> K
+
+X
+
+> k=1
+
+pk
+
+X
+
+> j
+
+(1 k=j − pj )∇xfj
+
+ X
+
+> i
+
+(1 k=i − pi)∇xfi
+
+!T 
+
+=
+
+> K
+
+X
+
+> k=1
+
+pk
+
+X
+
+> j
+
+1k=j ∇xfj − E[∇xf ]
+
+ X
+
+> i
+
+1k=i∇xfi − E[∇xf ]
+
+!
+
+> T
+
+=
+
+> K
+
+X
+
+> k=1
+
+pk
+
+X
+
+> j,i
+
+1k=i1k=j ∇xfi∇xf Tj − E[∇xf ]
+
+> K
+
+X
+
+> k=1
+
+pk
+
+X
+
+> i
+
+1k=i∇xf Tk
+
+−
+
+> K
+
+X
+
+> k=1
+
+pk
+
+X
+
+> j
+
+1k=j ∇xfj E[∇xf T ] + 
+
+> K
+
+X
+
+> k=1
+
+pkE[∇xf ]E[∇xf T ]=
+
+> K
+
+X
+
+> k=1
+
+pk∇xfk∇xf Tk − E[∇xf ]
+
+> K
+
+X
+
+> k=1
+
+pk∇xf Tk
+
+−
+
+> K
+
+X
+
+> k=1
+
+pk∇xfkE[∇xf ]T + E[∇xf ]E[∇xf ]T
+
+= E[∇xf ∇xf T ] − E[∇xf ]E[∇xf ]T
+
+= var (J(x)) . (60) 
+
+## E. General Analysis of Model Robustness 
+
+Theorem 8. For any deep network-based classifier h : x → softmax (f (x)) , where softmax is the softmax function, the spectral norm ∥F (x)∥2 of its Fisher information matrix with respect with the input x has the following upper bound 
+
+∥F (x)∥2 = λmax (F (x)) = max  
+
+> ∥v∥2=1
+
+vT F (x)v ≤ 2 max  
+
+> k
+
+pk(1 − pk)∥J(x)∥22, (61) 
+
+where Jf (x) is the Jacobian matrix of the output f (x) ∈ R K with respect to the input x ∈ R d. Let B = diag (p) − pp T .When the principal eigenvector w1 of B is aligned with the principal left singular vector of J(x), then there exists a principal right singular vector v = Jf (x)T w1/∥Jf (x)∥2 of J(x) such that ∥F (x)∥2 = 2 max k pk(1 − pk)∥Jf (x)∥22.
+
+To facilitate our estimation of the maximum eigenvalue of the Fisher information matrix, we rewrite it as 
+
+F (x) =
+
+> K
+
+X
+
+> k=1
+
+pk[∇x log p(y = k|x)∇x log p(y = k|x)T ]=
+
+> K
+
+X
+
+> k=1
+
+pk
+
+X
+
+> j
+
+(1 k=j − pj )∇xfj
+
+ X
+
+> i
+
+(1 k=i − pi)∇xfi
+
+!T 
+
+=
+
+> K
+
+X
+
+> k=1
+
+pk
+
+X
+
+> j,i
+
+(1 k=j − pj )(1 k=i − pi)∇xfj ∇xf Ti
+
+=
+
+> K
+
+X
+
+> j,i =1
+> K
+
+X
+
+> k=1
+
+pk(1 k=j − pj )(1 k=i − pi)
+
+!
+
+∇xfj ∇xf Ti
+
+= Jf (x)T BJ f (x) (62) 16 Submission and Formatting Instructions for ICML 2026 
+
+where Bij = PKk=1 pk(1 k=j − pj )(1 k=i − pi) and Jf (x) is the Jacobian matrix of the K outputs with respect to the d
+
+inputs. Now let’s discuss Bij = PKk=1 pk(1 k=j − pj )(1 k=i − pi):1) When i = j, we have 
+
+> K
+
+X
+
+> k=1
+
+pk(1 k=j − pj )(1 k=i − pi) =
+
+> K
+
+X
+
+> k=1
+
+pk(1 k=i − pi)2
+
+=
+
+> K
+
+X
+
+> k=1
+
+pk(1 2 
+
+> k=i
+
+− 21 k=ipi + p2 
+
+> i
+
+)= pi − 2p2 
+
+> i
+
++ p2
+
+> i
+
+= pi(1 − pi) (63) 2) When i̸ = j, then 
+
+> K
+
+X
+
+> k=1
+
+pk(1 k=j − pj )(1 k=i − pi) =
+
+> K
+
+X
+
+> k=1
+
+(pk1k=j 1k=i − pk1k=j pi
+
+−pk1k=ipj + pkpj pi)= 0 − pj pi − pipj + pj pi
+
+= −pipj (64) Finally, we get a matrix B with dimension K × KB = diag (p) − pp T . (65) We use the Gershgorin disk theorem (Golub & Loan, 2013) to estimate the range of eigenvalues. For B, the center of the i-th Gershgorin disk is Bii = pi(1 − pi), and the radius is P  
+
+> j̸=i
+
+|Bij | = P  
+
+> j̸=i
+
+pipj = pi(1 − pi). Therefore, each eigenvalue satisfies 
+
+|λ − pi(1 − pi)| ≤ pi(1 − pi), (66) which means λ ∈ [0 , 2pi(1 − pi)] . Then we have 
+
+∥B∥2 ≤ 2pi(1 − pi). (67) Finally, we estimate the largest eigenvalue of the matrix F (x) = Jf (x)T BJ f (x), which is equal to the Rayleigh quotient 
+
+∥F (x)∥2 = max 
+
+> ∥v∥=1
+
+(Jf (x)v)T B(Jf (x)v)
+
+≤ ∥Jf (x)∥2∥v∥2∥B∥2∥Jf (x)∥2∥v∥2
+
+= ∥B∥2∥Jf (x)∥22. (68) Assume that the model output is a classification probability vector p = [ p1, p 2, · · · , p K ]T , and let Y be a random class label (one-hot vector), then we have 
+
+E[Y ] = p, E[Y Y T ] = diag (p). (69) So we have 
+
+B = cov (Y ) = E[Y Y T ] − E[Y ]E[Y ]T . (70) Next we discuss the condition that there exists v(∥v∥2 = 1) such that λmax (F (x)) = ∥B∥2∥Jf (x)∥22. Let y = Jf (x)v,where ∥v∥2 = 1 , then we have 
+
+λmax (F (x)) = max  
+
+> ∥v∥=1
+
+yT By. (71) 17 Submission and Formatting Instructions for ICML 2026 
+
+When y∗ = cw 1(c > 0) = Jf (x)v, where w1(∥w1∥2 = 1) is the main eigenvector of B, then we have 
+
+λmax (F (x)) = ∥y∗∥22∥B∥2 = c2∥B∥2. (72) We look for the maximum value of c and get λmax (F (x)) . Furthermore, we let w1 = 1 
+
+> c
+
+Jf (x)v, then 
+
+wT 
+
+> 1
+
+w1 = 1
+
+c2 vT Jf (x)T Jf (x)v = 1 . (73) So we have 
+
+c =
+
+q
+
+vT Jf (x)T Jf (x)v (74) We immediately get the optimal value c∗ of c to be 
+
+c∗ = max 
+
+> ∥v∥2=1
+
+q
+
+vT Jf (x)T Jf (x)v = ∥Jf (x)∥2, (75) where v is the right singular vector corresponding to the largest singular value of Jf (x). Since ∥Jf (x)∥2wT 
+
+> 1
+
+w1 =
+
+wT 
+
+> 1
+
+Jf (x)v = ∥Jf (x)∥2, so when w1 and v are the left and right singular vectors corresponding to the maximum singular value of Jf (x), we have 
+
+∥F (x)∥2 = λmax (F (x)) = ∥B∥2∥Jf (x)∥22. (76) When the principal eigenvector w1 of B is the principal left singular vector of Jf (x), then 
+
+∥Jf (x)∥2w1 = Jf (x)v → ∥Jf (x)∥2Jf (x)T w1 = Jf (x)T Jf (x)v = ∥Jf (x)∥22v
+
+→ v = Jf (x)T w1/∥Jf (x)∥2. (77) So there exists Jf (x)T w1/∥Jf (x)∥2 such that the equation holds. However, w1 is the principal eigenvector of ∥B∥2, and is usually unlikely to be the principal left singular vector of Jf (x).
+
+## F. ∥J∥2 Estimation of Basic Modules 
+
+F.1. Convolution Layer 
+
+Theorem: For convolution operations on multi-channel images, the spectral norm ∥JΨ∥2 of the Jacobian matrix of the convolution operator Ψ is approximately the spectral norm ∥W ∥2 of the convolution kernel W , i.e. ∥JΨ∥2 ≈ ∥ W ∥2.
+
+1) When the convolution operator’s padding is ’SAME’ and circular padding is used, where the stride s is 1, so the input and output of the convolution operator have the same size. For the convolutional mapping Ψ : RH×W ×Cin → RH×W ×Cout :
+
+Ψh′,w ′,c ′ =
+
+> k−1
+
+X
+
+> i=0
+> k−1
+
+X
+
+> j=0
+> Cin
+
+X
+
+> c=1
+
+Wi,j,c,c ′ Xh′+i,w ′+j,c . (78) We divide JΨ into blocks according to the output channel c′ and the input channel c, then each block [JΨ]c′,c ∈ RHW ×HW 
+
+can be a circulant matrix with circulant filled. Under the loop filling condition, the Jacobian matrix can be expressed as a double loop structure 
+
+Jcirc  
+
+> Ψ
+
+=
+
+> k−1
+
+X
+
+> i=0
+> k−1
+
+X
+
+> j=0
+
+ΠiH ⊗ ΠjW ⊗ Wi,j , (79) where ⊗ denotes the Kronecker product, Wi,j ∈ Cout × Cin is a tensor slice of the matrix W , ΠH denotes the circulant shift matrix of H × H 
+
+0 0 · · · 0 11 0 · · · 0 00 1 · · · 0 0
+
+... ... . . . ... ...
+
+0 0 · · · 1 0
+
+
+
+. (80) 18 Submission and Formatting Instructions for ICML 2026 
+
+Let ω1 = e−2πi/H and ω2 = e−2πi/W , where i is the imaginary unit, we diagonalize the cyclic shift matrices separately 
+
+ΠH = FH ΛH F ∗ 
+
+> H
+
+, ΠW = FW ΛW F ∗ 
+
+> W
+
+, (81) where ΛH = diag (1 , ω 1, · · · , ω H−11 ) and ΛW = diag (1 , ω 2, · · · , ω W −12 ). We substitute them into Eqn. (79) and obtain 
+
+Jcirc  
+
+> Ψ
+
+=
+
+> k−1
+
+X
+
+> i=0
+> k−1
+
+X
+
+> j=0
+
+(FH ΛH F ∗ 
+
+> H
+
+) ⊗ (FW ΛW F ∗ 
+
+> W
+
+) ⊗ Wi,j ,
+
+=
+
+> k−1
+
+X
+
+> i=0
+> k−1
+
+X
+
+> j=0
+
+(FH ΛH F ∗ 
+
+> H
+
+)i ⊗ (FW ΛW F ∗ 
+
+> W
+
+)j ⊗ (Iout Wi,j Iin )=
+
+> k−1
+
+X
+
+> i=0
+> k−1
+
+X
+
+> j=0
+
+(FH ΛiH F ∗ 
+
+> H
+
+) ⊗ (FW ΛjW F ∗ 
+
+> W
+
+) ⊗ (Iout Wi,j Iin )=
+
+> k−1
+
+X
+
+> i=0
+> k−1
+
+X
+
+> j=0
+
+(FH ⊗ FW ⊗ Iout )(Λ iH ⊗ ΛjW ⊗ Wi,j )( FH ⊗ FW ⊗ Iin )= (FH ⊗ FW ⊗ Iout )
+
+
+
+> k−1
+
+X
+
+> i=0
+> k−1
+
+X
+
+> j=0
+
+ΛiH ⊗ ΛjW ⊗ Wi,j 
+
+ (FH ⊗ FW ⊗ Iin ),
+
+= (FH ⊗ FW ⊗ Iout ) ˆW (FH ⊗ FW ⊗ Iin ), (82) where ˆW = Pk−1
+
+> i=0
+
+Pk−1 
+
+> j=0
+
+ΛiH ⊗ ΛjW ⊗ Wi,j .Notice that ΛiH ⊗ ΛjW = diag (μi,j 
+
+> 0,0
+
+, μ i,j 
+
+> 0,1
+
+, · · · , μ i,j H−1,M −1), where μi,j u,v = ωui  
+
+> 1
+
+ωvj  
+
+> 2
+
+. We simplify ΛiH ⊗ ΛjW ⊗ Wi,j into diagonal blocks to obtain 
+
+ˆW =
+
+> k−1
+
+X
+
+> i=0
+> k−1
+
+X
+
+> j=0
+
+blkdiag (μi,j 
+
+> 0,0
+
+Wi,j , μ i,j 
+
+> 0,1
+
+Wi,j , · · · , μ i,j H−1,W −1Wi,j )= blkdiag ( ˆW0,0, ˆW0,1, · · · , ˆWH−1,W −1), (83) where ˆWp,q is the two-dimensional Discrete Fourier Transform (DFT) of the convolution kernel W at frequency (p, q )ˆWp,q =
+
+> k−1
+
+X
+
+> i=0
+> k−1
+
+X
+
+> j=0
+
+μi,j p,q Wi,j . (84) Therefore we have 
+
+∥JΨ∥2 = ∥Jcirc  
+
+> Ψ
+
+∥2 = max  
+
+> p,q
+
+σmax ( ˆWp,q ) = max  
+
+> p,q
+
+∥ ˆWp,q ∥2 = ∥W ∥2. (85) 2) When the convolution operator uses zero padding, W is a Toeplitz matrix (corresponding to non-circular convolution). According to the asymptotic spectral theory of the Toeplitz matrix (Grenander-Szeg ˝o theorem) (Grenander & Szego, 1958), when H, W ≫ k, the spectral norm of the Toeplitz matrix W converges to the l∞ norm of its sign function (i.e., the Fourier transform of the convolution kernel W )
+
+lim  
+
+> n→∞
+
+∥W ∥2 = ∥ ˆW ∥∞ = max  
+
+> u,v
+
+∥ ˆWu,v ∥2 = ∥JΨ∥2. (86) 3) Assuming the stride s in the convolution operator is s ≥ 1 and the padding method is VALID (i.e. no padding), the output size of the convolution operator is 
+
+H′ =
+
+ H − ks
+
+
+
++ 1 ≤ H, W ′ =
+
+ W − ks
+
+
+
++ 1 ≤ W. (87) 19 Submission and Formatting Instructions for ICML 2026 
+
+For any matrix A, without loss of generality, we delete the last k rows of A to obtain BA =
+
+
+
+aT
+
+> 1
+
+aT
+
+> 2
+
+...
+
+aTn
+
+ , B =
+
+
+
+aT
+
+> 1
+
+aT
+
+> 2
+
+...
+
+aTn−k
+
+ , (88) so we have 
+
+∥A∥22 = max  
+
+> ∥v∥2=1
+
+vT AT Ax =
+
+> n
+
+X
+
+> i=1
+
+(aTi v)2 ≥ max  
+
+> ∥v∥2=1
+
+vT BT Bx =
+
+> n−k
+
+X
+
+> i=1
+
+(aTi v)2 = ∥B∥22. (89) That is, the spectral norm of the submatrix is less than or equal to the spectral norm of the original matrix, e.g. ∥B∥2 ≥ ∥ A∥2.Note that J can be regarded as a submatrix obtained by deleting some rows and columns from the Jacobian matrix of the complete convolution ( s = 1 , padding= SAME ), and the spectral norm of the submatrix is smaller than the spectral norm of the original matrix, so there is 
+
+∥JΨ∥2 ≤ max  
+
+> p,q
+
+∥ ˆWp,q ∥2 = ∥W ∥2. (90) In summary, we can use ∥W ∥2 to approximate the spectral norm of the Jacobian matrix of the convolution operator,i.e. 
+
+∥JΨ∥2 ≈ ∥ W ∥2.
+
+F.2. ReLU Layer 
+
+The ReLU function is defined as ReLU (x) = max(0 , x ), so its derivative is 
+
+ddx ReLU (x) = 
+
+(
+
+1, x > 00, x ≤ 0. (91) For an input vector x ∈ Rn, the ReLU Jacobian matrix JReLU ∈ Rn×n is a diagonal matrix 
+
+JReLU = diag (1 x> 0). (92) We immediately get 
+
+∥JReLU ∥2 = 1 . (93) 
+
+F.3. Max Pooling Layer 
+
+Considering the input tensor X ∈ RH×W ×C and the stride of the max pooling layer is 2 and the pooling layer size is 2 × 2,the output Y ∈ R(H/ 2) ×(W/ 2) ×C is 
+
+Yi,j,c = max( X2i−1,2j−1,c , X 2i−1,2j,c , X 2i, 2j−1,c , X 2i, 2j,c ) (94) Furthermore, the Jacobian matrix J ∈ R(( H/ 2)( W/ 2) C)×(HW C ) describes the gradient relationship of the output Y to the input XJ(i,j,c ),(k,l,m ) = ∂Y i,j,c 
+
+∂X k,l,m 
+
+(95) Given Yi,j,c , if k, l, c = arg max( X2i−1,2j−1,c , X 2i−1,2j,c , X 2i, 2j−1,c , X 2i, 2j,c ), then Yi,j,c = Xk,l,c , i.e. ∂Y i,j,c  
+
+> ∂X k,l,c
+
+= 1 ;otherwise, ∂Y i,j,c  
+
+> ∂X k,l,c
+
+= 0 .So each row has exactly one 1 (corresponding to the maximum value), and all the others are 0, so the vectors in each row are orthogonal to each other, and we immediately get 
+
+JJ T = I(H/ 2)( W/ 2) C (96) and 
+
+∥J∥2 =
+
+q
+
+λmax (JT J) = 
+
+q
+
+λmax (JJ T ) = 1 . (97) 20 Submission and Formatting Instructions for ICML 2026 
+
+F.4. Average Pooling 
+
+Suppose we input a tensor X ∈ RH×W ×C , where H is the height, W is the width, and C is the number of channels. For two-dimensional average pooling, we use a pooling window such as k × k to slide on the input with a certain step size, and calculate the average of all elements in each window as the output. To simplify the analysis, we assume that the input is a vector x ∈ Rn, and average pooling divides x into m = n/k (k can divide n) windows of size k, then we have 
+
+yi = 1
+
+k
+
+> ik
+
+X
+
+> j=( i−1) k+1
+
+xj , , i = 1 , 2, · · · , m. (98) We calculate the partial derivative of yi with respect to xj and obtain 
+
+∂y i
+
+∂x j
+
+=
+
+(
+
+1/k, (i − 1) k + 1 ≤ j ≤ ik, 
+
+0, otherwise . (99) Further, we will write the Jacobian matrix of the average pooling into a block matrix form based on the above results 
+
+J = blkdiag 
+
+ 1
+
+k 1Tk , 1
+
+k 1Tk , · · · , 1
+
+k 1Tk
+
+
+
+. (100) We know that ∥J∥2 is the square root of the eigenvalue of JT J, so we calculate JT JJT J = blkdiag 
+
+ 1
+
+k2 1k1Tk , 1
+
+k2 1k1Tk , · · · , 1
+
+k2 1k1Tk
+
+
+
+, (101) where each diagonal block is a k × k matrix with all elements 1 
+
+> k2
+
+. The rank of the matrix 1 
+
+> k2
+
+is 1, and its non-zero eigenvalues are 
+
+λmax 
+
+ 1
+
+k2 1k1Tk
+
+
+
+= 1Tk
+
+  1 
+
+> k2
+
+1k1Tk
+
+ 1k
+
+1Tk 1k
+
+= 1
+
+k . (102) That is, JT J has an m-th eigenvalue 1 
+
+> k
+
+and an n − m eigenvalue 0. Therefore, we have 
+
+∥J∥2 = 1
+
+√k . (103) We generalize it to two-dimensional pooling, then the pooling window is k × k, so each element corresponds to the average of k2 inputs, and we have similar conclusions 
+
+∥J∥2 = 1
+
+k , (104) where the window size k is usually set to 2 in the construction of deep learning models. 
+
+F.5. Batch Normalization (BN) 
+
+Given an input x ∈ RC (assuming each channel c is processed independently), the output y(c) of the BN layer is 
+
+y(c) = γ(c) x(c) − μ(c)
+
+p(σ(c))2 + ϵ + β(c), (105) where the mean parameter μ(c), the offset parameter β(c), and the variance parameter σ(c) are all constants during the inference stage. For the convenience of analysis, we write the BN transformation in matrix form 
+
+y = D(x − u) + β, (106) 21 Submission and Formatting Instructions for ICML 2026 
+
+where 
+
+D = diag γ(1) 
+
+p(σ(1) )2 + ϵ , · · · , γ(C)
+
+p(σ(C))2 + ϵ
+
+!
+
+. (107) We immediately get 
+
+∥JBN ∥2 = ∂y ∂x 2
+
+= ∥D∥2 = max 
+
+> c
+
+|γ(c)|
+
+p(σ(c))2 + ϵ (108) Usually if |γ| ≫ σ, there is a risk of gradient explosion, while |γ| ≪ σ has a risk of gradient vanishing. Therefore, in practice, we usually approximately select γ ≈ σ or γ ≈ √σ2 + ϵ, where ϵ is a very small positive constant. In general, we have approximately 
+
+∥JBN ∥2 = max 
+
+> c
+
+|γ(c)|
+
+p(σ(c))2 + ϵ ≈ O(1) . (109) 
+
+F.6. Layer Normalization (LN) 
+
+The Layer normalization (LN) operation on the input x ∈ Rd is defined as ( ⊙ is the element-wise multiplication) 
+
+y = γ ⊙ x − μ
+
+√σ2 + ϵ + β, μ = 1
+
+d
+
+> d
+
+X
+
+> i=1
+
+xi, σ2 = 1
+
+d
+
+> d
+
+X
+
+> i=1
+
+(xi − μ)2, (110) where γ, β ∈ Rd are learnable scale and offset parameters ( ϵ is a small constant). According to the chain rule, JLN = ∂y ∂x can be expressed as 
+
+JLN = diag (γ) ∂z ∂x , z = x − μ
+
+√σ2 + ϵ . (111) Furthermore, we have ∂z i
+
+∂x j
+
+= δij − 1/d 
+
+√σ2 + ϵ − (xi − μ)( xj − μ)
+
+d(σ2 + ϵ)3/2 , (112) where δij is defined as 
+
+δij =
+
+(
+
+1, i = j, 
+
+0, i̸ = j. (113) That is 
+
+∂z ∂x = 1
+
+√σ2 + ϵ
+
+
+
+I − 1
+
+d 11 T − (x − μ)( x − μ)T
+
+d(σ2 + ϵ)
+
+
+
+= 1
+
+√σ2 + ϵ
+
+
+
+I − 1
+
+d 11 T − (x − μ)( x − μ)T
+
+dσ 2 + (x − μ)( x − μ)T
+
+dσ 2 − (x − μ)( x − μ)T
+
+d(σ2 + ϵ)
+
+
+
+= 1
+
+√σ2 + ϵ
+
+
+
+I − P + (x − μ)( x − μ)T
+
+dσ 2 − (x − μ)( x − μ)T
+
+d(σ2 + ϵ)
+
+
+
+, (114) where P = I − 1 
+
+> d
+
+11 T − (x−μ)( x−μ)T 
+
+> dσ 2
+
+.Next we prove that the matrix P is a projection matrix. We can observe that 
+
+P = aa T + bb T , (115) where a = 1√d 1 and b = 1√dx−uσ . We have 
+
+aT a = 1 , aT b = 1
+
+d
+
+Pdi=1 xi − dμ 
+
+√σ2 = 0 , bT b = 1
+
+d
+
+Pdi=1 (xi − u)2
+
+σ2 = σ2
+
+σ2 = 1 . (116) 22 Submission and Formatting Instructions for ICML 2026 
+
+Then 
+
+P 2 = ( aa T + bb T )( aa T + bb T ) = aa T + bb T = P. (117) According to the properties of the projection matrix P , we have I − P is also a projection matrix, so the eigenvalue of 
+
+I − P is either 1 or 0. That is 
+
+∥I − P ∥2 = 1 . (118) According to the properties of the spectral norm, we have 
+
+∥JLN ∥2 ≤ ∥diag (γ)∥2
+
+∂z ∂x 2
+
+= 1
+
+√σ2 + ϵ ∥diag (γ)∥2 I − P + (x − μ)( x − μ)T
+
+dσ 2 − (x − μ)( x − μ)T
+
+d(σ2 + ϵ) 2
+
+≤ 1
+
+√σ2 + ϵ ∥diag (γ)∥2
+
+
+
+∥I − P ∥2 + (x − μ)( x − μ)T
+
+dσ 2 − (x − μ)( x − μ)T
+
+d(σ2 + ϵ) 2
+
+
+
+≤ 1
+
+√σ2 + ϵ ∥diag (γ)∥2
+
+
+
+1 + ϵdσ 2
+
+dσ 2(σ2 + ϵ)
+
+
+
+= 1
+
+√σ2 + ϵ max  
+
+> i
+
+γ(i)
+
+
+
+1 + ϵσ2 + ϵ
+
+
+
+. (119) Usually we have ϵ ≪ σ2, and thus ϵϵ+σ2 → 0. Finally we have 
+
+∥JLN ∥2 ≤ max 
+
+> i
+
+|γ(i)|√σ2 + ϵ ≈ O(1) . (120) 
+
+F.7. Softmax Function 
+
+The softmax function σ is defined as 
+
+σ(z)i = ezi
+
+Pnj=1 ezj , i = 1 , 2, · · · , n. (121) Its Jacobian matrix Jσ (z) is a n × n matrix, where 
+
+σ(z)ij = ∂σ i
+
+∂z j
+
+= σi(δij − σj ). (122) Therefore, we can represent it in matrix form 
+
+Jσ = diag (σ(z)) − σ(z)σ(z)T , (123) which is a symmetric matrix. We use the Gershgorin disk theorem (Golub & Loan, 2013) to estimate the range of eigenvalues. For J, the center of the i-th Gershgorin disk is Jii = σi(1 − σi), and the radius is P  
+
+> j̸=i
+
+|Jij | = P  
+
+> j̸=i
+
+σiσj = σi(1 − σi). Therefore, each eigenvalue satisfies 
+
+|λ − σi(1 − σi)| ≤ σi(1 − σi), (124) which means λ ∈ [0 , 2σi(1 − σi)] . Then we have 
+
+∥Jsoftmax ∥2 ≤ 2σi(1 − σi). (125) When σi = 1 /2, the upper bound 2σi(1 − σi) takes the maximum value 1/2. That is, ∥J∥softmax ≤ 12 .Note that when the dimension d of the vector is very high, then σk are approximately equal, and we have 
+
+2σk(1 − σk) ≈ 2
+
+d
+
+
+
+1 − 1
+
+d
+
+
+
+≈ 2
+
+d , (126) which leads ∥Jσ ∥2 ≤ 2 
+
+> d
+
+.23 Submission and Formatting Instructions for ICML 2026 
+
+F.8. Block Matrix 
+
+Assume that the block matrix M ∈ Rm×(n1+n2) is composed of two sub-matrices A ∈ Rm×n1 and B ∈ Rm×n2
+
+horizontally concatenated 
+
+M = A B , (127) the spectral norm of a matrix M is its maximum singular value, defined as 
+
+∥M ∥2 = max  
+
+> ∥x∥2=1
+
+∥M x ∥2, (128) where x ∈ Rn1+n2 , and defined as 
+
+x =
+
+x1
+
+x2
+
+
+
+. (129) So we have 
+
+∥M x ∥2 = ∥Ax 1 + Bx 2∥≤ ∥A∥2∥x1∥2 + ∥B∥2∥x2∥2
+
+≤
+
+q
+
+∥A∥22 + ∥B∥22
+
+q
+
+∥x1∥22 + ∥x2∥22
+
+=
+
+q
+
+∥A∥22 + ∥B∥22. (130) On the other hand, if we let x1 be the main right singular vector of A, we have 
+
+∥M ∥2 = max  
+
+> ∥x∥2=1
+
+∥M x ∥2 ≥ M
+
+x1
+
+0
+
+
+
+> 2
+
+= ∥Ax 1∥2 = ∥A∥2. (131) Similarly, if we let x2 be the main right singular vector of matrix B, we have ∥M ∥2 ≥ ∥ B∥2. Therefore 
+
+∥M ∥2 ≥ max( ∥A∥2, ∥B∥2). (132) That is 
+
+max( ∥A∥2, ∥B∥2) ≤ ∥ M ∥2 ≤
+
+q
+
+∥A∥22 + ∥B∥22 ≤ √2 max {∥ A∥2, ∥B∥2}. (133) Furthermore, we can generalize to a block matrix consisting of n matrices 
+
+max  
+
+> i
+
+(∥Ai∥2) ≤ A1 A2 · · · An
+
+ 
+
+> 2
+
+≤
+
+vuut nX
+
+> i=1
+
+∥Ai∥22 ≤ √n max  
+
+> i
+
+{∥ Ai∥2}. (134) 
+
+## G. Robustness Analysis of Classical Deep Learning Networks 
+
+Since the components ReLU, Max Pooling, Average Pooling, BN and LN usually have a constant spectral norm upper bound O(1) , for the convenience of discussion, we mainly focus on the spectral norm upper bounds of convolutional layers, fully connected layers and concatenation layers. 
+
+G.1. VGGNet 
+
+VGGNet is mainly composed of consecutive convolutional layers and fully connected layers, each of which is followed by ReLU activation and maximum pooling. Assuming that VGGNet has L convolutional layers and M fully connected layers, we have 
+
+∥Jf ∥2 ≤
+
+> L
+
+Y
+
+> i=1
+
+∥Wi∥2 ·
+
+> M
+
+Y
+
+> j=1
+
+∥Uj ∥2, (135) where Wi is the convolution kernel and Uj is the weight of the fully connected layer. Since VGGNet is very deep and has no residual connections, the upper bound of ∥Jf ∥2 will grow or decay exponentially with depth (depending on the size of ∥Wi∥2). It is worth noting that VGG16 and VGG19 contain 13 convolutional layers, 3 fully connected layers and 16 convolutional layers, 3 fully connected layers, respectively. 24 Submission and Formatting Instructions for ICML 2026 
+
+G.2. ResNet 
+
+The core innovation of ResNet is the residual connection, which is used to solve the gradient vanishing problem of deep networks. It mainly includes the initial convolution layer, the maximum pooling layer, the residual block and the global average pooling + fully connected layer. ResNet18 and ResNet50 contain 8 residual blocks and 16 residual blocks, respectively. Suppose a residual block is 
+
+fi(x) = x + gi(x), (136) where gi is the composite function of the convolutional layer. The Jacobian matrix of the function fi is 
+
+Jfi = I + Jgi . (137) Therefore, we have 
+
+∥Jfi ∥2 ≤ ∥ I∥2 + ∥Jgi ∥2 = 1 + ∥Jgi ∥2. (138) Assuming that the function gi is a combination of convolution + ReLU + convolution 1, then 
+
+∥Jgi ∥ ≤ ∥ Wi, 1∥2 · ∥ Wi, 2∥2. (139) ResNet usually consists of an initial convolutional layer followed by multiple residual blocks, a global average pooling layer and a fully connected layer. So we end up with (assuming ∥JBN ∥2 ≤ 1)
+
+∥Jresnet ∥2 ≤ 12 ∥Wcov ∥2
+
+> L
+
+Y
+
+> l=1
+
+(1 + ∥Wl, 1∥2∥Wl, 2∥2)∥U ∥2, (140) where Wcov and U are the weights of the initial convolutional layer and the fully connected layer, respectively. ResNet still grows with depth, but more modestly than VGGNet’s exponential product. 
+
+G.3. DenseNet 
+
+DenseNet121 contains 4 dense blocks, a total of 58 convolution layers, and DenseNet169 also contains 4 dense blocks, but is deeper than DenseNet121 and contains 82 convolution layers. In dense blocks, each layer is the concatenation of the outputs of all previous layers. Suppose the output of the l-th layer is 
+
+Xl = Hl(concat (X0, X 1, · · · , X l−1)) (141) According to the properties of the Jacobian matrix, we have ( X0 is the input of the network) 
+
+∥JL∥2 = ∂X L
+
+∂X 0 2
+
+= ∂H L
+
+∂cat (X0, X 1, · · · , X L−1)
+
+∂cat (X0, X 1, · · · , X L−1)
+
+∂X 0 2
+
+≤ ∂(cov · ReLU · BN )
+
+∂cat 2
+
+
+
+IJ1
+
+· · · 
+
+JL−1
+
+
+
+> 2
+
+, Eqn. (134) 
+
+≤ ∥WL∥2
+
+vuut1 + 
+
+> L−1
+
+X
+
+> l=1
+
+∥Jl∥22
+
+≤ ∥WL∥2(1 + 
+
+> L−1
+
+X
+
+> l=1
+
+∥Jl∥2)= ∥WL∥2SL−1, (142) 
+
+> 1
+
+The residual blocks of ResNet are basic block and bottleneck block, where the former contains 2 convolutional layers, while the latter contains 3 convolutional layers. 
+
+25 Submission and Formatting Instructions for ICML 2026 
+
+where SL−1 = PL−1 
+
+> k=0
+
+∥Jk∥2 and J0 = I.We now use mathematical induction to prove 
+
+SL ≤
+
+> L
+
+Y
+
+> l=1
+
+(1 + ∥Wl∥2). (143) When L = 1 , we have 
+
+S1 = 1 + ∥J1∥2 ≤ 1 + ∥W1∥2. (144) Furthermore, we assume that the conclusion holds when k = l, that is Sl−1 ≤ Ql−1
+
+> k=1
+
+(1 + ∥Wk∥2). Then using the conclusion Jl ≤ ∥ Wl∥2Sl−1 from Eqn. (142), we immediately have 
+
+Sl = Sl−1 + ∥Jl∥2
+
+≤ Sl−1 + ∥Wl∥2Sl−1
+
+= Sl−1(1 + ∥Wl∥2)
+
+≤
+
+> l−1
+
+Y
+
+> k=1
+
+(1 + ∥Wk∥2)(1 + ∥Wl∥2)=
+
+> l
+
+Y
+
+> k=1
+
+(1 + ∥Wk∥2). (145) So, we get the upper bound of ∥JL∥2 as 
+
+∥JL∥2 ≤ ∥ WL∥2
+
+> L−1
+
+Y
+
+> k=1
+
+(1 + ∥Wk∥2). (146) 
+
+G.4. Transformer 
+
+Vision Transformer (ViT) is a vision model based on the Transformer architecture, which divides images into fixed-size patches and performs global modeling through multi-head attention (MHA). ViT-B-16 is the basic version, using a 16 × 16 
+
+patch size. ViT-B-16 contains L = 12 layers of Transformer Encoder. Next we discuss the spectral norm of the Jacobian matrix of the Encoder model. The input sequence X = ( x1, x 2, · · · , x n) is transformed by the embedding layer and positional encoding to 
+
+H(0) = Embed (X) + PositionalEncoding , (147) where H(0) ∈ Rn×d and d is the model dimension. The encoder is composed of L identical layers stacked together, each layer contains: • Multi-Head Attention (MHA) MHA (H) = Concat (head 1, · · · , head h)W O . (148) Each attention head head i = σ
+
+ QiKTi√dk
+
+
+
+Vi, where Qi = HW Qi , Ki = HW Ki , Vi = HW Vi and W Q, W K , W V ∈
+
+Rd×dk .• Feed-Forward Network (FFN) FFN (H) = ReLU (HW 1 + 1 bT 
+
+> 1
+
+)W2 + 1 bT 
+
+> 2
+
+, (149) • Residual Connection and Layer Normalization 
+
+H(l) = LN (H(l−1) + MHA (H(l−1) )) (150) 
+
+H(l) = LN (H(l) + FFN (H(l))) . (151) 26 Submission and Formatting Instructions for ICML 2026 
+
+Given an input H ∈ Rn×d, where n is the sequence length and d is the feature dimension, Self-Attention will be represented as follows 
+
+Q = HW Q, K = HW K , V = HW V ,S = QK T
+
+√dk
+
+, A = σ(S), Attention (Q, K, V ) = AV, (152) where W Q, W K , W V ∈ Rd×dk are the learnable weight matrices, A ∈ Rn×n is the row-normalized attention weight matrix, and Attention (Q, K, V ) ∈ Rn×dk is the output of Self-Attention. We first calculate the gradient with respect to the value H from V
+
+∂Attention 
+
+∂H 2
+
+≤ ∂Attention 
+
+∂V 2
+
+∂V ∂H 2
+
+= ∥A∥2∥W V ∥2. (153) Note that A ∈ Rm×n is a row-normalized matrix, and all elements of A are positive. Therefore, according to the Gerschgorin disk theorem, we have that any eigenvalue of the matrix A is located in a Gerschgorin disk 
+
+|λ − Aii | ≤ X 
+
+> j̸=i
+
+|Aij |, i = 1 , 2, · · · , m. (154) That is, −1 + Aii ≤ λ ≤ 1. So we immediately get ∥A∥2 ≤ 1. At the same time, we observe that A1 = 1, then 1 is an eigenvalue of A, and thus ∥A∥2 = 1 .Next we calculate the gradient of Attention with respect to H from the attention weight A
+
+∂Attention 
+
+∂H 2
+
+= ∂Attention 
+
+∂A ∂σ ∂S ∂S ∂H 2
+
+≤ ∥V ∥2 · 1
+
+n · 1
+
+√dk
+
+ ∂Q ∂H KT + Q ∂K T
+
+∂H 
+
+
+
+> 2
+
+≤ 2
+
+n√dk
+
+∥W V ∥2∥W Q∥2∥W K ∥2∥H∥22. (155) The input H is normalized, so ∥H∥2 is bounded. In general, n and dk are very large, then we have 
+
+∥Jattn ∥2 ≤ ∥ W V ∥2 + 2
+
+n
+
+∥W V ∥2∥W Q∥2∥W K ∥2∥H∥22
+
+√dk
+
+≈ ∥ W V ∥2. (156) According to the estimation of the spectral norm of the block matrix (as shown in Eqn. (134)), we have ( h = 8 )
+
+∥JMHA ∥2 ≤ √h max  
+
+> i
+
+∥W Vi ∥2∥W O ∥2. (157) According to the properties of the spectral norm, we immediately have 
+
+∥JFFN ∥2 = ∂FFN 
+
+∂H 2
+
+≤ ∥ W2∥2∥JReLU ∥2∥W1∥2 = ∥W1∥2∥W2∥2. (158) Note that when we use a transformer for classification, we do not use the decoding layer. Combining our previous analysis and conclusions, we have 
+
+∥Jtransformer ∥2 ≤
+
+> L
+
+Y
+
+> l=1
+
+(1 + √h max  
+
+> i
+
+∥W Vi ∥2∥W O ∥2 + ∥Wl1∥2∥Wl2∥2). (159) 27 Submission and Formatting Instructions for ICML 2026 
+
+## H. Properties of Hutchinson’s Algorithm 
+
+H.1. Convergence of Hutchinson’s Algorithm for Solving Spectral Norm Theorem 9. Let R(A, x i) = xTi Ax i  
+
+> xTixi
+
+, given m independent random vectors x1, · · · , x m, when m → ∞ , then ˆλmax =max mi=1 R(A, x i) will converge to λmax (A) with high probability. For any given δ value, when 
+
+m ≥ log 1
+
+> δ
+
+pϵ
+
+, (160) 
+
+then 
+
+P (ˆλmax ≥ λ(A) − ϵ) = 1 − (1 − pϵ)m ≥ 1 − δ, (161) 
+
+where pϵ = P (R(A, x i) ≥ λmax (A) − ϵ).
+
+Defining Rayleigh entropy R(A, x ) = xT Ax xT x , then for a symmetric matrix A, we have 
+
+λmin (A) ≤ R(A, x ) ≤ λmax (A), ∀x̸ = 0 . (162) Furthermore, we have λmax (A) = max x̸=0 R(A, x ).
+
+Coverage of random vectors Assume z ∼ N (0 , I n) is a standard Gaussian random variable, vmax is the largest eigenvector (unit vector) of A, then z = xT vmax is also a Gaussian random variable. We know that the probability of a continuous random variable at any single point is 0, so we have 
+
+P (z = 0) = P (xT vmax = 0) = 0 . (163) That is, P (xT vmax ̸ = 0) = 1 , so x can be decomposed into 
+
+x = ( xT vmax )vmax + x⊥, x⊥⊥vmax . (164) When x → vmax , that is, R(A, x ) → λmax (A).
+
+Concentration of Rayleigh Entropy Since R(A, x ) is a continuous function and R(A, v max ) = λmax (x), there exists a neighborhood Bδ (vmax ) of vmax such that for any x
+
+∥x − vmax ∥ ≤ δ ⇒ R(A, x ) ≥ λmax (A) − ϵ. (165) It is worth noting that the probability that a Gaussian random variable x falls in the neighborhood is positive 
+
+P (∥x − vmax ∥ < δ ) > 0. (166) So we have 
+
+P (R(A, x ) ≥ λmax (A) − ϵ) ≥ P (∥x − vmax ∥ < δ ) > 0. (167) 
+
+Convergence of the maximum value We take m independent random variables x1, · · · , x m and define 
+
+ˆλ = m
+
+max  
+
+> i=1
+
+R(A, x i). (168) Since P (R(A, x i) ≥ λmax (A) − ϵ) = pϵ > 0, then 
+
+P (R(A, x i) ≤ λmax (A) − ϵ) = 1 − pϵ, i = 1 , 2, · · · , m. (169) So we obtain 
+
+P (ˆλmax ≤ λ(A) − ϵ) = P
+
+ m
+
+max  
+
+> i=1
+
+R(A, x i) ≤ λ(A) − ϵ
+
+
+
+= (1 − pϵ)m. (170) When m → ∞ , then (1 − pϵ)m → 0. In other words, there is 
+
+P (ˆλmax ≥ λ(A) − ϵ) = 1 − (1 − pϵ)m → 1. (171) 28 Submission and Formatting Instructions for ICML 2026 
+
+High probability convergence Now, given δ ∈ (0 , 1) , we ask for the probability 
+
+P (ˆλmax ≥ λ(A) − ϵ) = 1 − (1 − pϵ)m ≥ 1 − δ
+
+⇒ (1 − pϵ)m ≤ δ
+
+⇒
+
+ 11 − pϵ
+
+m
+
+≥ 1
+
+δ
+
+⇒ m log 
+
+ 11 − pϵ
+
+
+
+≥ log 
+
+ 1
+
+δ
+
+
+
+⇒ m ≥ log 1
+
+> δ
+
+− log(1 − pϵ) (172) Since − log(1 − pϵ) is a convex function of pϵ, according to the convex function f (x) satisfying f (x) ≥ f (0) + f ′(0) x, we know that 
+
+− log(1 − pϵ) ≥ pϵ. (173) So when 
+
+m ≥ log 1
+
+> δ
+
+pϵ
+
+≥ log 1
+
+> δ
+
+− log(1 − pϵ) , (174) we have 
+
+P (ˆλmax ≥ λ(A) − ϵ) = 1 − (1 − pϵ)m ≥ 1 − δ. (175) 
+
+H.2. Alignment of randomly sampled vectors with the principal eigenvector of a matrix Theorem 10. Let u, v ∈ Rn, where u is a random unit vector and v is a fixed unit vector (such as the principal eigenvector of a matrix), then the probability that u is aligned with v decays exponentially with n. Specifically, we have 
+
+P (|uT v| ≥ t) ≤ 2 exp  −cnt 2 , (176) 
+
+where c is a universal constant. 
+
+Let v ∈ Rn be a fixed unit vector corresponding to the principal eigenvector of the matrix A, and u be a uniform random unit. Below we use uT v to denote the degree of alignment of u with v.
+
+Expectation and variance of the inner product Since u is uniformly randomly distributed, its direction distribution is symmetrical, that is, for any uv = c, there exists (−u)T v = −c. Therefore 
+
+E(uT v) = 0 . (177) Furthermore, we calculate the variance var (uT v) of uT v
+
+var (uT v) = E[( uT v − E(uT v)) 2] = E[( uT v)2]= E
+
+
+
+> n
+
+X
+
+> i=1
+
+uivi
+
+!2
+
+=
+
+> n
+
+X
+
+> i=1
+
+v2 
+
+> i
+
+E[u2 
+
+> i
+
+] + X
+
+> i̸=j
+
+vivj E[uiuj ]. (178) Note that since u is uniformly randomly distributed, all E[u2 
+
+> i
+
+] are equal, as shown by Pni=1 u2 
+
+> i
+
+= 1 
+
+> n
+
+X
+
+> i=1
+
+E[u2 
+
+> i
+
+] = 1 ⇒ E[u2 
+
+> i
+
+] = 1
+
+n . (179) 29 Submission and Formatting Instructions for ICML 2026 
+
+Therefore, the variance of uT v is var (uT v) = 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+v2 
+
+> i
+
+= 1
+
+n . (180) Let the standard deviation σ = pvar (uT v) = 1√n . For most probability distributions, such as the Gaussian distribution, 
+
+uT v will have a probability of 95% falling within the interval [−2σ, +2 σ]. Therefore, |uT v| is usually no more than O( 1√n ).
+
+Concentration Inequality Levy’s lemma (Milman & Schechtman, 1986) states that for a Lipschitz function on a high-dimensional sphere, its values are highly concentrated near the desired value. Specifically, 
+
+Lemma 1. Levy’s Lemma: Assume that f : Sn−1 → R is an L-Lipschitz function (i.e., |f (u) − f (u′)| ≤ L∥u − u′∥2), and 
+
+u is uniformly distributed on the unit sphere Sn−1, then 
+
+P (|f (u) − E[f ]| ≥ t) ≤ 2 exp 
+
+
+
+− cnt 2
+
+L2
+
+
+
+, (181) 
+
+where c is a universal constant (e.g. c = 1 /2). 
+
+We define the function f (u) = uT v, where v is a fixed unit vector, so we have 
+
+|f (u) − f (u′)| = |(u − u′)T v| ≤ ∥ u − u′∥2∥v∥2 = ∥u − u′∥2. (182) That is, the function f is an L-Lipschitz function, where L = 1 . From the symmetry of f , we know that E[f ] = 0 , so applying Levy’s Lemma we can get 
+
+P (|uT v| ≥ t) ≤ 2 exp  −cnt 2 . (183) It can be seen that the alignment of the random unit vector u with the fixed unit vector (the principal eigenvector of the matrix) decays exponentially as d increases. 
+
+## I. Overview and Analysis of Algorithms 
+
+We innovatively apply three algorithms based on the low-rank structure of F (x). We make full use of the associative property of matrix multiplication and the property of the spectral norm ∥AA T ∥ = ∥AT A∥ in our algorithm to indirectly estimate 
+
+B(x) = Λ 1/2QT QΛ1/2 rather than F (x) = QΛQT . In the power iteration algorithms, when computing bt+1 = F (x)bt,we compute (Q(Λ( QT bt)) instead of QΛQT bt. Computing according to (Q(Λ( QT bt)) has lower space complexity. Note that the indirect estimation makes the approximation error of the Hutchinson algorithm smaller. The following table compares the space complexity and time complexity of direct and indirect estimation of F (x) (d ≫ K)   
+
+> Table 11. Time and space complexity analysis of indirect estimation of ∥F∥2
+
+Indirect Estimation Space complexity Time complexity Eigendecomposition O(dK ) O(dK 2 + K3)
+
+Power Iteration O(dK ) O(T dK )
+
+Hutchinson Approximation O(dK ) O(dK )   
+
+> Table 12. Time and space complexity Analysis of direct estimation of ∥F∥2
+
+Direct Estimation Space complexity Time complexity Eigendecomposition O(d2) O(Kd 2 + d3)
+
+Power Iteration O(d2) O(T dK )
+
+Hutchinson Approximation O(dK ) O(dK )
+
+Overall, our innovative application of the three algorithms generally significantly reduces the time and space complexity of the algorithms, making our robustness metrics more feasible in large-scale practical applications. 30 Submission and Formatting Instructions for ICML 2026 
+
+Algorithm 1 Power Iteration for the Principal Eigenvalue  
+
+> 1:
+
+Input : Q and Λ 
+
+> 2:
+
+Initialize j = arg max k p(yk|x), b0 = ∇x log p(yj |x) ∈ Rd 
+
+> 3:
+
+λprev = p(yj |x) and b0 = b0/∥b0∥ 
+
+> 4:
+
+for t = 0 , 1, 2, · · · , T do  
+
+> 5:
+
+bt+1 = Q(Λ( QT bt))  
+
+> 6:
+
+λt = bTt bt+1  
+
+> 7:
+
+if (∥λt − λprev ∥)/∥λt∥2 < ϵ then  
+
+> 8:
+
+break  
+
+> 9:
+
+end if  
+
+> 10:
+
+λprev = λt 
+
+> 11:
+
+bt+1 = bt+1  
+
+> ∥bt+1 ∥
+> 12:
+
+end for  
+
+> 13:
+
+return λt
+
+Algorithm 2 Hutchinson Algorithm for the Principal Eigenvalue  
+
+> 1:
+
+Input : Q and Λ 
+
+> 2:
+
+Γ = Λ 1/2 
+
+> 3:
+
+for i = 1 , 2, · · · , M do  
+
+> 4:
+
+Generate a random vector z where zi ∼ N (0 , 1)  
+
+> 5:
+
+y = QΓz 
+
+> 6:
+
+λi = yT yzT z 
+
+> 7:
+
+end for  
+
+> 8:
+
+return max i λi
+
+## J. Theoretical Verification Experiment 
+
+J.1. Datasets and Settings 
+
+To estimate the robustness of the model, we use the basic models of four classic models, including VGG16, ResNet18, DenseNet121, and ViT B 16, and train them on three different styles of datasets (CIFAR10, MNIST, and Tiny-ImageNet). For unified processing, the images in the three datasets are resized to 224 ×224 size images during training. The optimizer uses the AdamW optimizer in PyTorch, where the learning rate is uniformly set to 3e-5. The model obtained by using only the training set (without using any pre-trained model) for all models is called the clean model Mclean . Subsequently, the model we obtain through the two adversarial training algorithms, CW or PGD, is the adversarial model, denoted as MCW or 
+
+MPGD . We also validate the effectiveness of our metrics on large-scale datasets like CIFAR100, ImageNet, and special types of data such as medical data 2.
+
+J.2. Evaluation Metrics and Settings 
+
+Assume that the model M is tested on the test set D, and a(x) represents the perturbation sample generated by the clean input x. We will mainly use the spectral norm robustness ∥F (x)∥2, Lipschitz constant, CLEVER score, and robustness metrics based on adversarial attacks including PGD (Madry et al., 2018) and C&W (Carlini & Wagner, 2017a). 
+
+PGD and CW Below we introduce the two metrics PGD and CW, which are two classic adversarial attack methods. We often use the attack success rate under PGD and CW attacks as an indicator to evaluate the robustness of the model, where the attack success rate (ASR) is defined as follows: ASR = |{ (x, y )|M (a(x)) ̸ = y, (x, y ) ∈ D}| |{ (x, y )|M (x) = y, (x, y ) ∈ D} . (184) 
+
+> 2https://www.kaggle.com/datasets/tawsifurrahman/covid19-radiography-database
+
+31 Submission and Formatting Instructions for ICML 2026 
+
+In the experiments, we use torchattacks 3 to calculate PGD and CW values. In PGD, the maximum perturbation ϵ is set to 8/255 , the step size α is 2/255 , the number of attack steps is 20 and random initialization is performed. CW uses the following parameters: box constraint parameter c = 1 , confidence κ = 0 , the number of attack steps is 20 and the learning rate lr = 0 .01 of the Adam optimizer. It is worth noting that PGD contains random factors, while CW does not contain randomness. 
+
+CLEVER score The maximum perturbation radius in the CLEVER algorithm is set to 0.1, and the distance norm in the neighborhood definition and the norm in the gradient both use the 2-norm. When the CLEVER algorithm estimates the Lipschitz constant at each data point x, 100 points are sampled in the neighborhood of point x to find the maximum value of the gradient norm. 
+
+Rspec and Lipschitz constant We approximate the Lipschitz constant of the model f (x) by the gradient at point x, where the gradient is implemented by automatic differentiation in pytorch. When calculating the robustness based on the spectral norm, we also count the average value of ∥F (x)∥2 and the average value of 1/∥F (x)∥2. The former is positively correlated with other metrics, while the latter corresponds to Rspec and is negatively correlated with other metrics. We use two common and popular datasets for image classification: CIFAR10 (Krizhevsky, 2009) and MNIST (LeCun et al., 1998). CIFAR10 contains 10 categories and a total of 60,000 color images of size 32 × 32. MNIST is a handwritten digit image dataset containing 60,000 training images and 10,000 test images, each sample size is 28 × 28 pixels. Our programs are all run on a server equipped with a GeForce RTX 3090 with 24G video memory. We select 4 classic base models including DenseNet121, VGG16, ResNet18, ViT-B-16 to study our proposed robustness metric based on the spectral norm. 
+
+J.3. Analysis of Spectral Robustness Measure FIM and variance of Jacobian matrix To verify the theorem F (x) = var (J(x)) , we estimate the variance of J(x) by sampling J(x) to verify its correctness. We design a toy model consisting of a simple single-layer convolution layer + fully connected layer + softmax layer. By generating random inputs of different batch sizes, we calculate the estimated variance 
+
+ˆσ2(x) of F (x) and J(x) respectively, and finally estimate the approximate error of ∥F (x)−ˆσ2(x)∥F  
+
+> ∥F(x)∥F
+
+through relative error. The results in Table 13 conform to the law of large numbers: as the number of samples increases, the estimated value of the random variable approaches its true value.  
+
+> Table 13. Error between FIM and variance of Jacobian matrix vs sampling size
+
+#Size 32 64 128 256 512 1024 
+
+Error 1.8552 1.5554 1.3644 1.2530 1.1921 1.1600 
+
+Model robustness and number of model layers Through model analysis, we know that when the model components are the same, the model robustness Rspec is inversely proportional to the number 
+
+L of layers of the model components (e.g. O(1 /L )). Resnet18 and Resnet34 have the same components (Basic Block), as shown in Table 14, when the number of layers of the model increases, the robustness metric of the model decreases.  
+
+> Table 14. Comparison of robustness measures for mod-els with the same components
+
+Rspec ResNet18 ResNet34 
+
+CIFAR10 9.610 3.162 MNIST 1.285 0.763 
+
+Analysis on the metric Rspec From the results in Table 15, we can see that ViT has the highest robustness metric, while DenseNet has the worst robustness. The performance of the robustness metric on the CIFAR10 dataset is consistent with our theoretical results, while in the results on MNIST, VGG16 is more robust than ResNet18. This may be because the gradient of VGG16 on simple MNIST images is smoother, making its spectral norm smaller.  
+
+> Table 15. Comparison of robustness measures for mul-tiple models
+
+Dataset CIFAR10 MNIST 
+
+ViT-B-16 11.44 35.66 ResNet18 9.61 1.28 VGG16 1.04 5.07 DenseNet 1.40 0.06 
+
+> 3https://adversarial-attacks-pytorch.readthedocs.io/en/latest /attacks.html#module-torchattacks.attacks.pgd
+
+32 Submission and Formatting Instructions for ICML 2026 
+
+Robustness metric Rspec and robustness metric based on Lips-chitz constant To analyze the relationship between Rspec and the classic robustness measure based on the Lipschitz constant, we count the estimated value 1/∥F (x)∥2 and the Lipschitz constant on each sample x in the data set, and then calculate the Pearson correlation coefficient of the two sequences, as shown in the table. This further verifies that there is a linear correlation and consistency of evalua-tion between our measure Rspec and Lipschitz constant robustness measure.    
+
+> Table 16. Pearson and Spearman values (in brackets) analysis between Rspec and Lipschitz constant robust-ness measure
+
+Dataset CIFAR10 MNIST 
+
+ViT-B-16 0.90 (0.95) 0.88 (0.88) ResNet18 0.86 (0.90) 0.82 (0.84) VGG16 0.85 (0.89) 0.80 (0.82) DenseNet 0.84 (0.91) 0.80 (0.83) 
+
+J.4. Solution on Spectral Norm of FIM Comparison of algorithm running times We propose to use three different types of algorithms to solve the spectral norm of the FIM matrix to cope with models of different sizes. We set the number of parameters to 1e5, the number of iterations in the power iteration algorithm and the number of samples in the Hutchinson algorithm to 1000. Then, we randomly generate a Gaussian distribution and run 10 times with the number of categories to average the running time, and obtain Table 17. From Table 17, we can see that when the category (model output) scale is small, we can directly resort to eigenvalue decomposition, which is usually faster; when the category is of medium size, power iteration may have an advantage; and when the category scale is very large, the Hutchinson algorithm may be more efficient.  
+
+> Table 17. Performance (Time) comparison of algorithms vs classes (D: direct eigenvalue decomposition, P: power itera-tion, and H: Hutchinson algorithm)
+
+#Classes(K) D (s) P (s) H (s) 
+
+10 0.0016 0.0136 0.2988 100 0.0070 0.0233 0.0265 1000 0.2649 0.1964 0.1378 10000 30.3127 1.3501 1.2813 
+
+Hutchinson’s convergence Theorem 4 shows that when the number of samplings M approaches ∞, ˆλmax =max mi=1 R(A, x i) will approach λmax (A) with high probability. Next we will verify this conclusion through experiments. We set the number of categories K = 10 and the dimension of the parameters to 1e5, and then randomly generate the Gaus-sian distribution matrix Q and the diagonal matrix Λ. When the Hutchinson random algorithm is run 10 times in parallel on the GPU with different sampling times, the statistical average approximation error 100 ∗| ˆλmax −λmax |/λ max and average run-ning time are shown in the table. We can clearly see that when 
+
+M increases, the approximation error continues to decrease.  
+
+> Table 18. Approximation Error of Hutchinson’s Algorithm
+
+#Samples (M) Time (s) Error (%) 
+
+10 0.3100 35.66 100 0.0038 26.06 1000 0.0055 12.69 10000 0.0515 9.26 
+
+Comparison of Hutchinson’s algorithm for solving ∥QΛQT ∥2 and ∥Λ1/2QT QΛ1/2∥2 Theorem 5 tells us that the probability of aligning a random vector generated by the Hutchinson algorithm with the true value λmax decays exponentially with the dimensional size n. The following experiment shows why we choose to use Λ1/2QT QΛ1/2 as the input of the Hutchinson algorithm instead of QΛQT , even though they theoretically have the same spectral norm. In Hutchinson, we choose the dimension of the parameter as 
+
+d = 10000 and the number of samplings as 1000. We ran-domly generate Q and Λ that follow a Gaussian distribution, select different numbers of categories, and use Λ1/2QT QΛ1/2
+
+and QΛQT as the input of Hutchinson to run the Hutchinson algorithm, as shown in Table 19. It can be seen that the ap-proximation error using Λ1/2QT QΛ1/2 as input is related to the number of categories, while the approximation error using 
+
+QΛQT as input is related to the dimension of the parameter.      
+
+> Table 19. Approximation error of Hutchinson’s algorithm with
+> QΛQTand Λ1/2QTQΛ1/2as input
+
+#Classes(K) Λ1/2QT QΛ1/2 QΛQT
+
+10 13.91 99.83 100 60.75 99.52 1000 73.85 97.19 However, the dimension of the parameters is constant, so we see that as the number of categories increases, the approximation error (or probability of alignment) of Λ1/2QT QΛ1/2 as input decreases, while the approximation error of QΛQT as input 33 Submission and Formatting Instructions for ICML 2026 
+
+remains approximately the same. 
+
+Sampling in Hutchinson approximation algorithm Hutchinson has good theoretical properties by generating Rademacher random variables, but in practice, sampling Gaussian random variables has better convergence properties. The following experimental results (Table 20) show that Gaussian random variables have lower approximation errors than Rademacher random variables. We generate a matrix Q with dimensions 100000 × 10 that follows a Gaussian distribution and a diagonal matrix Λ
+
+that follows a Gaussian distribution, and then sample Gaus-sian random variables and Rademacher random variables for different times, and compare their approximation er-rors as shown in Table 20. The results in Table 20 show that Gaussian sampling is much better than Rademacher sampling.  
+
+> Table 20. Approximation error (%) of Hutchinson algorithm under Gaussian sampling and Rademacher sampling
+
+#Samples (M) Normal Rademacher 
+
+10 32.13 56.66 100 26.51 61.86 1000 12.06 54.09 10000 9.68 59.04 
+
+J.5. Variance of Robustness Measure Estimate 
+
+According to the description and setting of the estimation measure above, CLEVER and PGD contain a certain amount of randomness because they need to randomly sample data points. The estimates of other metrics Rspec , CW, and Lipschitz constant are all deterministic metrics. Below we use the results of the clean model Mclean on three data sets and four models as shown in Tables 21 and 22. For each experiment, we sample 500 data points on the data set to count the variance of 5 repeated experiments. From Tables 21 and 22, it can be seen that DenseNet121 has the largest variance on the MNIST data set, and the variances of the others are very small.  
+
+> Table 21. Variance of PGD measure
+
+Dataset ViT B 16 ResNet18 VGG16 DenseNet121 
+
+CIFAR10 1.00 ±0.0000 1.00 ±0.0000 0.77 ±0.0006 0.99 ±0.0006 MNIST 0.89 ±0.0000 0.91 ±0.0000 0.01 ±0.0000 0.96 ±0.0013 Tiny-ImageNet 0.99 ±0.0000 0.99 ±0.0000 1.00 ±0.0000 1.00 ±0.0010  
+
+> Table 22. Variance of CLEVER Score
+
+Dataset ViT B 16 ResNet18 VGG16 DenseNet121 
+
+CIFAR10 2.42 ±0.0005 5.09 ±0.0006 2.31 ±0.0004 6.11 ±0.0041 MNIST 2.82 ±0.0035 3.17 ±0.0007 0.40 ±0.0001 11.99 ±0.0105 Tiny-ImageNet 2.59 ±0.0003 2.39 ±0.0002 13.14 ±0.0021 4.46 ±0.0027 
+
+J.6. Comparison of different types of data 
+
+Below we further give the results on CIFAR100, Medical Data (covid19-radiography-database from Kaggle 4) and ImageNet in Tab. 23 and 24. Comparing the robustness metrics of the two models, ViT B 16 and ResNet18, on the same dataset (Medical Data or CIFAR100), we can observe that our metrics and most other metrics give consistent results: ResNet18 <
+
+ViT B 16. 
+
+J.7. Comparison of robustness metrics on small-scale datasets 
+
+We use ResNet18 as the basis to analyze how the six metrics rank the dataset. The results are shown in Tab. 25. MNIST is a grayscale image with a simple input space, which results in a flat gradient of the model loss function, thus: 1) 
+
+> 4https://www.kaggle.com/datasets/tawsifurrahman/covid19-radiography-database
+
+34 Submission and Formatting Instructions for ICML 2026  
+
+> Table 23. Comparison results of the ResNet18 and VIT B 16 models on Medical data
+
+Model L(x) CLEVER CW PGD ∥F (x)∥2 Rspec 
+
+ResNet18 0.57 5.43 37.08 98.88 5.95 36.28 ViT B 16 0.29 2.10 20.25 98.73 2.11 375.44  
+
+> Table 24. Comparison results of the ResNet18 and VIT B 16 models on CIFAR100
+
+Model L(x) CLEVER CW PGD ∥F (x)∥2 Rspec 
+
+ResNet18 0.29 1.81 62.07 94.83 0.73 5.69 ViT B 16 0.23 1.21 65.22 93.48 0.55 23.05 The model may be prone to overfitting on MNIST, resulting in L(x) = 0 ; 2) Adversarial attacks are difficult to take effect, and the success rate of attacks is extremely low; 3) The model output is very certain, so ∥F (x)∥2 is extremely small; 4) 
+
+Rspec is extremely large, and there are many outliers in the robust value. If we exclude the outlier data MNIST, our metrics ∥F (x)∥2 and Rspec achieve consistent results with other metrics, including 
+
+L(x), CLEVER, and CW.  
+
+> Table 25. Comparison of robustness ranking results of ResNet18 using 6 metrics on 3 datasets
+
+Dataset L(x) CLEVER CW PGD Rnorm ↓ Rspec 
+
+CIFAR10 0.29 2.02 29.60 86.67 0.82 186.46 Tiny-Imagenet 0.21 1.72 38.64 88.64 0.51 7.25 MNIST 0.0 1.73 1.0 2.0 0.01 24510.91 
+
+## K. Limitations and Future Work 
+
+Our framework has several limitations that point to fruitful future directions: 
+
+Data Dependency F (x) depends on the input distribution, meaning robustness comparisons across datasets reflect both model and data properties. This is a feature for diagnostic analysis but a challenge for universal ranking. Future work could explore dataset-agnostic bounds or normalization schemes. 
+
+Computational Overhead While our algorithms are scalable, estimating F (x) for extremely large models (e.g., billion-parameter LLMs) remains expensive. Future optimizations could include more efficient gradient estimators or distributed Hutchinson sampling. 
+
+Extension to Non-Classification Tasks Our current analysis focuses on classification (softmax output). Extending the framework to regression, generative models, or multimodal tasks is theoretically possible but requires reformulating F (x)
+
+for continuous or structured outputs. 
+
+Empirical Validation on RobustBench Models Applying our metric to top RobustBench models would provide valuable diagnostic insights into state-of-the-art robust models—a direction we plan to pursue in future work. 35

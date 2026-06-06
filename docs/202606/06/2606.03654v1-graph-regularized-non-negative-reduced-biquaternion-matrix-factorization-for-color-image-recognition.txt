@@ -1,0 +1,1680 @@
+Title: Graph Regularized Non-negative Reduced Biquaternion Matrix Factorization for Color Image Recognition
+
+URL Source: https://arxiv.org/pdf/2606.03654v1
+
+Published Time: Wed, 03 Jun 2026 01:13:19 GMT
+
+Number of Pages: 26
+
+Markdown Content:
+# Graph Regularized Non-negative Reduced Biquaternion Matrix Factorization for Color Image Recognition 
+
+## Hailang Wu 1, Yonghe Liu 1, Bingxuan Yu 1, Chaoqian Li 1
+
+1School of Mathematics and Statistics, Yunnan University, Kunming, China. Contributing authors: wuhailang0217@163.com ; 13625698503@163.com ;
+
+2284047786@qq.com ; lichaoqian@ynu.edu.cn ;
+
+Abstract 
+
+Non-negative reduced biquaternion matrix factorization (NRBMF) uses the product of reduced biquaternion (RB) matrices to incorporate the non-negativity constraints of color image pixels into the factorization process. However, NRBMF mainly focuses on reconstruction accuracy and does not exploit the local geo-metric structure of image data, which may limit the discriminative ability of the learned low-dimensional features. To address this issue, we proposes a graph regularized non-negative reduced biquaternion matrix factorization (GNRBMF) model for color image recognition. The proposed model incorporates a graph Laplacian regularizer into the reduced biquaternion coefficient matrix, encour-aging nearby samples in the original space to have similar representations in the learned feature space. Meanwhile, GNRBMF retains the non-negativity-preserving property of NRBMF in the reduced biquaternion domain. To solve the optimization problem, a component-wise alternating projected gradient algo-rithm is derived, and its convergence properties are analyzed. Experimental results demonstrate that the proposed GNRBMF model achieves competitive or superior recognition performance in some tested settings. 
+
+Keywords: reduced biquaternion, non-negative matrix factorization, graph regularization, color image recognition, projected gradient method 
+
+1
+
+> arXiv:2606.03654v1 [cs.CV] 2 Jun 2026
+
+# 1 Introduction 
+
+Color image recognition is an important task in computer vision and pattern recog-nition, and has been widely used in applications such as face recognition [ 1], medical imaging [ 2], and remote sensing [ 3]. Compared with grayscale images, color images provide richer visual information because the RGB channels describe complemen-tary aspects of object appearance. Therefore, an effective color image representation should extract compact features while preserving useful correlations among color channels [ 4]. In addition, the pixel values of color images are non-negative, which makes non-negative representation models naturally suitable for color image feature extraction. Non-negative matrix factorization (NMF) [ 5] is a classical non-negative represen-tation method for data representation and feature extraction [ 6]. Given a non-negative data matrix, NMF learns a non-negative basis matrix and a non-negative coefficient matrix. In image recognition, the basis matrix can capture latent local patterns, while the coefficient matrix provides low-dimensional features for classification [ 7–9]. Owing to the non-negativity constraint, NMF often yields parts-based and interpretable representations. However, standard NMF is defined in the real domain and cannot naturally represent the RGB channels within a unified algebraic framework. When it is applied to color images, the RGB channels are usually processed independently or simply concatenated into a long real-valued vector, which may weaken the intrinsic correlations among different color channels [ 10 ]. Quaternion algebra [ 11 ] offers a useful hypercomplex representation for color image data. By encoding the three color channels into the imaginary components of a quater-nion, each color pixel can be represented as a single algebraic entity, which helps preserve and exploit the intrinsic relationships among RGB channels. Quaternion-based methods have been applied to color image recognition [ 12 ], denoising [ 13 ], restoration [ 14 ], and inpainting [ 15 ]. For non-negative factorization of color images, Ke et al. proposed quasi non-negative quaternion matrix factorization (QNQMF) [ 16 ]. However, due to the noncommutativity of quaternion multiplication, the QNQMF model cannot theoretically guarantee that the product of two quasi non-negative quaternion factor matrices remains quasi non-negative. To overcome this limitation, Miao et al. proposed non-negative reduced biquater-nion matrix factorization (NRBMF) for color image recognition [17 ]. Reduced biquaternion algebra has a four-component structure suitable for color image rep-resentation and, unlike quaternion algebra, has commutative multiplication [ 20 ]. In NRBMF, the coefficient matrix is restricted to a special reduced biquaternion form, which guarantees that the product of the factor matrices remains non-negative in the reduced biquaternion domain. Thus, NRBMF provides a more rigorous framework for hypercomplex non-negative factorization than QNQMF. Despite these advantages, NRBMF mainly focuses on reconstruction accuracy and does not explicitly use the local geometric structure of image data. In many recognition tasks, visually similar samples are expected to have similar low-dimensional represen-tations. Ignoring this structure may reduce the discriminative ability and robustness of the learned features, especially when the images contain illumination changes, pose 2variations, background interference, or large within-class differences. Graph regular-ization is an effective strategy for preserving local data structure in representation learning [ 23 ]. Its basic principle is that nearby samples in the original space should remain close in the learned feature space. This idea has been used in graph-regularized non-negative matrix factorization [ 23 ], graph-regularized non-negative Tucker decom-position [ 24 ], and generalized graph-regularized non-negative Tucker decomposition [25 ]. More recent studies have also introduced auto-weighted multiple graph regulariza-tion to improve the flexibility of graph-based learning [ 26 ]. Since the coefficient matrix directly provides the low-dimensional representation of each sample, it is natural to impose the graph constraint on the coefficient matrix. Based on the above analysis, this paper proposes a graph-regularized non-negative reduced biquaternion matrix factorization (GNRBMF) model for color image recognition. The proposed model extends NRBMF by introducing a graph Laplacian regularizer into the reduced biquaternion coefficient matrix. In this way, the learned representation preserves local geometric structure while retaining the non-negativity-preserving property of NRBMF. The main contributions of this paper are summarized as follows. 
+
+• We propose a graph regularized non-negative reduced biquaternion matrix factor-ization method for color image recognition. The proposed method incorporates local geometric information into the reduced biquaternion coefficient representation, while preserving the non-negativity structure and color-channel modeling ability of NRBMF. To solve the resulting constrained optimization problem, we further derive a component-wise alternating projected gradient algorithm. 
+
+• We provide a convergence analysis for the proposed optimization algorithm. The objective values generated by the algorithm are proved to be nonincreasing and con-vergent. Moreover, if the generated sequence converges, then its limit point satisfies the stationarity conditions of the proposed constrained optimization problem. 
+
+• We conduct extensive experiments on CASIA-FaceV5, KDEF, and Asirra for color image recognition. The experimental results show that the proposed GNRBMF method achieves competitive or superior recognition performance in most tested settings compared with several real-valued, quaternion-based, and reduced-biquaternion-based methods. The rest of this paper is organized as follows. Reduced biquaternion algebra and NRBMF are introduced in Section 2. The proposed GNRBMF model is presented in Section 3. The optimization algorithm is developed and the convergence analysis is given in Section 4. The experimental results are reported in Section 5. Finally, concluding remarks are provided in Section 6. Some basic notations used in the paper are given in Table 1.
+
+# 2 Preliminaries 
+
+In this section, we introduce the preliminaries used in this paper. 3Table 1 Basic notations used in this paper 
+
+Notation Representation 
+
+R Real space 
+
+RB RB space 
+
+q, q, Q Real scalar, vector, and matrix ¨q, ¨ q, ¨Q RB scalar, vector, and matrix 
+
+i, j, k Imaginary units of reduced biquaternions Re( ·) Real component of an RB number or matrix Im i(·), Im j (·), Im k(·) Three imaginary components of an RB number or matrix (·)⊤, ( ·)∗, ( ·)H Transpose, conjugate, and conjugate transpose 
+
+〈· , ·〉 Inner product of RB matrices 
+
+| · | , ‖ · ‖ F , ‖ · ‖ 2 Modulus, Frobenius norm, and spectral/Euclidean norm tr( ·) Trace of a square matrix 
+
+p Number of nearest neighbors in graph construction 
+
+λ Graph regularization parameter 
+
+⊗ Hadamard product 
+
+, Defined as 
+
+## 2.1 Reduced Biquaternion 
+
+A reduced biquaternion (RB) number ¨ q ∈ RB is defined as [ 18 –20 ]¨q = q0 + q1i + q2j + q3k,
+
+where qℓ ∈ R for ℓ = 0 , 1, 2, 3. The imaginary units i, j, k satisfy 
+
+i2 = k2 = −1, j2 = 1 , ij = ji = k, jk = kj = i, ki = ik = −j.
+
+Unlike standard quaternion multiplication, reduced biquaternion multiplication is commutative. For ¨ q = q0 + q1i + q2j + q3k ∈ RB , its conjugate and modulus are defined as [ 21 , 22 ]¨q∗ = q0 − q1i + q2j − q3k,
+
+and 
+
+|¨q| =
+
+√
+
+q20 + q21 + q22 + q23 .
+
+Let ¨Q = (¨ qmn ) ∈ RB M ×N be an RB matrix. It can be written as ¨Q = Q0 + Q1i + Q2j + Q3k,
+
+where Qℓ ∈ RM ×N for ℓ = 0 , 1, 2, 3. The transpose, conjugate, and conjugate transpose of ¨Q are denoted by ¨Q⊤, ¨Q∗, and ¨QH , respectively. If Q0 = 0, then ¨Q is called a pure RB matrix. 4For two RB matrices ¨Q, ¨P ∈ RB M ×N , their inner product is defined as 
+
+〈 ¨Q, ¨P 〉 =
+
+> M
+
+∑
+
+> m=1
+> N
+
+∑
+
+> n=1
+
+¨q∗ 
+
+> mn
+
+¨pmn .
+
+The Frobenius norm is 
+
+‖ ¨Q‖F =
+
+√
+
+Re (〈 ¨Q, ¨Q〉) =
+
+( M∑
+
+> m=1
+> N
+
+∑
+
+> n=1
+
+|¨qmn |2
+
+)1/2
+
+.
+
+An RB matrix ¨Q = Q0 + Q1i + Q2j + Q3k
+
+is called non-negative if all its real component matrices are elementwise non-negative, namely, 
+
+Q0 ≥ 0, Q1 ≥ 0, Q2 ≥ 0, Q3 ≥ 0.
+
+The set of all non-negative RB matrices is denoted by RB M ×N 
+
+> +
+
+. We also define the structured subset 
+
+RB M ×N 
+
+> +j
+
+=
+
+{ ¨Q ∈ RB M ×N 
+
+> +
+
+: ¨Q = Q0 + Q2j
+
+}
+
+. (1) Thus, matrices in RB M ×N 
+
+> +j
+
+have non-negative real and j-components, while their i-and k-components are identically zero. 
+
+## 2.2 Non-negative Reduced Biquaternion Matrix Factorization 
+
+Given a non-negative RB data matrix ¨X = X0 + X1i + X2j + X3k ∈ RB M ×N 
+
+> +
+
+,non-negative reduced biquaternion matrix factorization (NRBMF) seeks two factor matrices ¨W = W0 + W1i + W2j + W3k ∈ RB M ×l 
+
+> +
+
+and ¨H = H0 + H2j ∈ RB l×N 
+
+> +j
+
+, such that ¨X ≈ ¨W ¨H, 
+
+where l ≤ min( M, N ) is the factorization rank. Here, ¨W is the basis matrix and ¨H is the coefficient matrix. The constraint ¨H ∈ RB l×N 
+
+> +j
+
+is essential because it ensures that the product ¨W ¨H remains non-negative in the RB domain. Indeed, using the multiplication rules of reduced biquaternions, we have ¨W ¨H = ( W0H0 + W2H2) + ( W1H0 + W3H2)i
+
++ ( W0H2 + W2H0)j + ( W1H2 + W3H0)k. (2) If W0, W 1, W 2, W 3, H 0, and H2 are elementwise non-negative, then each component of ¨W ¨H is also elementwise non-negative. Therefore, the structured form ¨H = H0 + H2j
+
+provides a non-negativity-preserving factorization mechanism. 5The NRBMF model [ 17 ] is formulated as min  
+
+> ¨W , ¨H
+
+1
+
+2 ‖ ¨X − ¨W ¨H‖2
+
+> F
+
+s.t. ¨W ∈ RB M ×l 
+
+> +
+
+, ¨H ∈ RB l×N 
+
+> +j
+
+.
+
+(3) In this model, the basis matrix ¨W learns latent RB basis components from the orig-inal data, while the coefficient matrix ¨H provides a low-dimensional representation of the samples. For color image data, the RB form can encode different color-related com-ponents in a unified algebraic framework. Meanwhile, the non-negativity constraints preserve the physical meaning of image intensity values and lead to interpretable factorization results. 
+
+# 3 The Proposed GNRBMF Model 
+
+Although NRBMF provides a non-negativity-preserving factorization framework in the reduced biquaternion (RB) domain, it mainly focuses on the reconstruction error and does not explicitly exploit the local geometric structure of the training samples. In many recognition tasks, nearby samples in the original data space are expected to have similar low-dimensional representations. To incorporate this structural information while retaining the structured RB factorization mechanism of NRBMF, we introduce a graph Laplacian regularization term into the RB coefficient matrix. Let ¨X = [¨ x1, ¨x2, . . . , ¨xN ] ∈ RB M ×N 
+
+> +
+
+be the non-negative RB data matrix, where each column ¨ xn denotes one vectorized color image sample. We construct an undirected 
+
+p-nearest-neighbor graph on the training samples. Each sample is treated as a vertex, and the edge weights are stored in the affinity matrix A = [ Amn ] ∈ RN ×N .The squared distance between two samples ¨ xm and ¨ xn is defined as 
+
+d2 
+
+> mn
+
+= ‖¨xm − ¨xn‖2 
+
+> F
+
+.
+
+For each sample ¨ xn, let Np(n) denote the set of its p nearest neighbors, excluding ¨ xn
+
+itself. The affinity matrix A is defined by the following 0–1 weighting rule: 
+
+Amn =
+
+{ 1, m ∈ N p(n) or n ∈ N p(m),
+
+0, otherwise . (4) The use of the “or” condition makes the graph undirected, and hence A is symmetric. The degree matrix D and the graph Laplacian L are defined by 
+
+Dmm =
+
+> N
+
+∑
+
+> n=1
+
+Amn , L = D − A. 
+
+The Laplacian matrix L is then used to regularize the learned coefficient representa-tion, so that nearby samples in the original RB data space tend to remain close in the low-dimensional feature space. 6For a real-valued coefficient matrix 
+
+S = [ s1, s2, . . . , sN ] ∈ Rl×N ,
+
+where sn denotes the low-dimensional representation of the n-th sample, the standard graph identity gives 1
+
+2
+
+> N
+
+∑
+
+> m,n =1
+
+Amn ‖sm − sn‖22 = tr( SLS ⊤), (5) provided that A is symmetric. Therefore, minimizing tr( SLS ⊤) encourages adjacent samples on the graph to have similar coefficient vectors. We now apply this idea to the structured RB coefficient matrix in NRBMF. In the NRBMF framework, the coefficient matrix has the form ¨H = H0 + H2j ∈ RB l×N 
+
+> +j
+
+.
+
+The coefficient vector of the n-th sample can thus be written as ¨hn = h0,n + h2,n j,
+
+where h0,n and h2,n are the n-th columns of H0 and H2, respectively. Since the columns of ¨H serve as the low-dimensional representations of the samples, we define the graph regularization term in the RB coefficient space as 
+
+R( ¨H) = 1
+
+2
+
+> N
+
+∑
+
+> m,n =1
+
+Amn ‖¨hm − ¨hn‖2 
+
+> F
+
+.
+
+For any two coefficient vectors ¨hm and ¨hn, we have ¨hm − ¨hn = ( h0,m − h0,n ) + ( h2,m − h2,n )j.
+
+Hence, 
+
+‖¨hm − ¨hn‖2 
+
+> F
+
+= ‖h0,m − h0,n ‖22 + ‖h2,m − h2,n ‖22.
+
+Applying the graph identity in ( 5) to H0 and H2, respectively, yields 
+
+R( ¨H) = tr( H0LH ⊤ 
+
+> 0
+
+) + tr( H2LH ⊤ 
+
+> 2
+
+). (6) This regularizer is consistent with the structured constraint ¨H ∈ RB l×N 
+
+> +j
+
+, because it only acts on the real and j-components of ¨H. Therefore, it preserves the non-negativity-preserving factorization mechanism of NRBMF. By combining the reconstruction term with the graph regularization term in ( 6), we obtain the proposed graph regularized non-negative reduced biquaternion matrix 7factorization model: min  
+
+> ¨W , ¨H
+
+1
+
+2 ‖ ¨X − ¨W ¨H‖2 
+
+> F
+
++ λ
+
+2
+
+(tr( H0LH ⊤ 
+
+> 0
+
+) + tr( H2LH ⊤ 
+
+> 2
+
+))
+
+s.t. ¨W ∈ RB M ×l 
+
+> +
+
+, ¨H ∈ RB l×N 
+
+> +j
+
+,
+
+(7) where λ ≥ 0 is the regularization parameter that balances reconstruction accu-racy and graph smoothness. When λ = 0, the proposed model reduces to NRBMF. Thus, GNRBMF preserves the structured non-negative RB factorization mechanism of NRBMF while further incorporating local geometric information into the learned coefficient representation. 
+
+# 4 The Optimization Algorithm 
+
+In this section, we develop an alternating projected gradient algorithm for solving the proposed GNRBMF model. The basic notations used below follow Table 1, and several algorithm-specific symbols will be introduced when needed. 
+
+## 4.1 Algorithm 
+
+To solve the GNRBMF model in ( 7), we denote its objective function by F ( ¨W , ¨H), while the feasible constraints remain unchanged. Using the RB product formula in ( 2), we define the component-wise residual matrices by 
+
+E0 = W0H0 + W2H2 − X0, E1 = W1H0 + W3H2 − X1,E2 = W0H2 + W2H0 − X2, E3 = W1H2 + W3H0 − X3. (8) Then ¨W ¨H − ¨X = E0 + E1i + E2j + E3k. Hence the objective function F ( ¨W , ¨H) can be rewritten in the component form as 
+
+F ( ¨W , ¨H) = 1
+
+2
+
+> 3
+
+∑
+
+> r=0
+
+‖Er‖2 
+
+> F
+
++ λ
+
+2
+
+[tr( H0LH ⊤ 
+
+> 0
+
+) + tr( H2LH ⊤ 
+
+> 2
+
+)] . (9) Based on the component representation in ( 9), we next derive the gradients used in the alternating projected gradient algorithm. Since F is a real-valued function of RB matrix variables, its gradient with respect to ¨W is defined component-wise as 
+
+∇ ¨W F , ∂F 
+
+∂W 0
+
++ ∂F 
+
+∂W 1
+
+i + ∂F 
+
+∂W 2
+
+j + ∂F 
+
+∂W 3
+
+k.
+
+8By standard matrix differentiation, 
+
+∂F 
+
+∂W 0
+
+= E0H⊤ 
+
+> 0
+
++ E2H⊤ 
+
+> 2
+
+, ∂F 
+
+∂W 1
+
+= E1H⊤ 
+
+> 0
+
++ E3H⊤ 
+
+> 2
+
+,∂F 
+
+∂W 2
+
+= E0H⊤ 
+
+> 2
+
++ E2H⊤ 
+
+> 0
+
+, ∂F 
+
+∂W 3
+
+= E1H⊤ 
+
+> 2
+
++ E3H⊤ 
+
+> 0
+
+.
+
+(10) Equivalently, this component-wise gradient can be written compactly as 
+
+∇ ¨W F ( ¨W , ¨H) = ( ¨W ¨H − ¨X) ¨HH . (11) The compact expression in ( 11 ) is only a shorthand notation for the corresponding real component-wise gradients. For the matrix ¨H = H0 + H2j, only the real component and the j-component are involved. Thus, 
+
+∇ ¨H F , ∂F 
+
+∂H 0
+
++ ∂F 
+
+∂H 2
+
+j.
+
+Since the affinity matrix A is symmetric, the graph Laplacian L = D − A is also symmetric. Therefore, for r = 0 , 2, 
+
+∂
+
+∂H r
+
+[ λ
+
+2 tr( Hr LH ⊤ 
+
+> r
+
+)
+
+]
+
+= λH r L. 
+
+Combining the reconstruction term and the graph regularization term, we obtain 
+
+∂F 
+
+∂H 0
+
+= W ⊤ 
+
+> 0
+
+E0 + W ⊤ 
+
+> 1
+
+E1 + W ⊤ 
+
+> 2
+
+E2 + W ⊤ 
+
+> 3
+
+E3 + λH 0L, ∂F 
+
+∂H 2
+
+= W ⊤ 
+
+> 2
+
+E0 + W ⊤ 
+
+> 3
+
+E1 + W ⊤ 
+
+> 0
+
+E2 + W ⊤ 
+
+> 1
+
+E3 + λH 2L. 
+
+(12) The gradients in ( 10 ) and ( 12 ) are then used to construct the alternating projected gradient updates. The constrained GNRBMF problem is solved by alternately updating ¨W and ¨H. Before presenting the update rules, we first define the projections used in the algorithm. Let PRm×n
+
+> +
+
+denote the element-wise projection onto the non-negative real matrix cone, namely PRm×n
+
+> +
+
+(Y ) , max( Y, 0). For ¨Q = Q0 + Q1i + Q2j + Q3k ∈ RB m×n, the projection onto RB m×n 
+
+> +
+
+is 
+
+PRB m×n
+
+> +
+
+( ¨ Q) ,PRm×n
+
+> +
+
+(Q0) + PRm×n
+
+> +
+
+(Q1)i + PRm×n
+
+> +
+
+(Q2)j + PRm×n
+
+> +
+
+(Q3)k. (13) The projection onto the structured feasible set RB m×n 
+
+> +j
+
+is 
+
+PRB m×n
+
+> +j
+
+( ¨Q) , PRm×n
+
+> +
+
+(Q0) + PRm×n
+
+> +
+
+(Q2)j. (14) 9Thus, this projection keeps and non-negativizes the real and j-components while removing the i- and k-components. Given the current iterate ( ¨W t, ¨Ht), the projected gradient updates are ¨W t+1 = PRB M ×l
+
+> +
+
+[ ¨W t − αt∇ ¨W F ( ¨W t, ¨Ht)
+
+]
+
+, (15) and ¨Ht+1 = PRB l×N
+
+> +j
+
+[ ¨Ht − βt∇ ¨H F ( ¨W t+1 , ¨Ht)
+
+]
+
+. (16) The update of ¨H uses the updated value ¨W t+1 , yielding a Gauss–Seidel type alternating scheme. To ensure sufficient descent, the step sizes αt and βt are selected by Armijo back-tracking line search. Let 0 < μ < 1 and 0 < σ < 1. For the ¨W -update, set αt = μdt ,where dt is the first non-negative integer such that 
+
+F ( ¨W t+1 , ¨Ht) − F ( ¨W t, ¨Ht) ≤ σ Re 
+
+〈
+
+∇ ¨W F ( ¨W t, ¨Ht), ¨W t+1 − ¨W t〉
+
+. (17) For the ¨H-update, set βt = μst , where st is the first non-negative integer such that 
+
+F ( ¨W t+1 , ¨Ht+1 ) − F ( ¨W t+1 , ¨Ht) ≤ σ Re 
+
+〈
+
+∇ ¨H F ( ¨W t+1 , ¨Ht), ¨Ht+1 − ¨Ht〉
+
+. (18) The real parts of the RB inner products in ( 17 ) and ( 18 ) are evaluated through their corresponding real component representations. The complete procedure is summarized in Algorithm 1.
+
+Remark 4.1 The computationally expensive step in Algorithm 1 is the search for the step sizes αt and βt. In numerical implementation, the backtracking procedure may be initialized by the previously accepted step sizes and then adjusted until ( 17 ) and ( 18 ) are satisfied. This strategy is commonly used in projected gradient algorithms for matrix factorization and can reduce the number of function evaluations. For the convergence analysis below, the Armijo backtracking procedures are understood to start from the fixed trial step size 1 at each iteration. 
+
+## 4.2 Convergence Analysis 
+
+We now analyze the convergence behavior of Algorithm 1. Since the objective function is real-valued and the variables are RB matrices, the analysis is carried out through their real component representations. For an arbitrary RB matrix ¨U = U0 + U1i +
+
+U2j + U3k ∈ RB m×n, define Φ( ¨U ) ,
+
+
+
+vec( U0)vec( U1)vec( U2)vec( U3)
+
+ ∈ R4mn .
+
+10 Algorithm 1 RB projected gradient method for GNRBMF 
+
+Require: ¨X ∈ RB M ×N 
+
+> +
+
+; factorization rank l; graph Laplacian L; regularization parameter λ; parameters 0 < μ < 1, 0 < σ < 1; tolerance tol > 0; maximum number of iterations Tmax .
+
+Ensure: ¨W ∈ RB M ×l 
+
+> +
+
+and ¨H ∈ RB l×N 
+
+> +j
+
+. 
+
+> 1:
+
+Initialize ¨W 0 ∈ RB M ×l 
+
+> +
+
+and ¨H0 ∈ RB l×N 
+
+> +j
+
+; set t = 0 and r = + ∞. 
+
+> 2:
+
+while t < T max and r ≥ tol do  
+
+> 3:
+
+Compute GtW = ∇ ¨W F ( ¨W t, ¨Ht) by ( 10 ).  
+
+> 4:
+
+Update ¨W t+1 = PRB M ×l
+
+> +
+
+( ¨W t − αtGtW ), where αt = μdt , and dt is the first non-negative integer for which ( 17 ) holds.  
+
+> 5:
+
+Compute GtH = ∇ ¨H F ( ¨W t+1 , ¨Ht) by ( 12 ).  
+
+> 6:
+
+Update ¨Ht+1 = PRB l×N
+
+> +j
+
+( ¨Ht − βtGtH ), where βt = μst , and st is the first non-negative integer for which ( 18 ) holds.  
+
+> 7:
+
+Compute r = ‖ ¨W t+1 ¨Ht+1 − ¨W t ¨Ht‖F
+
+‖ ¨W t ¨Ht‖F
+
+. 
+
+> 8:
+
+Set t ← t + 1.  
+
+> 9:
+
+end while  
+
+> 10:
+
+return ¨W t and ¨Ht.
+
+For another RB matrix ¨V = V0 + V1i + V2j + V3k ∈ RB m×n, we have Re 〈 ¨U , ¨V 〉 = Φ( ¨U )⊤Φ( ¨V ), ‖ ¨U‖F = ‖Φ( ¨U )‖2.
+
+For the structured matrix ¨H = H0 + H2j, define Φj( ¨H) ,
+
+[vec( H0)vec( H2)
+
+]
+
+.
+
+Under these identifications, RB M ×l 
+
+> +
+
+and RB l×N 
+
+> +j
+
+are closed convex cones in finite-dimensional Euclidean spaces. All projection and convergence arguments below are understood under this equivalent real component representation. In particular, a stationary point refers to a first-order stationary point under this real component representation. We first state the first-order stationarity conditions for the problem ( 7). 11 Proposition 4.2 A feasible point ( ¨W #, ¨H#) is a stationary point of the problem (7) if and only if 
+
+¨W # ∈ RB M×l 
+
+> +
+
+, ¨H# ∈ RB l×N 
+
+> +j
+
+,
+
+∇ ¨W F ( ¨W #, ¨H#) ∈ RB M×l 
+
+> +
+
+, ∇ ¨H F ( ¨W #, ¨H#) ∈ RB l×N 
+
+> +j
+
+,
+
+Re( ¨W #) ⊗ Re 
+
+[
+
+∇ ¨W F ( ¨W #, ¨H#)
+
+]
+
+= 0 ,
+
+Im η( ¨W #) ⊗ Im η
+
+[
+
+∇ ¨W F ( ¨W #, ¨H#)
+
+]
+
+= 0 , η = i, j, k,
+
+Re( ¨H#) ⊗ Re 
+
+[
+
+∇ ¨H F ( ¨W #, ¨H#)
+
+]
+
+= 0 ,
+
+Im j( ¨H#) ⊗ Im j
+
+[
+
+∇ ¨H F ( ¨W #, ¨H#)
+
+]
+
+= 0 .
+
+(19) 
+
+Proof Under the real component representations Φ and Φ j, the feasible sets become non-negative orthants in finite-dimensional Euclidean spaces. For a differentiable optimization problem over a non-negative orthant, the first-order stationarity condition is equivalent to the component-wise non-negativity of the gradient and the complementarity condition between each variable and the corresponding gradient component. Rewriting these conditions in RB form gives ( 19 ). This completes the proof. 
+
+The variational inequality form of the stationarity conditions in ( 19 ) is given as follows. 
+
+Corollary 4.3 The conditions in (19 ) are equivalent to 
+
+
+
+Re 
+
+〈
+
+∇ ¨W F ( ¨W #, ¨H#), ¨ZW − ¨W #〉
+
+≥ 0, ∀ ¨ZW ∈ RB M×l 
+
+> +
+
+,
+
+Re 
+
+〈
+
+∇ ¨H F ( ¨W #, ¨H#), ¨ZH − ¨H#〉
+
+≥ 0, ∀ ¨ZH ∈ RB l×N 
+
+> +j
+
+.
+
+(20) 
+
+Proposition 4.4 Assume that the affinity matrix A is symmetric and elementwise non-negative, and that λ ≥ 0. Then F ( ¨W , ¨H) is bounded below on RB M×l 
+
+> +
+
+× RB l×N 
+
+> +j
+
+.Proof The reconstruction term 1 
+
+> 2
+
+‖ ¨X − ¨W ¨H‖2 
+
+> F
+
+is non-negative. Since A is symmetric and elementwise non-negative, the graph Laplacian L = D − A is symmetric positive semidefinite. For any real matrix S = [ s1, . . . , sN ], tr( SLS ⊤) = 1
+
+2
+
+> N
+
+∑
+
+> a,b =1
+
+Aab ‖sa − sb‖22 ≥ 0.
+
+Thus tr( H0LH ⊤ 
+
+> 0
+
+) ≥ 0 and tr( H2LH ⊤ 
+
+> 2
+
+) ≥ 0. Since λ ≥ 0, it follows that F ( ¨ W , ¨H) ≥ 0. Therefore, F is bounded below on the feasible set. This completes the proof. 
+
+Lemma 4.5 Let C be a nonempty closed convex set in a finite-dimensional Euclidean space. For z ∈ C , g in the same space, and τ > 0, define z+ = PC (z − τ g ). Then 
+
+〈g, z + − z〉 ≤ − 1
+
+τ ‖z+ − z‖2 ≤ 0.
+
+12 Proof By the optimality condition of Euclidean projection, 
+
+〈
+
+z+ − (z − τ g ), y − z+〉
+
+≥ 0, ∀y ∈ C .
+
+Taking y = z ∈ C gives 〈
+
+z+ − z + τ g, z − z+〉
+
+≥ 0.
+
+Equivalently, 
+
+−‖ z+ − z‖2 − τ 〈g, z + − z〉 ≥ 0,
+
+which proves the result. This completes the proof. 
+
+Lemma 4.6 For fixed ¨H = H0 + H2j, the block gradient ∇ ¨W F (·, ¨H) is Lipschitz continuous, and its Lipschitz constant can be taken as 
+
+L ¨W ( ¨H) = 2 ( ‖H0‖2 + ‖H2‖2)2 .
+
+For fixed ¨W = W0 +W1i+W2j+W3k, the block gradient ∇ ¨H F ( ¨W , ·) is Lipschitz continuous, and its Lipschitz constant can be taken as 
+
+L ¨H ( ¨W ) = 2 ( ‖W0‖2 + ‖W1‖2 + ‖W2‖2 + ‖W3‖2)2 + λ‖L‖2.
+
+Proof All the following arguments are understood under the real component representation introduced above. Thus, the Frobenius norm and the corresponding inner product are those induced by the associated real vector spaces. First, fix ¨H = H0 + H2j and consider the linear operator 
+
+T ¨H : ¨W 7 → ¨W ¨H. 
+
+For any perturbation ∆ ¨W = ∆ W0 + ∆ W1i + ∆ W2j + ∆ W3k, the multiplication rules of reduced biquaternions imply 
+
+‖T ¨H (∆ ¨W )‖F = ‖∆ ¨W ¨H‖F ≤ (‖H0‖2 + ‖H2‖2) ‖∆ ¨W ‖F .
+
+Hence, 
+
+‖T ¨H ‖ ≤ ‖ H0‖2 + ‖H2‖2.
+
+For fixed ¨H, the reconstruction term can be written as 1
+
+2 ‖T ¨H ( ¨ W ) − ¨X‖2 
+
+> F
+
+.
+
+Therefore, for any two matrices ¨W1 and ¨W2, with ∆ ¨W = ¨W1 − ¨W2, the difference of the corresponding block gradients satisfies 
+
+∇ ¨W F ( ¨W1, ¨H) − ∇ ¨W F ( ¨W2, ¨H) = T ∗ 
+
+> ¨H
+
+T ¨H (∆ ¨W ),
+
+where T ∗ 
+
+> ¨H
+
+denotes the adjoint operator with respect to the real component inner product. Consequently, 
+
+∥∥∥∇ ¨W F ( ¨W1, ¨H) − ∇ ¨W F ( ¨W2, ¨H)
+
+∥∥∥F ≤ ‖T ¨H ‖2‖∆ ¨W ‖F
+
+≤ (‖H0‖2 + ‖H2‖2)2 ‖ ¨W1 − ¨W2‖F .
+
+It follows that 2( ‖H0‖2 + ‖H2‖2)2 is a Lipschitz modulus for ∇ ¨W F (·, ¨H). Next, fix ¨W = W0 + W1i + W2j + W3k and consider the linear operator 
+
+S ¨W : ¨H 7 → ¨W ¨H
+
+13 on the structured space RB l×N 
+
+> +j
+
+. For any perturbation ∆ ¨H = ∆ H0 +∆ H2j, the multiplication rules give 
+
+‖S ¨W (∆ ¨H)‖F = ‖ ¨W ∆ ¨H‖F ≤ √2 ( ‖W0‖2 + ‖W1‖2 + ‖W2‖2 + ‖W3‖2) ‖∆ ¨H‖F .
+
+Thus, 
+
+‖S ¨W ‖2 ≤ 2 ( ‖W0‖2 + ‖W1‖2 + ‖W2‖2 + ‖W3‖2)2 .
+
+For any two structured matrices ¨H1 = H0,1 + H2,1j and ¨H2 = H0,2 + H2,2j, let ∆ ¨ H = ¨ H1 − ¨H2 = ∆ H0 + ∆ H2j.
+
+The difference of the reconstruction-gradient part is given by 
+
+S∗ 
+
+> ¨W
+
+S ¨W (∆ ¨H).
+
+Moreover, the graph regularization term contributes the gradient difference 
+
+λ∆H0L + λ∆H2Lj.
+
+Using the submultiplicativity of the spectral norm, we obtain 
+
+‖λ∆H0L + λ∆H2Lj‖F = λ
+
+(
+
+‖∆H0L‖2 
+
+> F
+
++ ‖∆H2L‖2
+
+> F
+
+)1/2
+
+≤ λ‖L‖2
+
+(
+
+‖∆H0‖2 
+
+> F
+
++ ‖∆H2‖2
+
+> F
+
+)1/2
+
+= λ‖L‖2‖∆ ¨H‖F .
+
+Combining the reconstruction part and the graph regularization part yields 
+
+∥∥∥∇ ¨H F ( ¨W , ¨H1) − ∇ ¨H F ( ¨W , ¨H2)
+
+∥∥∥F ≤
+
+[
+
+2 ( ‖W0‖2 + ‖W1‖2 + ‖W2‖2 + ‖W3‖2)2 + λ‖L‖2
+
+]
+
+‖ ¨H1 − ¨H2‖F .
+
+Therefore, L ¨H ( ¨W ) is a Lipschitz modulus for ∇ ¨H F ( ¨W , ·). The above Lipschitz constants are not necessarily the smallest possible constants, but they are valid upper bounds sufficient for the convergence analysis. This completes the proof. 
+
+Lemma 4.7 At each iteration of Algorithm 1, the Armijo line search procedures for both the 
+
+¨W -update and the ¨H-update terminate after finitely many reductions. Proof It is sufficient to prove the claim for the ¨W -update, since the proof for the ¨H-update is analogous. For fixed ¨Ht, let ̂ Lt¨W > 0 be a positive upper bound of a Lipschitz constant of 
+
+∇ ¨W F (·, ¨Ht). For a trial step size α > 0, define ¨W + = PRB M ×l
+
+> +
+
+[ ¨W t − α∇ ¨W F ( ¨W t, ¨Ht)
+
+]
+
+.
+
+By the descent lemma, 
+
+F ( ¨W +, ¨Ht) − F ( ¨W t, ¨Ht) ≤ Re 
+
+〈
+
+∇ ¨W F ( ¨W t, ¨Ht), ¨W + − ¨W t〉
+
++̂ Lt¨W
+
+2 ‖ ¨W + − ¨W t‖2 
+
+> F
+
+.
+
+By Lemma 4.5 ,Re 
+
+〈
+
+∇ ¨W F ( ¨W t, ¨Ht), ¨W + − ¨W t〉
+
+≤ − 1
+
+α ‖ ¨W + − ¨W t‖2 
+
+> F
+
+.
+
+Therefore, 
+
+F ( ¨W +, ¨Ht) − F ( ¨W t, ¨Ht) − σ Re 
+
+〈
+
+∇ ¨W F ( ¨W t, ¨Ht), ¨W + − ¨W t〉
+
+≤
+
+(
+
+− 1 − σ
+
+α +̂ Lt¨W
+
+2
+
+)
+
+‖ ¨W + − ¨W t‖2 
+
+> F
+
+.
+
+14 Hence the Armijo condition ( 17 ) is satisfied whenever α ≤ 2(1 − σ)/̂Lt¨W . Since, in the theoretical algorithm, the backtracking sequence starts from 1 and then follows 1 , μ, μ 2, . . . ,which tends to zero, such a step size is reached after finitely many reductions. The proof for the ¨H-update follows in the same way by Lemma 4.6 . This completes the proof. 
+
+Theorem 4.8 Let {( ¨W t, ¨Ht)}t≥0 be the sequence generated by the infinite version of Algorithm 1. Then {F ( ¨W t, ¨Ht)}t≥0 is nonincreasing and converges to a finite value. Moreover, 
+
+‖ ¨W t+1 − ¨W t‖F → 0, ‖ ¨Ht+1 − ¨Ht‖F → 0.
+
+Proof By the Armijo condition ( 17 ) and Lemma 4.5 ,
+
+F ( ¨W t+1 , ¨Ht) − F ( ¨W t, ¨Ht) ≤ σ Re 
+
+〈
+
+∇ ¨W F ( ¨W t, ¨Ht), ¨W t+1 − ¨W t〉
+
+≤ − σ
+
+αt
+
+‖ ¨W t+1 − ¨W t‖2 
+
+> F
+
+≤ 0.
+
+Similarly, 
+
+F ( ¨W t+1 , ¨Ht+1 ) − F ( ¨W t+1 , ¨Ht) ≤ − σ
+
+βt
+
+‖ ¨Ht+1 − ¨Ht‖2 
+
+> F
+
+≤ 0.
+
+Combining these two inequalities yields 
+
+F ( ¨W t+1 , ¨Ht+1 ) ≤ F ( ¨W t, ¨Ht).
+
+Thus, the objective values are nonincreasing. By Proposition 4.4 , they are bounded below and therefore converge to a finite value. Since the theoretical Armijo searches start from the trial step size 1, we have αt = μdt ≤ 1and βt = μst ≤ 1. Hence 1 /α t ≥ 1 and 1 /β t ≥ 1. Therefore, 
+
+F ( ¨W t+1 , ¨Ht+1 ) ≤ F ( ¨W t, ¨Ht) − σ‖ ¨W t+1 − ¨W t‖2 
+
+> F
+
+− σ‖ ¨Ht+1 − ¨Ht‖2 
+
+> F
+
+.
+
+Summing this inequality from t = 0 to T gives 
+
+σ
+
+> T
+
+∑
+
+> t=0
+
+(
+
+‖ ¨W t+1 − ¨W t‖2 
+
+> F
+
++ ‖ ¨Ht+1 − ¨Ht‖2
+
+> F
+
+)
+
+≤ F ( ¨W 0, ¨H0) − F ( ¨W T +1 , ¨HT +1 ).
+
+Letting T → ∞ , the right-hand side remains bounded. Therefore, 
+
+> ∞
+
+∑
+
+> t=0
+
+‖ ¨W t+1 − ¨W t‖2 
+
+> F
+
+< ∞,
+
+> ∞
+
+∑
+
+> t=0
+
+‖ ¨Ht+1 − ¨Ht‖2 
+
+> F
+
+< ∞.
+
+Consequently, ‖ ¨W t+1 − ¨W t‖F → 0 and ‖ ¨Ht+1 − ¨Ht‖F → 0. This completes the proof. 
+
+Lemma 4.9 Suppose that the sequence {( ¨ W t, ¨Ht)}t≥0 generated by Algorithm 1 converges. Then there exist constants α > 0, β > 0, and t0 such that αt ≥ α and βt ≥ β for all t ≥ t0.Proof Since the sequence converges, it is bounded. By Lemma 4.6 , there exists L ¨W > 0 such that, for all sufficiently large t,
+
+L ¨W ( ¨Ht) ≤ L ¨W .
+
+15 From the proof of Lemma 4.7 , the Armijo condition for the ¨W -update is guaranteed whenever 
+
+α ≤ 2(1 − σ)/L ¨W . Since the backtracking sequence starts from 1 and is reduced by μ, the accepted step size satisfies 
+
+αt ≥ μ min 
+
+{
+
+1, 2(1 − σ)
+
+L ¨W
+
+}
+
+, α > 0for all sufficiently large t.Similarly, since { ¨W t+1 }t≥0 is bounded, there exists L ¨H > 0 such that L ¨H ( ¨W t+1 ) ≤ L ¨H
+
+for all sufficiently large t. Hence 
+
+βt ≥ μ min 
+
+{
+
+1, 2(1 − σ)
+
+L ¨H
+
+}
+
+, β > 0.
+
+This completes the proof. 
+
+Theorem 4.10 Let {( ¨W t, ¨Ht)}t≥0 be the sequence generated by the infinite version of Algorithm 1. If 
+
+lim 
+
+> t→∞
+
+¨W t = ¨ W #, lim 
+
+> t→∞
+
+¨Ht = ¨ H#,
+
+then ( ¨W #, ¨H#) is a stationary point of problem (7).Proof Since every iterate is feasible and the feasible sets are closed, ¨W # ∈ RB M×l 
+
+> +
+
+and ¨H# ∈ RB l×N 
+
+> +j
+
+.We first consider the ¨W -block. From the projection update ( 15 ), the optimality condition of Euclidean projection gives, for any fixed ¨ZW ∈ RB M×l 
+
+> +
+
+,Re 
+
+〈 ¨W t+1 −
+
+[ ¨W t − αt∇ ¨W F ( ¨W t, ¨Ht)
+
+]
+
+, ¨ZW − ¨W t+1 〉
+
+≥ 0.
+
+Equivalently, Re 
+
+〈
+
+∇ ¨W F ( ¨W t, ¨Ht), ¨ZW − ¨W t+1 〉
+
+≥ 1
+
+αt
+
+Re 
+
+〈 ¨W t − ¨W t+1 , ¨ZW − ¨W t+1 〉
+
+.
+
+By Lemma 4.9 , αt is bounded away from zero for all sufficiently large t. Thus 1 /α t is bounded above. By Theorem 4.8 , ¨W t+1 − ¨W t → 0. Moreover, since ¨W t+1 → ¨W #, the sequence 
+
+{ ¨ZW − ¨W t+1 } is bounded for each fixed feasible ¨ZW . Hence the right-hand side tends to zero. Using the continuity of ∇ ¨W F and taking the limit gives Re 
+
+〈
+
+∇ ¨W F ( ¨W #, ¨H#), ¨ZW − ¨W #〉
+
+≥ 0, ∀ ¨ZW ∈ RB M×l 
+
+> +
+
+.
+
+Next, consider the ¨H-block. From the projection update ( 16 ), for any fixed ¨ZH ∈ RB l×N 
+
+> +j
+
+,Re 
+
+〈
+
+∇ ¨H F ( ¨W t+1 , ¨Ht), ¨ZH − ¨Ht+1 〉
+
+≥ 1
+
+βt
+
+Re 
+
+〈 ¨Ht − ¨Ht+1 , ¨ZH − ¨Ht+1 〉
+
+.
+
+By Lemma 4.9 , βt is bounded away from zero for all sufficiently large t. Thus 1 /β t is bounded above. By Theorem 4.8 , ¨Ht+1 − ¨Ht → 0. Moreover, since ¨Ht+1 → ¨H#, the sequence { ¨ZH −
+
+¨Ht+1 } is bounded for each fixed feasible ¨ZH . Also, ( ¨W t+1 , ¨Ht) → ( ¨W #, ¨H#). Therefore, by the continuity of ∇ ¨H F and by taking the limit, we obtain Re 
+
+〈
+
+∇ ¨H F ( ¨W #, ¨H#), ¨ZH − ¨H#〉
+
+≥ 0, ∀ ¨ZH ∈ RB l×N 
+
+> +j
+
+.
+
+Thus ( ¨W #, ¨H#) satisfies the variational inequalities in Corollary 4.3 . Hence it is a stationary point of problem ( 7). This completes the proof. 
+
+16 Remark 4.11 Theorem 4.8 shows that the objective values generated by Algorithm 1 are monotonically nonincreasing and convergent. Theorem 4.10 further shows that if the gener-ated sequence itself converges, then its limit is a stationary point of problem ( 7). Since the GNRBMF problem is non-convex with respect to ( ¨W , ¨H), the above result does not imply convergence to a global minimizer. 
+
+# 5 Experiments 
+
+In this section, numerical experiments on color image recognition are conducted to evaluate the proposed GNRBMF method. The experiments are designed from three aspects. First, GNRBMF is compared with NRBMF to examine the effect of graph regularization. Second, GNRBMF is compared with real-valued, quaternion-based, and reduced-biquaternion-based methods under different factorization ranks. Third, the influence of the regularization parameter λ, the number of nearest neighbors p,and the numerical convergence behavior of the proposed algorithm are investigated. All experiments are run in MATLAB 2024a under Windows 10 on a laptop with a 2.30GHz CPU and 16GB of memory. 
+
+## 5.1 Datasets and Experimental Setup 
+
+Three color image datasets are used in the experiments. The CASIA-FaceV5 dataset 1 contains 2500 color face images from 500 subjects, with five images for each subject. In our experiment, 120 subjects are randomly selected. For each subject, three images are used for training and the remaining two images are used for testing. Thus, each trial contains 360 training images and 240 test images. The KDEF dataset 2 is a color facial expression dataset developed at Karolinska Institutet. It contains 4900 images of 70 individuals, including 35 females and 35 males. Each individual displays seven emotional expressions, and each expression is photographed from five view angles in two sessions. Compared with CASIA-FaceV5, KDEF introduces more intra-class variations caused by facial expression and pose changes. In our experiment, 30 individuals are randomly selected. For each selected individual, 23 images are used for training and 12 images are used for testing. Thus, each trial contains 690 training images and 360 test images. The Asirra dataset 3 is a cat-and-dog image dataset derived from Microsoft Research and Petfinder image resources. Compared with face images, these natural images contain more complex variations in background, pose, illumination, texture, and object scale. In our experiment, 250 cat images and 250 dog images are selected. For each class, 130 images are used for training and 120 images are used for testing. Thus, each trial contains 260 training images and 240 test images.     
+
+> 1https://english.ia.cas.cn/db/201610/t20161026 169405.html
+> 2https://www.kdef.se/
+> 3https://www.microsoft.com/en-us/download/details.aspx?id=54765
+
+17 (a) CASIA-FaceV5 (b) KDEF (c) Asirra  
+
+> Fig. 1 Sample images from the three color image datasets.
+
+In all experiments, each color image is resized to 80 × 100 pixels. Following the full RB representation used in NRBMF [ 17 ], each color image is represented as ¨X = Xav + XRi + XGj + XB k,
+
+where XR, XG, and XB denote the red, green, and blue channels, respectively, and 
+
+Xav = XR + XG + XB
+
+3is used as the real part. This representation preserves the three color channels in the imaginary components and introduces an average intensity component in the real part. Suppose that the training set contains Ntr images and the test set contains Nte 
+
+images. After RB representation and column-wise vectorization, the training and test data matrices are denoted by ¨X ∈ RB M ×Ntr  
+
+> +
+
+and ¨Y ∈ RB M ×Nte  
+
+> +
+
+, respectively, where 
+
+M is the dimension of each vectorized RB sample. For each training set, GNRBMF is first applied to learn the basis matrix ¨W ∈
+
+RB M ×l 
+
+> +
+
+and the coefficient matrix ¨H = H0+H2j ∈ RB l×Ntr  
+
+> +j
+
+, where l is the factorization rank. The columns of ¨H are used as the low-dimensional representations of the training samples. For a test sample ¨ ys, its coefficient vector is obtained by solving min 
+
+> ¨h∈RB l×1+j
+
+‖¨ys − ¨W ¨h‖2 
+
+> F
+
+.
+
+This subproblem is solved by the same projected gradient strategy with the learned basis matrix fixed. Thus, both training and test samples are represented in the same coefficient space. For classification, the nearest-neighbor rule based on cosine similarity is used in the coefficient space. Since ¨H = H0 + H2j, the feature vector of the k-th training sample is defined as 
+
+z(train)  
+
+> k
+
+= [h⊤ 
+
+> 0,k
+
+, h⊤
+
+> 2,k
+
+]⊤ ,
+
+where h0,k and h2,k are the k-th columns of H0 and H2, respectively. Similarly, the fea-ture vector of the s-th test sample is denoted by z(test)  
+
+> s
+
+. The cosine similarity between the s-th test sample and the k-th training sample is calculated as 
+
+ds,k =
+
+〈
+
+z(train)  
+
+> k
+
+, z(test) 
+
+> s
+
+〉
+
+∥∥∥z(train) 
+
+> k
+
+∥∥∥2
+
+∥∥∥z(test) 
+
+> s
+
+∥∥∥2
+
+, k = 1 , 2, . . . , N tr .
+
+18 The recognition rate is used as the evaluation metric and is defined as Rec = Ncorrect 
+
+Nte 
+
+× 100% ,
+
+where Ncorrect denotes the number of correctly classified test samples and Nte 
+
+denotes the total number of test samples. A higher recognition rate indicates better classification performance. For graph-based methods, namely GNRBMF and GRIPG, the symmetric 0–1 nearest-neighbor graph is constructed from the training samples according to ( 4). The factorization rank is selected from l ∈ { 5, 10 , 15 , 20 , 25 }. Since only GNRBMF and GRIPG involve graph-related parameters, the regularization parameter λ and the number of nearest neighbors p are selected from predefined candidate sets. Specifi-cally, the regularization parameter is selected from λ ∈ { 10 −3, 10 −2, 10 −1, 1, 10 , 100 },and the number of nearest neighbors is selected from p ∈ { 3, 5, 7, 9, 11 }.For each dataset and each factorization rank, the graph-related parameters of GNRBMF and GRIPG are determined by selecting the best-performing values from the same candidate sets following an identical selection procedure. For methods without graph-related parameters, the recognition results are obtained under their standard settings. All recognition experiments are independently repeated ten times with random training/test splits, and the mean recognition rates with standard deviations are reported. The proposed method is compared with the following methods: 
+
+• GNRBMF: the proposed graph-regularized non-negative reduced biquaternion matrix factorization method; 
+
+• GRIPG: graph-regularized real-valued NMF solved by an improved projected gradient scheme [ 23 , 27 ]; 
+
+• NRBMF: non-negative reduced biquaternion matrix factorization without graph regularization [ 17 ]; 
+
+• QIPG: quasi non-negative quaternion matrix factorization solved by an improved projected gradient scheme [ 16 ]; 
+
+• QPCA: quaternion principal component analysis for color image recognition [ 28 ]; 
+
+• RIPG: real-valued NMF solved by an improved projected gradient scheme [ 27 ]. 
+
+## 5.2 Recognition Performance 
+
+Table 2 reports the recognition rates of different methods on the CASIA-FaceV5, KDEF, and Asirra datasets under different factorization ranks. Each result is reported as the mean value and standard deviation over ten independent trials. For each fac-torization rank, the best result and the second-best result are highlighted in bold and underlined, respectively. Several observations can be made from Table 2. First, GNRBMF consistently achieves the best recognition rates on the two face datasets. On CASIA-FaceV5, the recognition rate of GNRBMF increases from 70 .37% at l = 5 to 85 .28% at l = 25, and it obtains the best result under all tested ranks. On KDEF, GNRBMF also ranks first for all values of l, reaching 94 .18% at l = 15 and l = 25. These results show that the 19 Table 2 Recognition rates (%) of different methods on the three datasets with the 0–1 graph.                                                                                                                                                                                                                                                                                          
+
+> Dataset Method l= 5 l= 10 l= 15 l= 20 l= 25
+> CASIA-FaceV5 GNRBMF 70 .37 ±4.50 78 .28 ±3.43 83 .20 ±3.27 84 .12 ±3.47 85 .28 ±3.09
+> GRIPG 67 .33 ±3.87 76 .92 ±2.37 80 .75 ±3.92 82 .83 ±3.22 83 .67 ±3.84 NRBMF 68 .58 ±2.87 76 .92 ±3.38 81 .33 ±4.55 82 .50 ±3.58 84 .25 ±3.40
+> QIPG 65 .83 ±3.95 72 .50 ±4.07 76 .50 ±3.20 79 .17 ±1.84 81 .50 ±3.88 QPCA 57 .67 ±1.27 59 .25 ±1.75 63 .00 ±1.85 66 .75 ±4.96 68 .42 ±4.19 RIPG 66 .50 ±4.11 76 .58 ±2.52 79 .75 ±3.21 83 .42 ±3.44 83 .08 ±2.79
+> KDEF GNRBMF 87 .18 ±3.98 91 .60 ±2.87 94 .18 ±2.61 93 .35 ±2.71 94 .18 ±2.71
+> GRIPG 86 .58 ±4.09 90 .50 ±2.40 91 .83 ±2.55 92 .42 ±2.79 92 .25 ±2.14 NRBMF 86 .25 ±4.28 90 .58 ±2.90 91 .83 ±2.10 92 .33 ±2.14 92 .75 ±3.42 QIPG 85 .92 ±4.18 90 .08 ±3.59 91 .50 ±3.01 92 .33 ±2.68 93 .00 ±2.54
+> QPCA 74 .50 ±1.94 80 .42 ±4.56 82 .67 ±4.39 86 .33 ±4.35 89 .33 ±3.73 RIPG 86 .25 ±3.62 90 .50 ±2.88 90 .75 ±3.03 91 .67 ±2.52 91 .83 ±2.24
+> Asirra GNRBMF 59 .58 ±2.34 67 .67 ±2.97 71 .58 ±2.11 71 .33 ±1.62 71 .50 ±1.09
+> GRIPG 58 .58 ±2.31 66 .17 ±2.63 67 .83 ±2.95 68 .42 ±1.99 68 .75 ±2.32 NRBMF 58 .33 ±2.19 62 .75 ±3.54 69 .00 ±4.42 70 .00 ±3.03 69 .75 ±2.73
+> QIPG 59 .75 ±4.49 64 .25 ±1.92 66 .42 ±2.85 68 .42 ±4.36 65 .75 ±5.63 QPCA 53 .42 ±3.60 53 .33 ±2.26 56 .50 ±1.85 56 .92 ±2.87 60 .17 ±2.93 RIPG 58 .67 ±1.94 64 .50 ±2.19 66 .58 ±2.07 68 .42 ±2.36 69 .00 ±3.18
+
+proposed method is effective for color face recognition, even when facial expression and pose variations are present. Second, GNRBMF performs better than NRBMF in most cases. Since both meth-ods use the non-negative RB representation and the main difference lies in the graph regularization term, this comparison indicates that preserving the local geometric structure of training samples can improve the discriminative ability of the learned RB coefficient representation. This improvement is clear on CASIA-FaceV5 and KDEF, and it is also observed on Asirra when l ≥ 10. Third, compared with GRIPG, GNRBMF also shows better performance in most cases. Both methods use graph regularization, but GRIPG is based on a real-valued representation, whereas GNRBMF works in the RB domain. The performance differ-ence suggests that the RB representation is more suitable for color image recognition, because it can jointly encode the three color channels in a unified algebraic form. On Asirra, the recognition rates are generally lower than those on the two face datasets. This is reasonable because Asirra contains natural cat and dog images with more complex variations in background, pose, illumination, texture, and object scale. In this more challenging setting, GNRBMF obtains the best results for l =10 , 15 , 20 , 25, and achieves the second-best result at l = 5. This indicates that the proposed method remains competitive on natural color images, especially when the factorization rank is not too small. Overall, the recognition results demonstrate the effectiveness of combining graph regularization with non-negative RB matrix factorization. The comparison with NRBMF verifies the contribution of the graph regularization term, while the compar-ison with GRIPG, RIPG, QIPG, and QPCA shows the advantage of the proposed RB-based representation for color image recognition. 20 5.3 Parameter Sensitivity 
+
+This subsection analyzes the sensitivity of GNRBMF to two graph-related parameters, namely the regularization parameter λ and the number of nearest neighbors p. The parameter λ controls the contribution of the graph regularization term in the objective function, while p determines the local connectivity of the nearest-neighbor graph. To examine their effects, one parameter is fixed and the other parameter is varied. Specif-ically, p is first fixed as p = 5, and λ is selected from λ ∈ { 10 −3, 10 −2, 10 −1, 1, 10 , 100 }.Then, λ is fixed as λ = 0 .01, and p is selected from p ∈ { 3, 5, 7, 9, 11 }. In both experiments, the factorization rank is tested over l ∈ { 5, 10 , 15 , 20 , 25 }.Figure 2 shows the recognition rates obtained by GNRBMF under different values of λ when p = 5. Each panel corresponds to one factorization rank.                
+
+> 10 -3 10 -2 10 -1 110 100
+> 45 50 55 60 65 70 75 80
+> Recognition rate (%)
+> Asirra
+> CASIA-FaceV5
+> KDEF
+> 10 -3 10 -2 10 -1 110 100
+> 50 60 70 80 90 100
+> Recognition rate (%)
+> Asirra
+> CASIA-FaceV5
+> KDEF
+> 10 -3 10 -2 10 -1 110 100
+> 40 50 60 70 80 90 100
+> Recognition rate (%)
+> Asirra
+> CASIA-FaceV5
+> KDEF
+
+(a) l = 5 (b) l = 10 (c) l = 15           
+
+> 10 -3 10 -2 10 -1 110 100
+> 40 50 60 70 80 90 100
+> Recognition rate (%)
+> Asirra
+> CASIA-FaceV5
+> KDEF
+> 10 -3 10 -2 10 -1 110 100
+> 50 60 70 80 90 100
+> Recognition rate (%)
+> Asirra
+> CASIA-FaceV5
+> KDEF
+
+(d) l = 20 (e) l = 25 
+
+Fig. 2 Recognition rates of GNRBMF with respect to λ under p = 5. 
+
+As shown in Fig. 2, the influence of λ varies across different datasets and factoriza-tion ranks. On CASIA-FaceV5, the recognition performance is relatively stable when 
+
+λ takes small or moderate values. However, the performance decreases obviously when 
+
+λ becomes too large, especially when λ = 100. This indicates that an excessively large graph regularization weight may overemphasize the local smoothness of the coefficient representation and weaken the discriminative differences among samples. On KDEF and Asirra, the recognition rates are relatively stable over the tested range of λ. Although small fluctuations can still be observed under different ranks, no severe performance degradation appears in most cases. This suggests that the graph regularization term can provide useful local structure information within a relatively broad parameter range. Overall, a small-to-moderate value of λ is more suitable for balancing the reconstruction term and the graph regularization term. Therefore, λ =0.01 is used as a representative value in the following p-sensitivity experiment. 21 Figure 3 shows the recognition rates obtained by GNRBMF under different values of p when λ = 0 .01. Each panel corresponds to one factorization rank.             
+
+> 357911
+> p
+> 50 55 60 65 70 75 80
+> Recognition rate (%)
+> Asirra
+> CASIA-FaceV5
+> KDEF
+> 357911
+> p
+> 65 70 75 80 85 90 95
+> Recognition rate (%)
+> Asirra
+> CASIA-FaceV5
+> KDEF
+> 357911
+> p
+> 70 75 80 85 90 95
+> Recognition rate (%)
+> Asirra
+> CASIA-FaceV5
+> KDEF
+
+(a) l = 5 (b) l = 10 (c) l = 15         
+
+> 357911
+> p
+> 70 75 80 85 90 95
+> Recognition rate (%)
+> Asirra
+> CASIA-FaceV5
+> KDEF
+> 357911
+> p
+> 65 70 75 80 85 90 95
+> Recognition rate (%)
+> Asirra
+> CASIA-FaceV5
+> KDEF
+
+(d) l = 20 (e) l = 25 
+
+Fig. 3 Recognition rates of GNRBMF with respect to p under λ = 0 .01. 
+
+Compared with λ, the recognition performance is generally less sensitive to p, as shown in Fig. 3. Across the five factorization ranks, no obvious performance collapse is observed when p changes within the tested range. This indicates that GNRBMF is relatively robust to the choice of neighborhood size once a reasonable nearest-neighbor graph has been constructed. In summary, the parameter sensitivity experiments show that λ has a more notice-able influence on GNRBMF, especially when an excessively large value is used. In contrast, the influence of p is relatively moderate within the tested range. These results suggest that GNRBMF can maintain stable recognition performance under a reasonable graph parameter setting. 
+
+## 5.4 Convergence Behavior 
+
+To examine the numerical convergence behavior of the proposed algorithm, the objec-tive value of GNRBMF is recorded with respect to the number of iterations on the three datasets. In this experiment, the factorization rank is fixed as l = 15, the regu-larization parameter is set to λ = 0 .01, and the number of nearest neighbors is set to 
+
+p = 5. At the t-th iteration, the objective value is calculated as 
+
+F (t) = F ( ¨W t, ¨H t),
+
+22 where F is defined in ( ?? ). Therefore, F (t) contains both the reconstruction error term and the graph regularization term. For better visualization, the objective values are displayed in scientific notation when their magnitudes are large.                
+
+> 50 100 150 200 250 300
+> Iterations
+> 34567
+> Objective function value
+> 10 4
+> 50 100 150 200 250 300
+> Iterations
+> 11.2 1.4 1.6 1.8 2
+> Objective function value
+> 10 5
+> 50 100 150 200 250 300
+> Iterations
+> 0.5 11.5 2
+> Objective function value
+> 10 5
+
+(a) CASIA-FaceV5 (b) KDEF (c) Asirra  
+
+> Fig. 4 Objective value versus iterations of GNRBMF on the three datasets.
+
+As shown in Fig. 4, the objective values decrease rapidly during the first several iterations and then gradually approach stable values on all three datasets. This conver-gence trend indicates that the proposed iterative algorithm can effectively reduce the objective function during optimization. Similar decreasing patterns can be observed on CASIA-FaceV5, KDEF, and Asirra, which suggests that the optimization proce-dure is numerically stable for different types of color image data. These empirical observations are consistent with the convergence analysis given in Section 4.
+
+# 6 Conclusion 
+
+In this paper, we proposed a graph regularized non-negative reduced biquaternion matrix factorization model for color image recognition. By adding a graph Laplacian regularizer to the structured RB coefficient matrix, the proposed model preserves the non-negativity-preserving factorization structure of NRBMF while incorporating local geometric information into the learned low-dimensional representations. To solve the resulting constrained optimization problem, we developed an alter-nating projected gradient algorithm with Armijo backtracking line search. The optimization procedure was derived in component form, which is consistent with the algebraic structure of reduced biquaternions and the imposed non-negativity con-straints. The convergence analysis showed that the objective values generated by the proposed algorithm are nonincreasing and convergent. Moreover, if the generated sequence converges, then its limit point is a stationary point of the proposed GNRBMF optimization problem. Experiments on CASIA-FaceV5, KDEF, and Asirra demonstrated the effective-ness of GNRBMF. Compared with NRBMF and several real-valued, quaternion-based, and reduced-biquaternion-based methods, the proposed method achieved competi-tive or superior recognition performance on most tested settings. The results confirm that graph regularization can improve the discriminative ability of the learned RB coefficients, while the parameter sensitivity and convergence experiments further demonstrate the stability of the proposed method. 23 In our ongoing work, we have further investigated multiple-graph and auto-weighted graph regularization within the proposed framework. Such extensions may improve robustness by combining complementary neighborhood structures and reduc-ing the dependence on a specific graph construction strategy. In addition, we will investigate more efficient optimization algorithms and apply the proposed model to broader color image analysis tasks. 
+
+# References 
+
+[1] Lu, Z., Jiang, X.D., Kot, A.C.: Color space construction by optimizing luminance and chrominance components for face recognition. Pattern Recognition 83, 456– 468 (2018). https://doi.org/10.1016/j.patcog.2018.06.015 
+
+[2] Ashikuzzaman, M., Belasso, C.J., Kibria, M.G., Bergdahl, A., Gauthier, C.J., Rivaz, H.: Low rank and sparse decomposition of ultrasound color flow images for suppressing clutter in real-time. IEEE Transactions on Medical Imaging 39(4), 1073–1084 (2020). https://doi.org/10.1109/TMI.2019.2941865 
+
+[3] Kior, A., Yudina, L., Zolin, Y., Sukhov, V., Sukhova, E.: RGB imaging as a tool for remote sensing of characteristics of terrestrial plants: A review. Plants 13(9), Article 1262 (2024). https://doi.org/10.3390/plants13091262 
+
+[4] Cui, K., Boev, A., Alshina, E., Steinbach, E.G.: Color image restora-tion exploiting inter-channel correlation with a 3-stage CNN. IEEE Jour-nal of Selected Topics in Signal Processing 15(2), 174–189 (2021). 
+
+https://doi.org/10.1109/JSTSP.2020.3043148 
+
+[5] Lee, D.D., Seung, H.S.: Learning the parts of objects by non-negative matrix factorization. Nature 401, 788–791 (1999). https://doi.org/10.1038/44565 
+
+[6] Lee, D.D., Seung, H.S.: Algorithms for non-negative matrix factorization. In: Advances in Neural Information Processing Systems, vol. 13, 556–562 (2000) [7] Guillamet, D., Vitri` a, J.: Non-negative matrix factorization for face recog-nition. In: Escrig, M.T., Toledo, F., Golobardes, E. (eds.) Topics in Arti-ficial Intelligence, 5th Catalonian Conference on AI, CCIA 2002, Lecture Notes in Computer Science, vol. 2504, 336–344. Springer, Berlin (2002). 
+
+https://doi.org/10.1007/3-540-36079-4 29 
+
+[8] Wang, Y., Jia, Y.D., Hu, C.B., Turk, M.: Non-negative matrix fac-torization framework for face recognition. International Journal of Pattern Recognition and Artificial Intelligence 19(4), 495–511 (2005). 
+
+https://doi.org/10.1142/S0218001405004198 
+
+[9] Chen, W.-S., Ge, X.Y., Pan, B.B.: A novel general kernel-based non-negative matrix factorisation approach for face recognition. Connection Science 34(1), 785– 810 (2022). https://doi.org/10.1080/09540091.2021.1988904 
+
+24 [10] Xu, Y., Yu, L.C., Xu, H.T., Zhang, H., Nguyen, T.Q.: Vector sparse representation of color image using quaternion matrix analysis. IEEE Transactions on Image Processing 24(4), 1315–1329 (2015). https://doi.org/10.1109/TIP.2015.2397314 
+
+[11] Hamilton, W.R.: Elements of Quaternions. Edited by W.E. Hamilton. Longmans, Green, and Co., London (1866) [12] Zou, C.M., Kou, K.I., Wang, Y.L.: Quaternion collaborative and sparse repre-sentation with application to color face recognition. IEEE Transactions on Image Processing 25(7), 3287–3302 (2016). https://doi.org/10.1109/TIP.2016.2567077 
+
+[13] Yu, Y.B., Zhang, Y.L., Yuan, S.F.: Quaternion-based weighted nuclear norm minimization for color image denoising. Neurocomputing 332, 283–297 (2019). 
+
+https://doi.org/10.1016/j.neucom.2018.12.034 
+
+[14] Chen, Y.Y., Xiao, X.L., Zhou, Y.C.: Low-rank quaternion approximation for color image processing. IEEE Transactions on Image Processing 29, 1426–1439 (2020). 
+
+https://doi.org/10.1109/TIP.2019.2941319 
+
+[15] Miao, J.F., Kou, K.I.: Quaternion-based bilinear factor matrix norm minimization for color image inpainting. IEEE Transactions on Signal Processing 68, 5617–5631 (2020). https://doi.org/10.1109/TSP.2020.3025519 
+
+[16] Ke, Y.F., Ma, C.F., Jia, Z.G., Xie, Y.J., Liao, R.W.: Quasi non-negative quaternion matrix factorization with application to color face recognition. Journal of Scientific Computing 95, Article 38 (2023). 
+
+https://doi.org/10.1007/s10915-023-02157-x 
+
+[17] Miao, J.F., Pan, J.J., Ng, M.K.: Non-negative reduced biquaternion matrix factorization with applications in color face recognition. arXiv preprint arXiv:2408.05582v2 (2025). https://doi.org/10.48550/arXiv.2408.05582 
+
+[18] Sch¨ utte, H.-D., Wenzel, J.: Hypercomplex numbers in digital signal process-ing. In: Proceedings of the 1990 IEEE International Symposium on Cir-cuits and Systems (ISCAS), vol. 2, 1557–1560. IEEE, New Orleans (1990). 
+
+https://doi.org/10.1109/ISCAS.1990.112431 
+
+[19] Dimitrov, V.S., Cooklev, T.V., Donevsky, B.D.: On the multiplication of reduced biquaternions and applications. Information Processing Letters 43(3), 161–164 (1992). https://doi.org/10.1016/0020-0190(92)90009-K 
+
+[20] Pei, S.-C., Chang, J.-H., Ding, J.-J.: Commutative reduced biquaternions and their Fourier transform for signal and image processing applica-tions. IEEE Transactions on Signal Processing 52(7), 2012–2031 (2004). 
+
+https://doi.org/10.1109/TSP.2004.828901 
+
+25 [21] Pei, S.-C., Chang, J.-H., Ding, J.-J., Chen, M.-Y.: Eigenvalues and singu-lar value decompositions of reduced biquaternion matrices. IEEE Transac-tions on Circuits and Systems I: Regular Papers 55(9), 2673–2685 (2008). 
+
+https://doi.org/10.1109/TCSI.2008.920068 
+
+[22] El-Melegy, M.T., Kamal, A.T.: Linear regression classification in the quaternion and reduced biquaternion domains. IEEE Signal Processing Letters 29, 469–473 (2022). https://doi.org/10.1109/LSP.2022.3140682 
+
+[23] Cai, D., He, X.F., Han, J.W., Huang, T.S.: Graph regularized non-negative matrix factorization for data representation. IEEE Transactions on Pattern Analysis and Machine Intelligence 33(8), 1548–1560 (2011). 
+
+https://doi.org/10.1109/TPAMI.2010.231 
+
+[24] Qiu, Y.N., Zhou, G.X., Zhang, Y., Xie, S.L.: Graph regularized nonneg-ative Tucker decomposition for tensor data representation. In: Proceed-ings of the 2019 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 8613–8617. IEEE, Brighton (2019). 
+
+https://doi.org/10.1109/ICASSP.2019.8683766 
+
+[25] Qiu, Y.N., Zhou, G.X., Wang, Y.J., Zhang, Y., Xie, S.L.: A generalized graph regularized non-negative Tucker decomposition framework for tensor data representation. IEEE Transactions on Cybernetics 52(1), 594–607 (2022). 
+
+https://doi.org/10.1109/TCYB.2020.2979344 
+
+[26] Liu, G.M., Zhao, R.J., Zheng, B., Yang, F.Y.: Auto-weighted mul-tiple graph regularized non-negative tensor Tucker decomposition for clustering. Journal of Scientific Computing 102, Article 86 (2025). 
+
+https://doi.org/10.1007/s10915-025-02817-0 
+
+[27] Lin, C.-J.: Projected gradient methods for nonnegative matrix factorization. Neural Computation 19(10), 2756–2779 (2007). 
+
+https://doi.org/10.1162/neco.2007.19.10.2756 
+
+[28] Liu, W.K., Kou, K.I., Miao, J.F., Cai, Z.F.: Quaternion scalar and vector norm decomposition: Quaternion PCA for color face recognition. IEEE Transactions on Image Processing 32, 446–457 (2023). https://doi.org/10.1109/TIP.2022.3229616 
+
+26
