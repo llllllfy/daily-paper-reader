@@ -1,0 +1,59 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-07T21:08:02.400811+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2606.03976v1",
+      "source": "arxiv",
+      "title": "Formalizing the Binding Problem",
+      "abstract": "Representations of the world, arguably, contain information about features (e.g. something is blue, something is a circle) but also information about which features are part of the same object (e.g. the circle is blue), which we call binding information. Any system with the ability to understand scenes with multiple objects must be able to solve the binding problem: it needs to know which features belong together. However, despite work showing that Vision Transformers (ViTs) know which patches belong together, it is not known whether current deep learning models learn to exhibit binding information, i.e., for features. We may believe that there is not much binding information, after all misattributing features to wrong objects is a common failure of ViT-based architectures, especially in scenes with objects sharing features. Here we formalize the binding problem with an information-theoretic approach, and introduce a probing method to measure binding information in model representations. We perform experiments on ViTs, measuring binding from different components of the architecture, such as the image summary token [CLS] or the spatial tokens. We use datasets with different binding challenges, such as feature sharing, occlusion, and natural features, while comparing the performance of several pre-trained ViTs. Overall, our research demonstrates binding as a key ingredient to strong visual recognition and reasoning.",
+      "authors": [
+        "Lianghuan Huang",
+        "Yihao Li",
+        "Saeed Salehi",
+        "Yingshan Chang",
+        "Ansh Soni",
+        "Konrad P. Kording"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.LG",
+        "q-bio.NC"
+      ],
+      "published": "2026-06-02T17:56:24+00:00",
+      "link": "https://arxiv.org/pdf/2606.03976v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "explicitly studies how models bind color and shape features, addressing disentanglement",
+      "llm_evidence_cn": "明确研究模型如何绑定颜色和形状特征，涉及解耦问题",
+      "llm_evidence": "明确研究模型如何绑定颜色和形状特征，涉及解耦问题",
+      "canonical_evidence": "明确研究模型如何绑定颜色和形状特征，涉及解耦问题",
+      "llm_tldr_en": "This paper formalizes the binding problem in neural representations, investigating whether vision transformers learn to correctly bind features like color and shape to objects, directly addressing the challenge of disentangling color and shape information.",
+      "llm_tldr_cn": "深度学习模型处理多物体场景时需解决绑定问题，即正确关联颜色与形状等特征。本文形式化定义绑定信息，检验视觉Transformer是否习得特征绑定能力，发现模型常将特征错误赋予物体，导致颜色-形状解耦失败。该工作为理解和改善特征解耦提供了理论框架与分析工具，对研究颜色与形状分离具有直接意义。",
+      "llm_tldr": "深度学习模型处理多物体场景时需解决绑定问题，即正确关联颜色与形状等特征。本文形式化定义绑定信息，检验视觉Transformer是否习得特征绑定能力，发现模型常将特征错误赋予物体，导致颜色-形状解耦失败。该工作为理解和改善特征解耦提供了理论框架与分析工具，对研究颜色与形状分离具有直接意义。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}

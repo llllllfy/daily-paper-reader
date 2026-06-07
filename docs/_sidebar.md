@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-06-07 <!--dpr-date:20260607-->
+    * 精读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202606/07/2606.03976v1-formalizing-the-binding-problem" data-sidebar-item="{&quot;title&quot;: &quot;Formalizing the Binding Problem&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2606.03976v1-formalizing-the-binding-problem&quot;, &quot;score&quot;: &quot;9.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;明确研究模型如何绑定颜色和形状特征，涉及解耦问题&quot;}">Formalizing the Binding Problem</a>
   * 2026-06-06 <!--dpr-date:20260606-->
     * 速读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202606/06/2606.04310v1-latent-anchor-driven-test-generation-for-deep-neural-networks" data-sidebar-item="{&quot;title&quot;: &quot;Latent Anchor-Driven Test Generation for Deep Neural Networks&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2606.04310v1-latent-anchor-driven-test-generation-for-deep-neural-networks&quot;, &quot;score&quot;: &quot;7.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;利用VQ-VAE潜在空间锚定并生成测试输入，对潜在空间进行干预&quot;}">Latent Anchor-Driven Test Generation for Deep Neural Networks</a>
