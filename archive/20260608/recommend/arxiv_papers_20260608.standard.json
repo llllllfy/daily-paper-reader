@@ -1,0 +1,174 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-08T21:26:41.286873+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2606.05652v1",
+      "source": "arxiv",
+      "title": "CoFi-UCGen: Coarse-to-Fine Unsupervised Conditional Generation without Label Priors",
+      "abstract": "Unsupervised conditional image generation (UCGen) aims to control generation without relying on manually annotated labels, yet remains challenging due to unstructured semantic representations across granularities. To address this, we propose a novel coarse-to-fine UCGen framework (CoFi-UCGen) that explicitly disentangles global semantics from fine-grained variations, which to the best of our knowledge, sets out the first successful attempt for both coarse- and fine-grained conditional generation without any labels. More specifically, we first propose the adversarial semantic reciprocal learning theory to ensure the semantic consistency and completeness between images and latent spaces. Based on the consistency, we propose the bit-codes to learn a structured coarse-grained latent space, and further prove distinct global semantics inherent from our bit-codes while preserving independent noise sampling for generation. Building upon these bit-codes, we establish a fine-grained semantic basis and introduce a hierarchical modulation mechanism in diffusion models, by enabling layer-wise injection from coarse conditions to progressively control fine-grained attributes during generation. Extensive experiments demonstrate that without any label priors or pre-trained feature extractors, our CoFi-UCGen consistently outperforms existing UCGen methods in terms of image quality, semantic consistency, and control accuracy, verifying the effectiveness of explicit coarse-to-fine semantic decomposition for the challenging UCGen task.",
+      "authors": [
+        "Shengxi Li",
+        "Zhaokun Hu",
+        "Ce Zheng",
+        "Mai Xu",
+        "Jingyuan Xia",
+        "Si Liu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-04T03:29:29+00:00",
+      "link": "https://arxiv.org/pdf/2606.05652v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Intervenes in latent space with bit-codes for conditional generation, ensuring semantic consistency",
+      "llm_evidence_cn": "利用比特码在潜在空间进行干预以实现条件生成，确保语义一致性",
+      "llm_evidence": "利用比特码在潜在空间进行干预以实现条件生成，确保语义一致性",
+      "canonical_evidence": "利用比特码在潜在空间进行干预以实现条件生成，确保语义一致性",
+      "llm_tldr_en": "Proposes CoFi-UCGen, a framework that disentangles global semantics from fine-grained variations and uses bit-codes for latent space intervention, enabling unsupervised conditional generation without labels for the first time.",
+      "llm_tldr_cn": "针对无监督条件生成中语义表示混乱的难题，提出从粗到细框架CoFi-UCGen，通过对抗语义互学习确保语义一致性，并利用比特码在隐空间进行干预，首次实现无标签下的粗、细粒度条件生成，为可控图像生成提供了新思路。",
+      "llm_tldr": "针对无监督条件生成中语义表示混乱的难题，提出从粗到细框架CoFi-UCGen，通过对抗语义互学习确保语义一致性，并利用比特码在隐空间进行干预，首次实现无标签下的粗、细粒度条件生成，为可控图像生成提供了新思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.07451v1",
+      "source": "arxiv",
+      "title": "TEVI: Text-Conditioned Editing of Visual Representations via Sparse Autoencoders for Improved Vision-Language Alignment",
+      "abstract": "Vision-language models such as CLIP are highly useful for diverse tasks due to their shared image-text embedding space. Despite this, the image and text embeddings are often poorly aligned, affecting downstream performance. Recent work has shown that this can be attributed to an information imbalance: images contain more information than their captions describe. In this work, we propose TEVI, a framework that uses captions as a signal for what to retain from image embeddings. Specifically, we use sparse autoencoders to disentangle image embeddings and train a masking module to selectively reconstruct the embedding based on a given caption. In a controlled setup with synthetic captions, we show that TEVI is effective at preserving caption-described attributes while discarding others. By applying TEVI to CLIP models trained on natural images, we further achieve improved retrieval performance across coarse-grained short-caption (MS COCO, Flickr) and fine-grained long-caption (IIW, DOCCI) benchmarks, with stronger gains on richer captions, and improved robustness on the RoCOCO benchmark.",
+      "authors": [
+        "Sweta Mahajan",
+        "Sukrut Rao",
+        "Jiahao Xie",
+        "Alexander Koller",
+        "Bernt Schiele"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "published": "2026-06-05T16:54:40+00:00",
+      "link": "https://arxiv.org/pdf/2606.07451v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Edits image embeddings using text-conditioned sparse autoencoders, providing a method for targeted feature manipulation that could be used to decouple color from semantic content.",
+      "llm_evidence_cn": "使用文本条件的稀疏自编码器编辑图像嵌入，提供了一种可针对性操作特征的方法，可用于解耦颜色与语义内容。",
+      "llm_evidence": "使用文本条件的稀疏自编码器编辑图像嵌入，提供了一种可针对性操作特征的方法，可用于解耦颜色与语义内容。",
+      "canonical_evidence": "使用文本条件的稀疏自编码器编辑图像嵌入，提供了一种可针对性操作特征的方法，可用于解耦颜色与语义内容。",
+      "llm_tldr_en": "TEVI uses sparse autoencoders to disentangle image embeddings and trains a masking module to select relevant features based on a caption, enabling controlled editing of visual representations. This technique can be adapted to remove color information while retaining semantic meaning for robustness.",
+      "llm_tldr_cn": "本文针对视觉-语言模型中图像与文本嵌入不对齐的问题，提出TEVI框架，利用稀疏自编码器解耦图像嵌入，并训练掩码模块根据文本描述选择性重建特征。这种方法实现了对视觉表示的可控编辑，能够仅保留与文本相关的语义信息。该特征编辑技术可迁移至颜色鲁棒性，通过特定文本信号剔除颜色分量，从而在颜色变化下保持语义一致性。",
+      "llm_tldr": "本文针对视觉-语言模型中图像与文本嵌入不对齐的问题，提出TEVI框架，利用稀疏自编码器解耦图像嵌入，并训练掩码模块根据文本描述选择性重建特征。这种方法实现了对视觉表示的可控编辑，能够仅保留与文本相关的语义信息。该特征编辑技术可迁移至颜色鲁棒性，通过特定文本信号剔除颜色分量，从而在颜色变化下保持语义一致性。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "methods to edit feature representations to make models robust to color changes",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.05255v1",
+      "source": "arxiv",
+      "title": "Oklch+: A Three-Parameter Extension of Oklab for Improved Color Difference Prediction",
+      "abstract": "Oklab and its cylindrical representation Oklch are widely adopted in interpolation and design workflows as perceptually motivated color spaces, but their color difference prediction accuracy falls short of CIEDE2000. We propose Oklch+, a three-parameter extension of Oklab comprising a power transformation on the L-axis and a Naka-Rushton compression on the C-axis, with Euclidean distance computed in the resulting transformed Oklab coordinates. The Naka-Rushton function is bounded in [0,1], reflecting the saturating nature of chroma sensitivity at high colorimetric values. Evaluated on COMBVD -- 3,813 suprathreshold color difference pairs spanning six independent experimental datasets -- Oklch+ achieves STRESS = 29.09, closely matching CIEDE2000 (29.13; difference = 0.04), using only three parameters optimized against color difference data compared to approximately 17 for CIEDE2000. Cross-validation on a held-out BFD-P D65 subset (2,028 pairs) confirms generalization (STRESS = 26.14), with Oklch+ substantially outperforming Oklab (51.45) and achieving STRESS comparable to CIEDE2000 (24.12) on the held-out set. Improvement over Oklab (47.35) is confirmed across all six COMBVD sub-datasets. Because Oklch+ defines a coordinate system in which Euclidean distance approximates perceptual distance, linear interpolation in the transformed space offers substantially improved perceptual uniformity relative to Oklab. Current evaluation is limited to the sRGB-centered COMBVD dataset; validation in high-chroma regions with empirical observer-rated discrimination data remains future work.",
+      "authors": [
+        "Naoyuki Uchida"
+      ],
+      "primary_category": "eess.IV",
+      "categories": [
+        "eess.IV",
+        "cs.CV",
+        "cs.GR"
+      ],
+      "published": "2026-06-03T15:43:24+00:00",
+      "link": "https://arxiv.org/pdf/2606.05255v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Develops a perceptually accurate color difference metric that can be used to design minimal-perceptible adversarial color perturbations.",
+      "llm_evidence_cn": "提出了一种感知准确的色差度量，可用于设计难以察觉的对抗性颜色扰动。",
+      "llm_evidence": "提出了一种感知准确的色差度量，可用于设计难以察觉的对抗性颜色扰动。",
+      "canonical_evidence": "提出了一种感知准确的色差度量，可用于设计难以察觉的对抗性颜色扰动。",
+      "llm_tldr_en": "This paper proposes Oklch+, a three-parameter extension of Oklab that closely matches CIEDE2000 in color difference prediction accuracy. This metric is valuable for creating subtle adversarial color changes that preserve semantic meaning while attacking models.",
+      "llm_tldr_cn": "本文针对Oklab色彩空间色差预测精度不足的问题，提出Oklch+扩展，引入亮度轴幂变换和色度轴Naka-Rushton压缩，使色差预测力大幅提升至接近CIEDE2000的水平。该高精度色差度量可指导对抗性颜色攻击中难以察觉的扰动方向，确保在保持语义不变的前提下进行稳健性测试，对视觉模型颜色鲁棒性研究具有重要工具价值。",
+      "llm_tldr": "本文针对Oklab色彩空间色差预测精度不足的问题，提出Oklch+扩展，引入亮度轴幂变换和色度轴Naka-Rushton压缩，使色差预测力大幅提升至接近CIEDE2000的水平。该高精度色差度量可指导对抗性颜色攻击中难以察觉的扰动方向，确保在保持语义不变的前提下进行稳健性测试，对视觉模型颜色鲁棒性研究具有重要工具价值。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "Adversarial color perturbations and their effect on semantic robustness",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.06899v1",
+      "source": "arxiv",
+      "title": "Lighting-Aware Representation Learning under Controllable Lighting Variation",
+      "abstract": "Variations in illumination remain a major challenge for visual representation learning, as they induce substantial appearance changes both across and within environments. While existing approaches typically address this issue through data augmentations that encourage models to become invariant to lighting changes, such strategies do not explicitly model lighting information during learning. Inspired by theories of human vision, we propose a lighting-aware representation learning framework that incorporates illumination variation as an explicit training signal rather than a nuisance factor to be suppressed. Our method extends contrastive learning by introducing an auxiliary objective that captures illumination-dependent variation in rendered scenes, enabling the model to jointly learn representations that preserve semantic consistency while remaining sensitive to lighting-dependent visual structure. We evaluate the proposed model on image classification and object detection tasks across the ImageNet, ExDark, and PASCAL VOC benchmarks. Results demonstrate that the proposed lighting-aware training consistently improves downstream performance over standard contrastive learning baselines, while maintaining the same architecture and training budget. Furthermore, our approach shows promising performance in supervised learning frameworks and under settings involving simpler lighting variation, suggesting broad applicability beyond complex illumination scenarios. These results indicate its potential to enhance model robustness and adaptability in complex visual environments as well as in more conventional image processing tasks.",
+      "authors": [
+        "Lizhen Zhu",
+        "Charantej Reddy Pochimireddy",
+        "James Z Wang",
+        "Brad Wyble"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-06-05T04:31:32+00:00",
+      "link": "https://arxiv.org/pdf/2606.06899v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "learns lighting-aware representations that preserve semantics under illumination variation",
+      "llm_evidence_cn": "学习光照感知表征，在光照变化下保持语义",
+      "llm_evidence": "学习光照感知表征，在光照变化下保持语义",
+      "canonical_evidence": "学习光照感知表征，在光照变化下保持语义",
+      "llm_tldr_en": "Proposes a contrastive learning framework with an auxiliary objective to model illumination variation explicitly, improving robustness to lighting changes.",
+      "llm_tldr_cn": "针对光照变化对视觉表征学习的干扰，现有数据增强方法未显式建模光照信息的问题，本文提出光照感知表征学习框架，在对比学习中引入辅助目标，捕获渲染场景中与光照相关的变化。实验表明，该方法学到的表征对光照变化更加鲁棒，为在可变光照下保持语义一致性提供了新思路。",
+      "llm_tldr": "针对光照变化对视觉表征学习的干扰，现有数据增强方法未显式建模光照信息的问题，本文提出光照感知表征学习框架，在对比学习中引入辅助目标，捕获渲染场景中与光照相关的变化。实验表明，该方法学到的表征对光照变化更加鲁棒，为在可变光照下保持语义一致性提供了新思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
