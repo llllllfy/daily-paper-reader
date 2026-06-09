@@ -1,0 +1,1144 @@
+Title: Adaptive Causal Alignment for High-Confidence Adversarial Training
+
+URL Source: https://arxiv.org/pdf/2606.03925v1
+
+Published Time: Wed, 03 Jun 2026 01:37:44 GMT
+
+Number of Pages: 22
+
+Markdown Content:
+# Adaptive Causal Alignment for High-Confidence Adversarial Training 
+
+Zhiming Luo † · Kejia Zhang † · Yingxin Lai · Junwei Wu · Juanjuan Weng ∗ · Shaozi Li Abstract Inverse adversarial training leverages high-confidence predictions to stabilize robust learning, yet we uncover a critical paradox: high confidence often stems from overfitting to non-causal background correlations rather than intrinsic object semantics. Our investigation reveals that visual context functions as a dual-natured signal, serving as either a necessary supportive prior or a spurious confounder. This insight renders existing blind suppression strategies flawed, as they inevitably lead to severe Feature Loss. To resolve this, we propose High-Confidence Causally Aligned Training (HICAT), a uni-fied framework that establishes a Semantic Equilibrium. Operating on a “Measure-Debias-Align” pipeline, HI-CAT integrates a Learnable Background-Bias Estimator 
+
+Zhiming Luo † (Equal contribution) Department of Artificial Intelligence, Xiamen University, Xia-men, China E-mail: zhiming.luo@xmu.edu.cn Kejia Zhang † (Equal contribution) Department of Artificial Intelligence, Xiamen University, Xia-men, China E-mail: Kejiaz171@gmail.com Yingxin Lai Department of Artificial Intelligence, Xiamen University, Xia-men, China E-mail: laiyingxin2@gmail.com Junwei Wu Department of Computer Science, Emory University, GA, USA E-mail: junwei.wu@emory.edu Juanjuan Weng (Corresponding author) College of Information Science and Technology, Jinan Univer-sity, Guangzhou, China E-mail: wengjj@jnu.edu.cn Shaozi Li Department of Artificial Intelligence, Xiamen University, Xia-men, China E-mail: szlig@xmu.edu.cn 
+
+(LBBE) to adaptively diagnose context utility. Guided by this diagnosis, an Adaptive Debiasing mechanism performs surgical logit rectification, complemented by a geometrically grounded Foreground Logit Orthogonal Enhancement (FLOE) loss to enforce rigorous feature disentanglement. Extensive experiments on CIFAR-10, CIFAR-100, and ImageNet-1K demonstrate that HICAT consistently improves over matched baselines across di-verse architectures (CNNs and ViTs) while significantly reducing the robust generalization gap. 
+
+Keywords Adversarial Robustness · Adversarial Training · Causal Alignment · Spurious Correlations 
+
+1 Introduction 
+
+Deep neural networks (DNNs) have achieved remarkable success in visual recognition (Butt et al, 2025; Zhang et al, 2025a; Zhu et al, 2026; Bai et al, 2026; Wang et al, 2026) yet remain highly vulnerable to imperceptible adversarial perturbations (Szegedy et al, 2014; Fawzi et al, 2018; Li et al, 2019). To address these security concerns, Adversarial Training (AT) has emerged as the most effective defense paradigm (Shafahi et al, 2019; Kuang et al, 2024). Building on this, numerous methods have been proposed to refine AT, aiming to enhance training stability, convergence, and robustness against stronger attacks (Li and Liu, 2023; Subramanian et al, 2024; Huang et al, 2023). To address the vulnerabilities inherent in standard DNN models, numerous advanced AT-based techniques have been proposed (Li and Liu, 2023; Subramanian et al, 2024; Huang et al, 2023; Li et al, 2024a). Promi-nent methods in this domain primarily focus on align-ing the distributions of adversarial examples with their corresponding true classes, thereby improving classifica-tion accuracy under adversarial attacks. For instance, 
+
+> arXiv:2606.03925v1 [cs.CV] 2 Jun 2026
+
+2 Zhiming Luo † et al. normal attention natural       
+
+> attack
+> inverse
+> attack
+> (a) (b) 0200 400 600 800 1000
+> ImageNet Classes (Sorted by Context Dependency)
+> 10
+> 0
+> 10
+> 20
+> 30
+> Accuracy (Full - FG Only) [%]
+> Speedboat
+> (Water Context)
+> Alp/Valley
+> (Geo-Prior)
+> Parachute
+> (Sky Context)
+> Keyboard
+> (Indoor)
+> Pug/Terrier
+> (Conflicting)
+> (c)
+
+Fig. 1 The Dilemma of Contextual Dependence. (a) Biased Activation: Grad-CAM visualizations comparing feature activation under adversarial and inverse adversarial attacks. We observe that inverse attacks amplify model confidence but systematically shift attention from the foreground to the background. (b) Background Alignment: Quantitative analysis of the Intersection over Union (IoU) with background regions. The negative ϵ denotes the strength of inverse adversarial perturbations. As the inverse strength ( |ϵ|) increases, the UIAT model exhibits a disproportionate increase in background alignment compared to standard AT. (c) Context Dependency Spectrum: We quantify the impact of context by measuring the accuracy drop ( ∆Acc ) on ImageNet classes after removing backgrounds using SAM masks. The results reveal a clear heterogeneity: classes on the left rely on supportive context (large drop), while those on the right are dominated by spurious context (low or negative drop). 
+
+MART (Wang et al, 2020b) and TRADES (Zhang et al, 2019) aim to align the logits of adversarial examples with their corresponding natural examples to promote prediction consistency. Building upon this foundation, methods such as UIAT (Dong et al, 2023) and ACR (Cho et al, 2023) further extend the alignment strategy by generating inverse adversarial examples (Salman et al, 2021). These inverse examples typically exhibit higher confidence than natural samples, mitigating the influ-ence of misclassified natural data and guiding adversarial alignment toward correct, high-confidence regions. Upon further investigation, we identify a critical lim-itation in inverse adversarial training: high-confidence outputs often stem from biased feature activation .To rigorously validate this phenomenon, we conducted a 
+
+statistical analysis on a subset of ImageNet (Howard, 2019), using the Intersection over Union (IoU) metric to measure the precise alignment between attention maps and true foreground/background regions. As visu-alized in Fig. 1 (a) and quantified in Fig. 1 (b), inverse adversarial attacks consistently shift model attention away from discriminative foregrounds toward irrelevant background cues. Specifically, the Inverse Adversarial Training (UIAT) model exhibits a substantial increase in background IoU compared to standard Adversarial Training (AT) (Dong et al, 2023). This implies that the model relies on background contextual shortcuts rather than intrinsic object features, a fundamental vulnerabil-ity we identified as spurious correlation bias (Zhang et al, 2025b). However, suppressing all background features intro-duces a substantial over-correction, as observed in our preliminary work DHAT (Zhang et al, 2025b). Back-ground context is not merely noise; it often provides a 
+
+supportive prior that is essential for robust reason-ing (Xiao et al, 2021). To quantify this duality, we sample 50 images for each ImageNet class (Russakovsky et al, 2015) and use SAM (Kirillov et al, 2023) to generate foreground masks. This creates a foreground-only set for measuring the accuracy drop ( ∆Acc ) after background removal. The resulting Background Context Dependency Spectrum in Fig. 1 (c) reveals: 
+
+– Supportive Background Context (Left Side): 
+
+A significant portion of classes experiences perfor-mance degradation when the background is removed. This indicates that even robust models rely on con-textual cues, and indiscriminate background suppres-sion in these instances leads to Semantic Degra-dation .
+
+– Spurious Background Context (Right Side): 
+
+Conversely, object-centric classes show a slight accu-racy drop or even accuracy gains after background removal. This indicates that, for these classes, back-ground information primarily manifests as Spurious Correlation Bias .This empirical evidence exposes a critical dilemma: preserving all background cues can cause overfitting, while removing them can cause information loss. Ad-dressing this challenge requires a change from “indis-criminate suppression” to Adaptive Modulation . We argue that genuine robustness should be founded on 
+
+Causal Alignment , a state that balances robust fore-ground extraction with the preservation of supportive contextual information. Adaptive Causal Alignment for High-Confidence Adversarial Training 3
+
+To achieve this, we extend our previous framework 
+
+DHAT (Zhang et al, 2025b) to High-Confidence Causally Aligned Training (HICAT) . HICAT incor-porates a Learnable Background-Bias Estimator (LBBE) to dynamically diagnose the directional influence of contextual features, effectively distinguishing between helpful priors and harmful biases. Informed by this di-agnosis, our Adaptive Debiasing mechanism performs targeted logit recalibration. This process suppresses spu-rious correlations while preserving supportive priors that align with object semantics. Extensive experiments on CIFAR and ImageNet benchmarks demonstrate that HI-CAT consistently outperforms matched baselines across diverse architectures (CNNs and ViTs), effectively recti-fying the semantic degradation caused by blind suppres-sion while minimizing the robust generalization gap. The main contributions of this work are as follows: 
+
+– Uncovering Contextual Duality in Adversar-ial Training. We reveal that in adversarial training, visual context plays a dual role: serving as a neces-sary supportive prior for some classes while acting as spurious correlation for others. This finding chal-lenges the premise of blind suppression strategies and necessitates an adaptive approach. 
+
+– HICAT Framework. We propose High-Confidence Causally Aligned Training (HICAT), which inte-grates a learnable estimator with adaptive logit debi-asing to reduce spurious correlations while preserving semantic cues. 
+
+– Strong Performance Under Matched Proto-cols. Under matched architectures, data settings, and training schedules, HICAT delivers the strongest robustness among the compared baselines on CIFAR and ImageNet benchmarks. Crucially, it breaks the conventional clean-robust trade-off, delivering im-provements in clean accuracy while enhancing ad-versarial robustness. Moreover, our method serves as an architecture-agnostic principle, generalizing ef-fectively across diverse backbones (CNNs and ViTs) with a significantly reduced generalization gap. 
+
+2 Related Work 
+
+2.1 Adversarial Attacks Deep neural networks (DNNs) are known to be highly sensitive to adversarial perturbations, where a visually imperceptible noise δ added to an input x can lead the model to produce an incorrect prediction (Dong et al, 2018; Song et al, 2024; Guo et al, 2019). This vulnerability has been observed in a range of real-world settings such as autonomous driving, biometric authen-tication, and open-world recognition (Hu et al, 2023; Yi et al, 2025; Huang et al, 2025; Feng et al, 2024), high-lighting the importance of understanding and defending against adversarial manipulation. Related security con-cerns also appear in generated-text watermarking, where semantic-invariant attacks change the surface form while preserving meaning (Ai and He, 2026). Formally, an adversarial example ˆx = x + δ is gener-ated by solving the constrained maximization: arg max  
+
+> ∥δ∥p≤ϵ
+
+Ladv (fθ (x + δ), y ) , (1) where ϵ bounds the perturbation under the p-norm and 
+
+Ladv denotes the attack objective. This framework has motivated a variety of attack strategies differing in opti-mization strength and computational cost. 
+
+Gradient-based attacks. The Fast Gradient Sign Method (FGSM) (Goodfellow et al, 2014) generates one-step adversaries by linearizing the loss around the input: ˆx = x + ϵ · sign( ∇xLadv (fθ (x), y )) . (2) To obtain stronger perturbations, Projected Gradi-ent Descent (PGD) (Madry et al, 2018) applies iterative FGSM updates followed by projection onto the feasible set: ˆxt+1 = ΠB(ϵ)
+
+h
+
+ˆxt + α · sign  ∇ˆxt Ladv (fθ (ˆ xt), y ) i
+
+, (3) where α is the step size and ΠB(ϵ) denotes projection onto the p-norm ball. The PGD is widely recognized as a universal first-order adversary and forms the foundation for most robustness evaluation setups. 
+
+Optimization-based attacks. The Carlini–Wagner (C&W) attack (Carlini and Wagner, 2017) formulates a principled optimization that jointly minimizes perturba-tion magnitude and enforces misclassification through a logit-margin penalty: min  
+
+> δ
+
+∥δ∥22 +c·max 
+
+
+
+Z(x+δ)y −max   
+
+> k̸=y
+
+Z(x+δ)k, −κ
+
+
+
+, (4) where Z(·) denotes the neural network logits, κ specifies the enforced misclassification margin, and c governs the strength of the penalty term. This formulation is capable of generating highly imperceptible and targeted adversarial examples. 
+
+Benchmark Attacks. AutoAttack (AA) (Croce and Hein, 2020b) has become the standard robustness eval-uation protocol due to its deterministic, parameter-free design and its use of multiple complementary attack components. By eliminating hyperparameter tuning and ensuring repeatability, AA provides a reliable robust-ness estimate and is now widely adopted as the default benchmark for assessing adversarial defenses. 4 Zhiming Luo † et al. 
+
+2.2 Adversarial Defense Adversarial defense seeks to enhance the robustness of deep neural networks against worst-case perturba-tions (Liao et al, 2018; Zhang et al, 2026; Sriramanan et al, 2020). Among existing approaches, adversarial training is regarded as the most reliable and widely used strategy because it incorporates adversarial exam-ples directly into the optimization process (Wang et al, 2024; Shrivastava et al, 2017; Zhang et al, 2025c). 
+
+Adversarial Training. Classical adversarial train-ing is commonly formulated as a min-max optimization problem (Wang et al, 2021) in which the inner maxi-mization identifies the most harmful perturbation within an ℓp ball and the outer minimization updates model parameters: min  
+
+> θ
+
+E(x,y )∼D 
+
+h
+
+max  
+
+> ∥δ∥p≤ϵ
+
+LAT 
+
+ fθ (x + δ), y i
+
+. (5) Here LAT denotes the adversarial-training objective used for the standard adversarial example, such as cross-entropy, TRADES, or MART. A variety of ex-tensions build upon this formulation. TRADES (Zhang et al, 2019) uses a clean–adversarial consistency reg-ularizer to balance standard accuracy and robustness. MART (Wang et al, 2020b) emphasizes misclassified examples through loss reweighting. Both methods use clean and adversarial branches, so they are useful refer-ences for computational-cost comparisons. Adversarial Weight Perturbation improves robustness by search-ing for parameter perturbations that enlarge the loss landscape (Wu et al, 2020). Feature Separation and Recalibration suppresses non-robust activations in the logit space (Kim et al, 2023). Class-wise calibrated ad-versarial training addresses robustness imbalance across categories through class-specific weighting (Wei et al, 2023). Self-guided logit refinement stabilizes the learn-ing trajectory by progressively refining soft label dis-tributions (Li et al, 2024b). Although these methods strengthen adversarial training from different perspec-tives, most of them implicitly assume that robustness is primarily governed by loss smoothness or feature qual-ity, while the influence of background information on robustness is seldom addressed. 
+
+Inverse Adversarial Training. Another line of re-search investigates the use of inverse adversarial exam-ples (Dong et al, 2023), which move the input toward regions of higher classifier confidence instead of adver-sarial directions. Given an input x and a confidence -driven objective C(·), an inverse adversarial example ˇx = x − δ is typically generated by solving: arg min  
+
+> ∥δ∥p≤ϵ
+
+C(fθ (x − δ), y ) . (6) This formulation has been widely adopted to align ad-versarial features with high - confidence semantic targets. Unlike prior inverse-example training that mainly uses ˇx
+
+as a high-confidence anchor (Dong et al, 2023), HICAT keeps the full inverse-example supervision signal and debiases it with a sample-wise background estimate. However, recent studies highlight a critical vulnera-bility in this paradigm: high - confidence outputs often stem from spurious correlations rather than robust se-mantic features (Maheronnaghsh and Alvanagh, 2024; Varma et al, 2024). DHAT (Zhang et al, 2025b) reveals that under inverse adversarial perturbations, the model’s attention frequently shifts from causal foregrounds to irrelevant background textures (Ahmad et al, 2024; Jin et al, 2025). To mitigate this, DHAT proposes a hard debiasing strategy comprising two components: Debi-ased High - Confidence Logit Regularization (DHLR), which subtracts background logits based on attention masks, and Foreground Logit Orthogonal Enhancement (FLOE), which enforces orthogonality between fore-ground and background representations. In DHAT, the inverse-sample logit is corrected by fully subtracting the background-only component before alignment. This is equivalent to fixing the per-sample debiasing strength to one, regardless of whether the background is helpful or harmful. While DHAT effectively suppresses spuri-ous noise, it operates on the rigid assumption that all background context is detrimental. Consequently, its indiscriminate suppression may inadvertently discard beneficial priors (Seo et al, 2022), leading to feature impoverishment. HICAT replaces this fixed subtrac-tion with an instance-adaptive gate w(x) predicted by the frozen LBBE proxy. Thus, relative to DHAT, HI-CAT does not introduce another target-backbone pass; the extra operation is the scalar proxy gate used for sample-wise modulation. Building on this observation, the present work introduces a learnable estimator to quantify the direction of background influence, enabling an adaptive alignment strategy that preserves helpful context while removing harmful bias. 
+
+3 Methodology 
+
+This section presents High - Confidence Causally Aligned Training (HICAT), a unified framework that strengthens model robustness by disentangling causal foreground features from spurious background correlations. Our in-vestigation reveals a critical paradox in existing robust training: although inverse adversarial examples effec-tively probe high - confidence decision regions, they often achieve this by over - exploiting non - causal background context rather than intrinsic object semantics. Adaptive Causal Alignment for High-Confidence Adversarial Training 5
+
+To resolve this, HICAT operates on a “Measure -Debias-Align” pipeline: 
+
+– Measure (Fig. 2): We quantify the directional influence of context using a Learnable Background -Bias Estimator (LBBE) (Sec. 3.2), distinguishing between helpful cues and harmful spurious biases. 
+
+– Debias (Fig. 3, Top Right): Guided by this esti-mation, we introduce an Adaptive Debiasing mech-anism (Sec. 3.3) that adjusts high -confidence logits to suppress background-induced activations. 
+
+– Align (Fig. 3, Bottom Right): Finally, we en-force robust decision boundaries through a Debiased Logit Alignment strategy (Sec. 3.4), ensuring that the model’s high confidence stems from causal fore-ground evidence. 3.1 Preliminaries Let D = {(xi, y i)}Ni=1 denote the training set, where 
+
+xi ∈ RH×W ×C represents the input and yi ∈ { 1, . . . , K }
+
+is the corresponding ground - truth label. We consider a deep neural network classifier fθ (·) parameterized by θ.For an input x, it produces logits z = fθ (x) ∈ RK , class probabilities pθ (·| x) = softmax (z), and scalar ground-truth probability pθ (y|x) = [ pθ (·| x)] y .To analyze and improve robustness, we consider two distinct types of perturbed examples within an ℓp-norm constrained budget ϵ:
+
+(1) Adversarial Examples ( ˆx): These are standard perturbations designed to maximize the task loss L (e.g. ,cross-entropy), inducing model misclassification: ˆx = x + δ⋆ 
+
+> 1
+
+,δ⋆ 
+
+> 1
+
+= arg max 
+
+> ∥δ1∥∞≤ϵ
+
+L fθ (x + δ1), y . (7) where δ1 represents the adversarial perturbation that pushes the input towards the decision boundary. Adver-sarial training aligns the model’s distribution on ˆx with the clean label y to enhance robustness. 
+
+(2) Inverse Adversarial Examples ( ˇx): Contrary to standard attacks, inverse adversarial examples are generated to minimize the loss, effectively pushing the input further into the high - confidence region of the ground-truth class: ˇx = x − δ⋆ 
+
+> 2
+
+,δ⋆ 
+
+> 2
+
+= arg min 
+
+> ∥δ2∥∞≤ϵ
+
+L fθ (x − δ2), y . (8) where δ2 denotes the inverse perturbation that moves the input towards the class centroid. Since ˇx serves as a high-confidence reference for the model, we denote the logits corresponding to these inputs as ˆz = fθ ( ˆx) and 𝒙𝒙 
+
+𝒙𝒙𝒙 Segment 
+
+Proxy 
+
+Model 
+
+𝑃𝑃 𝜃𝜃 𝑝𝑝 
+
+Step 1: Directional contribution                               
+
+> 𝑠𝑠 +𝑥𝑥 = max( 𝑃𝑃𝜃𝜃 𝑝𝑝 𝑦𝑦 𝑥𝑥 − 𝑃𝑃 𝜃𝜃 𝑝𝑝 𝑦𝑦 𝑥𝑥 ′, 0)
+> 𝑠𝑠 −𝑥𝑥 = max( 𝑃𝑃 𝜃𝜃 𝑝𝑝 𝑦𝑦 𝑥𝑥 𝒙 − 𝑃𝑃𝜃𝜃 𝑝𝑝 𝑦𝑦 𝑥𝑥 , 0)
+> 𝑏𝑏 𝑥𝑥 =𝑠𝑠 +− 𝑠𝑠 −𝑠𝑠 ++𝑠𝑠 −+𝜉𝜉 ∈[−1, 1]
+> Zero Positive bias Negative bias
+
+Step 2: Learnable bias predictor           
+
+> ℒ𝑠𝑠𝑠𝑠𝑠𝑠 =𝑔𝑔 𝜙𝜙 𝑥𝑥 − 𝑏𝑏 𝑥𝑥 2+𝛽𝛽 ⋅ ℋ (𝑔𝑔 𝜙𝜙 𝑥𝑥 )
+> Learn background
+> contribution
+
+𝑥𝑥 
+
+�M𝐹𝐹  
+
+> Segment
+> 𝑔𝑔 𝜙𝜙 𝑥𝑥
+
+̂̌̌̌̌̌̌̌̌
+
+Fig. 2 Overview of the Learnable Background - Bias Estimator (LBBE). The pipeline consists of three stages: (1) Context Isolation : A background -only variant x′ is gen-erated by masking causal foreground semantics. (2) Bias Quantification : A proxy classifier computes the directional bias score b(x) by comparing predictions on x and x′, dis-tinguishing between supportive context and spurious noise. (3) Distillation : This diagnostic signal is distilled into a lightweight predictor gϕ(x) to provide efficient guidance for the subsequent adaptive debiasing. 
+
+ˇz = fθ ( ˇx). In our framework, ˇz serves as the primary target for debiasing and alignment. 3.2 Learnable Background-Bias Estimator (LBBE) In visual recognition, background context plays a dual role: it acts as either a supportive prior that aids object identification or a misleading distractor that misleads the classifier under distribution shifts. While inverse adversarial examples (ˇ x) effectively probe high-confidence regions, relying on them blindly risks over-fitting to non-causal background patterns. To distin-guish between these two effects, we design the Learnable Background-Bias Estimator (LBBE). As illustrated in Fig. 2, this module estimates both the magnitude and the direction of background influence via a three-stage process. 
+
+(1) Context Isolation (Fig. 2, Left). To evaluate the background’s contribution, we first isolate contex-tual information by removing informative foreground semantics. Let MF ∈ [0 , 1] H×W be a foreground proba-bility mask derived from CAM or a segmentation model. We generate a binary foreground indicator ˆMF using threshold τ1: In our implementation, MF is generated by vanilla Grad-CAM using a RobustBench-pretrained ResNet-18 CAM source model hψ for CIFAR-10 and ImageNet (Croce et al, 2021). The CAM source model is frozen during HICAT training. ˆMF (i, j ) = I MF (i, j ) ≥ τ1
+
+, (9) 6 Zhiming Luo † et al. 
+
+We then construct a background-modified variant x′:
+
+x′ = x ⊙ (1 − ˆMF ) + Nfg ( ˆMF ), (10) where ⊙ denotes element - wise multiplication, and Nfg (·)fills the masked foreground region with Gaussian noise. This background-only input x′ preserves the environ-mental context while removing the object, allowing us to measure the background’s standalone impact on the model’s decision. This foreground-removal operation is used only for diagnosis. During adversarial training, HICAT preserves the foreground information in the in-verse example and only adjusts the background-related component in Eq. (17). 
+
+(2) Bias Quantification (Fig. 2, Top Right). In this step, we employ a trained ResNet-18 proxy classifier pθp
+
+to compute the background’s contribution. We compare the proxy’s confidence on the original input x versus the background - modified input x′ for the ground - truth class 
+
+y. Here pθp (·| x) is a class-probability vector, pθp (y|x) is its scalar entry for class y, and θp denotes the parameters of the frozen proxy classifier, distinct from the target model parameters θ. Based on this, we define the positive (helpful) and negative (harmful) contributions as: 
+
+s+(x) = pθp (y|x) − pθp (y|x′)
+
+> +
+
+, (11) 
+
+s−(x) = pθp (y|x′) − pθp (y|x)
+
+> +
+
+. (12) where [ ·]+ is applied to one scalar confidence difference, not to a class vector. Here, s+(x) represents the con-fidence gain attributed to the foreground, while s−(x)captures instances where the background alone triggers high confidence (indicating spurious dominance). We then derive the normalized directional background bias 
+
+b(x): 
+
+b(x) = s+(x) − s−(x)
+
+s+(x) + s−(x) + ξ , (13) where ξ ensures numerical stability. 
+
+Interpretation: A positive score ( b(x) > 0) implies the background is supportive or neutral. Conversely, a negative score ( b(x) < 0) indicates that the background creates a strong spurious correlation, distracting the model from causal features. 
+
+(3) Distillation (Fig. 2, Bottom Right). Calculating 
+
+b(x) requires computationally expensive masking and proxy inference at every step, which is impractical during iterative adversarial training. To address this, we distill this diagnostic capability into a lightweight predictor (ResNet-18) gϕ(·), which is then trained to approximate the pseudo - label b(x) on a subset of training data using the following objective: gϕ : RH×W ×C → [−1, 1] is a scalar bias regressor, not a class-logit predictor. 
+
+Lsup = gϕ(x) − b(x) 22 + β · H  gϕ(x), (14) 𝒙𝒙                                                       
+
+> 𝒙𝒙𝒙 Segment
+> Proxy
+> Model
+> 𝑃𝑃 𝜃𝜃 𝑝𝑝
+> Step 1: Directional contribution
+> 𝑠𝑠 +𝑥𝑥 = max( 𝑃𝑃𝜃𝜃 𝑝𝑝 𝑦𝑦 𝑥𝑥 − 𝑃𝑃 𝜃𝜃 𝑝𝑝 𝑦𝑦 𝑥𝑥 ′, 0)
+> 𝑠𝑠 −𝑥𝑥 = max( 𝑃𝑃 𝜃𝜃 𝑝𝑝 𝑦𝑦 𝑥𝑥 𝒙 − 𝑃𝑃𝜃𝜃 𝑝𝑝 𝑦𝑦 𝑥𝑥 , 0)
+> 𝑏𝑏 𝑥𝑥 =𝑠𝑠 +− 𝑠𝑠 −𝑠𝑠 ++𝑠𝑠 −+𝜉𝜉 ∈[−1, 1]
+> Zero Positive bias Negative bias
+> Step 2: Learnable bias predictor
+> ℒ𝑠𝑠𝑠𝑠𝑠𝑠 =𝑔𝑔 𝜙𝜙 𝑥𝑥 − 𝑏𝑏 𝑥𝑥 2+𝛽𝛽 ⋅ ℋ (𝑔𝑔 𝜙𝜙 𝑥𝑥 )
+> Learn background
+> contribution
+> 𝑥𝑥
+> �M𝐹𝐹
+> Segment
+> +𝛿𝛿 1
+> −𝛿𝛿 2
+> �𝑥𝑥
+> �𝑥𝑥
+> �𝑥𝑥 (𝐵𝐵 )
+> 𝑔𝑔 𝜙𝜙 𝑥𝑥 ̂𝑧𝑧 ̌𝑧𝑧 ̌𝑧𝑧 (𝐵𝐵 )
+> Classifier
+> 𝑓𝑓 𝜃𝜃 Debiased Logit Alignment
+> 𝑤𝑤 𝑥𝑥 = 1− 𝑔𝑔 𝜙𝜙 (𝑥𝑥 )2
+> 𝑔𝑔 𝜙𝜙 𝑥𝑥
+> Adaptive Debiasing
+> =̌𝑧𝑧 ∗
+> −𝑤𝑤 𝑥𝑥 ⋅̌𝑧𝑧 ̌𝑧𝑧 (𝐵𝐵 )̌𝑧𝑧 ∗̌𝑧𝑧 ̌𝑧𝑧 (𝐵𝐵 )
+> ℒ𝐶𝐶C ℒ𝐹𝐹𝐹𝐹𝐹𝐹𝐹𝐹
+
+Fig. 3 Overview of the HICAT framework. Given adversarial ( ˆx) and inverse ( ˇx) inputs with extracted back-ground ˇx(B), the method employs two stages: (1) Adaptive Debiasing , where a bias estimator gϕ(x) computes a gating weight w(x) to selectively filter spurious background activa-tions in ˇz, producing a rectified target ˇz∗; (2) Debiased Logit Alignment , which optimizes classifier fθ by enforcing causal consistency ( LCC ) and foreground-background orthogonality (LFLOE ). 
+
+where the first term minimizes the estimation error, and 
+
+H denotes an entropy regularization term weighted by 
+
+β to prevent trivial solutions and ensure prediction sta-bility. During warm-up, b(x) in Eq. (13) is computed from the proxy classifier and used as the supervision tar-get. During adversarial training, the runtime estimate ˆb(x) = gϕ(x) is used for adaptive modulation. Con-cretely, gϕ is trained once in a pre-adversarial warm-up stage and then frozen during adversarial training (no alternating co-optimization with fθ ). After convergence, 
+
+gϕ(x) provides an efficient, sample - wise bias estima-tion. This score serves as the critical guidance for the subsequent Adaptive Debiasing module (Sec. 3.3), determining the intensity of logit recalibration. 3.3 Adaptive Debiasing While LBBE identifies the contribution of background context, the core challenge remains: how to effectively utilize this diagnosis to rectify model predictions? Stan-dard adversarial training often blindly overfits to spuri-ous background features in high-confidence regions. To counteract this, we propose the Adaptive Debiasing 
+
+module. As detailed in the Top Right panel of Fig. 3 ,instead of suppressing all context, this module uses the bias estimate gϕ(x) to adjust the logits and generate a debiased high-confidence representation ˇ z∗.
+
+(1) Background Activation Extraction (Fig. 3, In-put Stream). We utilize Inverse Adversarial Examples (IAEs), ˇx, as the source of high - confidence supervision. As visually depicted in the input stream of Fig. 3, to ensure accurate context separation, we derive a binary background mask from the attention map M (e.g. ,Grad-CAM) of the clean input x. We then extract the Adaptive Causal Alignment for High-Confidence Adversarial Training 7
+
+background region ˇx(B) by applying this mask to the inverse adversarial example ˇ x:[ˇ x(B)](i,j ) = I M(i,j ) < τ 2
+
+ · ˇx(i,j ), (15) where τ2 is a suppression threshold. The corresponding background logits are computed as ˇz(B) = fθ ( ˇx(B)). These logits quantify the raw strength of contextual activations before any intervention. 
+
+(2) Bias - Guided Logit Gating (Fig. 3, Top Right). 
+
+Blind subtraction of ˇz(B) risks discarding helpful con-text. To ensure the intervention is causally grounded, we employ the distilled bias score gϕ(x) ∈ [−1, 1], predicted by the lightweight ResNet-18 estimator, to modulate the suppression. We define a non - negative gating func-tion w(x) to transform the directional bias score into a normalized suppression weight within [0 , 1]: 
+
+w(x) = 1 − gϕ(x)2 . (16) We then apply this gate to recalibrate the original high -confidence logits ˇ z:ˇz∗ = ˇ z − w(x) · ˇz(B). (17) 
+
+Mechanism Analysis: This formulation enables sam-ple-adaptive debiasing: 
+
+– Harmful Bias ( gϕ → − 1): w(x) → 1. The model identifies the background as spurious and aggres-sively subtracts ˇ z(B), purifying the logits. 
+
+– Helpful Context ( gϕ → 1): w(x) → 0. The back-ground is deemed supportive, so the gate closes, preserving beneficial contextual cues. The resulting ˇz∗ represents a rectified supervision tar-get that retains high confidence while stripping away spurious correlations. We first assume an approximate foreground–background separation after mask-based ex-traction. This condition follows prior analyses that sepa-rate foreground and background signals in object recog-nition (Xiao et al, 2021). Under this condition, fore-ground and background evidence are approximately sep-arable in logit space: ˇz = zC + zB + ε, ˇz(B) ≈ zB ,
+
+Here, zC denotes the foreground signal, and zB denotes the background signal. From Eq. (17), we obtain ˇz∗ ≈ zC + (1 − w(x)) zB + ε. 
+
+Thus, the recalibrated target weakens the estimated background term while preserving the foreground term, rather than applying an unconstrained post-hoc logit shift. 3.4 Debiased Logit Alignment With the rectified high-confidence logits ˇz∗ obtained, the final step is to enforce these causal corrections into the model’s decision boundary. As depicted in the Bottom Right panel of Fig. 3 , we introduce a Debiased Logit Alignment strategy composed of two complementary objectives. 
+
+(1) High-Confidence Causal Consistency ( LCC ). 
+
+To transfer the “clean” knowledge from ˇz∗ to the ro-bust training process, we align the standard adversarial logits ˆ z with ˇ z∗ via a KL-divergence constraint: 
+
+LCC = LKL 
+
+  softmax(ˇ z∗)|| softmax(ˆ z), (18) Here, softmax (·) denotes the softmax function, and ϕ
+
+denotes only the parameters of gϕ. Unlike standard logit pairing which might align with biased predictions, this loss anchors the adversarial prediction to the debiased 
+
+high - confidence target. It guides the model to rely on foreground evidence rather than distracting background. 
+
+(2) Foreground Logit Orthogonal Enhancement (LFLOE ). While Eq. (18) aligns the distributions, resid-ual feature entanglement may persist. To strictly enforce the separation between object and context, we propose FLOE, which imposes a geometric orthogonality con-straint in the logit space: 
+
+LFLOE = − [1 − | gϕ(x)|] · ˇz − Proj ˇz(B) (ˇ z) p
+
+, (19) where p is the norm and Proj ˇz(B) ( ˇz) denotes the pro-jection of ˇz onto the background-logit direction. Under the standard minimization framework, the negative sign encourages a larger orthogonal residual norm. Because this term is optimized jointly with the main adversarial loss and LCC , it acts as a regularizer that discourages background-aligned logits rather than as a standalone objective. The weight 1 − | gϕ(x)| relaxes the constraint when the background’s role is clear and strengthens it when the background’s role is ambiguous ( gϕ ≈ 0). 3.5 Training loss function The proposed framework, HICAT, integrates these com-ponents into a unified adversarial training objective: 
+
+LTotal = LAT (ˆ z, y ) + λ1 · L CC + λ2 · L FLOE . (20) Here LAT is the method-specific adversarial-training loss applied to the standard adversarial example ˆx, e.g., TRADES or MART. The weights λ1 and λ2 balance the two added terms. This formulation combines adap-tive debiasing with adversarial training, so robustness 8 Zhiming Luo † et al. 
+
+Algorithm 1 High-Confidence Causally Aligned Train-ing (HICAT) 
+
+Require: Training set D = {(xi, y i)}; classifier fθ ; pertur-bation budget ϵ; background suppression threshold τ2;hyperparameters λ1, λ 2; learned bias estimator gϕ.
+
+Ensure: Robust model parameters θ∗
+
+1: for each epoch do 
+
+2: for each mini-batch ( x, y ) do 
+
+3: // 1. Generate Perturbed Examples 
+
+4: ˆx ← arg max ∥δ∥∞ ≤ϵ LAT (fθ (x+δ1), y ) {Adversarial example }
+
+5: ˇx ← arg min ∥δ∥∞ ≤ϵ LInv (fθ (x − δ2), y ) {Inverse ad-versarial example }
+
+6: Compute logits: ˆ z ← fθ (ˆ x), ˇ z ← fθ (ˇ x). 7: // 2. Measure: Quantify Background Bias (LBBE) 
+
+8: Estimate directional bias score: 9: ˆb(x) ← gϕ(x) {Runtime bias estimate; Eq. (14) is used as warm-up supervision target }
+
+10: // 3. Debias: Adaptive Debiasing Module 
+
+11: Obtain the fixed CAM foreground heatmap MF for 
+
+x from the frozen CAM source model. 12: Extract background activations: 13: [ˇ x(B)]i,j ← I[( MF )i,j < τ 2] · ˇxi,j .14: ˇz(B) ← fθ (ˇ x(B)). 15: Compute adaptive gating weight: 16: w(x) ← 1−ˆb(x)2 .17: Generate rectified high-confidence logits: 18: ˇz∗ ← ˇz − w(x) · ˇz(B).19: // 4. Align: Debiased Logit Alignment 
+
+20: i. High-Confidence Causal Consistency ( LCC ): 
+
+21: LCC ← L KL (softmax(ˇ z∗) ∥ softmax(ˆ z)). 22: ii. Foreground Logit Orthogonal Enhancement (LFLOE ): 
+
+23: LFLOE ← − (1 − | ˆb(x)|) · ˇz − ⟨ˇz, ˇz(B) ⟩∥ˇz(B) ∥22
+
+ˇz(B) p
+
+.24: // 5. Optimization 
+
+25: LHICAT ← L AT (ˆ z, y ) + λ1 · L CC + λ2 · L FLOE .26: θ ← θ − η · ∇ θ LHICAT .27: end for 
+
+28: end for 
+
+29: return θ∗
+
+is learned from causal feature alignment rather than spurious correlation fitting. Algorithm 1 summarizes the training procedure. 3.6 Theoretical Justification: Geometric Interpretation and Adaptive Regulation In this section, we provide a geometric analysis of FLOE to demonstrate how it integrates feature disentangle-ment with uncertainty-aware modulation (Fig. 4). 
+
+Geometric Decomposition. To quantify semantic purity, we decompose the high-confidence logits ˇz ∈ RC
+
+into a background projection and an orthogonal residual 
+
+e relative to background logits ˇz(B), where e denotes the residual after removing the background projection and Proj u(v) = ⟨v, u ⟩u/ ∥u∥22. Under controlled logit 
+
+Fig. 4 Geometric Interpretation. FLOE decomposes log-its ˇz into a background projection and an orthogonal residual 
+
+e. Encouraging a larger ∥e∥p under the full objective drives the representation away from spurious bias, preserving semantics. 
+
+energy, this decomposition shows that increasing the orthogonal residual reduces the relative contribution of the background projection, moving the representation away from the background-aligned direction and helping separate causal semantics from spurious correlations. Equivalently, when logit energy is controlled, 
+
+∥ˇz∥22 = ∥ Proj ˇz(B) (ˇ z)∥22 + ∥e∥22, (21) so increasing ∥e∥2 reduces the relative contribution of the background projection. 
+
+Adaptive Uncertainty Regulation. Since strict or-thogonality may discard helpful priors, HICAT uses a weight ω(x) = 1 − | gϕ(x)| to control the FLOE strength. The final FLOE term is: 
+
+LFLOE = − [1 − | gϕ(x)|]
+
+| {z }
+
+> Uncertainty Regulator
+
+· ∥e∥p
+
+|{z} 
+
+> Orthogonal Residual Norm
+
+.
+
+(22) The weight ω(x) adjusts the constraint for each sample: 
+
+– Definitive Context ( |gϕ| ≈ 1): ω(x) → 0. This relaxes the constraint, allowing the model to inte-grate helpful priors ( gϕ → 1) or rely on the explicit subtraction for known biases. 
+
+– Ambiguous Context ( gϕ ≈ 0): ω(x) → 1. When the background’s role is uncertain, the objective enforces maximum separation as a safety mechanism to prevent overfitting to ambiguous noise. 
+
+Sample-wise vs. Class-wise Adjustment. Fig. 5 re-ports the class-level average background-bias score and within-class differences on CIFAR-10. The figure shows that samples from the same class can have different background-bias scores. Therefore, a single class-wise weight cannot accurately adjust all samples in that class. In the class-wise variant, we compute ¯by by av-eraging LBBE scores over all training samples in class 
+
+y, then replace the sample-wise ˆb(x) with ¯by in CC and FLOE. Thus CC uses wy = (1 − ¯by )/2, and FLOE Adaptive Causal Alignment for High-Confidence Adversarial Training 9airplane  
+
+> automobile
+> bird
+> cat
+> deer
+> dog
+> frog
+> horse
+> ship
+> truck
+> 0.6
+> 0.4
+> 0.2
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> Signed LBBE score  b(x)
+> Fig. 5 CIFAR-10 class-level mean background-bias scores for sample-wise and class-wise background modulation, with error bars showing within-class differences.
+
+uses weight 1 − | ¯by |. Table 17 further shows that class-wise weighting improves over fixed CC/FLOE weights (AA: 53.73% vs. 52.99%) but remains below sample-wise HICAT (54.56%), with a larger robust gap (3.22% vs. 2.86%). 
+
+4 Experiments 
+
+4.1 Experimental Setups 
+
+4.1.1 Architectures 
+
+To comprehensively evaluate the universality of HICAT ,we conduct experiments across a broad range of back-bones with different inductive biases. Our experiments include widely used convolutional networks, including ResNet - 18, ResNet - 50 (He et al, 2016), VGG - 16 (Si-monyan and Zisserman, 2014), WRN28 - 10 (Zagoruyko and Komodakis, 2016), and Inception - V3 (Szegedy et al, 2015). In addition, we extend our evaluation to the trans-former - based ViT - B/16 (Dosovitskiy, 2020) to verify that our method maintains robust performance across different architectural paradigms. 
+
+4.1.2 Datasets 
+
+Datasets. We evaluate our method on three widely used image classification benchmarks: CIFAR-10 and CIFAR-100 (Krizhevsky et al, 2009), which contain 50,000 training and 10,000 test images at 32 ×32 reso-lution from 10 and 100 object categories, respectively, and ImageNet-1K (Russakovsky et al, 2015), which con-sists of 1.28M training and 50K validation images at high resolution (typically 224 ×224) across 1,000 classes. Together, these datasets span both low-resolution and large-scale visual domains, enabling a comprehensive evaluation of robustness and generalization. All CIFAR-10 and CIFAR-100 experiments are con-ducted on single NVIDIA RTX 4090 GPU per model, while ImageNet-1K experiments use two NVIDIA H100 GPUs due to the higher computational and memory requirements. This setup is sufficient to reproduce the full training schedule and ensures stable adversarial optimization across all settings. 
+
+4.1.3 Evaluation Metrics 
+
+Adversarial Robustness. We evaluate model robust-ness using Robust Accuracy, defined as the percentage of test samples that correctly classified under adversarial attacks. The evaluations are conducted under ℓ∞ con-straints using PGD (Madry et al, 2018), C&W (Carlini and Wagner, 2017), and AutoAttack (AA) (Croce and Hein, 2020b). Notably, AA integrates an ensemble of strong attacks (APGD-DLR, APGD-CE, FAB (Croce and Hein, 2020a), and Square Attack (Andriushchenko et al, 2020)) to provide a reliable estimate of worst-case robustness. 
+
+Robust Generalization. We further measure the robust generalization gap, defined as the difference be-tween robust accuracy on the training and test sets. For a given attack A, the gap is computed as: Gap A = RobAcc A 
+
+> train
+
+− RobAcc A
+
+> test
+
+. (23) A smaller gap indicates better robust generalization and reduced robust overfitting during adversarial training. Unless otherwise stated, we report the robust gap using PGD-10, which serves as a standard and computation-ally stable choice for evaluating robustness consistency across training and test data. 
+
+4.1.4 Implementation Details 
+
+CIFAR-10 and CIFAR-100. To ensure fair com-parison across all methods, we adopt a unified training configuration on CIFAR-10 and CIFAR-100 (Krizhevsky et al, 2009). All models are optimized using SGD with a momentum of 0.9 and a weight decay of 5 × 10 −4. The initial learning rate is set to 0.1 and decayed by a factor of 0.1 at the 80th and 90th epochs over a total of 100 training epochs. During adversarial training, we generate perturba-tions using a 10-step ℓ∞-PGD attack with a budget of 
+
+ϵ = 8 /255 and a step size of α = 2 /255. For producing inverse adversarial examples required by our method, we follow the same attack configuration as the UIAT baseline (Dong et al, 2023) to ensure fairness. For Vi-sion Transformers (ViTs), we align our setup with the training strategy proposed by Mo et al. (Mo et al, 2022) to ensure training stability and convergence. 10 Zhiming Luo † et al. 
+
+ImageNet-1K. For ImageNet-1K, we adopt the train-ing strategy (Singh et al, 2023) tailored for large-scale adversarial robustness. Specifically, models are trained for 50 epochs using adversarial perturbations generated via 2-step PGD. This configuration is selected to balance computational efficiency with training stability. 
+
+4.1.5 Hyperparameter Settings 
+
+We follow the general configuration protocol established in DHAT (Zhang et al, 2025b), while introducing subtle changes required by our framework. Unless otherwise stated, we set λ1 = λ2 = 1 .0 and τ1 = τ2 = 0 .5 across all datasets. The thresholds define the foreground mask for LBBE and the background mask for adaptive debiasing, respectively. For foreground probability estimation, we use vanilla Grad-CAM with RobustBench-pretrained ResNet-18 CAM source models for CIFAR-10 and ImageNet (Croce et al, 2021). The CAM source model is frozen during HICAT training. The heatmap is thresholded by τ1 for the foreground mask used in LBBE and by τ2 for the background mask used in adaptive debiasing. The LBBE proxy is trained once before adversarial training, as sum-marized in Table 13. During adversarial training, both the CAM source model and gϕ are frozen; HICAT only uses forward inference of ˆb(x) = gϕ(x). No alternating or joint optimization with fθ is performed. We use a unified hardware setup for each comparison table and report the corresponding device in the caption/text. 4.2 Main Results on Benchmark Datasets We report the performance of HICAT on CIFAR-10, CIFAR-100, and ImageNet-1K. Table 1 summarizes the results in terms of clean accuracy, robustness, and gen-eralization gaps. Under matched architectures, training schedules, and data protocols, HICAT consistently out-performs the compared baselines, demonstrating the effectiveness and universality of our causal alignment strategy. 
+
+– Strong Robustness Gains Under Matched Pro-tocols. HICAT achieves the strongest defense among the compared methods across all benchmarks, im-proving AutoAttack (AA) to 54.56% on CIFAR-10 (+1.46% over DHAT) and 42.85% on ImageNet-1K (+1.15% over DHAT). This improvement stems from adaptive debiasing, which removes spurious correlations while preserving useful context. HICAT grounds high confidence in object semantics and remains effective from CIFAR-scale images to Ima-geNet. 
+
+– Mitigating the Clean-Robust Trade-off via Contextual Diagnosis. Notably, HICAT enhances robustness without sacrificing clean accuracy, achiev-ing 85.92% clean accuracy on CIFAR-10 and 67.12% on ImageNet (+1.22% over DHAT). This advantage arises from the LBBE module, which diagnoses the utility of contextual cues. By preserving supportive priors rather than indiscriminately discarding them, HICAT avoids feature impoverishment, which is par-ticularly vital for resolving semantic ambiguity in natural images. 
+
+– Superior Generalization via Orthogonal Dis-entanglement. HICAT demonstrates the smallest robust generalization gap, reducing it from 3.51% (DHAT) to 2.86% on CIFAR-10 and from 9.53% (DHAT) to 8.72% on ImageNet. This reduction con-firms that FLOE mitigates robust overfitting. By enforcing foreground-background orthogonality, HI-CAT reduces memorization of training-specific back-ground noise and improves test robustness. 4.3 Cross-Architecture Robustness Generalization To examine generality, we evaluate HICAT on convo-lutional networks (ResNet-50, VGG-16, Inception-V3) on CIFAR-10 (Table 2) and on ViT-B/16 on ImageNet (Table 3). We also report two additional CIFAR-10 set-tings requested by the reviewers: WRN-34-10 without data augmentation (Table 4) and WRN-28-10 with RST 500K unlabeled data (Carmon et al, 2019) (Table 5). In the WRN-34-10 setting, HICAT improves AA over DHAT from 54.48% to 56.20% and reduces the Gap from 6.30% to 3.03%. Under the RST setting, HICAT improves AA from 56.45% to 57.55% and further reduces the Gap from 2.25% to 1.95%. These results show that the gains remain under both standard WRN training and semi-supervised training with unlabeled data. 
+
+– Consistent robustness gains across diverse ex-tractors. HICAT improves AutoAttack robustness on every tested architecture, outperforming DHAT by +1.32% on ResNet-50 and +1.33% on ImageNet with ViT-B/16. 
+
+– No sacrifice in clean accuracy via precise di-agnosis. HICAT also improves clean accuracy over DHAT by +1.68% on ResNet-50 and +1.18% on ImageNet with ViT-B/16. 
+
+– Reduced robust generalization gap via latent regularization. HICAT achieves the smallest robust generalization gap across all tested models, including 1.72% on ResNet-50 and 9.79% on ImageNet with ViT-B/16. Adaptive Causal Alignment for High-Confidence Adversarial Training 11 
+
+Table 1 Adversarial robustness (%) and robust generalization gap (%) across CIFAR-10, CIFAR-100, and ImageNet-1K. All methods are trained under a unified and fully reproducible training protocol to ensure fairness. The bold numbers indicate the best performance. 
+
+Net: WRN28-10 Attack ( ϵ = 4 /255) Robust Gap ↓
+
+ImageNet-1K Clean ↑ PGD-10 ↑ PGD-20 ↑ PGD-50 ↑ C&W ↑ AA ↑
+
+MART (Wang et al, 2020b) 62.31 43.56 42.89 42.54 40.62 38.94 13.76 AWP (Wu et al, 2020) 64.25 45.13 44.67 44.21 41.96 40.02 12.82 FSR (Kim et al, 2023) 64.70 44.31 43.82 43.45 41.23 39.30 14.17 CFA (Wei et al, 2023) 65.38 44.87 44.32 43.96 41.58 39.65 15.49 UIAT (Dong et al, 2023) 62.64 45.29 44.85 44.57 42.13 40.18 14.68 SGLR (Li et al, 2024b) 63.46 44.52 44.05 43.78 41.36 39.47 19.72 DHAT (Zhang et al, 2025b) 65.90 46.83 46.42 46.11 43.25 41.70 9.53 
+
+HICAT (ours) 67.12 47.91 47.52 47.21 44.60 42.85 8.72 Net: WRN28-10 Attack ( ϵ = 8 /255) Robust Gap ↓
+
+CIFAR-10 Clean ↑ PGD-10 ↑ PGD-20 ↑ PGD-50 ↑ C&W ↑ AA ↑
+
+MART (Wang et al, 2020b) 82.99 56.25 55.48 55.45 52.26 50.67 9.52 AWP (Wu et al, 2020) 82.67 57.80 57.21 57.07 54.82 51.90 6.90 FSR (Kim et al, 2023) 82.92 56.69 55.94 55.51 53.93 51.74 7.42 CFA (Wei et al, 2023) 84.43 57.87 56.90 56.64 54.60 51.85 10.36 UIAT (Dong et al, 2023) 82.94 58.66 58.12 58.05 54.11 52.17 7.92 SGLR (Li et al, 2024b) 85.76 57.53 56.91 56.66 54.28 52.07 9.38 DHAT (Zhang et al, 2025b) 83.95 60.49 59.95 59.87 55.27 53.10 3.51 
+
+HICAT (ours) 85.92 61.87 61.42 61.11 56.59 54.56 2.86 Net: WRN28-10 Attack ( ϵ = 8 /255) Robust Gap ↓
+
+CIFAR-100 Clean ↑ PGD-10 ↑ PGD-20 ↑ PGD-50 ↑ C&W ↑ AA ↑
+
+MART (Wang et al, 2020b) 54.69 32.06 31.90 31.88 28.77 27.25 9.96 AWP (Wu et al, 2020) 57.94 34.01 33.75 33.72 30.74 28.90 7.87 FSR (Kim et al, 2023) 57.48 32.93 32.30 32.26 29.16 27.04 7.84 CFA (Wei et al, 2023) 60.92 33.10 32.56 32.41 30.49 28.04 10.47 UIAT (Dong et al, 2023) 57.65 34.27 33.91 33.85 30.97 29.03 11.70 SGLR (Li et al, 2024b) 61.02 33.43 32.98 32.82 30.72 28.50 15.67 DHAT (Zhang et al, 2025b) 59.14 35.82 35.33 35.02 31.72 30.17 4.24 
+
+HICAT (ours) 62.38 37.29 36.82 36.71 33.15 31.24 3.12 
+
+Table 2 Comparison of robustness (%) and robust generalization gap (%) across CNN architectures on CIFAR-10 under ℓ∞
+
+perturbations ( ϵ = 8 /255). The bold numbers indicate the best performance. 
+
+CIFAR-10 ResNet-50 VGG-16 Inception-V3 Clean ↑ AA ↑ Robust Gap ↓ Clean ↑ AA ↑ Robust Gap ↓ Clean ↑ AA ↑ Robust Gap ↓
+
+MART (Wang et al, 2020b) 75.05 49.05 4.57 66.72 44.27 3.60 76.05 49.59 5.91 AWP (Wu et al, 2020) 75.59 50.80 3.91 67.14 45.97 3.47 76.74 50.46 4.07 FSR (Kim et al, 2023) 78.38 50.59 3.97 69.59 44.90 3.30 77.28 50.02 4.73 CFA (Wei et al, 2023) 77.88 50.64 4.27 70.45 45.53 4.66 76.70 49.97 4.46 UIAT (Dong et al, 2023) 78.42 51.00 2.99 68.46 45.27 3.57 75.19 51.23 3.70 SGLR (Li et al, 2024b) 80.39 50.55 5.21 70.90 45.04 3.94 80.62 50.73 5.00 DHAT (Zhang et al, 2025b) 79.94 51.92 1.85 70.01 46.40 1.34 77.85 51.81 1.92 
+
+HICAT (ours) 81.62 53.24 1.72 71.18 47.03 1.21 78.93 53.10 1.64 
+
+4.4 Transfer Attacks (Black-Box Robustness) To evaluate black-box robustness, we examine HICAT’s resistance to adversarial examples transferred across 
+
+different architectures and different datasets (Tables 6 and 7). Table 6 reports cross-model transfer under the expanded baseline set using six representative source– target pairs. Table 7 reports the corresponding multi-baseline cross-dataset transfer comparison. 
+
+4.4.1 Cross-Model Transferability 
+
+HICAT consistently outperforms UIAT when facing attacks from heterogeneous architectures. 
+
+– Higher accuracy across model pairs. HICAT im-proves AA accuracy by +1.47% over UIAT (VGG-16 
+
+→ WRN28-10) and +1.68% (ResNet-18 → Inc-V3). Transfer attacks often exploit shared non-robust cues, including background textures. The gains suggest 12 Zhiming Luo † et al. 
+
+Table 3 Comparison on ImageNet with the ViT-B/16 back-bone under AutoAttack ( ϵ = 8 /255).                            
+
+> Method Clean (%) AA (%) Robust Gap (%)
+> MART (Wang et al, 2020b) 64.28 44.71 16.70 AWP (Wu et al, 2020) 67.51 46.23 14.31 FSR (Kim et al, 2023) 67.22 45.33 12.40 CFA (Wei et al, 2023) 66.90 44.64 15.16 UIAT (Dong et al, 2023) 66.87 46.38 17.56 SGLR (Li et al, 2024b) 67.14 47.30 15.07 DHAT (Zhang et al, 2025b) 68.59 48.91 11.82
+> HICAT (ours) 69.77 50.24 9.79
+
+Table 4 CIFAR-10 comparison under the WRN-34-10 back-bone without data augmentation.                            
+
+> Method Clean (%) AA (%) Gap (%)
+> MART (Wang et al, 2020b) 84.17 51.10 9.90 AWP (Wu et al, 2020) 85.57 53.90 7.51 FSR (Kim et al, 2023) 84.46 53.03 7.99 CFA (Wei et al, 2023) 84.90 52.63 11.27 UIAT (Dong et al, 2023) 83.20 52.92 9.40 SGLR (Li et al, 2024b) 85.81 52.77 9.84 DHAT (Zhang et al, 2025b) 86.10 54.48 6.30
+> HICAT (Ours) 87.44 56.20 3.03
+
+Table 5 CIFAR-10 semi-supervised comparison under the WRN-28-10 backbone with the RST 500K-unlabeled setting.                            
+
+> Method Clean (%) AA (%) Gap (%)
+> MART (Wang et al, 2020b) 84.70 52.30 8.40 AWP (Wu et al, 2020) 84.60 53.80 5.90 FSR (Kim et al, 2023) 84.40 53.70 6.75 CFA (Wei et al, 2023) 86.30 54.25 8.65 UIAT (Dong et al, 2023) 87.25 55.20 9.00 SGLR (Li et al, 2024b) 88.25 53.95 10.80 DHAT (Zhang et al, 2025b) 88.45 56.45 2.25
+> HICAT (Ours) 89.10 57.55 1.95
+
+that FLOE reduces reliance on these cues, making transferred perturbations less effective. 
+
+– Larger improvements under stronger attacks. 
+
+Across the selected transfer pairs, HICAT consis-tently improves over UIAT under PGD-50 and AA. Strong attacks tend to overfit the gradient landscape of the source model. Adaptive Debiasing aligns pre-dictions with causal semantics rather than noise, making source-model attack directions less effective. 
+
+4.4.2 Cross-Dataset Transfer 
+
+We further test generalization across datasets with dif-ferent label distributions. 
+
+– Stable improvements across CIFAR datasets. 
+
+With MART, SGLR, DHAT, and UIAT jointly com-pared, HICAT achieves the highest accuracy across all attacks in both transfer directions (CIFAR-10 
+
+⇔ CIFAR-100). Under AA, HICAT improves over DHAT by +0.54% (CIFAR-10 → CIFAR-100) and +0.64% (CIFAR-100 → CIFAR-10). These results indicate that separating foreground semantics from environmental noise remains effective when the la-bel space changes. By reducing reliance on low-level dataset artifacts, HICAT improves transfer robust-ness across CIFAR datasets. 
+
+– ImageNet-C transfer. Under corruption-induced perturbations, HICAT improves AutoAttack accu-racy by +0.42% over DHAT and +0.79% over SGLR. Common corruptions such as snow often appear as image-wide background artifacts. LBBE assigns low causal relevance to these artifacts, reducing their in-fluence on semantic feature extraction. This suggests that causal alignment also helps under corruption-induced distribution shifts. 4.5 Compatibility with Data Augmentation We evaluate HICAT’s synergy with synthetic data by augmenting CIFAR-10 and CIFAR-100 with 50K DDPM samples (Wang et al, 2023) under a unified protocol (Table 8). 
+
+– Significant clean accuracy improvements. HI-CAT achieves the highest clean accuracy, surpass-ing UIAT by +3.12% on CIFAR-10 (WRN28-10) to reach 89.85%. This suggests that LBBE helps retain clean accuracy when generated samples are added, rather than improving robustness only by sacrificing standard accuracy. 
+
+– Consistent boosts in robust accuracy. HICAT yields consistent AA robustness gains of 3.5–5.3% over UIAT. On CIFAR-100 with WRN28-10, AA accuracy improves from 30.98% (UIAT) to 36.20% (+5.22%). These gains indicate that Adaptive Debi-asing remains effective under the enlarged training distribution and improves robust accuracy under the same augmentation budget. 
+
+– Substantial reduction in robust generalization gap. HICAT minimizes the robust generalization gap, reducing it from 14.32% (UIAT) to 2.51% on CIFAR-100 (WRN28-10). This result indicates that FLOE reduces robust overfitting in the augmented setting, as reflected by the lower train–test robust gap. We further compare HICAT with large-scale augmen-tation baselines (Gowal et al. (Gowal et al, 2021): 100M DDPM samples and 2000 epochs; Pang et al. (Pang et al, 2022): 1M DDPM samples and 800 epochs) under the same AutoAttack evaluation protocol on CIFAR-10 (Table 9). HICAT uses 5K–200K DDPM samples with a fixed 100-epoch schedule. We use 200K as the largest setting to keep the augmentation budget moderate and evaluate HICAT without using 1M–100M generated sam-ples. Compared with Gowal et al., HICAT has higher Adaptive Causal Alignment for High-Confidence Adversarial Training 13 
+
+Table 6 Cross-model transfer attack accuracy (%) under the single-model transfer setting. Adversarial examples are crafted on a source model and evaluated on a different target model. We retain six representative transfer settings to fit the expanded baseline set. The bold numbers indicate the best performance. 
+
+Attack VGG-16 → WRN28-10 VGG-16 → Inc-V3 WRN28-10 → ResNet-50 
+
+MART SGLR DHAT UIAT HICAT MART SGLR DHAT UIAT HICAT MART SGLR DHAT UIAT HICAT 
+
+FGSM 61.93 64.03 64.55 63.73 65.36 61.64 63.74 64.21 63.44 64.98 75.31 77.41 78.02 77.11 78.92 
+
+PGD-10 52.37 54.47 54.91 54.17 55.64 50.91 53.11 53.47 52.81 54.12 60.13 62.23 62.55 61.93 63.18 
+
+PGD-20 52.00 54.10 54.64 53.80 55.47 50.83 52.93 53.32 52.63 54.01 59.72 61.82 62.23 61.52 62.94 
+
+PGD-50 51.97 53.97 54.65 53.77 55.53 50.72 52.82 53.34 52.62 54.05 59.71 61.81 62.25 61.51 62.98 
+
+C&W 53.51 55.61 55.99 55.31 56.67 49.58 51.68 52.14 51.38 52.89 59.25 61.35 61.73 61.05 62.41 
+
+AA 57.85 59.95 60.39 59.65 61.12 54.22 56.32 56.82 56.02 57.61 65.38 67.48 68.05 67.18 68.92 
+
+Attack WRN28-10 → VGG-16 ResNet-18 → WRN28-10 ResNet-18 → Inc-V3 
+
+MART SGLR DHAT UIAT HICAT MART SGLR DHAT UIAT HICAT MART SGLR DHAT UIAT HICAT 
+
+FGSM 76.28 78.38 78.81 78.08 79.54 71.21 73.31 73.97 73.01 74.93 70.63 72.73 73.03 72.43 73.62 
+
+PGD-10 62.93 64.03 65.33 64.73 65.93 56.76 58.86 59.59 58.56 60.62 56.02 58.12 58.55 57.82 59.27 
+
+PGD-20 62.80 64.90 65.20 64.60 65.79 56.33 58.43 59.28 58.13 60.43 55.68 57.78 58.26 57.48 59.04 
+
+PGD-50 62.76 64.86 65.22 64.56 65.88 56.35 58.45 59.35 58.15 60.55 55.65 57.75 58.32 57.45 59.18 
+
+C&W 61.52 63.62 64.02 63.32 64.71 55.93 58.03 59.11 57.73 60.48 55.91 58.01 58.68 57.71 59.64 
+
+AA 70.06 72.16 72.65 71.86 73.44 60.56 62.66 63.10 62.36 63.84 58.89 60.99 61.53 60.69 62.37 
+
+Table 7 Cross-dataset transfer attack accuracy (%). Adver-sarial examples are crafted from a source dataset and evaluated on a model trained on a different target dataset. The bold 
+
+numbers indicate the best performance.                                                                                                                                                   
+
+> Attack Transfer MART SGLR DHAT UIAT HICAT
+> CIFAR Cross-Dataset Transfer ( ϵ= 8 /255 )
+> FGSM CIFAR-10 →CIFAR-100 60.41 62.69 63.07 62.10 63.55
+> CIFAR-100 →CIFAR-10 70.62 73.02 73.55 72.45 74.12
+> PGD-10 CIFAR-10 →CIFAR-100 50.11 52.36 52.88 51.92 53.44
+> CIFAR-100 →CIFAR-10 58.49 60.91 61.43 60.36 62.10
+> PGD-20 CIFAR-10 →CIFAR-100 49.70 51.86 52.41 51.43 52.98
+> CIFAR-100 →CIFAR-10 57.93 60.36 60.88 59.82 61.40
+> PGD-50 CIFAR-10 →CIFAR-100 49.42 51.58 52.11 51.10 52.70
+> CIFAR-100 →CIFAR-10 57.56 59.96 60.48 59.40 61.05
+> C&W CIFAR-10 →CIFAR-100 48.86 50.81 51.37 50.32 51.91
+> CIFAR-100 →CIFAR-10 56.12 58.51 58.97 57.95 59.38
+> AA CIFAR-10 →CIFAR-100 53.02 55.06 55.49 54.65 56.03
+> CIFAR-100 →CIFAR-10 61.41 63.55 64.08 63.10 64.72
+> ImageNet Cross-Dataset Transfer ( ϵ= 4 /255 )
+> FGSM ImageNet-C →ImageNet-1K 40.12 41.88 42.21 41.52 42.73
+> PGD-10 ImageNet-C →ImageNet-1K 33.45 35.21 35.60 34.91 36.12
+> PGD-20 ImageNet-C →ImageNet-1K 32.81 34.58 34.97 34.20 35.48
+> PGD-50 ImageNet-C →ImageNet-1K 31.78 33.36 33.59 33.10 33.92
+> C&W ImageNet-C →ImageNet-1K 30.54 32.29 32.62 31.85 33.10
+> AA ImageNet-C →ImageNet-1K 28.36 30.06 30.43 29.74 30.85
+
+Clean accuracy (+2.14% on WRN-70-16 and +3.24% on WRN-28-10), while AA is lower by only 0.03% and 0.06%, respectively. We also evaluate HICAT under unlabeled-data super-vision on CIFAR-10 (ResNet-18) with 500K unlabeled images following (Carmon et al, 2019). MART, AWP, FSR, CFA, UIAT, SGLR, DHAT, and HICAT are com-pared under the same schedule and attack/evaluation protocol. As shown in Table 10, HICAT remains the top-performing method and improves over UIAT (Clean: +3.18%, AA: +3.56%, Gap: -2.36%) and over DHAT in AA robustness (+1.51%). 4.6 Robustness Under Varying Attack Strengths To understand defense behavior under challenging set-tings, we analyze robustness from two perspectives: vary-ing the perturbation budget and varying the optimiza-tion intensity. These experiments provide a fine-grained evaluation beyond fixed-budget benchmarks (Fig. 6). 
+
+4.6.1 Varying Perturbation Budget 
+
+We vary the perturbation magnitude ϵ ∈ { 1, 2, 4, 8,
+
+16 , 24 }/255 under PGD, C&W, and AutoAttack to ex-amine degradation patterns. 
+
+– Highest robustness across all ϵ settings. Even in the extreme regime ( ϵ = 24 /255), HICAT main-tains a noticeable margin over MART, UIAT, and DHAT, demonstrating superior resistance to large-magnitude perturbations. 
+
+– Slower degradation with increasing ϵ. Unlike baselines that drop sharply, HICAT exhibits smooth decay. This confirms that Adaptive Debiasing effec-tively filters brittle background noise; by reducing reliance on high-frequency correlations, it forces at-tackers to target robust semantic features, thereby delaying performance collapse. 
+
+– Stable behavior under AutoAttack. While AA integrates multiple strong sub-attacks, HICAT re-mains consistently more robust, showing that the improvements extend beyond standard first-order gradient-based PGD variants. 14 Zhiming Luo † et al. 
+
+Table 8 Performance of adversarial training methods under data augmentation. Models are trained on diffusion-generated samples and evaluated on CIFAR-10 and CIFAR-100. HICAT achieves the best clean accuracy, highest robustness, and lowest robust generalization gap. The bold numbers indicate the best performance. 
+
+CIFAR-10 CIFAR-100 
+
+ResNet-18 WRN28-10 ResNet-18 WRN28-10 
+
+Method Clean ↑ AA ↑ Gap ↓ Clean ↑ AA ↑ Gap ↓ Clean ↑ AA ↑ Gap ↓ Clean ↑ AA ↑ Gap ↓
+
+MART (Wang et al, 2020b) 83.45 49.45 2.91 84.26 51.95 8.73 54.73 27.70 2.88 55.87 30.20 8.86 AWP (Wu et al, 2020) 83.78 50.79 2.03 84.10 53.29 6.11 57.55 29.33 2.37 59.71 31.83 7.13 FSR (Kim et al, 2023) 83.19 50.53 2.35 83.88 53.03 7.05 58.10 28.94 2.47 59.03 30.44 7.40 CFA (Wei et al, 2023) 84.97 50.85 2.98 85.81 53.35 8.94 60.13 28.85 3.01 61.56 29.61 9.13 UIAT (Dong et al, 2023) 85.10 52.09 3.04 86.73 54.59 9.41 59.92 28.48 4.47 60.24 30.98 14.32 SGLR (Li et al, 2024b) 86.35 51.27 2.75 87.72 53.77 11.25 61.25 29.10 4.15 62.39 30.15 17.05 DHAT (Zhang et al, 2025b) 87.62 54.42 0.83 88.94 56.92 2.48 63.14 32.21 0.98 64.80 34.71 2.96 
+
+HICAT (Ours) 88.40 55.63 0.71 89.85 58.11 2.12 64.52 33.48 0.86 66.02 36.20 2.51 12 4 8 16 24                 
+
+> 40
+> 50
+> 60
+> 70
+> 80
+> Accuracy (%)
+> MART
+> UIAT
+> DHAT
+> HICAT 124816 24
+> 40
+> 50
+> 60
+> 70
+> 80
+> Accuracy (%)
+> MART
+> UIAT
+> DHAT
+> HICAT 124816 24
+> 40
+> 50
+> 60
+> 70
+> 80
+> Accuracy (%)
+> MART
+> UIAT
+> DHAT
+> HICAT 124816 24
+> 35
+> 40
+> 45
+> 50
+> 55
+> 60
+> 65
+> 70
+> 75
+> 80
+> Accuracy (%)
+> MART
+> UIAT
+> DHAT
+> HICAT 124816 24
+> 35
+> 40
+> 45
+> 50
+> 55
+> 60
+> 65
+> 70
+> 75
+> 80
+> Accuracy (%)
+> MART
+> UIAT
+> DHAT
+> HICAT
+
+(a) PGD-10 ( ϵ sweep) (b) PGD-20 ( ϵ sweep) (c) PGD-50 ( ϵ sweep) (d) C&W ( ϵ sweep) (e) AA ( ϵ sweep) 10 100 200 300 500                 
+
+> Number of iterations
+> 48
+> 50
+> 52
+> 54
+> 56
+> 58
+> 60
+> 62
+> Accuracy (%)
+> MART
+> UIAT
+> DHAT
+> HICAT 10 100 200 300 500
+> Number of iterations
+> 46
+> 48
+> 50
+> 52
+> 54
+> 56
+> 58
+> Accuracy (%)
+> MART
+> UIAT
+> DHAT
+> HICAT 10 100 200 300 500
+> Number of iterations
+> 44
+> 46
+> 48
+> 50
+> 52
+> 54
+> 56
+> Accuracy (%)
+> MART
+> UIAT
+> DHAT
+> HICAT 10 100 200 300 500
+> Number of iterations
+> 44
+> 46
+> 48
+> 50
+> 52
+> 54
+> 56
+> Accuracy (%)
+> MART
+> UIAT
+> DHAT
+> HICAT 10 100 200 300 500
+> Number of iterations
+> 46
+> 48
+> 50
+> 52
+> 54
+> 56
+> Accuracy (%)
+> MART
+> UIAT
+> DHAT
+> HICAT
+
+(f) PGD (iter.) (g) C&W (iter.) (h) APGD-CE (iter.) (i) APGD-DLR (iter.) (j) FAB (iter.) 
+
+Fig. 6 Robustness evaluation under varying attack strengths on CIFAR-10 using WRN28-10. We compare the defense performance of HICAT against strong matched baselines (MART, UIAT, DHAT) across diverse adversarial constraints. 
+
+Top Row (a–e): Robustness under varying perturbation budgets ϵ ∈ { 1, 2, 4, 8, 16 , 24 }/255. HICAT consistently exhibits the highest accuracy, demonstrating substantial resilience even against large-magnitude perturbations. Bottom Row (f–j): 
+
+Robustness under varying attack iterations (optimization steps) from 10 to 500, with fixed ϵ = 8 /255. We examine PGD, C&W, and the individual components of AutoAttack (APGD-CE, APGD-DLR, and FAB). 
+
+4.6.2 Varying Attack Steps 
+
+To probe “worst-case” robustness, we increase attack iterations K ∈ { 10 , . . . , 500 } to allow adversaries ample budget to overcome gradient masking. 
+
+– Resistance to Gradient Masking. HICAT main-tains the highest accuracy throughout the steep op-timization phase. Unlike MART and UIAT, which suffer sharp degradation as gradients become more informative, HICAT’s stability suggests that it re-duces reliance on non-robust features rather than only creating a loss landscape that temporarily ob-structs optimization. 
+
+– Superior Asymptotic Stability. After 200 steps, HICAT remains higher than the baselines. This sug-gests that FLOE moves the decision boundary to-ward foreground semantics and leaves fewer back-ground directions for the adversary. 
+
+– Universality Across Optimization Landscapes. 
+
+HICAT remains stable against Cross-Entropy, Logit-Difference, and Projection-based objectives. This suggests that causal logit alignment improves robust-ness across different attack losses. Adaptive Causal Alignment for High-Confidence Adversarial Training 15 Original AT DHAT HICAT 
+
+Conf : 78.5% 
+
+Conf : 81.9% 
+
+Conf : 76.7% 
+
+Conf : 69.9% 
+
+Conf : 70.4% 
+
+Conf : 62.2% 
+
+Conf : 84.6% 
+
+Conf : 90.4% 
+
+Conf : 85.0% 
+
+Original AT DHAT HICAT 
+
+Conf : 64.7% 
+
+Conf : 72.3% 
+
+Conf : 77.4% 
+
+Conf : 72.4% 
+
+Conf : 77.6% 
+
+Conf : 81.4% 
+
+Conf : 75.8% 
+
+Conf : 82.2% 
+
+Conf : 83.1% 
+
+Scenario 1: Supportive Context (Background is Helpful) Scenario 2: Spurious Context (Background is Harmful) 
+
+Cock 
+
+Catamaran 
+
+Sewing Machine 
+
+Steel Arch Bridge 
+
+Sunglass 
+
+Snowplow 
+
+Fig. 7 Visualization of feature activation maps using Standard AT, DHAT, and HICAT via Grad-CAM. The figure is divided into two scenarios: Supportive Context (Left Block) and Spurious Context (Right Block). Left-to-right in each block: the original image; feature activation maps from Standard AT/DHAT/HICAT(Ours). The prediction confidence for the ground-truth class is displayed below each visualization. 
+
+Table 9 Comparison of HICAT with large-scale data-augmentation baselines on CIFAR-10 under AutoAttack (ϵ = 8 /255). HICAT rows report a data-scaling sweep with a fixed 100-epoch schedule; at 200K generated samples, HICAT obtains AA close to the reported Gowal et al. result under this evaluation setting.                                                                  
+
+> Method Backbone Aug. Data Epochs Clean (%) AA (%)
+> Gowal et al. (Gowal et al, 2021) WRN-70-16 100M 2000 88.94 62.20 Gowal et al. (Gowal et al, 2021) WRN-28-10 100M 2000 87.37 61.38 Pang et al. (Pang et al, 2022) WRN-70-16 1M 800 88.70 60.20 Pang et al. (Pang et al, 2022) WRN-28-10 1M 800 88.02 57.52 HICAT (Ours) WRN-70-16 5K 100 89.12 57.83 HICAT (Ours) WRN-70-16 50K 100 90.44 60.81 HICAT (Ours) WRN-70-16 100K 100 90.75 61.68 HICAT (Ours) WRN-70-16 200K 100 91.08 62.17 HICAT (Ours) WRN-28-10 5K 100 86.74 55.38 HICAT (Ours) WRN-28-10 50K 100 89.85 58.11 HICAT (Ours) WRN-28-10 100K 100 90.18 59.96 HICAT (Ours) WRN-28-10 200K 100 90.61 61.32
+
+Table 10 Semi-supervised results on CIFAR-10 (ResNet-18) with 500K unlabeled images under the unified evaluation protocol. 
+
+Method Clean (%) AA (%) Gap (%) 
+
+MART (Wang et al, 2020b) 82.91 48.86 3.20 AWP (Wu et al, 2020) 83.26 50.11 2.36 FSR (Kim et al, 2023) 82.78 49.84 2.63 CFA (Wei et al, 2023) 84.31 50.22 3.31 UIAT (Dong et al, 2023) 84.78 51.62 3.32 SGLR (Li et al, 2024b) 85.67 50.93 3.08 DHAT (Zhang et al, 2025b) 86.94 53.67 1.21 
+
+HICAT (Ours) 87.96 55.18 0.96 
+
+4.7 Visual Explanations and Analysis To verify HICAT’s Causal Alignment, we visualize Grad-CAM attention maps (Selvaraju et al, 2017) and predic-tion confidence in Figure 7. Comparing these behaviors highlights three advantages: 
+
+– Supportive Priors. For context-dependent classes (e.g. , Snowplow ), DHAT treats valid priors as noise due to rigid suppression, dropping confidence to 70.4%. In contrast, HICAT identifies the background as supportive via LBBE and relaxes constraints. This preserves useful context and achieves the highest confidence (90.4%) in this example. 
+
+– Targeted Debiasing. In object-centric cases ( e.g. ,
+
+Sewing Machine ), Standard AT overfits to irrele-vant textures, reducing confidence to 64.7%. HICAT filters spurious backgrounds and sharpens focus on causal foreground structures. This targeted debiasing improves confidence over the baseline ( e.g. , 75.8% for Sewing Machine , 83.1% for Sunglasses ). 
+
+– Dynamic Modulation. The visual comparison shows that HICAT avoids the static behavior of prior baselines. It suppresses background features when they are spurious and preserves them when they aid recognition. 4.8 Hyperparameter Sensitivity Analysis We conduct a comprehensive sensitivity study to exam-ine the stability of HICAT under different training and inference hyperparameters. Figure 8 summarizes the 16 Zhiming Luo † et al. 1.00 1.25 1.50 1.75 2.00 2.25 2.50 2.75 3.00                                
+
+> 1
+> 54
+> 56
+> 58
+> 60
+> 62
+> 64
+> Accuracy (%)
+> PGD-10 PGD-20 PGD-50 C&W AA 1.00 1.25 1.50 1.75 2.00 2.25 2.50 2.75 3.00
+> 2
+> 54
+> 56
+> 58
+> 60
+> 62
+> Accuracy (%)
+> PGD-10 PGD-20 PGD-50 C&W AA 85.0
+> 85.5
+> 86.0
+> 86.5
+> 87.0
+> Accuracy (%)
+> 1.00 1.25 1.50 1.75 2.00 2.25 2.50 2.75 3.00
+> Value
+> 53.5
+> 54.0
+> 54.5
+> 55.0
+> 55.5
+> 56.0
+> Accuracy (%)
+> 1(AA) 2(AA) 1(Clean) 2(Clean)
+
+(a) λ1 sensitivity (b) λ2 sensitivity (c) Clean--Robust trade-off w.r.t. λ0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9                                
+
+> 1
+> 52
+> 54
+> 56
+> 58
+> 60
+> 62
+> Accuracy (%)
+> PGD-10 PGD-20 PGD-50 C&W AA 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9
+> 2
+> 52
+> 54
+> 56
+> 58
+> 60
+> 62
+> Accuracy (%)
+> PGD-10 PGD-20 PGD-50 C&W AA 83
+> 84
+> 85
+> 86
+> 87
+> Accuracy (%)
+> 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9
+> Threshold
+> 52.0
+> 53.0
+> 54.0
+> 55.0
+> 56.0
+> Accuracy (%)
+> 1(AA) 2(AA) 1(Clean) 2(Clean)
+
+(d) τ1 sensitivity (e) τ2 sensitivity (f) Clean--Robust trade-off w.r.t. τ
+
+Fig. 8 Parameter sensitivity analysis. We evaluate the robustness of our method under different training and inference hyperparameters. (a,b) show the influence of logit debiasing weights λ1 and λ2 on robustness across different adversarial attacks. (c) visualizes the clean–robust accuracy trade -off under varying λ values using a broken y-axis for clarity. (d,e) analyze the effect of foreground/background thresholding parameters τ1 and τ2, which control causal mask sparsity and background separation. (f) summarizes the corresponding clean–robust trade -off under different τ values. Across all settings, the curves demonstrate that HICAT remains stable within a broad hyperparameter range, achieving best performance around λ = 1 .0 and τ = 0 .5. 
+
+effects of the debiasing weights ( λ1, λ 2) and thresholds (τ1, τ 2). Three consistent observations emerge: 
+
+– Stable robustness across a wide range of λ
+
+values. Robustness improves as λ1 or λ2 increase to 1.0 and then plateaus (Figs. 8(a)-(b)). This stability corroborates the structural nature of our causal align-ment. Unlike standard regularization where hyper-parameters strictly balance loss magnitudes, HICAT alters the optimization direction to enforce feature disentanglement. Once the representation is suffi-ciently orthogonalized (around λ ≈ 1.0), increasing weights yields diminishing returns, confirming that robustness stems from learned feature invariance rather than gradient masking. 
+
+– Complementary mechanisms of λ1 and λ2. Fig-ure 8(c) reveals that λ1 and λ2 regulate the trade-off through distinct pathways. λ1 (Adaptive Debiasing) operates in the logit space , purifying the supervision signal by filtering high-confidence noise. λ2 (FLOE) operates in the geometric space , enforcing structural orthogonality. While stronger λ2 favors clean feature separation, it imposes a rigid constraint that slightly limits flexibility for adversarial adaptation. The re-sults confirm that λ1 = λ2 = 1 .0 achieves optimal synergy between signal purification and geometric disentanglement. 
+
+– Foreground/background thresholds (τ1, τ 2) ex-hibit smooth optima. Robustness peaks around 
+
+τ1 = τ2 = 0 .5 (Figs. 8(d)-(e)). This reflects the 
+
+semantic signal-to-noise ratio in mask generation. Lower thresholds ( τ < 0.3) fail to isolate the fore-ground, leaking spurious background noise into the causal estimator. Conversely, overly high thresholds (τ > 0.7) aggressively crop the object, causing the loss of essential semantic features. The peak at 0 .5represents a Causal Alignment, where LBBE cap-tures maximum causal information with minimum background interference. Adaptive Causal Alignment for High-Confidence Adversarial Training 17 
+
+Table 11 Cross-dataset robustness under a unified default hyperparameter setting ( λ1 = λ2 = 1 .0, τ1 = 0 .5, τ2 = 0 .5).                                                     
+
+> Dataset Method Clean ↑AA ↑Robust Gap ↓
+> CIFAR-10
+> MART 82.99 50.67 9.52 UIAT 82.94 52.17 7.92 DHAT 83.95 53.10 3.51
+> HICAT (Ours) 85.92 54.56 2.86 CIFAR-100
+> MART 54.69 27.25 9.96 UIAT 57.65 29.03 11.70 DHAT 59.14 30.17 4.24
+> HICAT (Ours) 62.38 31.24 3.12 SVHN
+> MART 95.21 70.34 8.12 UIAT 95.16 71.84 6.65 DHAT 96.17 72.77 4.05
+> HICAT (Ours) 97.05 74.23 3.18 MNIST
+> MART 98.34 91.27 4.68 UIAT 98.29 92.77 3.92 DHAT 98.88 93.70 2.95
+> HICAT (Ours) 99.22 95.16 2.21
+
+Table 12 Comparison of per-epoch computational costs (# RTX4090 GPU hours) using different adversarial training methods on CIFAR-10 under the same software and hardware setup. Method Architecture ResNet-18 WRN28-10 Inception-V3 TRADES (Zhang et al, 2019) 0.024 0.161 0.188 MART (Wang et al, 2020b) 0.026 0.168 0.194 AWP (Wu et al, 2020) 0.034 0.192 0.224 FSR (Kim et al, 2023) 0.036 0.205 0.239 CFA (Wei et al, 2023) 0.031 0.184 0.213 UIAT (Dong et al, 2023) 0.028 0.171 0.198 SGLR (Li et al, 2024b) 0.027 0.167 0.194 DHAT (Zhang et al, 2025b) 0.029 0.173 0.201    
+
+> HICAT (Ours) 0.029 0.176 0.204
+
+4.9 Cross-Dataset Transferability We further evaluate whether a single fixed configuration generalizes across datasets without per-dataset tuning. We fix λ1 = λ2 = 1 .0 and τ1 = τ2 = 0 .5, and com-pare MART, UIAT, DHAT, and HICAT on CIFAR-10, CIFAR-100, SVHN, and MNIST under a unified proto-col. The results are summarized in Table 11. The same default configuration preserves a consistent ranking across the evaluated datasets. Compared with MART, UIAT, and DHAT, HICAT achieves stronger AA robustness while retaining high clean accuracy, sug-gesting that the gains are not mainly driven by dataset-specific tuning. 4.10 Computational Efficiency Analysis We further examine the computational overhead intro-duced by HICAT during adversarial training. Computa-tional efficiency is important for adversarial training be-cause robust optimization repeatedly generates adversar-
+
+Table 13 One-time warm-up cost for training the proxy model gϕ(·) to approximate the pseudo-label b(x) on a single RTX 4090 GPU (ResNet-18 proxy).             
+
+> Dataset Data Used Proxy Epochs RTX4090 GPU Hours
+> CIFAR-10 1k sampled images 20 0.041 CIFAR-100 1k sampled images 20 0.046 ImageNet-1K 10k sampled images 10 0.538
+
+Table 14 Robustness (%) with different mask generators on CIFAR-10 using the WRN28-10 backbone under the same training and evaluation protocol. 
+
+Mask Generator Clean ↑ AA ↑ Robust Gap ↓
+
+Grad-CAM 85.92 54.56 2.86 Grad-CAM++ [1] 86.10 54.75 2.82 Integrated-Grad [2] 86.38 55.08 2.57 SOLO [3] 86.81 55.62 2.31 SAM [4] 87.42 56.10 1.95 
+
+ial examples and is often limited by GPU cost (Shafahi et al, 2019; Huang et al, 2023). Table 12 reports RTX4090 GPU hours per training epoch for adversarial training on CIFAR-10 under the same schedule, hardware/software setup, and implemen-tation protocol. We include TRADES as a direct low-cost baseline. For alignment-based AT variants (MART, UIAT, DHAT, and HICAT), we use the same runtime setting with parallel inputs; MART is re-run in this unified setting rather than reported only from its origi-nal sequential forward implementation. HICAT includes the inverse branch for ˇx and ˇz, but its branches are evaluated together in one GPU forward pass. Compared with DHAT, the extra operation is only the scalar gate 
+
+w(x) from the frozen proxy gϕ, which does not require another target-backbone pass. Table 12 accounts for per-epoch adversarial-training cost only. The one-time warm-up cost for training gϕ(·)is reported in Table 13. 4.11 Stability to Mask Quality and Generators To investigate the dependence on mask quality, we evaluate HICAT with different mask generators using WRN28-10. The default Grad-CAM masks are produced by a frozen CAM source model, and gϕ is frozen af-ter warm-up. Therefore, HICAT does not rely on the evolving target model’s early-stage attention. Table 14 summarizes the results. Table 14 shows that replacing Grad-CAM with Grad-CAM++ Chattopadhay et al (2018), Integrated Gra-dients Sundararajan et al (2017), SOLO Wang et al (2020a), and SAM Kirillov et al (2023) improves Au-toAttack robustness from 54.56% to 54.75%, 55.08%, 55.62%, and 56.10%, respectively. The robust gap also 18 Zhiming Luo † et al. Clean PGD-10 C&W AA                            
+
+> 0
+> 20
+> 40
+> 60
+> 80
+> Accuracy (%)
+> MART UIAT DHAT HICAT Clean PGD-10 C&W AA
+> 0
+> 20
+> 40
+> 60
+> 80
+> Accuracy (%)
+> MART UIAT DHAT HICAT Clean PGD-10 C&W AA
+> 0
+> 20
+> 40
+> 60
+> 80
+> Accuracy (%)
+> MART UIAT DHAT HICAT Clean PGD-10 C&W AA
+> 0
+> 20
+> 40
+> 60
+> 80
+> Accuracy (%)
+> MART UIAT DHAT HICAT Clean PGD-10 C&W AA
+> 0
+> 20
+> 40
+> 60
+> 80
+> Accuracy (%)
+> MART UIAT DHAT HICAT
+
+(a) ϵinv = 2 /255 (b) ϵinv = 4 /255 (c) ϵinv = 8 /255 (d) ϵinv = 12 /255 (e) ϵinv = 16 /255 
+
+Fig. 9 Impact of inverse adversarial perturbation strength ( ϵinv ) on model performance. We evaluate clean accuracy and robustness (PGD-10, C&W, AA) on CIFAR-10 across varying training perturbation budgets. While baselines (MART, UIAT) suffer from severe performance degradation and overfitting as ϵinv increases (from 8/255 to 16/255), HICAT (Ours) demonstrates superior stability, maintaining high robustness even under aggressive inverse parameter settings. 
+
+decreases from 2.86% to 1.95%. These results indicate that better segmentation quality leads to stronger ro-bustness. We use Grad-CAM as the default generator because it has lower computational cost; SAM achieves the highest robustness in this study but requires sub-stantially higher segmentation cost. 4.12 Impact of Inverse Adversarial Perturbation Strength We analyze the sensitivity to the inverse perturbation magnitude ϵinv , which governs the strength of high-confidence supervision. We conduct a sweep with ϵinv 
+
+∈ { 2, 4, 8, 12 , 16 }/255 on CIFAR-10 (Fig. 9). Note that MART is evaluated using UIAT’s inverse examples to ensure a fair comparison of alignment capabilities. Three critical trends emerge: 
+
+– Optimal performance at moderate strength. 
+
+Performance peaks around ϵinv = 4 /255 for all meth-ods (Fig. 9(b)). At this sweet spot, inverse examples strike an ideal balance: providing sufficient margin guidance to rectify the decision boundary without destroying input semantics. HICAT achieves its high-est AutoAttack accuracy (54.56%) here, confirming optimal utilization of high-confidence supervision. 
+
+– Baselines suffer from noise amplification. Per-formance for MART and UIAT degrades sharply beyond ϵinv ≥ 8/255. Under aggressive perturba-tion ( ϵinv = 16 /255), UIAT’s accuracy collapses to 
+
+∼ 40 .5%. This collapse occurs because strong inverse perturbations indiscriminately amplify non-robust background textures to boost confidence. Without filtering, baselines blindly align with these intensi-fied artifacts, leading to severe contextual overfitting 
+
+where the model memorizes noise rather than robust features. 
+
+– HICAT achieves stability via dynamic decou-pling. In contrast, HICAT maintains robust accu-racy over 52% (AA) even at ϵinv = 16 /255, outper-forming the best baseline by ∼ 7%. This stability 
+
+Table 15 Impact of LBBE Proxy Architectures on Bias Estimation. We evaluate the sensitivity of HICAT to the proxy backbone used for bias diagnosis. Bias Alignment 
+
+measures the similarity between the learned estimator gϕ(x)and the ground-truth b(x) using Pearson Correlation ( r)
+
+and Mean Squared Error (MSE) . UIAT and DHAT are included as baselines. The Default HICAT setting uses ResNet-18 as the proxy.                                
+
+> Method / Proxy Model Performance (%) Bias Alignment
+> Clean ↑AA ↑Pearson r↑MSE ↓
+> UIAT (Dong et al, 2023) 82.94 52.17 --DHAT (Zhang et al, 2025b) 83.95 53.10 --HICAT (AlexNet) 84.47 54.05 0.76 0.082 HICAT (ResNet-18) 85.92 54.56 0.89 0.035 HICAT (ResNet-50) 86.05 54.68 0.92 0.031
+> HICAT (ViT-B/16) 85.45 54.32 0.82 0.056
+
+validates Adaptive Debiasing as a dynamic filter. As 
+
+ϵinv increases and background noise becomes more pronounced, LBBE detects the stronger spurious correlation and triggers more aggressive suppression. This effectively decouples supervision strength from feature corruption , allowing HICAT to benefit from strong supervision targets without overfitting to ex-acerbated background noise. 4.13 Robustness of the Bias Estimator To verify that our LBBE module captures intrinsic con-textual dependencies rather than architectural artifacts, we instantiated the proxy classifier with diverse back-bones ranging from shallow CNNs to Transformers. We quantify the estimation quality using the Pearson corre-lation ( r) between the predicted and ground-truth bias. As shown in Table 15, three key trends emerge: 
+
+– High lower bound over baselines. Even when uti-lizing a lightweight AlexNet proxy, HICAT achieves 
+
+54.05% AutoAttack accuracy. This significantly outperforms the strongest matched baselines UIAT (52.17%) and DHAT (53.10%), confirming that our improvements stem from the Adaptive Causal Align-Adaptive Causal Alignment for High-Confidence Adversarial Training 19 
+
+Table 16 Ablation study of HICAT components on CIFAR-10 (ResNet-18). We report clean accuracy (%), robustness under PGD-10 and AutoAttack (%), and the robust general-ization gap. When LBBE is removed but CC or FLOE remains active, we set ˆb(x) = 0, yielding w(x) = 0 .5 and FLOE weight 1 − | ˆb(x)| = 1 .0. Best results are highlighted in bold .LBBE CC FLOE Clean ↑ PGD-10 ↑ AA ↑ Gap ↓                               
+
+> 78.10 55.30 48.21 3.80
+> ✓78.62 55.95 48.70 2.67
+> ✓78.85 56.42 49.18 2.43
+> ✓78.51 56.10 49.05 2.41
+> ✓✓79.03 56.93 49.81 2.10
+> ✓✓78.96 56.70 49.66 2.26
+> ✓✓✓79.28 57.21 50.25 2.07
+
+ment mechanism itself, rather than reliance on a heavy proxy model. 
+
+– Correlation between diagnosis and robustness. 
+
+There is a clear positive correlation between bias alignment and final robustness. As the estimator becomes more precise ( r increases from 0.76 with AlexNet to 0.92 with ResNet-50), the robust accu-racy consistently improves. This validates our core hypothesis: accurate diagnosis of “supportive vs. spu-rious” context is the decisive factor for robust feature learning. 
+
+– Universality and optimal trade-off. The frame-work proves effective across distinct inductive biases, with the Transformer-based ViT-B/16 proxy main-taining strong performance ( r = 0 .82, 54.32% AA). Furthermore, while ResNet-50 yields the highest alignment ( r = 0 .92), the default ResNet-18 strikes the optimal efficiency-accuracy balance, achieving competitive robustness (54.56% AA) with signifi-cantly lower computational overhead. 4.14 Ablation Study We conduct an ablation on CIFAR-10 (ResNet-18). Ta-ble 16 shows the effect of adding LBBE, CC, and FLOE step by step. When LBBE is removed but CC or FLOE remains active, we set ˆb(x) = 0. By Eqs. (16) and (19), 
+
+w(x) = 0 .5 and FLOE weight 1 − | ˆb(x)| = 1 .0. This setting keeps the loss forms unchanged while isolating the benefit of adaptive diagnosis. Three mechanistic observations emerge: 
+
+– Each alignment branch helps under the fixed bias setting. Activating CC or FLOE with ˆb(x) = 0 already improves over the base model, confirming that both logit rectification and geometric disentan-glement contribute to robustness. 
+
+– Adaptive diagnosis further strengthens both branches. Replacing this fixed score with learned 
+
+Table 17 Class-wise weight ablation on CIFAR-10 using the WRN28-10 backbone under ℓ∞ perturbations ( ϵ = 8 /255).                     
+
+> Method Clean ↑PGD-10 ↑C&W ↑AA ↑Robust Gap ↓
+> HICAT (no adaptive weight) 83.51 60.04 54.72 52.99 4.85 HICAT (class-wise weight) 84.62 61.25 55.80 53.73 3.22
+> HICAT (sample-wise weight, Ours) 85.92 61.87 56.59 54.56 2.86
+
+LBBE improves AA from 49.18% to 49.81% for CC and from 49.05% to 49.66% for FLOE, showing that adaptive bias estimation benefits both the logit-space and geometric regularizers. 
+
+– Full HICAT achieves synergistic integration. 
+
+Combining LBBE, CC, and FLOE yields the high-est clean and robust accuracy. This validates the “Measure-Debias-Align” pipeline: diagnosis (LBBE) requires actionable mechanisms (CC/FLOE), while rigorous constraints require precise diagnosis. The full framework achieves a Causal Alignment where diagnosis and correction reinforce each other. Table 17 compares fixed, class-wise, and sample-wise weighting under the same setting. The no-adaptive-weight variant sets ˆb(x) = 0, so CC uses w(x) = 0 .5 and FLOE uses weight 1 −| ˆb(x)| = 1 .0. It obtains 52.99% AA with a 4.85% robust gap. Replacing these fixed weights with class-wise weights improves AA to 53.73% and reduces the gap to 3.22%, showing that LBBE-based background diagnosis is useful. Sample-wise HICAT further improves AA to 54.56% and reduces the gap to 2.86%, showing that per-sample weighting is more precise than assigning one weight to each class. 
+
+5 Conclusion 
+
+In this work, we identified the “Feature Alignment Para-dox” inherent to adversarial training: visual context is not merely noise but a dual-natured signal that can serve as either a supportive prior or a spurious confounder. Consequently, existing blind suppression strategies in robust learning are limited because they can cause se-vere semantic degradation. To resolve this, we proposed 
+
+HICAT , a unified framework that establishes a Causal Alignment for robust optimization. By integrating the LBBE for diagnosis and FLOE for geometric regular-ization, HICAT dynamically disentangles causal fea-tures from adversarial noise, preserving helpful context while filtering harmful bias. Empirical results across CIFAR and ImageNet benchmarks demonstrate that HICAT achieves state-of-the-art adversarial robustness. Furthermore, its success across CNNs and ViTs vali-dates Causal Alignment as an architecture-agnostic defense principle that significantly reduces the robust generalization gap. 20 Zhiming Luo † et al. 
+
+References 
+
+Ahmad O, B´ ereux N, Baret L, Hashemi V, Lecue F (2024) Causal analysis for robust interpretability of neural networks. In: WAVC 4 Ai Z, He H (2026) Pasa: A principled embedding-space watermarking approach for llm-generated text under semantic-invariant attacks. In: ICML 3 Andriushchenko M, Croce F, Flammarion N, Hein M (2020) Square attack: a query-efficient black-box ad-versarial attack via random search. In: ECCV 9 Bai H, Kong L, Chen X, Wang J, Tao Z, Wang H (2026) Dice: Diffusion large language models excel at gener-ating cuda kernels. arXiv preprint arXiv:260211715 1Butt MA, Ali H, Qayyum A, Sultani W, Al-Fuqaha A, Qadir J (2025) R2s100k: Road-region segmentation dataset for semi-supervised autonomous driving in the wild. IJCV 133(2):910–928 1 Carlini N, Wagner D (2017) Towards evaluating the robustness of neural networks. IEEE SP pp 39–57 3, 9Carmon Y, Raghunathan A, Schmidt L, Duchi JC, Liang PS (2019) Unlabeled data improves adversarial ro-bustness. Advances in neural information processing systems 32 10, 13 Chattopadhay A, Sarkar A, Howlader P, Balasubrama-nian VN (2018) Grad-cam++: Generalized gradient-based visual explanations for deep convolutional net-works. In: WACV 17 Cho H, Han Y, Kim WH (2023) Anti-adversarial con-sistency regularization for data augmentation: Ap-plications to robust medical image segmentation. In: MICAI 2 Croce F, Hein M (2020a) Minimally distorted adversarial examples with a fast adaptive boundary attack. In: ICML 9 Croce F, Hein M (2020b) Reliable evaluation of adversar-ial robustness with an ensemble of diverse parameter-free attacks. In: ICML 3, 9 Croce F, Andriushchenko M, Sehwag V, Debenedetti E, Flammarion N, Chiang M, Mittal P, Hein M (2021) Robustbench: a standardized adversarial robustness benchmark. In: NeurIPS 5, 10 Dong J, Moosavi-Dezfooli SM, Lai J, Xie X (2023) The enemy of my enemy is my friend: Exploring inverse ad-versaries for improving aversarial training. In: CVPR 2, 4, 9, 11, 12, 14, 15, 17, 18 Dong Y, Liao F, Pang T, Su H, Zhu J, Hu X, Li J (2018) Boosting adversarial attacks with momentum. In: CVPR 3 Dosovitskiy A (2020) An image is worth 16x16 words: Transformers for image recognition at scale. arXiv preprint arXiv:201011929 9 Fawzi A, Fawzi H, Fawzi O (2018) Adversarial vulnera-bility for any classifier. In: NeurIPS 1 Feng S, Li S, Chen L, Chen S (2024) Unveiling potential threats: backdoor attacks in single-cell pre-trained models. Cell Discovery 10(1):122 3 Goodfellow IJ, Shlens J, Szegedy C (2014) Explaining and harnessing adversarial examples. arXiv preprint arXiv:14126572 3 Gowal S, Rebuffi SA, Wiles O, Stimberg F, Calian DA, Mann TA (2021) Improving robustness using gener-ated data. In: NeurIPS 12, 15 Guo C, Gardner J, You Y, Wilson AG, Weinberger K (2019) Simple black-box adversarial attacks. In: ICML 3He K, Zhang X, Ren S, Sun J (2016) Deep residual learning for image recognition. In: CVPR 9 Howard FJ (2019) Imagenette: A smaller subset of imagenet. In: Github, https://github.com/fastai/imagenette 2 Hu Y, Yang J, Chen L, Li K, Sima C, Zhu X, Chai S, Du S, Lin T, Wang W, et al (2023) Planning-oriented autonomous driving. In: CVPR 3 Huang X, Wu J, Zhang K, Yang C, Luo Z (2025) Mani-pure: Magnitude-adaptive noise injection for adver-sarial purification. arXiv preprint arXiv:250925082 3Huang Z, Fan Y, Liu C, Zhang W, Zhang Y, Salzmann M, S¨ usstrunk S, Wang J (2023) Fast adversarial train-ing with adaptive step size. IEEE TIP 32:6102–6114 1, 17 Jin D, Fan C, Ma J, Zhou J, Chen W, Yu S (2025) On denoising walking videos for gait recognition. In: CVPR 4 Kim WJ, Cho Y, Jung J, Yoon SE (2023) Feature sep-aration and recalibration for adversarial robustness. In: CVPR 4, 11, 12, 14, 15, 17 Kirillov A, Mintun E, Ravi N, Mao H, Rolland C, Gustafson L, Xiao T, Whitehead S, Berg AC, Lo WY, et al (2023) Segment anything. In: ECCV 2, 17 Krizhevsky A, Hinton G, et al (2009) Learning multiple layers of features from tiny images. In: Toronto, ON, Canada 9 Kuang H, Liu H, Lin X, Ji R (2024) Defense against adversarial attacks using topology aligning adversarial training. IEEE TIFS 19:3659–3673 1 Li B, Liu W (2023) Wat: improve the worst-class ro-bustness in adversarial training. In: AAAI 1 Li B, Xiao H, Tang L (2024a) Asam: Boosting segment anything model with adversarial tuning. In: CVPR 1 Li J, Ji R, Liu H, Hong X, Gao Y, Tian Q (2019) Universal perturbation attack against image retrieval. In: ICCV 1 Adaptive Causal Alignment for High-Confidence Adversarial Training 21 
+
+Li Z, Yu D, Wei L, Jin C, Zhang Y, Chan S (2024b) Soften to defend: Towards adversarial robustness via self-guided label refinement. In: CVPR 4, 11, 12, 14, 15, 17 Liao F, Liang M, Dong Y, Pang T, Hu X, Zhu J (2018) Defense against adversarial attacks using high-level representation guided denoiser. In: CVPR 4 Madry A, Makelov A, Schmidt L, Tsipras D, Vladu A (2018) Towards deep learning models resistant to adversarial attacks. In: ICLR 3, 9 Maheronnaghsh M, Alvanagh TA (2024) Robustness to spurious correlation: A comprehensive review. In: ECCV 4 Mo Y, Wu D, Wang Y, Guo Y, Wang Y (2022) When ad-versarial training meets vision transformers: Recipes from training to architecture. In: NeurIPS 9 Pang T, Lin M, Yang X, Zhu J, Yan S (2022) Robust-ness and accuracy could be reconcilable by (proper) definition. In: ICML 12, 15 Russakovsky O, Deng J, Su H, Krause J, Satheesh S, Ma S, Huang Z, Karpathy A, Khosla A, Bernstein M, et al (2015) Imagenet large scale visual recognition challenge. IJCV 115:211–252 2, 9 Salman H, Ilyas A, Engstrom L, Vemprala S, Madry A, Kapoor A (2021) Unadversarial examples: Designing objects for robust vision. In: NeurIPS 2 Selvaraju RR, Cogswell M, Das A, Vedantam R, Parikh D, Batra D (2017) Grad-cam: Visual explanations from deep networks via gradient-based localization. In: ICCV 15 Seo S, Lee JY, Han B (2022) Information-theoretic bias reduction via causal view of spurious correlation. In: AAAI 4 Shafahi A, Najibi M, Ghiasi MA, Xu Z, Dickerson J, Studer C, Davis LS, Taylor G, Goldstein T (2019) Adversarial training for free! In: NeurIPS 1, 17 Shrivastava A, Pfister T, Tuzel O, Susskind J, Wang W, Webb R (2017) Learning from simulated and unsuper-vised images through adversarial training. In: CVPR 4Simonyan K, Zisserman A (2014) Very deep convo-lutional networks for large-scale image recognition. arXiv preprint arXiv:14091556 9 Singh ND, Croce F, Hein M (2023) Revisiting adversarial training for imagenet: Architectures, training and generalization across threat models. In: NeurIPS 10 Song C, Fan Y, Zhou A, Wu B, Li Y, Li Z, He K (2024) Regional adversarial training for better robust generalization. IJCV 132(10):4510–4520 3 Sriramanan G, Addepalli S, Baburaj A, et al (2020) Guided adversarial attack for evaluating and enhanc-ing adversarial defenses. In: NeurIPS 4 Subramanian A, Sizikova E, Majaj N, Pelli D (2024) Spatial-frequency channels, shape bias, and adversar-ial robustness. In: NeurIPS 1 Sundararajan M, Taly A, Yan Q (2017) Axiomatic at-tribution for deep networks. In: ICML 17 Szegedy C, Zaremba W, Sutskever I, Bruna J, Erhan D, Goodfellow I, Fergus R (2014) Intriguing properties of neural networks. In: ICLR 1 Szegedy C, Liu W, Jia Y, Sermanet P, Reed S, Anguelov D, Erhan D, Vanhoucke V, Rabinovich A (2015) Going deeper with convolutions. In: CVPR 9 Varma M, Delbrouck JB, Chen Z, Chaudhari A, Lan-glotz C (2024) Ravl: Discovering and mitigating spuri-ous correlations in fine-tuned vision-language models. In: NeurIPS 4 Wang H, Jin X, Lu L, Li C, Chen J, Liu Q, Wang H (2026) Earlytom: Early token compression completes fast video understanding. In: CVPR 1 Wang J, Zhang T, Liu S, Chen PY, Xu J, Fardad M, Li B (2021) Adversarial attack generation empowered by min-max optimization. In: NeurIPS 4 Wang X, Kong T, Shen C, Jiang Y, Li L (2020a) Solo: Segmenting objects by locations. In: ECCV 17 Wang Y, Zou D, Yi J, Bailey J, Ma X, Gu Q (2020b) Improving adversarial robustness requires revisiting misclassified examples. In: ICLR 2, 4, 11, 12, 14, 15, 17 Wang Z, Pang T, Du C, Lin M, Liu W, Yan S (2023) Better diffusion models further improve adversarial training. In: ICML 12 Wang Z, Li X, Zhu H, Xie C (2024) Revisiting adver-sarial training at scale. In: CVPR 4 Wei Z, Wang Y, Guo Y, Wang Y (2023) Cfa: Class-wise calibrated fair adversarial training. In: CVPR 4, 11, 12, 14, 15, 17 Wu D, Xia ST, Wang Y (2020) Adversarial weight per-turbation helps robust generalization. In: NeurIPS 4, 11, 12, 14, 15, 17 Xiao K, Engstrom L, Ilyas A, Madry A (2021) Noise or signal: The role of image backgrounds in object recognition. In: ICLR 2, 7 Yi J, Bi Q, Zheng H, Zhan H, Ji W, Huang H, Li Y, Li S, Wu X, Zheng Y, et al (2025) D-cam: Learning generalizable weakly-supervised medical image seg-mentation from domain-invariant cam. In: MICCAI 3Zagoruyko S, Komodakis N (2016) Wide residual net-works. arXiv preprint arXiv:160507146 9 Zhang H, Yu Y, Jiao J, Xing E, Ghaoui LE, Jordan M (2019) Theoretically principled trade-off between robustness and accuracy. In: ICML 2, 4, 17 Zhang K, Tao K, Luo Z, Liu C, Tang J, Wang H (2025a) Tars: Minmax token-adaptive preference strat-22 Zhiming Luo † et al. 
+
+egy for mllm hallucination reduction. arXiv preprint arXiv:250721584 1 Zhang K, Weng J, Li S, Luo Z (2025b) Towards adver-sarial robustness via debiased high-confidence logit alignment. In: ICCV 2, 3, 4, 10, 11, 12, 14, 15, 17, 18 Zhang K, Weng J, Cai Y, Li S, Luo Z (2026) Miti-gating low-frequency bias: Feature recalibration and frequency attention regularization for adversarial ro-bustness. Neural Networks 193:108070 4 Zhang Y, Chen Y, Chen Z, Ruan W, Huang X, Khastgir S, Zhao X (2025c) Adversarial training for probabilis-tic robustness. In: ICCV 4 Zhu J, Wang H, Su M, Wang Z, Wang H (2026) Obs-diff: Accurate pruning for diffusion models in one-shot. In: ICLR 1

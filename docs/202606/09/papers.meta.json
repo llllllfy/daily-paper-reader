@@ -1,0 +1,69 @@
+{
+  "label": "2026-06-09",
+  "date": "2026-06-09",
+  "generated_at": "2026-06-09T21:57:08",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202606/09/2606.06813v1-breaking-the-lock-in-diversifying-text-to-image-generation-via-representation-modulation",
+      "section": "deep",
+      "title_en": "Breaking the Lock-in: Diversifying Text-to-Image Generation via Representation Modulation",
+      "authors": "Dahee Kwon, Haeun Lee, Jaesik Choi",
+      "date": "2026-06-05",
+      "pdf": "https://arxiv.org/pdf/2606.06813v1",
+      "score": "9.0",
+      "evidence": "调制中间Transformer特征的直流分量是一种深度模型潜在空间干预。",
+      "tldr": "基于大规模Transformer和流模型的文生图模型虽对齐良好，但固定提示下易生成高度相似图像，现有多样性方法或需额外采样或优化，开销大。研究发现中间Transformer特征的零频率空间平均（DC）分量在生成早期跨种子迅速收敛，造成轨迹锁定，限制变化。为此提出无训练表示干预DAVE，在早期衰减DC分量。DAVE以几乎零代价提升了提示一致多样性，并保持竞争性图像质量，为低成本多样化生成提供新途径。",
+      "tags": "query:cp",
+      "abstract_en": "Recent text-to-image models built on large-scale Transformer backbones and flow-based objectives deliver strong text-image alignment and high visual quality, yet often produce overly similar samples under a fixed prompt. Existing diversity-enhancement methods alleviate this issue, but typically require expensive sampling or auxiliary optimization, incurring non-trivial overhead. To investigate the root cause of this homogeneity, we examine intermediate Transformer features and observe that the zero-frequency spatial average (DC) component rapidly converges across seeds early in generation, causing early trajectory lock-in that limits downstream variation. Building on this observation, we propose DC Attenuation for diVersity Enhancement (DAVE), a training-free representation-level intervention that selectively attenuates this component in the early regime. DAVE preserves the sampling pipeline with negligible overhead, improving prompt-consistent diversity while maintaining competitive image quality.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/09/2606.08044v1-when-behavioral-safety-evaluation-fails-a-representation-level-perspective",
+      "section": "deep",
+      "title_en": "When Behavioral Safety Evaluation Fails: A Representation-Level Perspective",
+      "authors": "Enyi Jiang, Anders Gjølbye, Yibo Jacky Zhang, Sanmi Koyejo",
+      "date": "2026-06-06",
+      "pdf": "https://arxiv.org/pdf/2606.08044v1",
+      "score": "8.0",
+      "evidence": "提出基于潜在空间干预的评估框架，通过参数和潜在空间中的软干预测试模型鲁棒性。",
+      "tldr": "大型语言模型安全性评估通常仅关注行为输出，忽视了表征层面的潜在脆弱性。本研究形式化了审计差距，构建了保持外部安全行为但内部脆弱的解离模型，并提出基于参数和潜在空间干预的评估框架，包括有害微调与逐层扰动，引入潜在脆弱性分数（LVS）量化易被有限扰动唤出有害行为的程度。在多个安全与不安全对齐模型上的实验表明，行为安全指标无法反映表征层鲁棒性，解离模型LVS显著升高且中间层最敏感。这些发现揭示了单独行为评估的不足，强调需结合表征感知审计来全面衡量模型安全性。",
+      "tags": "query:cp",
+      "abstract_en": "Large Language Model (LLM) safety has often been evaluated at the behavior level, which provides limited evidence of internal robustness, as these evaluations target outputs rather than representation-level vulnerability under intervention. We formalize this discrepancy as the audit gap: the difference between behavioral safety and robustness under intervention. To study this gap, we construct dissociated models that preserve safe outward behavior while remaining vulnerable in the latent space. We introduce an intervention-based evaluation framework to test model robustness through soft interventions in parameter and latent spaces, including harmful fine-tuning and layer-wise latent perturbations. To formalize the evaluation, we propose the Latent Vulnerability Score (LVS) to measure how easily harmful behavior can be elicited by bounded latent perturbations. Using this evaluation framework, we show that behavioral safety metrics are insufficient measures of representation-level robustness across multiple safely and unsafely aligned state-of-the-art models. Notably, dissociated models show substantially elevated LVSs despite comparable refusal behavior under harmful intervention, with intermediate representations being the most sensitive to intervention. Our results suggest that behavioral safety evaluation alone provides an incomplete picture of model robustness, motivating representation-aware audits of latent vulnerability and observable behavior.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/09/2606.08063v1-robust-u1-can-mllms-self-recover-corrupted-visual-content-for-robust-understanding",
+      "section": "quick",
+      "title_en": "Robust-U1: Can MLLMs Self-Recover Corrupted Visual Content for Robust Understanding?",
+      "authors": "Jiaqi Tang, Jianmin Chen, Youyang Zhai, Wei Wei, Runtao Liu, Mengjie Zhao, Xiangyu Wu, Qingfa Xiao, Qifeng Chen",
+      "date": "2026-06-06",
+      "pdf": "https://arxiv.org/pdf/2606.08063v1",
+      "score": "7.0",
+      "evidence": "多模态大模型自我恢复受破坏的视觉内容以实现鲁棒理解，应对包括颜色变化在内的视觉退化。",
+      "tldr": "多模态大语言模型（MLLMs）在真实世界视觉干扰下性能显著下降，现有鲁棒性增强方法或缺乏可解释性，或无法恢复丢失细节。本文提出Robust-U1框架，赋予MLLMs显式视觉自恢复能力，通过监督微调、强化学习（双重奖励：像素级SSIM与语义级CLIP相似度）及多模态推理三阶段实现。实验显示该方法在真实干扰基准上达到最优，并在对抗干扰下保持优越性能，高质量视觉恢复直接增强推理。该工作确立了自恢复作为鲁棒视觉理解的关键机制，代码已开源。",
+      "tags": "query:cp",
+      "abstract_en": "Multimodal Large Language Models (MLLMs) have demonstrated remarkable success in visual understanding, yet their performance degrades significantly under real-world visual corruptions. While existing robustness enhancement approaches exist, they are limited: black-box feature alignment lacks interpretability, and white-box text-based reasoning cannot restore lost pixel-level details. This work investigates a fundamental research question: Can MLLMs recover corrupted visual content by themselves? To address this, we propose Robust-U1, a novel framework that equips MLLMs with explicit visual self-recovery capability for robust understanding. The approach comprises three core stages: supervised fine-tuning for initial reconstruction, reinforcement learning with dual rewards (pixel-level SSIM and semantic-level CLIP similarity) for aligning high visual quality, and multimodal reasoning that jointly considers both the corrupted input and the recovered image. Extensive experiments demonstrate that Robust-U1 achieves state-of-the-art robustness on the real-world corruption benchmark and maintains superior performance under adversarial corruptions on general VQA benchmarks. Analysis confirms that high-quality visual recovery directly enhances reasoning performance, establishing self-recovery as a critical mechanism for robust visual understanding. The source code is available at https://github.com/jqtangust/Robust-U1.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/09/2606.03925v1-adaptive-causal-alignment-for-high-confidence-adversarial-training",
+      "section": "quick",
+      "title_en": "Adaptive Causal Alignment for High-Confidence Adversarial Training",
+      "authors": "Zhiming Luo, Kejia Zhang, Yingxin Lai, Junwei Wu, Juanjuan Weng, Shaozi Li",
+      "date": "2026-06-02",
+      "pdf": "https://arxiv.org/pdf/2606.03925v1",
+      "score": "6.0",
+      "evidence": "将因果特征与虚假背景相关性解耦",
+      "tldr": "高置信度预测在对抗训练中常捕获非因果背景关联，而非物体语义，导致模型过拟合虚假特征，损失鲁棒性。现有方法盲目抑制背景，无法区分上下文是支持性先验还是虚假混淆因子，引发特征丢失。本文提出HICAT，一种基于测量-去偏-对齐的自适应因果对齐框架，通过可学习背景偏差估计器实现上下文自适应诊断，执行针对性logit校正，并设计前景logit正交增强损失强制语义解耦，达到均衡。在CIFAR-10/100和ImageNet-1K数据集上，HICAT在CNN和ViT等架构上均提升鲁棒准确率，显著减小鲁棒泛化差距。该工作阐明上下文双重角色，为高置信度对抗训练贡献了因果去偏的新思路。",
+      "tags": "query:cp",
+      "abstract_en": "Inverse adversarial training leverages high-confidence predictions to stabilize robust learning, yet we uncover a critical paradox: high confidence often stems from overfitting to non-causal background correlations rather than intrinsic object semantics. Our investigation reveals that visual context functions as a dual-natured signal, serving as either a necessary supportive prior or a spurious confounder. This insight renders existing blind suppression strategies flawed, as they inevitably lead to severe Feature Loss. To resolve this, we propose High-Confidence Causally Aligned Training (HICAT), a unified framework that establishes a Semantic Equilibrium. Operating on a ``Measure-Debias-Align'' pipeline, HICAT integrates a Learnable Background-Bias Estimator (LBBE) to adaptively diagnose context utility. Guided by this diagnosis, an Adaptive Debiasing mechanism performs surgical logit rectification, complemented by a geometrically grounded Foreground Logit Orthogonal Enhancement (FLOE) loss to enforce rigorous feature disentanglement. Extensive experiments on CIFAR-10, CIFAR-100, and ImageNet-1K demonstrate that HICAT consistently improves over matched baselines across diverse architectures (CNNs and ViTs) while significantly reducing the robust generalization gap.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
