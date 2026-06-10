@@ -1,0 +1,69 @@
+{
+  "label": "2026-06-10",
+  "date": "2026-06-10",
+  "generated_at": "2026-06-10T22:27:32",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202606/10/2606.09909v1-bypassing-copyright-protection-in-diffusion-based-customization-via-two-stage-latent-feature-optimization",
+      "section": "deep",
+      "title_en": "Bypassing Copyright Protection in Diffusion-based Customization via Two-Stage Latent Feature Optimization",
+      "authors": "Ziang Xu, Wenbo Yu, Hongyao Yu, Hao Fang, Jiawei Kong, Bin Chen, Hao Wu, Shu-Tao Xia, Zhiyong Wu",
+      "date": "2026-06-06",
+      "pdf": "https://arxiv.org/pdf/2606.09909v1",
+      "score": "8.0",
+      "evidence": "在潜在扩散模型的潜在空间中执行两阶段特征优化以操纵表示",
+      "tldr": "针对扩散模型定制化中的版权保护问题，现有防御通过扰动潜在空间阻碍个性化生成，但易被自适应攻击绕过。本文提出两阶段潜在特征优化攻击TS-LFO，通过潜在去噪与重构两阶段恢复输入图像到潜在空间的映射，有效去除防御引入的高频噪声并修复低频语义。实验表明该方法能稳定攻破多种SOTA防御，且攻击效果优于DiffPure、GrIDPure和IMPRESS等现有方法，为版权保护研究提供重要对照。",
+      "tags": "query:cp",
+      "abstract_en": "With the growing concerns over copyright infringement in diffusion-based customization, adversarial attacks have emerged as a prominent defense strategy to prevent malicious content forgery in personalized image generation. However, current defenses typically introduce persistent perturbations in the latent space of Latent Diffusion Models (LDMs), which remain susceptible to adaptive bypasses by adversaries. In this paper, we introduce Two-Stage Latent Feature Optimization (TS-LFO), an efficient and effective copyright-stealing attack against protected diffusion-based customization. We begin by observing that existing defenses primarily disrupt the mapping between input images and their latent representations, thereby degrading the model's ability to produce personalized outputs. To counteract this, TS-LFO restores the broken mapping through a two-stage optimization process. In the Latent Denoising Stage, we enhance semantic consistency between latent codes and input images by jointly minimizing a Latent-Image Alignment Loss and a Latent Diffusion Loss with timestep-dependent weights, effectively suppressing the high-frequency noise introduced by defenses. In the Latent Reconstruction Stage, we recover low-frequency semantic information using pixel-level constraints to refine the latent features. Extensive experiments show that TS-LFO consistently bypasses state-of-the-art (SOTA) copyright defenses and outperforms SOTA copyright attacks such as DiffPure, GrIDPure and IMPRESS across diverse settings.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/10/2606.10653v1-stediff-strengthening-text-embedding-for-text-to-image-alignment-in-diffusion-model",
+      "section": "deep",
+      "title_en": "STEDiff: Strengthening Text Embedding for Text-to-Image Alignment in Diffusion Model",
+      "authors": "Hailan Zhang, Haipeng Liu, Bo Fu, Yang Wang",
+      "date": "2026-06-09",
+      "pdf": "https://arxiv.org/pdf/2606.10653v1",
+      "score": "8.0",
+      "evidence": "通过直接干预文本嵌入空间增强语义对齐，强化[EOT]标记以改善属性绑定。",
+      "tldr": "尽管文本到图像扩散模型能生成逼真图像，但在处理多对象或复杂语义关系时，常出现忽略实体、属性错绑等语义不对齐问题，极大地限制了实际部署。现有方案多借助额外训练数据或预定义布局来改善，但计算开销大且不够灵活。针对此，本文提出STEDiff，一种无需重新训练的方法，它直接在文本嵌入空间中进行语义强化：首先利用[EOT]令牌提取并增强各子句的语义，之后用增强后的嵌入替换原始提示中的对应令牌；此外，引入语义增强损失，强制模型将每个实体的语义准确映射到图像空间中的恰当区域，从而缓解错位。在语义对齐基准T2I-CompBench上的大量实验显示，STEDiff在复杂场景下能明显提升语义一致性和生成完整性，如对象存在性和属性绑定准确率均显著提高，为文本到图像的对齐技术提供了一种轻量高效的新选择。",
+      "tags": "query:cp",
+      "abstract_en": "Although pretrained text-to-image (T2I) generation models can produce high-quality images, they often fail to faithfully reflect the semantic intent of complex prompts due to stochastic noise and inherent model limitations. This issue frequently manifests as the model overlooking specific objects or failing to correctly bind attributes to their corresponding entities, a challenge referred to as semantic alignment. Unlike existing approaches that rely on computationally expensive fine-tuning or labor-intensive layout priors, we propose STEDiff, a training-free method designed to enhance semantic representations directly within the text-embedding space. Specifically, we introduce a method that primarily leverages the [EOT] token to strengthen the relevant semantics of sub-sentences and then replaces the corresponding tokens in the original prompt. Furthermore, a novel semantic enhancement loss is incorporated to enforce spatial constraints, ensuring that the semantics of each entity are precisely mapped to their respective image regions. Extensive quantitative and qualitative evaluations on the T2I-CompBench demonstrate that our method notably improves semantic consistency and generation integrity in complex scenarios.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/10/2606.06943v1-ss-tpt-stability-and-suitability-guided-test-time-prompt-tuning-for-adversarially-robust-vision-language-models",
+      "section": "quick",
+      "title_en": "SS-TPT: Stability and Suitability-Guided Test-Time Prompt Tuning for Adversarially Robust Vision-Language Models",
+      "authors": "Sunoh Kim, Daeho Um",
+      "date": "2026-06-05",
+      "pdf": "https://arxiv.org/pdf/2606.06943v1",
+      "score": "7.0",
+      "evidence": "测试时提示调优在隐空间提示中干预，提升视觉-语言模型的对抗鲁棒性。",
+      "tldr": "视觉语言模型如CLIP虽零样本识别能力强，但对抗扰动下极度脆弱，现有测试时自适应防御依赖多增强视图导致昂贵推理延迟。本文提出SS-TPT，引入稳定性与适宜性分数评价增强视图质量，用SS引导一致性损失与加权预测，增强可靠视图并抑制损坏视图。大量实验表明，SS-TPT在不同数据集与视图数量下均显著超越前人方法，取得优越的鲁棒性-吞吐量权衡，兼顾强实用性与通用性。",
+      "tags": "query:cp",
+      "abstract_en": "Vision-language models (VLMs) such as CLIP achieve strong zero-shot recognition but remain highly fragile under adversarial perturbations. Recent test-time adaptation defenses improve robustness by leveraging many augmented views, but this leads to impractical slowdown and a clear robustness-throughput trade-off. To address this challenge, we present Stability and Suitability-guided Test-time Prompt Tuning (SS-TPT), evaluating the quality of each augmented view via two complementary scores: (1) stability, measuring prediction invariance to weak augmentations, and (2) suitability, measuring feature-space density among views. These stability and suitability (SS) scores guide both adaptation and inference through an SS-guided consistency loss and an SS-weighted prediction, amplifying trustworthy views while suppressing corrupted ones. Extensive experiments demonstrate that SS-TPT significantly outperforms prior state-of-the-art methods, achieving superior robustness-throughput trade-offs across diverse datasets and varying numbers of views, thereby demonstrating both strong practicality and generality. Our code is available at https://github.com/sunoh-kim/SS-TPT.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/10/2606.08302v1-hack-towards-more-effective-head-aware-key-value-compression-for-efficient-visual-autoregressive-modeling",
+      "section": "quick",
+      "title_en": "HACK++: Towards More Effective Head-Aware Key-Value Compression for Efficient Visual Autoregressive Modeling",
+      "authors": "Ziran Qin, Yuchen Jiang, Mingbao Lin, Youru Lv, Hang Guo, Wen Fei, Weiyao Lin",
+      "date": "2026-06-06",
+      "pdf": "https://arxiv.org/pdf/2606.08302v1",
+      "score": "6.0",
+      "evidence": "注意力头自然分为上下文(语义一致性)和结构(空间一致性)角色",
+      "tldr": "视觉自回归（VAR）模型基于next-scale预测范式，以较少解码步数实现高质量生成，但跨尺度键值缓存积累导致注意力复杂度和内存开销剧增。本文深入分析发现注意力头可稳定分为两类：语境头维持语义一致性，结构头保持空间连贯性，二者对历史尺度的依赖差异显著，且随层级和生成步动态变化。提出HACK++，一种无训练的头感知键值压缩框架，通过一次性离线标定确定头类型与先验，在推理时解耦注意力与缓存压缩，采用模式特定策略和依赖感知预算分配，将当前尺度注意力成本和累积缓存大幅压缩。在Infinity-2B/8B等模型上，仅需30%注意力预算和10%缓存预算即可保持近乎无损生成，1%缓存预算仍具鲁棒性。所提方法为高效视觉自回归建模提供有效且通用的解决方案。",
+      "tags": "query:cp",
+      "abstract_en": "Visual Autoregressive (VAR) models adopt a next-scale prediction paradigm, offering high-quality generation with substantially fewer decoding steps. However, existing VAR models suffer from significant attention complexity and severe memory overhead due to the accumulation of key-value (KV) caches across scales. In this paper, we tackle this challenge by introducing KV cache compression into the next-scale paradigm. We begin with an in-depth analysis of VAR attention and observe that attention heads can be stably divided into two functionally distinct categories: Contextual Heads focus on maintaining semantic consistency, while Structural Heads preserve spatial coherence. Their functional divergence makes existing one-size-fits-all compression methods perform poorly on VAR models. We further find that the two head types differ markedly in their reliance on historical scales, and that this reliance shifts across layers and generation steps, arguing for an adaptive cache budget allocation. To address these challenges, we propose HACK++, a training-free Head-Aware key-value Compression frameworK for VAR models. From a one-time offline calibration, HACK++ classifies head types and derives head-specific priors. At inference, it decouples attention from cache compression under independent budgets, bounding the current-scale attention cost while compressing the accumulated cache far more aggressively, via pattern-specific strategies and a reliance-aware budget allocation. Extensive experiments on multiple VAR models across text-to-image, class-conditional, and unified understanding-and-generation tasks validate the effectiveness and generalizability of HACK++. For example, on Infinity-2B/8B, HACK++ maintains near-lossless generation with only a 30% attention budget and a 10% cache budget, and remains robust even under a 1% cache budget.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
