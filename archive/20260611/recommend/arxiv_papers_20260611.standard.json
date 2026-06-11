@@ -1,0 +1,96 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-11T22:18:26.216869+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2606.06918v1",
+      "source": "arxiv",
+      "title": "DRIFT: From Robustness Gaps to Invariance Manifolds for AI-Generated Image Detection",
+      "abstract": "The rapid evolution of generative image models challenges existing AI-generated image detectors, particularly in open-world settings with unseen generators. Recent training-free approaches measure robustness gaps in frozen vision foundation models (VFMs), detecting fakes via perturbation-induced embedding drift. However, these methods rely on fixed invariance geometry inherited from pretraining and lack principled adaptation to the detection task. We instead formulate AI-generated image detection as learning a structured invariance manifold of real images under one-class supervision. Building upon a frozen VFM, we introduce lightweight projection heads that decompose representation space into complementary robust and fragile subspaces. The robust subspace is explicitly trained to suppress variations induced by physically plausible imaging transformations, approximating tangent directions of a real-image manifold, while the fragile subspace retains sensitivity to edit-like perturbations. A structured ordering margin enforces hierarchical separation between physical invariance and edit-induced variability, enabling detection as a margin-violation test relative to the learned manifold. At inference, multi-scale patch-wise drift under both transformation families yields a dual-channel invariance signature and interpretable localization. Extensive experiments demonstrate strong open-world generalization across unseen generators and resolutions, consistently outperforming training-free robustness-based baselines while providing interpretable invariance-violation maps.",
+      "authors": [
+        "Abhishek Ameta",
+        "Sayan Banerjee",
+        "Shreyas Pandith",
+        "Harshit",
+        "Ankita Chatterjee",
+        "Akshay Janardan Bankar",
+        "Amit Satish Unde"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-05T05:32:57+00:00",
+      "link": "https://arxiv.org/pdf/2606.06918v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "decomposes representation space into robust/fragile subspaces, a latent space intervention technique for detection",
+      "llm_evidence_cn": "将表示空间分解为鲁棒与脆弱子空间，是一种潜在空间干预技术用于检测",
+      "llm_evidence": "将表示空间分解为鲁棒与脆弱子空间，是一种潜在空间干预技术用于检测",
+      "canonical_evidence": "将表示空间分解为鲁棒与脆弱子空间，是一种潜在空间干预技术用于检测",
+      "llm_tldr_en": "Proposes learning structured invariance manifolds for real images by decomposing frozen VFM representations into robust and fragile subspaces, improving AI-generated image detection.",
+      "llm_tldr_cn": "针对AI生成图像检测，提出通过单类监督学习真实图像的结构化不变流形，在冻结的视觉基础模型上引入轻量投影头，将表示空间分解为互补的鲁棒与脆弱子空间，从而在开放世界设置中提升检测能力。",
+      "llm_tldr": "针对AI生成图像检测，提出通过单类监督学习真实图像的结构化不变流形，在冻结的视觉基础模型上引入轻量投影头，将表示空间分解为互补的鲁棒与脆弱子空间，从而在开放世界设置中提升检测能力。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.12303v1",
+      "source": "arxiv",
+      "title": "From 2D Grids to 1D Tokens: Reforming Shared Representations for Multimodal Image Fusion",
+      "abstract": "Multimodal image fusion aims to integrate complementary information from different modalities into a fused image that preserves rich local details while maintaining globally consistent appearance. Existing approaches build shared representations on 2D feature grids, which excel at modeling local structures but offer limited leverage over image-level global appearance factors. To balance these objectives, we introduce a compact 1D token interface based on a frozen pretrained image tokenizer for modeling non-local appearance/base factors. Rather than using the tokenizer as a reconstruction backbone, our design uses the 1D token space as a global carrier while retaining the 2D spatial pathway for local structure restoration. Specifically, we introduce Selective Token Editing (STE), which sparsely updates/replaces a small set of critical tokens, providing a lightweight mechanism to steer global appearance coherence while keeping the fusion backbone unchanged and avoiding extra losses. Experiments on four commonly used benchmarks show that our method achieves the best overall performance, with consistent, multi-metric improvements in both global coherence and local fidelity. Project page: https://zju-xyc.github.io/1D-Fusion-Project-Page/",
+      "authors": [
+        "Yuchen Xian",
+        "Yunqiu Xu",
+        "Yang He",
+        "Yi Yang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-10T16:40:18+00:00",
+      "link": "https://arxiv.org/pdf/2606.12303v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "1D tokens for global appearance (color/tone) and 2D pathway for local structure disentangle color and shape",
+      "llm_evidence_cn": "一维令牌用于全局外观（颜色/色调），二维通路用于局部结构，解耦颜色与形状",
+      "llm_evidence": "一维令牌用于全局外观（颜色/色调），二维通路用于局部结构，解耦颜色与形状",
+      "canonical_evidence": "一维令牌用于全局外观（颜色/色调），二维通路用于局部结构，解耦颜色与形状",
+      "llm_tldr_en": "Introduces a shared representation for multimodal fusion that uses 1D token space for global appearance factors and 2D spatial pathway for local structure, disentangling shape and appearance.",
+      "llm_tldr_cn": "该论文针对多模态图像融合中难以同时保留局部细节和全局外观一致性的问题，提出使用冻结预训练图像分词器的一维令牌接口来建模全局外观因子，同时保留二维空间通路进行局部结构重建。这种设计分离了形状（局部结构）和外观（全局颜色、色调等），实验中实现更平衡的融合效果，为显示解耦形状与外观特征提供了一种新的表示思路。",
+      "llm_tldr": "该论文针对多模态图像融合中难以同时保留局部细节和全局外观一致性的问题，提出使用冻结预训练图像分词器的一维令牌接口来建模全局外观因子，同时保留二维空间通路进行局部结构重建。这种设计分离了形状（局部结构）和外观（全局颜色、色调等），实验中实现更平衡的融合效果，为显示解耦形状与外观特征提供了一种新的表示思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

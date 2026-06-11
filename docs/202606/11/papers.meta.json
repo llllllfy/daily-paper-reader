@@ -1,0 +1,39 @@
+{
+  "label": "2026-06-11",
+  "date": "2026-06-11",
+  "generated_at": "2026-06-11T22:21:17",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202606/11/2606.06918v1-drift-from-robustness-gaps-to-invariance-manifolds-for-ai-generated-image-detection",
+      "section": "quick",
+      "title_en": "DRIFT: From Robustness Gaps to Invariance Manifolds for AI-Generated Image Detection",
+      "authors": "Abhishek Ameta, Sayan Banerjee, Shreyas Pandith, Harshit, Ankita Chatterjee, Akshay Janardan Bankar, Amit Satish Unde",
+      "date": "2026-06-05",
+      "pdf": "https://arxiv.org/pdf/2606.06918v1",
+      "score": "6.0",
+      "evidence": "将表示空间分解为鲁棒与脆弱子空间，是一种潜在空间干预技术用于检测",
+      "tldr": "生成式模型快速演进使开放世界AI生成图像检测面临泛化挑战。现有训练免费方法利用冻结视觉基础模型的鲁棒性差距，检测嵌入漂移，但缺乏任务适应。本文提出DRIFT，学习真实图像不变流形，将表示空间分解为鲁棒与脆弱子空间，通过排序边界进行流形违反测试，输出多尺度双通道不变签名和定位。实验表明，DRIFT在未见生成器和分辨率上泛化性能强，一致超越鲁棒性基线，并提供可解释的不变性违反图。",
+      "tags": "query:cp",
+      "abstract_en": "The rapid evolution of generative image models challenges existing AI-generated image detectors, particularly in open-world settings with unseen generators. Recent training-free approaches measure robustness gaps in frozen vision foundation models (VFMs), detecting fakes via perturbation-induced embedding drift. However, these methods rely on fixed invariance geometry inherited from pretraining and lack principled adaptation to the detection task. We instead formulate AI-generated image detection as learning a structured invariance manifold of real images under one-class supervision. Building upon a frozen VFM, we introduce lightweight projection heads that decompose representation space into complementary robust and fragile subspaces. The robust subspace is explicitly trained to suppress variations induced by physically plausible imaging transformations, approximating tangent directions of a real-image manifold, while the fragile subspace retains sensitivity to edit-like perturbations. A structured ordering margin enforces hierarchical separation between physical invariance and edit-induced variability, enabling detection as a margin-violation test relative to the learned manifold. At inference, multi-scale patch-wise drift under both transformation families yields a dual-channel invariance signature and interpretable localization. Extensive experiments demonstrate strong open-world generalization across unseen generators and resolutions, consistently outperforming training-free robustness-based baselines while providing interpretable invariance-violation maps.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/11/2606.12303v1-from-2d-grids-to-1d-tokens-reforming-shared-representations-for-multimodal-image-fusion",
+      "section": "quick",
+      "title_en": "From 2D Grids to 1D Tokens: Reforming Shared Representations for Multimodal Image Fusion",
+      "authors": "Yuchen Xian, Yunqiu Xu, Yang He, Yi Yang",
+      "date": "2026-06-10",
+      "pdf": "https://arxiv.org/pdf/2606.12303v1",
+      "score": "6.0",
+      "evidence": "一维令牌用于全局外观（颜色/色调），二维通路用于局部结构，解耦颜色与形状",
+      "tldr": "多模态图像融合需同时保持局部细节和全局一致性，现有2D特征网格方法局部建模强但全局控制弱。为此，本文引入基于冻结预训练图像分词器的1D令牌接口，作为全局载体，同时保留2D空间路径恢复局部结构。通过选择性令牌编辑（STE）稀疏更新少量关键令牌，轻量级引导全局外观一致性。实验在四个常用基准上取得最佳整体性能，多指标一致提升全局连贯性和局部保真度。",
+      "tags": "query:cp",
+      "abstract_en": "Multimodal image fusion aims to integrate complementary information from different modalities into a fused image that preserves rich local details while maintaining globally consistent appearance. Existing approaches build shared representations on 2D feature grids, which excel at modeling local structures but offer limited leverage over image-level global appearance factors. To balance these objectives, we introduce a compact 1D token interface based on a frozen pretrained image tokenizer for modeling non-local appearance/base factors. Rather than using the tokenizer as a reconstruction backbone, our design uses the 1D token space as a global carrier while retaining the 2D spatial pathway for local structure restoration. Specifically, we introduce Selective Token Editing (STE), which sparsely updates/replaces a small set of critical tokens, providing a lightweight mechanism to steer global appearance coherence while keeping the fusion backbone unchanged and avoiding extra losses. Experiments on four commonly used benchmarks show that our method achieves the best overall performance, with consistent, multi-metric improvements in both global coherence and local fidelity. Project page: https://zju-xyc.github.io/1D-Fusion-Project-Page/",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
