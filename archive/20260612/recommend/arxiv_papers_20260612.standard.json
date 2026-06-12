@@ -1,0 +1,212 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-12T21:42:13.217685+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2606.11661v1",
+      "source": "arxiv",
+      "title": "Learning Instance-Adaptive Low-Rank Orthogonal Subspaces for Clothes-Changing Person Re-Identification",
+      "abstract": "Clothes-changing person re-identification (CC-ReID) aims to recognize individuals despite drastic appearance changes caused by clothing variation. While existing methods rely on adversarial learning to disentangle clothing features, we propose Ortho-ReID, which explicitly models a low-rank clothing subspace from VLM text descriptions and extracts clothing-invariant representations via direct geometric constraints. A critical component is our transformer-based Basis Maker, which refines a shared, low-dimensional clothing prior into an instance-adaptive low-rank subspace through cross-attention with image patches, enabling robust clothing feature extraction even under varying visibility conditions. This instance-adaptive subspace is supervised via alignment with clothing text embeddings, while identity features are extracted via a learnable projection head and geometrically constrained to be strictly orthogonal to it. Extensive experiments demonstrate state-of-the-art performance on PRCC (+5.9% top-1), Celeb-reID-light (+3.5%), and LaST (+5.3%), with competitive results on LTCC.",
+      "authors": [
+        "Dong-Woo Kim",
+        "Tae-Kyun Kim"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-06-10T05:07:45+00:00",
+      "link": "https://arxiv.org/pdf/2606.11661v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Explicitly disentangles clothing features via low-rank subspace to extract clothing-invariant representations, directly relevant to disentangling color/shape.",
+      "llm_evidence_cn": "通过低秩子空间显式解耦服装特征，提取服装不变表示，直接相关于颜色/形状解耦",
+      "llm_evidence": "通过低秩子空间显式解耦服装特征，提取服装不变表示，直接相关于颜色/形状解耦",
+      "canonical_evidence": "通过低秩子空间显式解耦服装特征，提取服装不变表示，直接相关于颜色/形状解耦",
+      "llm_tldr_en": "Proposes Ortho-ReID, which models a low-rank clothing subspace and extracts clothing-invariant features using geometric constraints, improving clothes-changing person re-identification by disentangling appearance changes including color.",
+      "llm_tldr_cn": "该论文针对换衣行人重识别中服装变化导致的巨大外观差异，提出Ortho-ReID方法。通过从VLM文本描述中建模低秩服装子空间，并利用几何约束提取服装不变特征，实现身份特征的解耦。实验表明，该方法在换衣重识别上显著优于现有方法，有效分离了服装（颜色/款式）与身份信息。",
+      "llm_tldr": "该论文针对换衣行人重识别中服装变化导致的巨大外观差异，提出Ortho-ReID方法。通过从VLM文本描述中建模低秩服装子空间，并利用几何约束提取服装不变特征，实现身份特征的解耦。实验表明，该方法在换衣重识别上显著优于现有方法，有效分离了服装（颜色/款式）与身份信息。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.11889v1",
+      "source": "arxiv",
+      "title": "Task-Aligned Stability Analysis of Vision-Language Models for Autonomous Driving Hazard Detection",
+      "abstract": "Vision-language models (VLMs) are increasingly used for scene understanding in autonomous driving, but robustness analysis often relies on task-agnostic embedding stability alone. We study whether corruption-induced embedding drift predicts changes in a task-aligned hazard score derived from CLIP image-text similarities. Using controlled corruptions on BDD100K road scenes, we compare embedding drift against margin drift, defined as the change in hazard score under perturbation. The relationship is highly corruption-dependent: some families exhibit strong coupling between representation drift and decision drift, while others induce hazardous decision instability despite relatively modest embedding change. Furthermore, corruption families differ in failure direction: most suppress hazard detections via false negatives, while occlusion instead triggers false alarms, suggesting that benchmark design should account for asymmetric failure modes, not just overall instability rates. These results suggest that robustness benchmarks should include task-aligned stability measures in addition to embedding-level perturbation statistics.",
+      "authors": [
+        "Everett Richards"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.RO"
+      ],
+      "published": "2026-06-10T10:20:14+00:00",
+      "link": "https://arxiv.org/pdf/2606.11889v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "studies embedding drift and margin drift under controlled corruptions, directly linking perturbation to semantic output changes",
+      "llm_evidence_cn": "研究受控损坏下嵌入漂移与危险评分的语义边际漂移，直接关联扰动与语义输出变化",
+      "llm_evidence": "研究受控损坏下嵌入漂移与危险评分的语义边际漂移，直接关联扰动与语义输出变化",
+      "canonical_evidence": "研究受控损坏下嵌入漂移与危险评分的语义边际漂移，直接关联扰动与语义输出变化",
+      "llm_tldr_en": "Analyzes how corruption-induced embedding drift affects hazard detection scores in VLMs, revealing corruption-dependent coupling between representation and decision stability.",
+      "llm_tldr_cn": "本文研究视觉语言模型在自动驾驶场景中的鲁棒性，通过施加受控图像损坏，分析嵌入漂移与任务对齐危险分数变化的关系。实验发现不同损坏类型下表征漂移与决策漂移的耦合程度差异显著，表明单纯依赖嵌入稳定性不足以预测语义决策的稳定性，为任务对齐的鲁棒性评估提供了新方向。",
+      "llm_tldr": "本文研究视觉语言模型在自动驾驶场景中的鲁棒性，通过施加受控图像损坏，分析嵌入漂移与任务对齐危险分数变化的关系。实验发现不同损坏类型下表征漂移与决策漂移的耦合程度差异显著，表明单纯依赖嵌入稳定性不足以预测语义决策的稳定性，为任务对齐的鲁棒性评估提供了新方向。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "impact of color perturbation on semantic understanding",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.06890v1",
+      "source": "arxiv",
+      "title": "Diagnosing Visual Ignorance in Vision-Language Models",
+      "abstract": "Vision-Language Models (VLMs) frequently rely on language priors, producing confident answers that are weakly grounded in visual evidence. While this behavior is widely observed, its internal mechanisms and its impact on benchmark evaluation remain insufficiently understood. In this work, we study language-prior reliance from both mechanistic and behavioral perspectives. Internally, we combine counterfactual layer replacement with supervised layer-wise MLP probing to trace how ground-truth visual semantics and language-prior semantics compete across the language decoder. Our analysis reveals a multi-stage bottleneck: intermediate layers often fail to effectively retrieve visual information, while later layers can further suppress surviving visual signals in favor of text-space biases. Externally, we introduce a progressive visual decay metric based on multi-step Gaussian blurring, which identifies instances whose answers remain invariant even as visual content is increasingly destroyed. Across twelve visual question-answering benchmarks and three representative VLMs, we find that a substantial fraction of examples remain answerable under severe or total visual obfuscation, indicating that current benchmarks can inadvertently reward visual ignorance. These findings demonstrate that language-prior reliance is a systematic routing failure affecting both model internals and benchmark validity. Finally, we outline critical pathways for future research, highlighting the necessity of designing training distributions and evaluation protocols built on structurally isolated or counterfactual data to enforce genuine cross-modal grounding.",
+      "authors": [
+        "Runyu Zhou",
+        "Qi Zhang",
+        "Qixun Wang",
+        "Yisen Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-06-05T04:16:01+00:00",
+      "link": "https://arxiv.org/pdf/2606.06890v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "counterfactual layer replacement intervenes in the latent space of VLMs to analyze visual-semantic competition",
+      "llm_evidence_cn": "反事实层替换在VLM的潜在空间中进行干预，分析视觉与语义竞争",
+      "llm_evidence": "反事实层替换在VLM的潜在空间中进行干预，分析视觉与语义竞争",
+      "canonical_evidence": "反事实层替换在VLM的潜在空间中进行干预，分析视觉与语义竞争",
+      "llm_tldr_en": "This paper diagnoses visual ignorance in VLMs by counterfactual layer replacements and probing, revealing a multi-stage bottleneck where intermediate layers fail to retrieve visual info and later layers suppress residual visual signals, offering a mechanistic understanding of language-prior reliance.",
+      "llm_tldr_cn": "视觉语言模型（VLM）常输出与视觉证据无关的答案，依赖语言先验。为探究其内部机制，本文使用反事实层替换和逐层MLP探针，追踪解码器各层中真实视觉语义与语言先验的竞争。分析揭示了一个多阶段瓶颈：中间层往往无法有效提取视觉信息，而后期层进一步抑制残余视觉信号，偏向文本信息。这一发现为诊断和缓解视觉忽视提供了可解释性基础，并可用于指导模型改进和鲁棒性提升。",
+      "llm_tldr": "视觉语言模型（VLM）常输出与视觉证据无关的答案，依赖语言先验。为探究其内部机制，本文使用反事实层替换和逐层MLP探针，追踪解码器各层中真实视觉语义与语言先验的竞争。分析揭示了一个多阶段瓶颈：中间层往往无法有效提取视觉信息，而后期层进一步抑制残余视觉信号，偏向文本信息。这一发现为诊断和缓解视觉忽视提供了可解释性基础，并可用于指导模型改进和鲁棒性提升。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.05535v1",
+      "source": "arxiv",
+      "title": "Noise-Aware Visual Representation Learning for Medical Visual Question Answering",
+      "abstract": "Medical visual question answering (Med-VQA) has strong potential for clinical decision support by enabling AI models to interpret medical images and answer clinically relevant queries. Recent approaches typically connect off-the-shelf vision encoders with large language models (LLMs) through lightweight mapping networks to reduce computational cost. However, these methods often overlook the importance of handling noise and small irrelevant changes in visual representations. To address these challenges, we propose a noise-aware Med-VQA framework that incorporates a denoising autoencoder before visual embeddings are mapped into the input space of an LLM. The denoising autoencoder is pretrained to reconstruct clean visual embeddings from corrupted inputs, encouraging the model to learn robust visual representations that are less sensitive to noise. The resulting embeddings are then projected into the language model embedding space using a multi-layer perceptron (MLP), forming visual prefix tokens that provide image information to the LLM. To enable efficient adaptation without full retraining, we employ parameter-efficient fine-tuning using low-rank adaptation (LoRA). The proposed method is evaluated on the SLAKE and PathVQA benchmarks. Experimental results show improved robustness to noisy input embeddings while maintaining competitive clean performance across multiple evaluation criteria. These findings suggest that learning more robust visual representations can enhance Med-VQA performance and robustness.",
+      "authors": [
+        "I Putu Adi Pratama",
+        "Bahadorreza Ofoghi",
+        "Atul Sajjanhar",
+        "Shang Gao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-06-04T00:37:27+00:00",
+      "link": "https://arxiv.org/pdf/2606.05535v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Denoises visual embeddings to handle noise and irrelevant changes, a feature-level editing method applicable to color robustness.",
+      "llm_evidence_cn": "通过去噪视觉嵌入来处理噪声和无关变化，这是一种可应用于颜色鲁棒性的特征层编辑方法",
+      "llm_evidence": "通过去噪视觉嵌入来处理噪声和无关变化，这是一种可应用于颜色鲁棒性的特征层编辑方法",
+      "canonical_evidence": "通过去噪视觉嵌入来处理噪声和无关变化，这是一种可应用于颜色鲁棒性的特征层编辑方法",
+      "llm_tldr_en": "Proposes a denoising autoencoder pre-training to reconstruct clean visual embeddings from corrupted ones, improving Med-VQA robustness to noise, with potential for color perturbation resilience.",
+      "llm_tldr_cn": "该论文针对医学视觉问答中模型对噪声敏感的问题，提出在视觉编码器和语言模型之间引入去噪自编码器，通过预训练从损坏的视觉嵌入中重建干净表示，从而提升对噪声的鲁棒性。该方法可推广至颜色扰动等视觉变化，保持语义一致性。",
+      "llm_tldr": "该论文针对医学视觉问答中模型对噪声敏感的问题，提出在视觉编码器和语言模型之间引入去噪自编码器，通过预训练从损坏的视觉嵌入中重建干净表示，从而提升对噪声的鲁棒性。该方法可推广至颜色扰动等视觉变化，保持语义一致性。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "methods to edit feature representations to make models robust to color changes",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.08063v1",
+      "source": "arxiv",
+      "title": "Robust-U1: Can MLLMs Self-Recover Corrupted Visual Content for Robust Understanding?",
+      "abstract": "Multimodal Large Language Models (MLLMs) have demonstrated remarkable success in visual understanding, yet their performance degrades significantly under real-world visual corruptions. While existing robustness enhancement approaches exist, they are limited: black-box feature alignment lacks interpretability, and white-box text-based reasoning cannot restore lost pixel-level details. This work investigates a fundamental research question: Can MLLMs recover corrupted visual content by themselves? To address this, we propose Robust-U1, a novel framework that equips MLLMs with explicit visual self-recovery capability for robust understanding. The approach comprises three core stages: supervised fine-tuning for initial reconstruction, reinforcement learning with dual rewards (pixel-level SSIM and semantic-level CLIP similarity) for aligning high visual quality, and multimodal reasoning that jointly considers both the corrupted input and the recovered image. Extensive experiments demonstrate that Robust-U1 achieves state-of-the-art robustness on the real-world corruption benchmark and maintains superior performance under adversarial corruptions on general VQA benchmarks. Analysis confirms that high-quality visual recovery directly enhances reasoning performance, establishing self-recovery as a critical mechanism for robust visual understanding. The source code is available at https://github.com/jqtangust/Robust-U1.",
+      "authors": [
+        "Jiaqi Tang",
+        "Jianmin Chen",
+        "Youyang Zhai",
+        "Wei Wei",
+        "Runtao Liu",
+        "Mengjie Zhao",
+        "Xiangyu Wu",
+        "Qingfa Xiao",
+        "Qifeng Chen"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "published": "2026-06-06T08:58:12+00:00",
+      "link": "https://arxiv.org/pdf/2606.08063v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Self-recovery from corrupted visual content to maintain understanding, relevant to preserving semantic meaning under visual corruptions like color changes.",
+      "llm_evidence_cn": "从损坏的视觉内容中自我恢复以维持理解，适用于颜色变化等视觉损坏下保持语义",
+      "llm_evidence": "从损坏的视觉内容中自我恢复以维持理解，适用于颜色变化等视觉损坏下保持语义",
+      "canonical_evidence": "从损坏的视觉内容中自我恢复以维持理解，适用于颜色变化等视觉损坏下保持语义",
+      "llm_tldr_en": "Proposes Robust-U1, enabling MLLMs to recover corrupted visual content through fine-tuning and reinforcement, improving robustness to visual corruptions including potential color perturbations.",
+      "llm_tldr_cn": "该论文针对多模态大语言模型在视觉损坏下性能下降的问题，提出Robust-U1框架，赋予模型自我恢复损坏视觉内容的能力。通过监督微调、强化学习等阶段，模型能从损坏图像中重建细节，从而在视觉理解任务上保持鲁棒性。该方法有望应用于颜色扰动，保持语义一致性。",
+      "llm_tldr": "该论文针对多模态大语言模型在视觉损坏下性能下降的问题，提出Robust-U1框架，赋予模型自我恢复损坏视觉内容的能力。通过监督微调、强化学习等阶段，模型能从损坏图像中重建细节，从而在视觉理解任务上保持鲁棒性。该方法有望应用于颜色扰动，保持语义一致性。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
