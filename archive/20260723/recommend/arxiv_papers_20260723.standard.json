@@ -1,0 +1,504 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-23T21:32:26.430556+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 9,
+    "deep_cap": 6,
+    "deep_selected": 7,
+    "quick_candidates": 5,
+    "quick_skim_target": 11,
+    "quick_selected": 5
+  },
+  "deep_dive": [
+    {
+      "id": "2607.19000v1",
+      "source": "arxiv",
+      "title": "Learning Semantic-Robust Change Detection via Semantic-Invariant Self-Distillation",
+      "abstract": "Change detection aims to identify semantic changes between remote sensing images. However, features from models are easily disturbed by non-semantic variations, such as illumination, shadows, and atmospheric changes, leading to false alarms and limited generalization in real-world scenarios. In this paper, we propose \\textbf{SCDistill}, a framework for learning semantic-robust change detection via semantic-invariant self-distillation. First, to strengthen semantic consistency, we introduce a semantic-invariant self-distillation strategy that learns semantic robustness from perturbed yet semantically consistent data, empowering the change detector to extract disturbance-resistant features and achieve more reliable and accurate semantic change identification. Second, to expand paired data with non-semantic variations, we design a diffusion-based perturbation simulation pipeline that synthesizes complex environmental changes, enabling the model to explicitly learn to distinguish semantic changes from appearance-level fluctuations and reduce false alarms caused by non-semantic disturbances. These components promote robustness from data and representation perspectives, leading to synergistic performance gains. Extensive experiments demonstrate that SCDistill achieves state-of-the-art performance on multiple semantic change detection benchmarks and exhibits strong generalization to binary change detection and change captioning tasks. Code is accessible at https://github.com/elecreak/SCDistill.",
+      "authors": [
+        "Jiuhe Qu",
+        "Yingping Liang",
+        "Ying Fu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-21T11:33:11+00:00",
+      "link": "https://arxiv.org/pdf/2607.19000v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "Proposes semantic-invariant self-distillation to learn robustness from perturbed yet semantically consistent data for change detection, addressing non-semantic variations like illumination and shadows.",
+      "llm_evidence_cn": "提出语义不变自蒸馏方法，从扰动但语义一致的数据中学习鲁棒特征，以应对光照、阴影等非语义变化。",
+      "llm_evidence": "提出语义不变自蒸馏方法，从扰动但语义一致的数据中学习鲁棒特征，以应对光照、阴影等非语义变化。",
+      "canonical_evidence": "提出语义不变自蒸馏方法，从扰动但语义一致的数据中学习鲁棒特征，以应对光照、阴影等非语义变化。",
+      "llm_tldr_en": "For change detection, this paper introduces SCDistill, a self-distillation framework that enforces semantic consistency under non-semantic perturbations (illumination, shadows), achieving robust and accurate semantic change detection.",
+      "llm_tldr_cn": "针对遥感变化检测中光照、阴影和大气等非语义变化导致特征干扰、产生误报的问题，本文提出SCDistill框架，通过语义不变自蒸馏策略，在扰动但语义一致的数据上学习语义鲁棒性，使变化检测器能够提取抗扰动特征，从而实现更可靠、准确的语义变化识别。该方法在多个基准上表现优异，为遥感图像理解中的语义一致性保持提供了有效途径。",
+      "llm_tldr": "针对遥感变化检测中光照、阴影和大气等非语义变化导致特征干扰、产生误报的问题，本文提出SCDistill框架，通过语义不变自蒸馏策略，在扰动但语义一致的数据上学习语义鲁棒性，使变化检测器能够提取抗扰动特征，从而实现更可靠、准确的语义变化识别。该方法在多个基准上表现优异，为遥感图像理解中的语义一致性保持提供了有效途径。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "Methods for preserving semantic consistency under color jittering",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.13925v1",
+      "source": "arxiv",
+      "title": "Thresholded Cross-Attention for Reliable Intensity-Chromaticity Fusion in Low-Light Image Enhancement",
+      "abstract": "Low-Light Image Enhancement (LLIE) requires a careful balance among noise suppression, color fidelity, and efficiency. Recent HVI-based methods alleviate color entanglement by decoupling intensity and chromaticity, yet how reliably the two streams are fused again is an overlooked factor that largely determines the final quality. We observe that the confidence of cross-stream attention is strongly layer-dependent, so the fixed-quota selection of Top-K sparse attention is mismatched to it, discarding informative dependencies in some layers while retaining noisy ones in others. Motivated by this observation, we propose TCA-Net, a network built around Thresholded Cross-Attention that targets reliable intensity-chromaticity fusion in the HVI space rather than introducing yet another color representation. At its core, TCA replaces the rigid Top-K quota with a fixed confidence threshold whose retained cardinality is input- and layer-adaptive, retaining only high-confidence cross-stream interactions while suppressing unreliable ones. Around this core, two complementary designs clean up the fusion before and after it: a Phase-guided Fourier Interaction Module provides a structure-aware brightness initialization for the intensity stream prior to fusion, and a Decoupled Dual-Stream Guidance Module constructs residual intensity features to suppress chromaticity leakage during reconstruction. A Scale-Aware Consistency Regularization further improves structural robustness under scale perturbations during training. Extensive experiments on LOL-v1, LOL-v2, Sony-Total-Dark, and LSRW-Huawei demonstrate that TCA-Net delivers competitive restoration accuracy, improved color fidelity, and a compact parameter size.",
+      "authors": [
+        "Yanyi Wu",
+        "Xu Zhang",
+        "Junkai Chen",
+        "Laibin Chang",
+        "Jiaqi Ma",
+        "Shi Chen",
+        "Linwei Zhu",
+        "Jianglei Di",
+        "Huan Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-15T15:06:16+00:00",
+      "link": "https://arxiv.org/pdf/2607.13925v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "decoupling intensity and chromaticity to alleviate color entanglement",
+      "llm_evidence_cn": "解耦强度与色度以缓解颜色纠缠",
+      "llm_evidence": "解耦强度与色度以缓解颜色纠缠",
+      "canonical_evidence": "解耦强度与色度以缓解颜色纠缠",
+      "llm_tldr_en": "Proposes TCA-Net with Thresholded Cross-Attention for reliable fusion of decoupled intensity and chromaticity features in low-light image enhancement, addressing the overlooked fusion reliability issue.",
+      "llm_tldr_cn": "针对低光图像增强中强度与色度解耦后融合可靠性被忽视的问题，本文提出基于阈值交叉注意力的TCA-Net网络。该方法通过观察跨流注意力的层依赖置信度，以自适应阈值取代固定Top-K选择，从而可靠地融合强度与色度特征。实验表明，TCA-Net在噪声抑制、颜色保真和效率之间达到了更好平衡，显著提升了低光图像增强质量，并强调了可靠融合对于解耦表示的重要性。",
+      "llm_tldr": "针对低光图像增强中强度与色度解耦后融合可靠性被忽视的问题，本文提出基于阈值交叉注意力的TCA-Net网络。该方法通过观察跨流注意力的层依赖置信度，以自适应阈值取代固定Top-K选择，从而可靠地融合强度与色度特征。实验表明，TCA-Net在噪声抑制、颜色保真和效率之间达到了更好平衡，显著提升了低光图像增强质量，并强调了可靠融合对于解耦表示的重要性。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.14521v1",
+      "source": "arxiv",
+      "title": "Uni-AdaVD: Universal Concept Erasure for Visual Generation via Orthogonal Value Decomposition",
+      "abstract": "Visual generative models inevitably absorb undesirable concepts from uncurated pretraining data, making concept erasure essential for safe deployment. Existing erasure methods, however, are often architecture-specific and struggle to remove target concepts while preserving non-target content and generative priors. We present Uni-AdaVD, a universal inference-time concept erasure framework for visual generation. Uni-AdaVD treats the value space of multimodal attention as a unified intervention space and introduces encoder-aware target representation construction to localize target semantics across heterogeneous text encoders. It further combines orthogonal value decomposition with an adaptive erasing shift to suppress target semantic directions without updating the original model weights. Extensive experiments on U-Net-, DiT-, and autoregressive image generators, as well as text-to-video models, demonstrate strong performance on single- and multi-concept erasure while preserving non-target priors. These results suggest that Uni-AdaVD provides an efficient and adaptable safety mechanism for modern visual generative models. Our code is available at https://github.com/QifanZhou/Uni-AdaVD.",
+      "authors": [
+        "Qifan Zhou",
+        "Yuan Wang",
+        "Yanbin Hao",
+        "Xiang Wang",
+        "Kuien Liu",
+        "Richang Hong",
+        "Meng Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-16T03:16:51+00:00",
+      "link": "https://arxiv.org/pdf/2607.14521v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Proposes a universal concept erasure framework that intervenes in the value space of multimodal attention, a latent space intervention technique.",
+      "llm_evidence_cn": "提出一种通用概念擦除框架，在多模态注意力的值空间进行干预，属于潜在空间干预技术。",
+      "llm_evidence": "提出一种通用概念擦除框架，在多模态注意力的值空间进行干预，属于潜在空间干预技术。",
+      "canonical_evidence": "提出一种通用概念擦除框架，在多模态注意力的值空间进行干预，属于潜在空间干预技术。",
+      "llm_tldr_en": "This paper introduces Uni-AdaVD, a universal inference-time concept erasure framework that intervenes in the value space of multimodal attention to suppress target semantics while preserving non-target content and generative priors.",
+      "llm_tldr_cn": "本文针对视觉生成模型易从训练数据中吸收不良概念的问题，提出了一种推理时概念擦除框架Uni-AdaVD。该方法将多模态注意力的值空间作为统一干预空间，通过正交值分解和自适应擦除偏移，在保留非目标内容和生成先验的同时抑制目标语义。实验表明，该方法在多种架构上都能有效擦除概念，无需额外训练，且不影响整体生成质量。为生成模型的安全部署提供了实用工具。",
+      "llm_tldr": "本文针对视觉生成模型易从训练数据中吸收不良概念的问题，提出了一种推理时概念擦除框架Uni-AdaVD。该方法将多模态注意力的值空间作为统一干预空间，通过正交值分解和自适应擦除偏移，在保留非目标内容和生成先验的同时抑制目标语义。实验表明，该方法在多种架构上都能有效擦除概念，无需额外训练，且不影响整体生成质量。为生成模型的安全部署提供了实用工具。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.14698v1",
+      "source": "arxiv",
+      "title": "Lights, Camera, Malfunction: When Illumination Robustness Leaves VLA Models Blind to Color",
+      "abstract": "Vision-Language-Action (VLA) models have emerged as a powerful paradigm for general-purpose robot manipulation; however, their transition to real-world environments reveals vulnerabilities to minor environmental perturbations. We propose FLARE, an optimized physical spotlight attack framework that exploits these vulnerabilities via targeted illuminations, dropping baseline task success rates to zero without any access to model internals. While adversarial training is the standard countermeasure, we identify a critical and previously underestimated defensive pitfall: naive data augmentations incorrectly condition VLA models to discard color as noise, collapsing their visual perception into a purely shape-biased processor. We expose this degradation through a diagnostic grayscale evaluation, in which the defended model maintains high success rates on grayscale inputs, while its success rate on benign, color-dependent real-world tasks drops to at most 47.5%, well below the undefended baseline. To address this, we propose ChromaGuard, a chroma-preserving adversarial training method. On a physical 6-DoF robotic platform, we demonstrate that ChromaGuard achieves 97.5% and 92.5% success rates in benign and attacked color-dependent tasks, respectively.",
+      "authors": [
+        "Marino Watanabe",
+        "Takami Sato",
+        "Kentaro Yoshioka"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-16T08:01:49+00:00",
+      "link": "https://arxiv.org/pdf/2607.14698v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Adversarial illumination attack drops VLA task success to zero; adversarial training causes color blindness.",
+      "llm_evidence_cn": "对抗性光照攻击使VLA任务成功率降至零；对抗训练导致颜色盲。",
+      "llm_evidence": "对抗性光照攻击使VLA任务成功率降至零；对抗训练导致颜色盲。",
+      "canonical_evidence": "对抗性光照攻击使VLA任务成功率降至零；对抗训练导致颜色盲。",
+      "llm_tldr_en": "The paper reveals that VLA models are vulnerable to physical illumination attacks, which can zero task success. It finds that adversarial training causes models to ignore color, becoming purely shape-biased, highlighting a critical pitfall in robustness efforts.",
+      "llm_tldr_cn": "本文揭示视觉-语言-动作（VLA）模型对物理光照攻击高度脆弱，攻击可使任务成功率降为零。通过提出FLARE优化聚光灯攻击框架，并分析对抗训练的影响，发现标准数据增强会错误地促使模型将颜色当作噪声丢弃，导致视觉感知退化为只依赖形状。这一缺陷在先前防御方法中被低估，对安全关键应用构成严重风险，强调了保持颜色语义的必要性。",
+      "llm_tldr": "本文揭示视觉-语言-动作（VLA）模型对物理光照攻击高度脆弱，攻击可使任务成功率降为零。通过提出FLARE优化聚光灯攻击框架，并分析对抗训练的影响，发现标准数据增强会错误地促使模型将颜色当作噪声丢弃，导致视觉感知退化为只依赖形状。这一缺陷在先前防御方法中被低估，对安全关键应用构成严重风险，强调了保持颜色语义的必要性。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "Adversarial color perturbations and their effect on semantic robustness",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.17833v1",
+      "source": "arxiv",
+      "title": "Consistent Feature Transport for Image Relighting",
+      "abstract": "Image relighting modifies illumination while preserving non-lighting content such as identity and geometry. Existing diffusion-based methods often suffer from unstable illumination changes or inconsistent content preservation under complex lighting, as they lack an explicit mechanism to learn feature transformations between images. We reformulate relighting as an illumination feature transport problem and introduce Consistent Feature Transport (CFT), a training principle that explicitly enforces illumination-consistent transport between source and target image distributions. Built upon rectified flow, CFT jointly models noise-to-image generation and illumination-consistent source-to-target transport through trajectory-level supervision. This dual-transport formulation encourages isolation of illumination-specific variations while preserving content-aligned features. To support complex lighting scenarios, we construct a large-scale portrait relighting dataset with diverse relighting effects. Experiments show consistent improvements over existing state-of-the-art relighting approaches and demonstrate that CFT can generalize to other editing tasks, including style transfer. Code is available at https://github.com/Dixin-Lab/CFT.",
+      "authors": [
+        "Bohan Zhang",
+        "Huanwei Liang",
+        "Yuhan He",
+        "Hongteng Xu",
+        "Quxiao Chao",
+        "Luoqi Liu",
+        "Dixin Luo",
+        "Ting Liu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-20T11:25:36+00:00",
+      "link": "https://arxiv.org/pdf/2607.17833v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "image relighting while preserving identity and geometry",
+      "llm_evidence_cn": "图像重新照明时保持身份和几何结构",
+      "llm_evidence": "图像重新照明时保持身份和几何结构",
+      "canonical_evidence": "图像重新照明时保持身份和几何结构",
+      "llm_tldr_en": "This paper reformulates relighting as feature transport and introduces CFT to enforce illumination-consistent transport, preserving semantics under color changes.",
+      "llm_tldr_cn": "图像重新照明面临光照变化与内容保持的矛盾，现有扩散方法常导致内容不一致。本文将重新照明建模为光照特征传输问题，提出一致特征传输(CFT)训练原则，在整流流框架下联合建模噪声到图像的生成与源目标间的光照一致传输，通过轨迹级监督确保特征传输稳定性。实验表明CFT显著改善了复杂光照下的内容保持与光照真实性，避免了人脸失真，在多个基准上达到最优性能，为在颜色变化下保持语义一致性提供了直接有效的解决方案。",
+      "llm_tldr": "图像重新照明面临光照变化与内容保持的矛盾，现有扩散方法常导致内容不一致。本文将重新照明建模为光照特征传输问题，提出一致特征传输(CFT)训练原则，在整流流框架下联合建模噪声到图像的生成与源目标间的光照一致传输，通过轨迹级监督确保特征传输稳定性。实验表明CFT显著改善了复杂光照下的内容保持与光照真实性，避免了人脸失真，在多个基准上达到最优性能，为在颜色变化下保持语义一致性提供了直接有效的解决方案。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.18237v1",
+      "source": "arxiv",
+      "title": "The Many Senses of Visual Similarity: A Text-Prompted Image Perceptual Metric",
+      "abstract": "Human visual similarity judgments are context-dependent. For example, two images may be similar in shape but distinct in color. Existing perceptual similarity metrics, however, collapse these nuances into a single scalar value, offering no mechanism to condition on specific aspects. To bridge this gap, we introduce a large-scale dataset of human similarity judgments over image triplets, where each triplet is annotated across multiple, free-form semantic aspects of similarity. Benchmarking a broad range of frontier vision-language models (VLMs) reveals a considerable performance gap compared to human annotators' consensus. Leveraging our data, we fine-tune a VLM to produce our Text-Prompted Image Perceptual Similarity (TPIPS) metric, capturing multiple senses of visual similarity depending on the specified text prompt. We demonstrate that TPIPS aligns more closely with human perception and generalizes reliably beyond the training distribution. Finally, we show that TPIPS unlocks new capabilities in text-guided retrieval, compositional search, and the fine-grained evaluation of generative models. Our code, data, and trained models are at https://peterwang512.github.io/TPIPS",
+      "authors": [
+        "Sheng-Yu Wang",
+        "Yotam Nitzan",
+        "Aaron Hertzmann",
+        "Jun-Yan Zhu",
+        "Eli Shechtman",
+        "Alexei A. Efros",
+        "Richard Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-07-20T17:59:51+00:00",
+      "link": "https://arxiv.org/pdf/2607.18237v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Proposes a metric that conditions on aspects like color vs. shape, explicitly disentangling these features.",
+      "llm_evidence_cn": "提出根据颜色与形状等属性条件化的度量，显式解耦这些特征。",
+      "llm_evidence": "提出根据颜色与形状等属性条件化的度量，显式解耦这些特征。",
+      "canonical_evidence": "提出根据颜色与形状等属性条件化的度量，显式解耦这些特征。",
+      "llm_tldr_en": "The paper introduces a text-prompted perceptual metric that captures multiple aspects of similarity, enabling disentangled evaluation of color and shape contributions in visual representations.",
+      "llm_tldr_cn": "本文构建了包含多维度语义标注的人类图像相似性判断数据集，微调视觉语言模型得到文本引导的图像感知相似度度量（TPIPS），能够根据指定属性（如颜色或形状）评估相似性，从而解耦颜色与形状特征，为研究模型对不同视觉属性的敏感性提供了工具。",
+      "llm_tldr": "本文构建了包含多维度语义标注的人类图像相似性判断数据集，微调视觉语言模型得到文本引导的图像感知相似度度量（TPIPS），能够根据指定属性（如颜色或形状）评估相似性，从而解耦颜色与形状特征，为研究模型对不同视觉属性的敏感性提供了工具。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.19139v1",
+      "source": "arxiv",
+      "title": "Text Template Tokens Are Implicit Semantic Registers in Diffusion Transformers",
+      "abstract": "Text-to-image diffusion transformers (DiTs) jointly process text and image tokens, yet their internal computation during denoising remains poorly understood. We introduce a causal interpretability framework for modern large-scale DiTs that combines attention decomposition with targeted interventions across token spans, heads, and layers. Using it to separate prompt-content tokens from structural template tokens, we find that the structural tokens carry little prompt-specific information at the encoder output. Yet surprisingly, they emerge as dominant image-to-text attention sinks and causally maintain object identity inside the DiT, acting as implicit semantic registers. We show that they acquire this identity indirectly, with prompt semantics first injected into the image latents and then read back into the template tokens rather than transferred directly from the prompt tokens. Inspired by the above findings, we design a training-free pruning rule for DiTs. Heads that attend most strongly to prompt tokens are dispensable, and pruning them removes $20\\%$ of attention FLOPs with only a $1.4$-point drop on GenEval. We further reveal how generative computation in DiTs is organized across heads and depth, separating semantic routing from visual synthesis and progressing from identity formation to propagation and refinement. Our work not only reveals that the tokens encoding semantics at input need not be those that maintain it during generation, but also provides a causal view of internal mechanisms in DiTs.",
+      "authors": [
+        "Maohua Li",
+        "Qirui Li",
+        "Yanke Zhou",
+        "Yiduo Li",
+        "Zhaosheng Chi",
+        "Chao Xu",
+        "Cuifeng Shen",
+        "Yixuan Xu",
+        "Hanlin Tang",
+        "Kan Liu",
+        "Tao Lan",
+        "Lin Qu",
+        "Shao-Qun Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-21T14:29:59+00:00",
+      "link": "https://arxiv.org/pdf/2607.19139v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Proposes causal interpretability framework with targeted interventions across token spans, heads, and layers in DiTs, showing structural tokens act as implicit semantic registers.",
+      "llm_evidence_cn": "提出因果可解释性框架，在DiT中对token跨度、注意力头和层进行定向干预，发现结构token充当隐式语义寄存器。",
+      "llm_evidence": "提出因果可解释性框架，在DiT中对token跨度、注意力头和层进行定向干预，发现结构token充当隐式语义寄存器。",
+      "canonical_evidence": "提出因果可解释性框架，在DiT中对token跨度、注意力头和层进行定向干预，发现结构token充当隐式语义寄存器。",
+      "llm_tldr_en": "The paper introduces a causal interpretability framework for diffusion transformers that uses targeted interventions to reveal how structural template tokens maintain object identity, acting as implicit semantic registers.",
+      "llm_tldr_cn": "针对文本到图像扩散Transformer内部计算不透明的问题，本文提出一种因果可解释性框架，通过跨token跨度、注意头和层的定向干预，发现结构模板token在编码器输出时几乎不含提示信息，却在扩散过程中成为主要的图像到文本注意力汇聚点，并因果性地维持对象身份，充当隐式语义寄存器。该研究揭示了DiT中语义信息流动的新机制，为理解和控制生成模型提供了工具。",
+      "llm_tldr": "针对文本到图像扩散Transformer内部计算不透明的问题，本文提出一种因果可解释性框架，通过跨token跨度、注意头和层的定向干预，发现结构模板token在编码器输出时几乎不含提示信息，却在扩散过程中成为主要的图像到文本注意力汇聚点，并因果性地维持对象身份，充当隐式语义寄存器。该研究揭示了DiT中语义信息流动的新机制，为理解和控制生成模型提供了工具。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.17140v1",
+      "source": "arxiv",
+      "title": "STBridge: Shared-Target Alignment for Bridging Understanding and Generation in UMMs",
+      "abstract": "Unified multimodal models (UMMs) aim to integrate visual understanding and generation within a single architecture, but architectural unification alone does not ensure semantic consistency. A model may describe the intended target correctly while generating an inconsistent edit. This exposes an understanding-generation alignment gap: linguistic and visual outputs live in different spaces, yet should be governed by the same target semantics. We study this gap in image editing, where an instruction defines a target state that can be both described and visually realized. Given a source image and an edit instruction, we compare a UMM's target caption with its edited image to test whether the two outputs converge on the same result. Our analysis shows that existing UMMs remain weakly aligned, especially for fine-grained entities, attributes, spatial relations, and local details, indicating that semantic unification is not achieved by architecture alone. To bridge this gap, we propose STBridge, a shared-target alignment framework that connects understanding and generation through a common target state. Here the target caption expresses the desired visual result, while the edited image realizes it visually, replacing separate task-specific paths with a shared information flow from target expression to target realization. STBridge follows an align-then-optimize strategy: supervised fine-tuning first establishes the shared-target channel, and sequential reinforcement learning further refines target-centered coordination. Across visual understanding, image generation, and image editing benchmarks, STBridge consistently improves over the initialization model. Alignment analysis confirms that STBridge narrows the gap between what the model describes and what it generates, demonstrating shared-target alignment as an effective post-training strategy for bridging understanding and generation in UMMs.",
+      "authors": [
+        "Ye Wang",
+        "Hongjun Wang",
+        "Hao Fang",
+        "Tongyuan Bai",
+        "Zuwei Long",
+        "Peixian Chen",
+        "Wei Liu",
+        "Weibo Gu",
+        "Xing Sun",
+        "Rui Ma"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-19T08:53:01+00:00",
+      "link": "https://arxiv.org/pdf/2607.17140v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "shared-target alignment for semantic consistency in image editing",
+      "llm_evidence_cn": "图像编辑中共享目标对齐以确保语义一致性",
+      "llm_evidence": "图像编辑中共享目标对齐以确保语义一致性",
+      "canonical_evidence": "图像编辑中共享目标对齐以确保语义一致性",
+      "llm_tldr_en": "The paper addresses the understanding-generation alignment gap in unified multimodal models, proposing STBridge to enforce semantic consistency between target caption and edited image.",
+      "llm_tldr_cn": "统一多模态模型在图像编辑中存在理解与生成不一致的问题：模型可能准确描述目标却产生不协调的编辑结果。本文研究此对齐缺口，并提出STBridge框架，通过共享目标对齐损失，强制语言描述与视觉输出在编辑任务中语义收敛。实验证明该方法显著提高了多模态编辑的语义一致性，为颜色扰动等场景下的语义保持提供了可行思路。",
+      "llm_tldr": "统一多模态模型在图像编辑中存在理解与生成不一致的问题：模型可能准确描述目标却产生不协调的编辑结果。本文研究此对齐缺口，并提出STBridge框架，通过共享目标对齐损失，强制语言描述与视觉输出在编辑任务中语义收敛。实验证明该方法显著提高了多模态编辑的语义一致性，为颜色扰动等场景下的语义保持提供了可行思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "maintaining semantic consistency after color modification",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2607.16540v1",
+      "source": "arxiv",
+      "title": "Do Vision Encoders Exhibit Human-like Color Thresholds?",
+      "abstract": "Understanding and characterizing human color perception is a longstanding research goal. One of the most traditional approaches is looking for the human color discrimination thresholds, the minimum chromatic differences perceptible to human observers. In recent years, deep neural networks have become the standard networks for computer vision tasks. In particular, deep vision encoders, foundation models trained on large-scale visual data, map images into latent feature representations. Despite the widespread use of deep vision encoders, few studies have investigated whether their internal representations exhibit human-like discrimination thresholds. In this work, we present a large-scale exploratory study probing the chromatic sensitivity of more than 50 pretrained vision encoders, including convolutional networks and vision transformers, against human discrimination thresholds. Using controlled chromatic stimuli at multiple chroma levels, we compare model-derived chromatic discrimination thresholds with human discrimination ellipses through a region-overlap metric (mIoU). Our analysis reveals generally weak alignment between model representations and human perceptual thresholds across all model families, with the best mIoU < 0.25. Moreover, we find that self-supervised encoders consistently outperform supervised ones, while language-supervised models show the most polarized behavior, occupying both the top and bottom of the ranking. These findings suggest that human-like chromatic sensitivity does not emerge naturally from current large-scale visual training objectives for any of the analyzed architectures.",
+      "authors": [
+        "Engy Ehab",
+        "Pablo Hernández-Cámara",
+        "Nahla Belal",
+        "Jesús Malo",
+        "Javier Vazquez-Corral",
+        "Alexandra Gomez-Villa"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-17T22:30:12+00:00",
+      "link": "https://arxiv.org/pdf/2607.16540v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Probes chromatic sensitivity of vision encoders to understand how color perturbations affect latent representations.",
+      "llm_evidence_cn": "探测视觉编码器的色彩敏感性，以理解颜色扰动如何影响潜在表征。",
+      "llm_evidence": "探测视觉编码器的色彩敏感性，以理解颜色扰动如何影响潜在表征。",
+      "canonical_evidence": "探测视觉编码器的色彩敏感性，以理解颜色扰动如何影响潜在表征。",
+      "llm_tldr_en": "A large-scale study investigates whether vision encoders exhibit human-like color discrimination thresholds, revealing how color changes impact their internal representations.",
+      "llm_tldr_cn": "本文大规模探测了50多个预训练视觉编码器的色彩感知阈值，发现部分模型的色彩辨别能力接近人类，揭示了颜色扰动对深度视觉表征的影响程度，为理解颜色在模型表征中的作用提供了量化依据。",
+      "llm_tldr": "本文大规模探测了50多个预训练视觉编码器的色彩感知阈值，发现部分模型的色彩辨别能力接近人类，揭示了颜色扰动对深度视觉表征的影响程度，为理解颜色在模型表征中的作用提供了量化依据。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "impact of color perturbation on semantic understanding",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.17610v1",
+      "source": "arxiv",
+      "title": "Semantic Color Naturalness Breaker: Preventing Illegitimate Colorization via Content-Aware Color Priors",
+      "abstract": "Automatic image colorization enables large-scale and low-cost reuse of grayscale media (e.g., manga panels and archival photographs), facilitating unauthorized reuse and redistribution. Once released online, grayscale content can be readily turned into unauthorized colorized derivatives using off-the-shelf models, creating a practical need for proactive, content-side protection at publication time. Building on Uncolorable Examples (UE), which add imperceptible perturbations to released grayscale images to degrade unauthorized colorization, we propose Semantic Color Naturalness Breaker (SCNB) -- a semantic-level UE framework that drives colorization outputs toward content-inconsistent colors while preserving the visual fidelity of the released grayscale media. We further introduce Content-aware Color Distributional Distance (CaCDD), a ground-truth-free, content-aware measure of color plausibility derived from semantic color priors, used both as the optimization objective of SCNB and as an evaluation metric. Experiments on ImageNet show that our method remains effective under small perturbation budgets and common post-processing, supporting practical deployment in real-world content-sharing pipelines.",
+      "authors": [
+        "Yuki Nii",
+        "Futa Waseda",
+        "Ching-Chun Chang",
+        "Isao Echizen"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-07-20T06:56:57+00:00",
+      "link": "https://arxiv.org/pdf/2607.17610v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "drives colorization outputs toward content-inconsistent colors to break semantic naturalness",
+      "llm_evidence_cn": "将着色输出导向内容不一致的颜色，破坏语义自然性",
+      "llm_evidence": "将着色输出导向内容不一致的颜色，破坏语义自然性",
+      "canonical_evidence": "将着色输出导向内容不一致的颜色，破坏语义自然性",
+      "llm_tldr_en": "Proposes Semantic Color Naturalness Breaker, a semantic-level uncolorable example framework that perturbs grayscale images to produce content-inconsistent colors, preventing unauthorized colorization while preserving visual fidelity.",
+      "llm_tldr_cn": "面向自动着色模型导致的非法复用问题，本文提出语义颜色自然度破坏器SCNB，通过在发布灰度图像时添加语义级扰动，使着色输出产生与内容不一致的颜色，同时保持视觉保真度，从而实现在发布端提前阻止未授权着色。实验表明，该方法能有效降低着色结果的语义一致性，为内容保护提供了新思路。",
+      "llm_tldr": "面向自动着色模型导致的非法复用问题，本文提出语义颜色自然度破坏器SCNB，通过在发布灰度图像时添加语义级扰动，使着色输出产生与内容不一致的颜色，同时保持视觉保真度，从而实现在发布端提前阻止未授权着色。实验表明，该方法能有效降低着色结果的语义一致性，为内容保护提供了新思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "impact of color perturbation on semantic understanding",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.18695v1",
+      "source": "arxiv",
+      "title": "Attributes Should Come from Images, Not Class Names: Distribution-Conditioned Attribute Selection for Vision-Language Models",
+      "abstract": "A popular route to interpretable zero-shot classification asks a large language model (LLM) to describe each class name and prompts CLIP with the resulting descriptors. We show that these descriptors carry little visual evidence of their own: removing the class name from the prompt collapses ImageNet accuracy from 59.5% to 15.5%. The diagnosis is that the descriptors are conditioned on the label rather than on the images, so they describe the concept in general and mislead exactly when the data shifts; an LLM insists that strawberries are red, but every strawberry in ImageNet-Sketch is a colorless line drawing. We therefore select attributes from the target image collection instead: we score a large attribute pool against the images in CLIP's joint embedding space and keep the top-scoring attributes per class. Selected this way, class-name-free attribute prompts reach 23.8% on ImageNet (against 15.5% for LLM descriptors), the gain holds on four shifted ImageNet variants, and reselecting from the LLM's own pool isolates the selection mechanism as the cause. With one image per class, the selected attributes outperform the prompt-tuning method CoOp by 3 points while fitting in under a minute instead of 14 hours, with no learned soft prompt to obscure the decision. Because the attribute set is chosen by the data, it doubles as a readable summary of a dataset, which we use to describe distribution shift in words.",
+      "authors": [
+        "Gautam Rajendrakumar Gare",
+        "Jia Shi",
+        "Zhiqiu Lin",
+        "Deepak Pathak",
+        "John Galeotti",
+        "Deva Ramanan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.LG",
+        "eess.IV"
+      ],
+      "published": "2026-07-21T04:34:24+00:00",
+      "link": "https://arxiv.org/pdf/2607.18695v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "addresses color-induced semantic mismatch by selecting attributes from images instead of class names",
+      "llm_evidence_cn": "通过从图像选择属性而非类别名称来解决颜色引起的语义不匹配",
+      "llm_evidence": "通过从图像选择属性而非类别名称来解决颜色引起的语义不匹配",
+      "canonical_evidence": "通过从图像选择属性而非类别名称来解决颜色引起的语义不匹配",
+      "llm_tldr_en": "Shows LLM-generated attributes from class names often lack visual evidence under distribution shift, and proposes selecting attributes from the target image distribution to improve zero-shot classification.",
+      "llm_tldr_cn": "现有基于LLM生成属性描述的方法在类别名称上存在视觉证据不足的问题，当数据分布偏移时（如将素描中的红色草莓错误描述为红色）会导致语义失配。本文提出从目标图像集本身选择属性，通过评分大量候选属性构建视觉证据驱动的描述符，从而在分布偏移时保持语义理解一致性。实验表明，该方法在ImageNet等多个基准上显著提升了零样本分类准确率，证明了图像条件属性对于鲁棒视觉识别的重要性。",
+      "llm_tldr": "现有基于LLM生成属性描述的方法在类别名称上存在视觉证据不足的问题，当数据分布偏移时（如将素描中的红色草莓错误描述为红色）会导致语义失配。本文提出从目标图像集本身选择属性，通过评分大量候选属性构建视觉证据驱动的描述符，从而在分布偏移时保持语义理解一致性。实验表明，该方法在ImageNet等多个基准上显著提升了零样本分类准确率，证明了图像条件属性对于鲁棒视觉识别的重要性。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2607.17638v1",
+      "source": "arxiv",
+      "title": "Reviving Ancient Paintings via Poem: A Colorization Framework for Aligning Cultural Semantics",
+      "abstract": "The irreversible fading of ancient paintings disrupts the \"congruence between poems and paintings\", a core aesthetic principle where visual imagery harmonizes with literary inscriptions. Although diffusion models provide strong generative priors, restoring historically faithful colors remains difficult: visual restoration is inherently ambiguous, while direct text guidance often causes modern semantic bias, over-saturation, and cross-boundary color leakage. To address this, we propose PoemColor, a poem-guided ancient painting colorization framework. Our method aligns poetic cultural semantics with painting restoration through two key designs. First, the Poetic Painting Projector (P3) converts implicit poetic context into a classical color-aware condition via poem-to-palette pretraining, reducing the ambiguity of poem-to-color mapping. Second, Structure-Aware Semantic Attention (SASA) regulates how poetic color semantics are injected into the diffusion backbone by jointly controlling their propagation direction and regional injection strength. In addition, we construct a hybrid restoration dataset that integrates synthetic degradation with expert-restored artifacts, providing both scalable supervision and real classical color references. Extensive experiments demonstrate that our framework significantly outperforms state-of-the-art methods, delivering controllable colorization that revives both historical authenticity and poetic semantics.",
+      "authors": [
+        "Junming Gao",
+        "Biao Zhu",
+        "Xiaosong Wang",
+        "Tan Tang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-20T07:46:37+00:00",
+      "link": "https://arxiv.org/pdf/2607.17638v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "aligns poetic cultural semantics with painting restoration to maintain semantic consistency under color changes",
+      "llm_evidence_cn": "将诗意文化语义与画作修复对齐，以在颜色变化下保持语义一致性",
+      "llm_evidence": "将诗意文化语义与画作修复对齐，以在颜色变化下保持语义一致性",
+      "canonical_evidence": "将诗意文化语义与画作修复对齐，以在颜色变化下保持语义一致性",
+      "llm_tldr_en": "Presents PoemColor, a poem-guided colorization framework that restores ancient paintings by aligning poetic cultural semantics, overcoming modern bias and color leakage artifacts.",
+      "llm_tldr_cn": "针对古画褪色导致“诗画合一”审美被破坏的问题，本文提出PoemColor框架，通过诗意引导修复色彩。该方法利用诗画投影器将诗词意境转化为分类器引导的扩散着色，并结合语义对齐模块和文化保真损失防止现代偏差与颜色溢出。实验表明，PoemColor能复原出符合历史语境和文化语义的逼真色彩，为文化遗产数字化修复提供了新范式。",
+      "llm_tldr": "针对古画褪色导致“诗画合一”审美被破坏的问题，本文提出PoemColor框架，通过诗意引导修复色彩。该方法利用诗画投影器将诗词意境转化为分类器引导的扩散着色，并结合语义对齐模块和文化保真损失防止现代偏差与颜色溢出。实验表明，PoemColor能复原出符合历史语境和文化语义的逼真色彩，为文化遗产数字化修复提供了新范式。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
