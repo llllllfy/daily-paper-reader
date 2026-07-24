@@ -1,0 +1,69 @@
+{
+  "label": "2026-07-24",
+  "date": "2026-07-24",
+  "generated_at": "2026-07-24T21:34:23",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202607/24/2607.14945v1-introspective-attention-modulation-for-safe-text-to-image-generation",
+      "section": "deep",
+      "title_en": "Introspective Attention Modulation for Safe Text-to-Image Generation",
+      "authors": "Basim Azam, Hossein Rahmani, Naveed Akhtar",
+      "date": "2026-07-16",
+      "pdf": "https://arxiv.org/pdf/2607.14945v1",
+      "score": "9.0",
+      "evidence": "通过内省在推理时调节注意力动态，这是一种潜在空间干预技术。",
+      "tldr": "当前文本到图像模型虽生成能力强，但易产生不安全内容，现有防护易被参数高效微调等方法绕过。本文提出内省注意力调制，通过推理时自省动态调节注意力，在合成中引导远离不安全概念。在标准及对抗基准上取得高安全评分，同时保持或提升语义对齐和感知质量。结果证明注意力空间调控比概念擦除更有效，为安全图像生成开辟新途径。",
+      "tags": "query:cp",
+      "abstract_en": "State-of-the-art flow based text-to-image (T2I) models exhibit remarkable generative abilities but remain vulnerable to producing unsafe content. Prior safety efforts range from concept erasure and prompt filtering to classifier-based gating. However, simple techniques like parameter efficient adaptations of the models easily bypass such guardrails. We introduce a unique principled approach that achieves safety by regulating the model's attention dynamics through inference-time introspection, exhibiting intrinsic robustness. Our method analyzes and rebalances attention activations throughout image synthesis, steering generations away from unsafe concepts while preserving semantic alignment. This introspective control ensures safety of deployed models. Across standard and adversarial safety benchmarks, our approach achieves remarkable safety scores while maintaining or even improving alignment and perceptual quality. Our results reveal that attention-space regulation offers a considerably more promising path to safer diffusion transformer based image generation than the existing concept erasing mechanism.Our code can be accessed at https://basim-azam.github.io/iam/",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/24/2607.19877v1-robust-activation-map-rectification-for-weakly-supervised-volumetric-segmentation-temporal-coherence-as-a-free-lunch",
+      "section": "deep",
+      "title_en": "Robust Activation Map Rectification for Weakly Supervised Volumetric Segmentation: Temporal Coherence as a Free Lunch",
+      "authors": "Renshu Gu, Jialiang Chen, Fei Gao, Hang Su, Jun Qi, Jiamin Xu, Yicheng Shen, Jiayu Zhang, Jiaxi Pan, Caiming Zhang, Gang Xu",
+      "date": "2026-07-22",
+      "pdf": "https://arxiv.org/pdf/2607.19877v1",
+      "score": "9.0",
+      "evidence": "训练无需框架，矫正潜在空间中的激活图",
+      "tldr": "弱监督体积分割中，类激活图(CAM)常包含噪声且易出现灾难性失败，现有修正方法多需额外训练或原型学习，增加计算开销。本文提出免训练、免原型的框架，利用体积数据的时序和结构连贯性作为免费先验，通过方差降低激活聚合(VRAA)与双向极值校正(BER)修正不可靠的CAM。在公开基准上，该方法提升Dice系数20%、mIoU 40%，并将推断速度提高5倍以上，展示出利用连贯性作为隐式归纳偏置的高效性与鲁棒性。",
+      "tags": "query:cp",
+      "abstract_en": "Weakly supervised segmentation relies heavily on class activation maps (CAMs) to initially localize target regions. However, CAMs are often noisy and prone to catastrophic failures. Existing remedies typically introduce additional training stages or prototype learning, increasing computational cost and reducing robustness. In this paper, we propose a training-free prototype-free framework that rectifies unreliable CAMs by exploiting temporal and structural coherence in volumetric data as a free lunch. Our approach is built on two key components. First, we introduce Variance-Reduced Activation Aggregation (VRAA) which suppresses noise and amplify coherent semantic signals. We provide a theoretical justification by modeling CAMs as high-dimensional random vectors and show that aggregation yields provable variance reduction. Second, we design a Bidirectional Extremity Rectification (BER) mechanism that detects and rectifies implausible activations through bidirectional extremity checks, effectively mitigating extreme-value failures without learning additional parameters. Our method is model-agnostic and can be seamlessly integrated with existing pipelines. Extensive experiments on multiple public benchmarks demonstrate substantial improvements over state-of-the-art weakly supervised methods, achieving up to 20% Dice and 40% mIoU gains while reducing inference time by more than 5 times. These results indicate that leveraging coherence as an implicit inductive bias yields a principled and efficient approach to stabilizing weakly supervised volumetric segmentation. Our code will be available.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/24/2607.20883v1-whereedit-mask-aware-local-latent-editing-for-one-step-image-editing",
+      "section": "deep",
+      "title_en": "WhereEdit: Mask-aware Local Latent Editing for One-Step Image Editing",
+      "authors": "Ming Hu, Mingyu Dou, Jianfu Yin, Miaomiao Zhang, Cong Hu, Yao Wang, Bingliang Hu, Quan Wang",
+      "date": "2026-07-23",
+      "pdf": "https://arxiv.org/pdf/2607.20883v1",
+      "score": "8.0",
+      "evidence": "提出面向一步T2I模型的掩码感知局部潜在编辑方法",
+      "tldr": "现有一步图像编辑方法主要依赖文本条件，缺乏精确空间控制，导致局部语义修改不稳定。针对此问题，WhereEdit利用模型内部特征自动发现语义相关区域，并通过自适应局部调制实现目标区域的高强度编辑，同时保留非目标区域。在PIE-Bench基准上，WhereEdit编辑质量显著优于现有一步编辑方法，且保持高效推理。这项工作为一步图像编辑提供了有效的空间推理机制。",
+      "tags": "query:cp",
+      "abstract_en": "Recent one-step text-to-image (T2I) models enable efficient image synthesis and provide new opportunities for real-time image editing. However, existing one-step editing methods primarily rely on text conditioning for semantic transformation, lacking explicit spatial control over \\textit{where} to edit. More importantly, even when spatial constraints are introduced, these methods often struggle to achieve strong and stable semantic modifications within the target regions. In this work, we revisit one-step image editing from a spatially controlled perspective and identify two key challenges: discovering editable regions and achieving effective localized semantic transformation. We reveal that existing methods perform global semantic transport, which limits high-intensity local editing under the one-step setting. To address this issue, we propose \\textbf{WhereEdit}, a framework that reformulates one-step editing as localized adaptive editing. WhereEdit automatically identifies semantically relevant regions from internal model features and applies adaptive local modulation to enhance target-region editing while preserving non-target areas and structural consistency. Experiments on the PIE-Bench benchmark demonstrate that WhereEdit consistently outperforms existing one-step image editing methods, achieving superior editing quality while maintaining the efficiency of one-step generation. Additional experiments with region-level supervision further highlight the importance of explicit spatial reasoning for high-quality one-step image editing.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/24/2607.21032v1-spectral-spatial-synergistic-guided-network-for-hyperspectral-salient-object-detection",
+      "section": "deep",
+      "title_en": "Spectral-Spatial Synergistic Guided Network for Hyperspectral Salient Object Detection",
+      "authors": "Yanyan Peng, Tingfa Xu, Yao Xiao, Peifu Liu, Shuyan Bai, Fengxiang Xu, Jianan Li",
+      "date": "2026-07-23",
+      "pdf": "https://arxiv.org/pdf/2607.21032v1",
+      "score": "8.0",
+      "evidence": "构建对光照等偶然光谱变化鲁棒的表示",
+      "tldr": "高光谱显著性目标检测利用丰富光谱信息识别显著物体，但光照变化易使现有方法混淆偶然光谱变化与材质本质差异，导致特征脆弱和预测噪声。为此，本文提出轻量高效的S3GNet，以结构感知为核心，构建光谱稳健建模、跨流协同感知及多尺度细化解码的闭环信息流。它引入参数无关的光谱结构感知模块，利用光谱导数和区域层次建模提取光照不变特征；流感知注意模块通过跨流全局交互与流内空间引导实现高效协同；渐进门控细化解码器融合多尺度特征，精准恢复边界与细节。实验表明，S3GNet在检测精度和计算效率上均优于现有方法，为鲁棒高光谱显著性检测提供了新方案。",
+      "tags": "query:cp",
+      "abstract_en": "Hyperspectral salient object detection aims to identify visually salient regions from hyperspectral images. Existing methods often fail because they fundamentally misunderstand the data, confusing incidental spectral variations caused by external factors such as illumination with essential spectral differences caused by the intrinsic material properties of the object. This leads to fragile representations and noisy predictions. To this end, we propose a lightweight and efficient Spectral-Spatial Synergistic Guided Network (S3GNet), with structure perception as the core, to build a closed-loop information flow around spectrum robust modeling, cross-stream co-perception and multi-scale refinement decoding. S3GNet introduces a parameter-free Spectral Structure-Aware Module that leverages spectral derivatives and regional hierarchical modeling to extract intrinsic features of robustness against illumination variations. Our Stream-Aware Attention Module achieves effective spectral-spatial collaboration through inter-stream global interaction and intra-stream spatial guidance. Furthermore, a Progressive Gated Refinement Decoder ensures precise object boundaries and detail recovery by optimally integrating multi-scale features. Experimental results show that S3GNet achieves superior performance in both computational efficiency and detection accuracy compared to existing methods.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
