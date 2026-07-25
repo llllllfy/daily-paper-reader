@@ -1,0 +1,54 @@
+{
+  "label": "2026-07-25",
+  "date": "2026-07-25",
+  "generated_at": "2026-07-25T20:05:47",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202607/25/2607.16644v1-dara-degradation-aware-low-rank-residual-adaptation-with-original-to-corrupted-distillation-for-corruption-robust-animal-re-identification",
+      "section": "quick",
+      "title_en": "DARA: Degradation-Aware Low-Rank Residual Adaptation with Original-to-Corrupted Distillation for Corruption-Robust Animal Re-Identification",
+      "authors": "Cynthia Xie, Talia Xu",
+      "date": "2026-07-18",
+      "pdf": "https://arxiv.org/pdf/2607.16644v1",
+      "score": "7.0",
+      "evidence": "在特征空间中使用低秩残差适配修复退化嵌入，一种特征层面干预技术，可用于构建颜色鲁棒性。",
+      "tldr": "动物重识别依赖细粒度身份信息，但模糊、噪声等视觉退化会破坏检索特征空间。现有方法通过数据增强或图像恢复间接提升鲁棒性，但未直接修复身份嵌入偏移。本文提出DARA，一种轻量级模型改造方法，冻结主干网络并学习路由低秩残差专家以自适应修复退化输入特征，配合原始图像蒸馏稳定训练。实验表明，DARA显著提升腐蚀查询检索性能，恢复77.0%的mAP差距，仅增加0.49%参数和0.05% FLOPs，为退化鲁棒动物重识别提供高效解决方案。",
+      "tags": "query:cp",
+      "abstract_en": "Animal re-identification (Re-ID) relies on fine-grained identity cues that can be disrupted by blur, noise, compression, and other visual degradations. Existing robustness strategies based on degradation-augmented training or pixel-level restoration improve robustness indirectly, but do not explicitly repair shifts in the identity retrieval space. We study corruption-robust animal Re-ID as input-conditioned feature-space repair and introduce DARA, a lightweight retrofit for compact Re-ID models. DARA freezes the fine-tuned backbone and learns routed low-rank residual experts to adapt degraded-input embeddings without corruption-type annotations. To stabilize this adaptive repair, original-to-corrupted distillation uses an original-image teacher to preserve individual embeddings and retrieval relations. Experiments on ATRW, FriesianCattle2017, MPDD, and SeaStarReID2023 show that DARA improves corrupted-query retrieval over standard and augmentation-based fine-tuning, generalizes to unseen corruptions and cross-domain evaluation, and recovers 77.0% of the corrupted-query mAP gap to full corrupted fine-tuning while adding only 0.49% parameters and 0.05% FLOPs.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/25/2607.17264v1-coordinated-disentanglement-with-iterative-mode-discovery-under-hidden-correlations",
+      "section": "quick",
+      "title_en": "Coordinated Disentanglement with Iterative Mode Discovery Under Hidden Correlations",
+      "authors": "Rong Hu, Ling Chen",
+      "date": "2026-07-19",
+      "pdf": "https://arxiv.org/pdf/2607.17264v1",
+      "score": "7.0",
+      "evidence": "解耦表示学习处理隐藏相关性，适用于解耦颜色和形状特征。",
+      "tldr": "解耦表示学习中，隐藏相关性使得属性值下的数据存在潜在模式，并与其它属性相关，现有方法忽略模式信息。本文提出协调迭代模式发现的CoDID框架，端到端地联合模式发现与条件独立性约束，并通过动态架构适应变化的模式数量，元优化模块协调二者避免错误累积。实验证实CoDID在多项任务中达到SOTA，为鲁棒属性预测提供新范式。",
+      "tags": "query:cp",
+      "abstract_en": "Disentangled representation learning is a powerful paradigm for robust attribute prediction. While recent methods address attribute correlations, hidden correlations remain underexplored, where data under the value of a certain attribute exhibit underlying modes correlated with other attributes. To preserve mode information and achieve disentanglement, we jointly discover modes and enforce mode-based conditional independence. Yet, the interdependency between these two modules may lead to error amplification under naive iterations. We propose Coordinated Disentanglement with Iterative mode Discovery (CoDID), an end-to-end framework featuring a dynamic architecture that adapts to evolving number of modes, and a coordination mechanism that mitigates error amplification via meta-optimization. Empirical results demonstrate the state-of-the-art performance on diverse tasks.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/25/2607.16898v1-cross-branch-conflict-as-a-shield-safeguarding-facial-identities-in-unified-multimodal-image-editing",
+      "section": "quick",
+      "title_en": "Cross-Branch Conflict as a Shield: Safeguarding Facial Identities in Unified Multimodal Image Editing",
+      "authors": "Weiwei Tan, Junxian Li, Rui Wang, Zhenhua Xu, Yanjun Zhang, Yu Leo Zhang",
+      "date": "2026-07-18",
+      "pdf": "https://arxiv.org/pdf/2607.16898v1",
+      "score": "6.0",
+      "evidence": "作为潜在干预的模型分支特征级扰动",
+      "tldr": "统一多模态图像编辑模型可能被滥用于非法篡改肖像，现有对抗保护方法因仅干扰单一视觉分支而失效。本工作发现ViT理解与VAE生成分支存在结构一致性，提出CCS框架，联合扰动双分支表征并利用线性CKA破坏跨分支兼容性，使模型无法恢复可靠身份信息。实验表明CCS在抑制身份保留编辑方面显著优于现有方法，为面部身份保护提供了有效方案。",
+      "tags": "query:cp",
+      "abstract_en": "Unified multimodal models (UMMs) have recently demonstrated powerful instruction-based image editing capabilities, but they also raise serious concerns about unauthorized manipulation of personal portraits. Existing adversarial protection methods are mainly designed for either visual understanding or image generation models and often become ineffective when transferred to UMMs, which process an image through multiple complementary visual pathways. In this work, we first conduct a feature-level analysis of unified image editing. We observe that the ViT-based understanding branch and the VAE-based generation branch exhibit non-trivial structural agreement for the same input image. Although perturbing an individual branch can reduce this agreement and induce intermediate hidden-state deviations, such effects are asymmetric and gradually attenuated during multimodal fusion and generation. These observations reveal that single-branch feature distortion is insufficient for consistently disrupting unified image editing. Motivated by this finding, we propose CCS, a unified adversarial protection framework that jointly drives the ViT and VAE representations away from their clean counterparts while explicitly disrupting their cross-branch compatibility through linear CKA. By simultaneously removing stable information from both visual pathways and creating incompatible visual contexts, CCS prevents the UMM from recovering reliable identity information during editing. Extensive experiments demonstrate that CCS consistently outperforms existing protection methods in suppressing identity-preserving edits.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

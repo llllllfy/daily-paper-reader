@@ -6,35 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-24
-- 运行时间：2026-07-24 21:34:13 UTC
+- 最新运行日期：2026-07-25
+- 运行时间：2026-07-25 20:05:35 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：4
-- 速读区：0
+- 本次总论文数：3
+- 精读区：0
+- 速读区：3
 
 ### 今日简报（AI）
-今日精读两篇高分离散，聚焦安全生成与弱监督分割的前沿解法。  
-内省注意力调制让文生图模型学会自我纠偏，时序一致性则成为三维医学分割的免费增强利器。  
-若关注可信AI落地，可沿着“模型自省”与“数据内在先验”这两条线索深挖。
-- 详情：[/202607/24/README](/202607/24/README)
+今日聚焦视觉鲁棒性的三条快讯：借助退化感知提升动物重识别、通过模式发现来解耦隐藏关联，以及在统一编辑中利用分支冲突保护人脸身份。  
+最值得留意的是 DARA 的“原图到劣化蒸馏”与协调解耦方法，它们分别在恶劣场景重识别和可解释表征上提供了可落地的思路。  
+如果你正关注监控、生物识别或可控生成，不妨从这两篇入手，思考如何把抗干扰知识迁移到自己的模型里。
+- 详情：[/202607/25/README](/202607/25/README)
 
 ### 精读区论文标签
-1. [Introspective Attention Modulation for Safe Text-to-Image Generation](/202607/24/2607.14945v1-introspective-attention-modulation-for-safe-text-to-image-generation)  
-   标签：评分：9.0/10、query:cp
-   evidence：通过内省在推理时调节注意力动态，这是一种潜在空间干预技术。
-2. [Robust Activation Map Rectification for Weakly Supervised Volumetric Segmentation: Temporal Coherence as a Free Lunch](/202607/24/2607.19877v1-robust-activation-map-rectification-for-weakly-supervised-volumetric-segmentation-temporal-coherence-as-a-free-lunch)  
-   标签：评分：9.0/10、query:cp
-   evidence：训练无需框架，矫正潜在空间中的激活图
-3. [WhereEdit: Mask-aware Local Latent Editing for One-Step Image Editing](/202607/24/2607.20883v1-whereedit-mask-aware-local-latent-editing-for-one-step-image-editing)  
-   标签：评分：8.0/10、query:cp
-   evidence：提出面向一步T2I模型的掩码感知局部潜在编辑方法
-4. [Spectral-Spatial Synergistic Guided Network for Hyperspectral Salient Object Detection](/202607/24/2607.21032v1-spectral-spatial-synergistic-guided-network-for-hyperspectral-salient-object-detection)  
-   标签：评分：8.0/10、query:cp
-   evidence：构建对光照等偶然光谱变化鲁棒的表示
+- 本次无精读推荐。
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [DARA: Degradation-Aware Low-Rank Residual Adaptation with Original-to-Corrupted Distillation for Corruption-Robust Animal Re-Identification](/202607/25/2607.16644v1-dara-degradation-aware-low-rank-residual-adaptation-with-original-to-corrupted-distillation-for-corruption-robust-animal-re-identification)  
+   标签：评分：7.0/10、query:cp
+   evidence：在特征空间中使用低秩残差适配修复退化嵌入，一种特征层面干预技术，可用于构建颜色鲁棒性。
+2. [Coordinated Disentanglement with Iterative Mode Discovery Under Hidden Correlations](/202607/25/2607.17264v1-coordinated-disentanglement-with-iterative-mode-discovery-under-hidden-correlations)  
+   标签：评分：7.0/10、query:cp
+   evidence：解耦表示学习处理隐藏相关性，适用于解耦颜色和形状特征。
+3. [Cross-Branch Conflict as a Shield: Safeguarding Facial Identities in Unified Multimodal Image Editing](/202607/25/2607.16898v1-cross-branch-conflict-as-a-shield-safeguarding-facial-identities-in-unified-multimodal-image-editing)  
+   标签：评分：6.0/10、query:cp
+   evidence：作为潜在干预的模型分支特征级扰动
 
 
 <div class="dpr-home-promo-card">
