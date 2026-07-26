@@ -6,32 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-25
-- 运行时间：2026-07-25 20:05:35 UTC
+- 最新运行日期：2026-07-26
+- 运行时间：2026-07-26 21:12:46 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：0
-- 速读区：3
+- 本次总论文数：1
+- 精读区：1
+- 速读区：0
 
 ### 今日简报（AI）
-今日聚焦视觉鲁棒性的三条快讯：借助退化感知提升动物重识别、通过模式发现来解耦隐藏关联，以及在统一编辑中利用分支冲突保护人脸身份。  
-最值得留意的是 DARA 的“原图到劣化蒸馏”与协调解耦方法，它们分别在恶劣场景重识别和可解释表征上提供了可落地的思路。  
-如果你正关注监控、生物识别或可控生成，不妨从这两篇入手，思考如何把抗干扰知识迁移到自己的模型里。
-- 详情：[/202607/25/README](/202607/25/README)
+今日精读一篇8.0分多模态论文，揭秘LVLM幻觉的视觉根源。  
+核心发现：用显著性驱动感知重对齐引导模型“先看清楚再回答”，可大幅降低幻觉。  
+建议读者尝试将视觉注意力校准模块插入你的多模态流程，先修复感知再信任生成。
+- 详情：[/202607/26/README](/202607/26/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Look Clearly Before Answering: Mitigating Hallucinations in LVLMs via Saliency-Driven Perceptual Realignment](/202607/26/2607.16841v1-look-clearly-before-answering-mitigating-hallucinations-in-lvlms-via-saliency-driven-perceptual-realignment)  
+   标签：评分：8.0/10、query:cp
+   evidence：显著性驱动的注意力重分配通过干预恢复视觉感知
 
 ### 速读区论文标签
-1. [DARA: Degradation-Aware Low-Rank Residual Adaptation with Original-to-Corrupted Distillation for Corruption-Robust Animal Re-Identification](/202607/25/2607.16644v1-dara-degradation-aware-low-rank-residual-adaptation-with-original-to-corrupted-distillation-for-corruption-robust-animal-re-identification)  
-   标签：评分：7.0/10、query:cp
-   evidence：在特征空间中使用低秩残差适配修复退化嵌入，一种特征层面干预技术，可用于构建颜色鲁棒性。
-2. [Coordinated Disentanglement with Iterative Mode Discovery Under Hidden Correlations](/202607/25/2607.17264v1-coordinated-disentanglement-with-iterative-mode-discovery-under-hidden-correlations)  
-   标签：评分：7.0/10、query:cp
-   evidence：解耦表示学习处理隐藏相关性，适用于解耦颜色和形状特征。
-3. [Cross-Branch Conflict as a Shield: Safeguarding Facial Identities in Unified Multimodal Image Editing](/202607/25/2607.16898v1-cross-branch-conflict-as-a-shield-safeguarding-facial-identities-in-unified-multimodal-image-editing)  
-   标签：评分：6.0/10、query:cp
-   evidence：作为潜在干预的模型分支特征级扰动
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">

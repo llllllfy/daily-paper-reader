@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-26",
+  "date": "2026-07-26",
+  "generated_at": "2026-07-26T21:12:52",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/26/2607.16841v1-look-clearly-before-answering-mitigating-hallucinations-in-lvlms-via-saliency-driven-perceptual-realignment",
+      "section": "deep",
+      "title_en": "Look Clearly Before Answering: Mitigating Hallucinations in LVLMs via Saliency-Driven Perceptual Realignment",
+      "authors": "Pengxu Chen, Yao Zhu, Guangming Zhu, Jun Sheng, Jincai Huang, Xiangyang Ji, Liang Zhang",
+      "date": "2026-07-18",
+      "pdf": "https://arxiv.org/pdf/2607.16841v1",
+      "score": "8.0",
+      "evidence": "显著性驱动的注意力重分配通过干预恢复视觉感知",
+      "tldr": "大型视觉语言模型易产生幻觉，即输出与视觉内容不符。现有方法多解决语言先验偏差，忽略感知与记忆中的渐进视觉退化。本文提出显着性驱动的重对齐框架SDPR，通过释放非语义令牌的注意力、修复KV缓存扭曲和先验约束对比解码，全轨迹对齐视觉意识。在多个LVLM上，SDPR在幻觉和通用基准均超越现有方法，无需训练且开销极小。为减轻LVLM幻觉提供了高效鲁棒的新路径。",
+      "tags": "query:cp",
+      "abstract_en": "Large vision-language models (LVLMs) have demonstrated remarkable capabilities in multimodal understanding. However, they remain prone to hallucinations, generating responses that are inconsistent with the visual evidence. Existing mitigation methods largely address language-prior bias or cross-modal imbalance, while progressive visual degradation across perception and memory remains underexplored. In this work, we propose Saliency-Driven Perceptual Realignment (SDPR), a training-free framework that mitigates the degradation of visual awareness throughout inference. Specifically, we first introduce saliency-driven attention redistribution to release attention hijacked by non-semantic sink tokens, thereby recovering critical visual evidence. Second, we identify spatial distortion in the KV cache and propose saliency-driven cache alignment to preserve query-relevant visual features during generation. Finally, we introduce prior-constrained contrastive decoding to penalize unfaithful predictions induced by dominant language priors. Our proposed SDPR is robust against hallucinations due to its holistic alignment of visual awareness across the entire generative trajectory. Extensive experiments across diverse LVLM architectures show that SDPR outperforms state-of-the-art methods on both hallucination and general-purpose benchmarks, requiring no additional training and incurring minimal runtime overhead. The code is available \\href{https://github.com/PengSyuChen/SDPR}{\\color{blue}{here}}.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
