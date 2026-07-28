@@ -6,37 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-27
-- 运行时间：2026-07-27 21:20:34 UTC
+- 最新运行日期：2026-07-28
+- 运行时间：2026-07-28 21:50:02 UTC
 - 运行状态：成功
-- 本次总论文数：5
-- 精读区：4
-- 速读区：1
+- 本次总论文数：2
+- 精读区：2
+- 速读区：0
 
 ### 今日简报（AI）
-今日聚焦视觉语言模型及边缘感知的鲁棒性提升，精读高分论文并速览对抗微调新作。  
-最值得关注：利用测试时训练保持模态顺序一致性（9分），以及通过特征空间矫正让边缘机器人量化感知抵御分布外偏移（8分）。  
-建议读者留意多模态模型在动态输入下的自适配训练策略，这正成为可靠边缘智能的关键。
-- 详情：[/202607/27/README](/202607/27/README)
+今日深入研读两篇顶会论文，聚焦于用文本条件精准操控嵌入空间及提升文本生成的包容性。  
+核心发现：文本驱动的嵌入变换可灵活控制语义特征，而LoRA适配与激活引导能有效实现性别包容改写与反叙事生成。  
+建议关注这两项技术如何结合，在保证生成质量的同时，为内容安全与多样性提供更鲁棒的调控方案。
+- 详情：[/202607/28/README](/202607/28/README)
 
 ### 精读区论文标签
-1. [Test-Time Training for Modality Order Consistency in Vision-Language Models](/202607/27/2607.20351v1-test-time-training-for-modality-order-consistency-in-vision-language-models)  
+1. [Controlling Embedding Spaces with Text-Conditioned Transformations](/202607/28/2607.22919v1-controlling-embedding-spaces-with-text-conditioned-transformations)  
    标签：评分：9.0/10、query:cp
-   evidence：使用激活修补定位潜在空间差异，并通过测试时训练干预以增强一致性
-2. [Recti-Q: Feature-Space Rectification for Out-of-Distribution-Robust Quantized Perception in Edge Robotics](/202607/27/2607.18540v1-recti-q-feature-space-rectification-for-out-of-distribution-robust-quantized-perception-in-edge-robotics)  
-   标签：评分：8.0/10、query:cp
-   evidence：提出特征空间校正以提升分布外鲁棒性
-3. [Decafs: Disentangled Conditional adversarial Flows](/202607/27/2607.18755v1-decafs-disentangled-conditional-adversarial-flows)  
-   标签：评分：8.0/10、query:cp
-   evidence：解耦潜在空间中的生成因子
-4. [Rethinking Layer-Wise Information Allocation for Vision Foundation Model Adaptation](/202607/27/2607.21973v1-rethinking-layer-wise-information-allocation-for-vision-foundation-model-adaptation)  
-   标签：评分：8.0/10、query:cp
-   evidence：主张对表征的保留与抑制进行有原则的控制，通过逐层信息分配进行干预
+   evidence：文本条件仿射变换强调视觉嵌入中的颜色属性，实现颜色与形状的解耦。
+2. [LoRA for Gender-Inclusive Rewriting and Activation Steering for Counter-Narrative Generation](/202607/28/2607.23083v1-lora-for-gender-inclusive-rewriting-and-activation-steering-for-counter-narrative-generation)  
+   标签：评分：9.0/10、query:cp
+   evidence：通过PCA在隐藏状态上激活引导
 
 ### 速读区论文标签
-1. [Dual Adversarial Fine-tuning for Enhancing Robustness of Large Vision Language Model](/202607/27/2607.18958v1-dual-adversarial-fine-tuning-for-enhancing-robustness-of-large-vision-language-model)  
-   标签：评分：7.0/10、query:cp
-   evidence：双重对抗微调提升鲁棒性，结合视觉与语义监督
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">

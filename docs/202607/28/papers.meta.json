@@ -1,0 +1,39 @@
+{
+  "label": "2026-07-28",
+  "date": "2026-07-28",
+  "generated_at": "2026-07-28T21:50:12",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202607/28/2607.22919v1-controlling-embedding-spaces-with-text-conditioned-transformations",
+      "section": "deep",
+      "title_en": "Controlling Embedding Spaces with Text-Conditioned Transformations",
+      "authors": "Joseph Fioresi, Fabian Caba Heilbron, Pankaj Nathani, Mubarak Shah, Kushal Kafle",
+      "date": "2026-07-24",
+      "pdf": "https://arxiv.org/pdf/2607.22919v1",
+      "score": "9.0",
+      "evidence": "文本条件仿射变换强调视觉嵌入中的颜色属性，实现颜色与形状的解耦。",
+      "tldr": "多模态嵌入空间（如CLIP）将语义压缩为单一向量，牺牲了相机角度、色彩等次级属性。本文提出文本条件仿射变换，可依据自然语言描述显式控制嵌入，强调指定属性。该方法支持多属性同时学习和零成本推理，直接操作冻结嵌入空间，无需重编码。在属性检索和多属性组织任务上取得最优性能。",
+      "tags": "query:cp",
+      "abstract_en": "Multimodal embedding spaces in models like CLIP enable powerful capabilities such as semantic similarity retrieval and cross-modal zero-shot classification. These embeddings compress high-level semantics into a single vector, which comes at the cost of primarily expressing a dominant semantics like main object while suppressing other important attributes such as camera angle or color tone. We propose a text-conditioned transformation of visual embeddings that makes such attributes explicitly accessible. Given a natural language description of an attribute category (e.g., \"color\" or \"art style\"), a network generates an affine transformation that emphasizes the specified attribute. Conditioning on text enables it to learn many attributes simultaneously, accessing them at inference time through an intuitive interface. The network is trained to align transformed embeddings with the frozen latent space, enabling retrieval using existing large-scale embeddings without any re-encoding. When applied to a full set, the same mechanism transforms the latent space for attribute disentanglement tasks such as multi-clustering. By operating directly in latent space, our method provides a unified and efficient framework for controlling embedding spaces, demonstrating state-of-the-art performance across both attribute-based retrieval and multi-attribute organization tasks with near-zero inference cost. Project page: https://joefioresi718.github.io/ControlEmbed_webpage/",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/28/2607.23083v1-lora-for-gender-inclusive-rewriting-and-activation-steering-for-counter-narrative-generation",
+      "section": "deep",
+      "title_en": "LoRA for Gender-Inclusive Rewriting and Activation Steering for Counter-Narrative Generation",
+      "authors": "Akhil Rajeev P, Manoj Balaji J",
+      "date": "2026-07-25",
+      "pdf": "https://arxiv.org/pdf/2607.23083v1",
+      "score": "9.0",
+      "evidence": "通过PCA在隐藏状态上激活引导",
+      "tldr": "性别包容生成任务需将偏见文本转化为公正表达，反叙事生成尤需轻量可控方案。本文提出IHLC，对重写采用LoRA微调，对反叙事利用PCA从对比激活提取方向，注入Gemma-3-4B-it中间层实现激活转向，辅以约束提示。在共享任务中，重写与反叙事分别获80.00%和78.12%评分，分析发现语义漂移等失效模式。工作证实激活转向作为无权重更新方法的可行性，同时指出层敏感性等局限。",
+      "tags": "query:cp",
+      "abstract_en": "Gender-inclusive language generation seeks to transform biased text into inclusive alternatives while preserving semantic meaning and contextual coherence. This paper presents the IHLC system for the LT-EDI 2026 Shared Task, addressing both gender-inclusive rewriting and counter-narrative generation. For gender-inclusive rewriting, we employ parameter-efficient Low-Rank Adaptation (LoRA) fine-tuning, achieving an official score of 80.00%. Our primary contribution is a compute-efficient inference-time representation engineering approach for counter-narrative generation. We derive a principal steering direction from contrastive hidden-state activations using principal component analysis (PCA) and inject it into the intermediate representations of Gemma-3-4B-it during inference, enabling behavioral steering toward inclusive responses without modifying model weights. Combined with constrained prompting, this approach produces polite and contextually appropriate counter-narratives, achieving an official score of 78.12%. We further present a manual analysis of steering behavior, identifying key failure modes including semantic drift, residual bias leakage, layer sensitivity, over-steering, and text degeneration. Our findings highlight both the practical potential and current limitations of activation steering as a lightweight alternative to parameter updates for controllable and socially aligned language generation.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
