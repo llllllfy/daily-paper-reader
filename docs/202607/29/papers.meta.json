@@ -1,0 +1,39 @@
+{
+  "label": "2026-07-29",
+  "date": "2026-07-29",
+  "generated_at": "2026-07-29T20:50:01",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202607/29/2607.23271v1-what-clip-knows-but-cannot-say-recovering-negation-from-frozen-intermediate-features",
+      "section": "deep",
+      "title_en": "What CLIP Knows but Cannot Say: Recovering Negation from Frozen Intermediate Features",
+      "authors": "Chen-Yi Lu, Yueh-Shao Chen, Somali Chaterji",
+      "date": "2026-07-25",
+      "pdf": "https://arxiv.org/pdf/2607.23271v1",
+      "score": "10.0",
+      "evidence": "在编码器组合语法峰值处拦截，通过嵌入校正网络恢复否定信号",
+      "tldr": "对比语言-图像模型 CLIP 对否定不敏感，将“一只狗”与“不是一只狗”映射到几乎相同的嵌入，这源于最终层的表征坍塌。为此提出 PeakPatch，一种轻量级事后校正方法，在编码器组合峰值层注入否定信号，仅增加 5.2M 参数（约占主干 3.5%）。在 NegBench 上，PeakPatch 将 COCO MCQ 提升至 74.3%，比 CLIP 高 35.1 个百分点，并超越最佳微调方法 17.8 个百分点，同时在分布外检索和文生图上表现优异。该工作证明，通过层级干预无需微调即可恢复丢失的语法信息，为修复视觉-语言模型的组合推理提供了高效范式。",
+      "tags": "query:cp",
+      "abstract_en": "Contrastive vision-language models such as CLIP map semantically opposite phrases (e.g., \"a dog\" vs. \"not a dog\") to nearly identical embeddings, rendering them insensitive to negation. We attribute this failure to a phenomenon we call Representational Collapse: by tracking compositional divergence and visual alignment across the CLIP text encoder, we show that middle layers build compositional syntax, but the final layers collapse this structure as visual alignment rises, producing a syntax-blind final representation. To recover the lost negation signal without altering pretrained weights, we propose PeakPatch, a lightweight post-hoc correction system that intercepts the encoder at its compositional peak. An Embedding Correction Network (ECN) uses cross-attention to extract a negation-specific signal from the peak layer, anchored to a stable baseline, and predicts a deviation vector that re-injects the lost syntax into the final-layer embedding space. A complementary Score Correction Network (SCN) predicts bounded scalar score offsets for discriminative tasks. Both modules are trained jointly end-to-end while all CLIP parameters remain frozen, adding only 5.2M parameters (3.5% of the backbone) and preserving the standard cosine similarity interface. On NegBench, PeakPatch achieves 74.3% on COCO MCQ (+35.1 over CLIP, +17.8 over the best encoder fine-tuning method) and 65.5% on VOC MCQ, while outperforming all fine-tuning baselines on fully out-of-distribution negation retrieval despite training only 3.5% of the parameters. The corrected embeddings also transfer to text-to-image generation (+18.4 negation score) and generalize across ViT-B/32, ViT-L/14, and SigLIP backbones. Project URL: https://stevencylu.github.io/PeakPatch/.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/29/2607.23600v1-confusion-continuous-fusion-space-learning-for-fine-grained-controllable-infrared-and-visible-image-fusion",
+      "section": "deep",
+      "title_en": "ConFusion: Continuous Fusion Space Learning for Fine-Grained Controllable Infrared and Visible Image Fusion",
+      "authors": "Guo Yurong, He Yufei, Li Yonghao, Chang Dongliang, Zhang Ke, Ma Zhanyu",
+      "date": "2026-07-26",
+      "pdf": "https://arxiv.org/pdf/2607.23600v1",
+      "score": "9.0",
+      "evidence": "双分支架构解耦模态不变（形状）和模态特有（颜色/纹理）特征",
+      "tldr": "现有的可控红外可见图像融合方法通常依赖预定义的离散控制条件，导致融合控制空间稀疏，难以满足细粒度调整需求。为此，本文提出ConFusion框架，通过高斯条件空间感知调制学习连续融合空间，实现实例级别的精细控制。实验表明，该方法在融合质量和下游任务中均达到最优性能，并支持灵活的用户意图驱动融合。该工作为细粒度可控多模态融合提供了新范式。",
+      "tags": "query:cp",
+      "abstract_en": "Controllable infrared-visible image fusion aims to integrate complementary thermal and structural information with flexible region-aware modulation, producing fused images that adapt to diverse user requirements and downstream tasks. However, existing methods typically rely on predefined discrete control conditions, leading to a sparse space that fails to support fine-grained modulation demands. To address this, we propose ConFusion, a novel framework that learns the continuous fusion space via Gaussian-conditioned spatial-aware modulation, enabling instance-level fine-grained controllable infrared and visible image fusion. ConFusion employs a dual-branch architecture to disentangle modality-invariant and modality-specific representations under joint reconstruction and text-guided semantic alignment. Gaussian-conditioned instance modulation variables coupled with Grounded SAM-based instance masks guide instance-level fine-grained modulation through the Mask-Guided Specific Feature Modulator, while the Text-Driven Invariant Feature Enhancer improves semantic consistency and enhances fusion. During inference, the multimodal large language model parses user intents into instance-level modulation variables to guide image fusion. Extensive experiments show that ConFusion achieves state-of-the-art performance across multiple metrics in both fusion quality and downstream tasks, while supporting fine-grained controllable image fusion. Our code is available at https://github.com/HeyufeiAnto/Confusion",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

@@ -6,26 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-28
-- 运行时间：2026-07-28 21:50:02 UTC
+- 最新运行日期：2026-07-29
+- 运行时间：2026-07-29 20:49:50 UTC
 - 运行状态：成功
 - 本次总论文数：2
 - 精读区：2
 - 速读区：0
 
 ### 今日简报（AI）
-今日深入研读两篇顶会论文，聚焦于用文本条件精准操控嵌入空间及提升文本生成的包容性。  
-核心发现：文本驱动的嵌入变换可灵活控制语义特征，而LoRA适配与激活引导能有效实现性别包容改写与反叙事生成。  
-建议关注这两项技术如何结合，在保证生成质量的同时，为内容安全与多样性提供更鲁棒的调控方案。
-- 详情：[/202607/28/README](/202607/28/README)
+今日精读两篇高分论文，直击多模态模型的“盲点”与融合新范式。  
+一篇满分破解 CLIP 如何“知否不言”，揭示冻结特征中潜藏的否定理解能力；另一篇用连续融合空间换取红外与可见光图像的细粒度可控。  
+下次用 CLIP 做视觉推理或图像融合时，不妨先探一探中间层里被冻结的“潜台词”。
+- 详情：[/202607/29/README](/202607/29/README)
 
 ### 精读区论文标签
-1. [Controlling Embedding Spaces with Text-Conditioned Transformations](/202607/28/2607.22919v1-controlling-embedding-spaces-with-text-conditioned-transformations)  
+1. [What CLIP Knows but Cannot Say: Recovering Negation from Frozen Intermediate Features](/202607/29/2607.23271v1-what-clip-knows-but-cannot-say-recovering-negation-from-frozen-intermediate-features)  
+   标签：评分：10.0/10、query:cp
+   evidence：在编码器组合语法峰值处拦截，通过嵌入校正网络恢复否定信号
+2. [ConFusion: Continuous Fusion Space Learning for Fine-Grained Controllable Infrared and Visible Image Fusion](/202607/29/2607.23600v1-confusion-continuous-fusion-space-learning-for-fine-grained-controllable-infrared-and-visible-image-fusion)  
    标签：评分：9.0/10、query:cp
-   evidence：文本条件仿射变换强调视觉嵌入中的颜色属性，实现颜色与形状的解耦。
-2. [LoRA for Gender-Inclusive Rewriting and Activation Steering for Counter-Narrative Generation](/202607/28/2607.23083v1-lora-for-gender-inclusive-rewriting-and-activation-steering-for-counter-narrative-generation)  
-   标签：评分：9.0/10、query:cp
-   evidence：通过PCA在隐藏状态上激活引导
+   evidence：双分支架构解耦模态不变（形状）和模态特有（颜色/纹理）特征
 
 ### 速读区论文标签
 - 本次无速读推荐。

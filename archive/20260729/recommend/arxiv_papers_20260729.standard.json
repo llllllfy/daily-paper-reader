@@ -1,0 +1,93 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-29T20:47:34.682948+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2607.23271v1",
+      "source": "arxiv",
+      "title": "What CLIP Knows but Cannot Say: Recovering Negation from Frozen Intermediate Features",
+      "abstract": "Contrastive vision-language models such as CLIP map semantically opposite phrases (e.g., \"a dog\" vs. \"not a dog\") to nearly identical embeddings, rendering them insensitive to negation. We attribute this failure to a phenomenon we call Representational Collapse: by tracking compositional divergence and visual alignment across the CLIP text encoder, we show that middle layers build compositional syntax, but the final layers collapse this structure as visual alignment rises, producing a syntax-blind final representation. To recover the lost negation signal without altering pretrained weights, we propose PeakPatch, a lightweight post-hoc correction system that intercepts the encoder at its compositional peak. An Embedding Correction Network (ECN) uses cross-attention to extract a negation-specific signal from the peak layer, anchored to a stable baseline, and predicts a deviation vector that re-injects the lost syntax into the final-layer embedding space. A complementary Score Correction Network (SCN) predicts bounded scalar score offsets for discriminative tasks. Both modules are trained jointly end-to-end while all CLIP parameters remain frozen, adding only 5.2M parameters (3.5% of the backbone) and preserving the standard cosine similarity interface. On NegBench, PeakPatch achieves 74.3% on COCO MCQ (+35.1 over CLIP, +17.8 over the best encoder fine-tuning method) and 65.5% on VOC MCQ, while outperforming all fine-tuning baselines on fully out-of-distribution negation retrieval despite training only 3.5% of the parameters. The corrected embeddings also transfer to text-to-image generation (+18.4 negation score) and generalize across ViT-B/32, ViT-L/14, and SigLIP backbones. Project URL: https://stevencylu.github.io/PeakPatch/.",
+      "authors": [
+        "Chen-Yi Lu",
+        "Yueh-Shao Chen",
+        "Somali Chaterji"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-07-25T16:15:50+00:00",
+      "link": "https://arxiv.org/pdf/2607.23271v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "intercepts encoder at compositional peak to recover lost negation via Embedding Correction Network",
+      "llm_evidence_cn": "在编码器组合语法峰值处拦截，通过嵌入校正网络恢复否定信号",
+      "llm_evidence": "在编码器组合语法峰值处拦截，通过嵌入校正网络恢复否定信号",
+      "canonical_evidence": "在编码器组合语法峰值处拦截，通过嵌入校正网络恢复否定信号",
+      "llm_tldr_en": "Proposes PeakPatch, a post-hoc correction that intercepts CLIPs text encoder at its compositional peak to recover lost negation signals via an embedding correction network, without retraining, enabling frozen models to regain sensitivity to negation.",
+      "llm_tldr_cn": "针对CLIP等视觉语言模型对否定不敏感的问题，发现中层构建组合语法但最终层表示坍塌，提出PeakPatch后验校正系统，在组合语法峰值处截取中间特征，通过嵌入校正网络恢复否定信号，无需修改预训练权重。实验证明有效恢复否定理解能力，揭示了冻结模型中潜在的结构化语义，为表示编辑和语义操控提供新工具。",
+      "llm_tldr": "针对CLIP等视觉语言模型对否定不敏感的问题，发现中层构建组合语法但最终层表示坍塌，提出PeakPatch后验校正系统，在组合语法峰值处截取中间特征，通过嵌入校正网络恢复否定信号，无需修改预训练权重。实验证明有效恢复否定理解能力，揭示了冻结模型中潜在的结构化语义，为表示编辑和语义操控提供新工具。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.23600v1",
+      "source": "arxiv",
+      "title": "ConFusion: Continuous Fusion Space Learning for Fine-Grained Controllable Infrared and Visible Image Fusion",
+      "abstract": "Controllable infrared-visible image fusion aims to integrate complementary thermal and structural information with flexible region-aware modulation, producing fused images that adapt to diverse user requirements and downstream tasks. However, existing methods typically rely on predefined discrete control conditions, leading to a sparse space that fails to support fine-grained modulation demands. To address this, we propose ConFusion, a novel framework that learns the continuous fusion space via Gaussian-conditioned spatial-aware modulation, enabling instance-level fine-grained controllable infrared and visible image fusion. ConFusion employs a dual-branch architecture to disentangle modality-invariant and modality-specific representations under joint reconstruction and text-guided semantic alignment. Gaussian-conditioned instance modulation variables coupled with Grounded SAM-based instance masks guide instance-level fine-grained modulation through the Mask-Guided Specific Feature Modulator, while the Text-Driven Invariant Feature Enhancer improves semantic consistency and enhances fusion. During inference, the multimodal large language model parses user intents into instance-level modulation variables to guide image fusion. Extensive experiments show that ConFusion achieves state-of-the-art performance across multiple metrics in both fusion quality and downstream tasks, while supporting fine-grained controllable image fusion. Our code is available at https://github.com/HeyufeiAnto/Confusion",
+      "authors": [
+        "Guo Yurong",
+        "He Yufei",
+        "Li Yonghao",
+        "Chang Dongliang",
+        "Zhang Ke",
+        "Ma Zhanyu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-26T11:00:10+00:00",
+      "link": "https://arxiv.org/pdf/2607.23600v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "dual-branch architecture disentangles modality-invariant (shape) and modality-specific (color) features",
+      "llm_evidence_cn": "双分支架构解耦模态不变（形状）和模态特有（颜色/纹理）特征",
+      "llm_evidence": "双分支架构解耦模态不变（形状）和模态特有（颜色/纹理）特征",
+      "canonical_evidence": "双分支架构解耦模态不变（形状）和模态特有（颜色/纹理）特征",
+      "llm_tldr_en": "ConFusion uses a dual-branch architecture to disentangle shape and color information for fine-grained controllable infrared-visible image fusion, learning a continuous fusion space via Gaussian-conditioned modulation.",
+      "llm_tldr_cn": "现有红外与可见光图像融合方法依赖预定义离散控制条件，稀疏的控制空间无法支持细粒度调制。本文提出ConFusion框架，通过高斯条件空间感知调制学习连续融合空间，并采用双分支架构解耦模态不变特征和模态特有特征。实验表明，该方法能实现实例级细粒度可控融合，灵活适应多种下游任务，为可控图像融合提供了新思路。",
+      "llm_tldr": "现有红外与可见光图像融合方法依赖预定义离散控制条件，稀疏的控制空间无法支持细粒度调制。本文提出ConFusion框架，通过高斯条件空间感知调制学习连续融合空间，并采用双分支架构解耦模态不变特征和模态特有特征。实验表明，该方法能实现实例级细粒度可控融合，灵活适应多种下游任务，为可控图像融合提供了新思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}
