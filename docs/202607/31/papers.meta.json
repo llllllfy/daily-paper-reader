@@ -1,0 +1,39 @@
+{
+  "label": "2026-07-31",
+  "date": "2026-07-31",
+  "generated_at": "2026-07-31T21:04:47",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202607/31/2607.28526v1-what-to-remove-what-to-preserve-dual-ambiguity-rectification-for-all-in-one-image-restoration",
+      "section": "deep",
+      "title_en": "What to Remove, What to Preserve: Dual-Ambiguity Rectification for All-in-One Image Restoration",
+      "authors": "Cencen Liu, Wen Yin, Dongyang Zhang, Dongmin Li, Shan Zhao, Bing Su, Tao He, Jielei Wang, Guoming Lu",
+      "date": "2026-07-30",
+      "pdf": "https://arxiv.org/pdf/2607.28526v1",
+      "score": "8.0",
+      "evidence": "通过双歧义校正在潜空间中解耦退化与内容特征",
+      "tldr": "All-in-one图像恢复旨在用统一模型处理多种退化，但现有方法常将异构退化条件编码在共享潜在空间，导致退化相关线索与场景内容在通道和空间维度发生纠缠，形成语义模糊和空间歧义双重问题，进而引发内容损坏和残留伪影。本文提出双重歧义校正网络DAR-Net，首先引入退化原型表示模块，通过单纯形约束的原型混合建模构建结构化退化状态；接着语义歧义校正模块以此状态生成退化感知提示，优化解码器通道调节；空间歧义校正模块则进一步将退化感知与互补特征正则化至正交响应子空间，减轻去除与保留信号的空间干扰。在多项标准基准上，DAR-Net在三种退化与五种退化设定下均取得最佳综合性能，相比最强竞争对手，平均PSNR分别提升0.14 dB和0.34 dB，并在CDD-11和WeatherBench数据集上表现同样出色，为统一图像恢复任务提供了高效的双重歧义校正新思路。",
+      "tags": "query:cp",
+      "abstract_en": "All-in-one image restoration aims to handle diverse degradations within a unified framework. Existing methods commonly encode heterogeneous degradation conditions in a shared latent space, where degradation-related cues and scene content can remain entangled. We characterize the resulting challenge as dual ambiguity: semantic ambiguity in channel-wise modulation and spatial ambiguity in restoration responses, which can lead to content corruption and residual artifacts. To mitigate this issue, we propose DAR-Net, a Dual-Ambiguity Rectification Network for all-in-one image restoration. DAR-Net first introduces a Degradation Archetype Representation (DAR) module to construct a structured degradation state through simplex-constrained archetype mixture modeling. Based on this state, a Semantic Ambiguity Rectification (SeAR) module generates degradation-aware prompts to improve channel-wise conditioning in the decoder. A Spatial Ambiguity Rectification (SpAR) module further regularizes degradation-aware and complementary features toward orthogonal response subspaces, reducing spatial interference between removal and preservation cues. Extensive experiments on standard all-in-one restoration benchmarks show that DAR-Net achieves the best overall performance under both three-degradation and five-degradation settings, improving the average PSNR over the strongest competitor by 0.14 dB and 0.34 dB, respectively; it additionally shows superior performance on CDD-11 and WeatherBench.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/31/2607.28386v1-explaining-image-similarity-with-automatically-extracted-concept-activation-vectors",
+      "section": "quick",
+      "title_en": "Explaining Image Similarity with Automatically Extracted Concept Activation Vectors",
+      "authors": "Isaac Roberts, Petra Bevandic, Alexander Schulz, Barbara Hammer",
+      "date": "2026-07-30",
+      "pdf": "https://arxiv.org/pdf/2607.28386v1",
+      "score": "7.0",
+      "evidence": "沿概念方向（颜色、形状、纹理）扰动嵌入",
+      "tldr": "图像相似性广泛应用于检索、匹配等任务，但模型判定相似的原因常不透明。现有方法多提供局部归因图，难以揭示嵌入空间中纹理、形状等全局概念如何驱动相似度。本文提出与模型和度量无关的框架，利用稀疏自编码器自动提取概念激活向量，通过扰动嵌入测量相似性变化，量化概念重要性，并对图像对生成概念归因图。进一步扩展至组级解释和样本检索。实验表明潜在扰动比像素空间方法更忠实，概念重要性线性恢复真实相似度分数，为理解个体与簇相似性判断提供了新工具，并支持样本检索以发现语义一致的图像。",
+      "tags": "query:cp",
+      "abstract_en": "Image similarity underlies many computer vision applications, yet it is often unclear why two images receive a high or low similarity score. Existing explainability methods often rely on gradient-based attribution maps to provide local justifications for similarity. These approaches struggle to provide global insights into what specifically drives similarity in regions of an embedding space, such as texture, shape, or color. We introduce a model- and metric-agnostic framework that explains image similarity using Concept Activation Vectors (CAVs) extracted automatically via Sparse Autoencoders (SAEs). Given a pair of images, we perturb their embeddings along discovered concept directions and measure the resulting change in a chosen similarity function, yielding concept importances. For image pairs, we provide localization with concept attribution maps. We extend this procedure to group-level settings, explaining what drives similarity across a cluster of images rather than a single pair, and further, we introduce Exemplar Retrieval, aiming to recover samples with similar reasons contributing to similarity. Our experiments show that our latent perturbations are more faithful to the underlying data distribution than pixel-space baselines, and that concept importances linearly recover the true similarity score. Qualitative results further confirm the usefulness of our methods in understanding a model's individual and group similarity judgments.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

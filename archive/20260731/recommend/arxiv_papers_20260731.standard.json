@@ -1,0 +1,99 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-31T21:00:52.598857+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2607.28526v1",
+      "source": "arxiv",
+      "title": "What to Remove, What to Preserve: Dual-Ambiguity Rectification for All-in-One Image Restoration",
+      "abstract": "All-in-one image restoration aims to handle diverse degradations within a unified framework. Existing methods commonly encode heterogeneous degradation conditions in a shared latent space, where degradation-related cues and scene content can remain entangled. We characterize the resulting challenge as dual ambiguity: semantic ambiguity in channel-wise modulation and spatial ambiguity in restoration responses, which can lead to content corruption and residual artifacts. To mitigate this issue, we propose DAR-Net, a Dual-Ambiguity Rectification Network for all-in-one image restoration. DAR-Net first introduces a Degradation Archetype Representation (DAR) module to construct a structured degradation state through simplex-constrained archetype mixture modeling. Based on this state, a Semantic Ambiguity Rectification (SeAR) module generates degradation-aware prompts to improve channel-wise conditioning in the decoder. A Spatial Ambiguity Rectification (SpAR) module further regularizes degradation-aware and complementary features toward orthogonal response subspaces, reducing spatial interference between removal and preservation cues. Extensive experiments on standard all-in-one restoration benchmarks show that DAR-Net achieves the best overall performance under both three-degradation and five-degradation settings, improving the average PSNR over the strongest competitor by 0.14 dB and 0.34 dB, respectively; it additionally shows superior performance on CDD-11 and WeatherBench.",
+      "authors": [
+        "Cencen Liu",
+        "Wen Yin",
+        "Dongyang Zhang",
+        "Dongmin Li",
+        "Shan Zhao",
+        "Bing Su",
+        "Tao He",
+        "Jielei Wang",
+        "Guoming Lu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-07-30T17:01:24+00:00",
+      "link": "https://arxiv.org/pdf/2607.28526v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "disentangles degradation and content features in latent space via dual-ambiguity rectification",
+      "llm_evidence_cn": "通过双歧义校正在潜空间中解耦退化与内容特征",
+      "llm_evidence": "通过双歧义校正在潜空间中解耦退化与内容特征",
+      "canonical_evidence": "通过双歧义校正在潜空间中解耦退化与内容特征",
+      "llm_tldr_en": "Addresses entangled degradation and content by disentangling them in latent space via degradation archetype representation and dual-branch modulation; applicable to color-shape separation.",
+      "llm_tldr_cn": "该论文针对图像恢复中退化与内容特征纠缠导致的内容损坏问题，提出双歧义校正网络，通过退化原型表示和双分支调制在潜空间中解耦退化与内容。实验显示即使在未见退化上也能有效保持语义，方法可扩展到颜色-形状解耦。",
+      "llm_tldr": "该论文针对图像恢复中退化与内容特征纠缠导致的内容损坏问题，提出双歧义校正网络，通过退化原型表示和双分支调制在潜空间中解耦退化与内容。实验显示即使在未见退化上也能有效保持语义，方法可扩展到颜色-形状解耦。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.28386v1",
+      "source": "arxiv",
+      "title": "Explaining Image Similarity with Automatically Extracted Concept Activation Vectors",
+      "abstract": "Image similarity underlies many computer vision applications, yet it is often unclear why two images receive a high or low similarity score. Existing explainability methods often rely on gradient-based attribution maps to provide local justifications for similarity. These approaches struggle to provide global insights into what specifically drives similarity in regions of an embedding space, such as texture, shape, or color. We introduce a model- and metric-agnostic framework that explains image similarity using Concept Activation Vectors (CAVs) extracted automatically via Sparse Autoencoders (SAEs). Given a pair of images, we perturb their embeddings along discovered concept directions and measure the resulting change in a chosen similarity function, yielding concept importances. For image pairs, we provide localization with concept attribution maps. We extend this procedure to group-level settings, explaining what drives similarity across a cluster of images rather than a single pair, and further, we introduce Exemplar Retrieval, aiming to recover samples with similar reasons contributing to similarity. Our experiments show that our latent perturbations are more faithful to the underlying data distribution than pixel-space baselines, and that concept importances linearly recover the true similarity score. Qualitative results further confirm the usefulness of our methods in understanding a model's individual and group similarity judgments.",
+      "authors": [
+        "Isaac Roberts",
+        "Petra Bevandic",
+        "Alexander Schulz",
+        "Barbara Hammer"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-30T15:43:33+00:00",
+      "link": "https://arxiv.org/pdf/2607.28386v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Perturb embeddings along concept directions including color, shape, texture",
+      "llm_evidence_cn": "沿概念方向（颜色、形状、纹理）扰动嵌入",
+      "llm_evidence": "沿概念方向（颜色、形状、纹理）扰动嵌入",
+      "canonical_evidence": "沿概念方向（颜色、形状、纹理）扰动嵌入",
+      "llm_tldr_en": "The paper proposes a framework to explain image similarity by perturbing embeddings along automatically extracted concept directions (e.g., color, shape, texture) using Sparse Autoencoders, revealing which concepts drive similarity.",
+      "llm_tldr_cn": "针对图像相似性难以解释的问题，提出一种利用稀疏自编码器自动提取概念激活向量（CAV）的框架，沿颜色、形状等概念方向扰动嵌入以度量概念对相似性的驱动作用，实验表明该方法能揭示嵌入空间中颜色等视觉概念的影响，为概念级干预提供了工具。",
+      "llm_tldr": "针对图像相似性难以解释的问题，提出一种利用稀疏自编码器自动提取概念激活向量（CAV）的框架，沿颜色、形状等概念方向扰动嵌入以度量概念对相似性的驱动作用，实验表明该方法能揭示嵌入空间中颜色等视觉概念的影响，为概念级干预提供了工具。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
