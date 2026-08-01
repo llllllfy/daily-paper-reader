@@ -1,0 +1,54 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-01T21:07:31.339860+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2607.26715v1",
+      "source": "arxiv",
+      "title": "FreeShadow: Training-Free Shadow Removal via Illumination Transfer and Selective Content Preservation in Diffusion Models",
+      "abstract": "Existing supervised and unsupervised shadow removal methods often suffer from limited generalization due to the insufficient diversity of available training datasets, while zero-shot methods tend to produce artifacts and require time-consuming test-time optimization. To address these issues, we propose FreeShadow, a training-free shadow removal method built upon pretrained diffusion models, which exploits diffusion priors for shadow removal without any training or optimization. For illumination recovery, we propose an illumination transfer attention (ITA), which re-weights the self-attention maps in diffusion model to transfer illumination cues from non-shadow to shadow regions. For content preservation, we analyze the effects of illumination variations on self-attention maps and latent high-frequency features in diffusion model, and selectively preserve illumination-invariant components to maintain content fidelity while suppressing residual shadows. We further propose local texture-preserving relighting (LTPR) to mitigate local texture misalignment caused by VAE compression. Extensive experiments demonstrate that our method achieves strong generalization and produces realistic shadow-free images.",
+      "authors": [
+        "Yinan Wang",
+        "Yan Huang",
+        "Yong Xu",
+        "Patrick Le Callet"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-29T10:05:36+00:00",
+      "link": "https://arxiv.org/pdf/2607.26715v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Proposes a latent space intervention technique: re-weighting self-attention maps in diffusion models to transfer illumination.",
+      "llm_evidence_cn": "提出在扩散模型中对自注意力图进行重加权实现光照迁移的潜在空间干预技术。",
+      "llm_evidence": "提出在扩散模型中对自注意力图进行重加权实现光照迁移的潜在空间干预技术。",
+      "canonical_evidence": "提出在扩散模型中对自注意力图进行重加权实现光照迁移的潜在空间干预技术。",
+      "llm_tldr_en": "FreeShadow is a training-free shadow removal method that uses pretrained diffusion models, intervening via illumination transfer attention to re-weight self-attention maps, achieving shadow removal while preserving content, demonstrating a latent space intervention for visual editing.",
+      "llm_tldr_cn": "针对有监督和无监督阴影去除方法泛化性有限的问题，FreeShadow 提出一种基于预训练扩散模型的无训练阴影去除方法。其核心为光照迁移注意力机制，通过重加权自注意力图将非阴影区域的光照线索迁移至阴影区域，同时利用扩散先验保留图像内容。实验表明该方法无需训练或优化即可实现阴影去除，为视觉编辑中的潜在空间干预提供了新思路。",
+      "llm_tldr": "针对有监督和无监督阴影去除方法泛化性有限的问题，FreeShadow 提出一种基于预训练扩散模型的无训练阴影去除方法。其核心为光照迁移注意力机制，通过重加权自注意力图将非阴影区域的光照线索迁移至阴影区域，同时利用扩散先验保留图像内容。实验表明该方法无需训练或优化即可实现阴影去除，为视觉编辑中的潜在空间干预提供了新思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}

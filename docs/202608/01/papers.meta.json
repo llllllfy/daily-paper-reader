@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-01",
+  "date": "2026-08-01",
+  "generated_at": "2026-08-01T21:08:57",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/01/2607.26715v1-freeshadow-training-free-shadow-removal-via-illumination-transfer-and-selective-content-preservation-in-diffusion-models",
+      "section": "deep",
+      "title_en": "FreeShadow: Training-Free Shadow Removal via Illumination Transfer and Selective Content Preservation in Diffusion Models",
+      "authors": "Yinan Wang, Yan Huang, Yong Xu, Patrick Le Callet",
+      "date": "2026-07-29",
+      "pdf": "https://arxiv.org/pdf/2607.26715v1",
+      "score": "9.0",
+      "evidence": "提出在扩散模型中对自注意力图进行重加权实现光照迁移的潜在空间干预技术。",
+      "tldr": "阴影去除方法常因训练数据多样性不足导致泛化能力有限，零样本方法则易产生伪影且优化耗时。FreeShadow基于扩散模型先验，提出照明转移注意力机制，将非阴影区照明线索传递至阴影区，并选择性保留照明不变特征以维持内容保真度，同时通过局部纹理保留重新照明减轻VAE压缩造成的纹理错位。该方法无需任何训练或优化，实验表明其泛化性强，能生成真实无阴影图像。",
+      "tags": "query:cp",
+      "abstract_en": "Existing supervised and unsupervised shadow removal methods often suffer from limited generalization due to the insufficient diversity of available training datasets, while zero-shot methods tend to produce artifacts and require time-consuming test-time optimization. To address these issues, we propose FreeShadow, a training-free shadow removal method built upon pretrained diffusion models, which exploits diffusion priors for shadow removal without any training or optimization. For illumination recovery, we propose an illumination transfer attention (ITA), which re-weights the self-attention maps in diffusion model to transfer illumination cues from non-shadow to shadow regions. For content preservation, we analyze the effects of illumination variations on self-attention maps and latent high-frequency features in diffusion model, and selectively preserve illumination-invariant components to maintain content fidelity while suppressing residual shadows. We further propose local texture-preserving relighting (LTPR) to mitigate local texture misalignment caused by VAE compression. Extensive experiments demonstrate that our method achieves strong generalization and produces realistic shadow-free images.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
