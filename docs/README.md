@@ -6,26 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-01
-- 运行时间：2026-08-01 21:08:48 UTC
+- 最新运行日期：2026-08-02
+- 运行时间：2026-08-02 21:09:08 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：1
-- 速读区：0
+- 本次总论文数：3
+- 精读区：0
+- 速读区：3
 
 ### 今日简报（AI）
-今日精读了一篇关于无需训练即可去除阴影的论文，它通过扩散模型实现了光照迁移与内容选择性保留。  
-该方法无需额外训练，仅用预训练扩散模型即可完成阴影去除，同时避免细节丢失，效果超越现有依赖精细数据集的方案。  
-若你对图像编辑或扩散模型应用感兴趣，可重点关注其如何通过“选择性内容保持”平衡真实感与原始信息。
-- 详情：[/202608/01/README](/202608/01/README)
+今天速读了3篇论文，聚焦于提升生成模型真实度、视觉语言模型鲁棒性与注意力机制解耦。
+值得关注的方向：一是通过“锚定+引导”让文生图更忠实于文本描述，二是标定先行，让VLM在减少视觉标记时抵抗语义漂移。
+若对AIGC可控性或模型效率感兴趣，可从这两篇的推理优化方法入手，试跑其开源代码。
+- 详情：[/202608/02/README](/202608/02/README)
 
 ### 精读区论文标签
-1. [FreeShadow: Training-Free Shadow Removal via Illumination Transfer and Selective Content Preservation in Diffusion Models](/202608/01/2607.26715v1-freeshadow-training-free-shadow-removal-via-illumination-transfer-and-selective-content-preservation-in-diffusion-models)  
-   标签：评分：9.0/10、query:cp
-   evidence：提出在扩散模型中对自注意力图进行重加权实现光照迁移的潜在空间干预技术。
+- 本次无精读推荐。
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [Anchoring and Steering Diffusion: Enhancing the Faithfulness of Text-to-Image Generation at Inference Time](/202608/02/2607.26647v1-anchoring-and-steering-diffusion-enhancing-the-faithfulness-of-text-to-image-generation-at-inference-time)  
+   标签：评分：7.0/10、query:cp
+   evidence：在扩散模型的潜在空间中提出推理时干预以提升语义忠实度
+2. [Calibrate Before Reason: Robust Visual Token Reduction against Semantic Drift in VLMs](/202608/02/2607.27700v1-calibrate-before-reason-robust-visual-token-reduction-against-semantic-drift-in-vlms)  
+   标签：评分：7.0/10、query:cp
+   evidence：校准紧凑视觉表征以保持语义一致性，防止语义漂移
+3. [Disentangling Semantic Attention from Structural Bias in the Attention Manifold](/202608/02/2607.24017v1-disentangling-semantic-attention-from-structural-bias-in-the-attention-manifold)  
+   标签：评分：6.0/10、query:cp
+   evidence：在注意力流形中进行推理干预以解耦语义注意力
 
 
 <div class="dpr-home-promo-card">
