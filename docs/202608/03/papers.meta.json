@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-03",
+  "date": "2026-08-03",
+  "generated_at": "2026-08-03T21:17:02",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/03/2607.27465v1-igme-efficient-chained-method-ensemble-for-transferable-semantic-segmentation-attacks",
+      "section": "deep",
+      "title_en": "IGME: Efficient Chained Method Ensemble for Transferable Semantic Segmentation Attacks",
+      "authors": "Mengqi He, Jing Zhang",
+      "date": "2026-07-29",
+      "pdf": "https://arxiv.org/pdf/2607.27465v1",
+      "score": "10.0",
+      "evidence": "针对语义分割模型的可迁移对抗攻击",
+      "tldr": "语义分割模型易受可迁移对抗攻击，但现有集成攻击依赖多模型，计算成本高昂。本文提出单源高效链式方法集成（IGME），通过链式计算共享梯度并利用路径平均方向稳定更新。在Pascal VOC和Cityscapes上，IGME仅用单一源模型即取得与集成攻击相当的可迁移性，且运行时间显著更短。该方法为密集预测任务的对抗评估提供了轻量且高效的替代方案。",
+      "tags": "query:cp",
+      "abstract_en": "Semantic segmentation models are vulnerable to transferable adversarial perturbations, yet evaluating transfer attacks on dense prediction models can be computationally expensive. Existing ensemble attacks often rely on multiple surrogate models, increasing the computation cost, even harder for segmentation. This paper studies an efficient single-source alternative for transferable attacks on semantic segmentation. We formulate transferable attack composition as a chained computation over differentiable attack components, allowing the expensive source-model gradient computation to be shared. To reduce the update instability introduced by chained composition, we further use an integrated-gradient-style path-averaged direction as an empirical stabilization heuristic. Experiments on Pascal VOC and Cityscapes evaluate the resulting transferability efficiency trade-off across CNN- and transformer-based segmentation models. IGME achieves competitive transferability compared with single-source baselines and favorable runtime compared with model-ensemble attacks, while requiring access to only one source model.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

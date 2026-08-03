@@ -1,0 +1,244 @@
+Title: IGME: Efficient Chained Method Ensemble for Transferable Semantic Segmentation Attacks
+
+URL Source: https://arxiv.org/pdf/2607.27465v1
+
+Published Time: Fri, 31 Jul 2026 00:14:09 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# IGME: Efficient Chained Method Ensemble for Transferable Semantic Segmentation Attacks 
+
+## Mengqi He Jing Zhang 
+
+School of Computing, College of Systems & Society The Australian National University, Canberra, ACT, Australia 
+
+Mengqi.He@anu.edu.au Jing.Zhang@anu.edu.au 
+
+## Abstract 
+
+Semantic segmentation models are vulnerable to trans-ferable adversarial perturbations, yet evaluating transfer attacks on dense prediction models can be computationally expensive. Existing ensemble attacks often rely on multi-ple surrogate models, increasing the computation cost, even harder for segmentation. This paper studies an efficient single-source alternative for transferable attacks on seman-tic segmentation. We formulate transferable attack compo-sition as a chained computation over differentiable attack components, allowing the expensive source-model gradient computation to be shared. To reduce the update instabil-ity introduced by chained composition, we further use an integrated-gradient-style path-averaged direction as an em-pirical stabilization heuristic. Experiments on Pascal VOC and Cityscapes evaluate the resulting transferability effi-ciency trade-off across CNN- and transformer-based seg-mentation models. IGME achieves competitive transferabil-ity compared with single-source baselines and favorable runtime compared with model-ensemble attacks, while re-quiring access to only one source model. 
+
+## 1. Introduction 
+
+Semantic segmentation is a core dense-prediction task used in applications such as autonomous driving and med-ical image analysis [22, 32]. Despite strong clean-image accuracy, segmentation models remain vulnerable to small adversarial perturbations [1, 37]. The dense and spatially structured output makes this vulnerability particularly im-portant: a perturbation can alter large regions of a prediction while remaining visually subtle. Transferable attacks consider a more constrained setting than ordinary white-box evaluation. An adversarial exam-ple is generated on an accessible source model and then ap-plied to target models whose parameters or gradients are unavailable. Figure 1 illustrates this source-to-target gap: the example substantially degrades the source-model pre-diction, but its effect is weaker after transfer to a model with a different architecture. Prior work on transferable attacks for semantic segmentation evaluated classification-oriented techniques under dense-prediction objectives [17]. Among the strategies used to improve transferability, ensemble at-tacks are the most direct: aggregating information from multiple surrogate models, or from multiple attack branches applied to one model, generally transfers better than any single attack alone [8, 24, 39]. However, this strength comes at a cost that is especially severe for segmentation. Model ensembles require a sep-arate forward backward pass through the source model for every surrogate. Because segmentation losses and gradi-ents are computed densely over every pixel rather than a single class score, each such pass is already far more ex-pensive than in classification, so this repeated computation is especially costly for dense prediction. Method ensembles avoid the need for multiple models, but a naive implementa-tion still evaluates each attack branch independently, so the source-model computation is still repeated once per branch. We therefore study chained attack-component composi-tion in a single-source model setting. Instead of generating and aggregating several independent attack branches, differ-entiable transfer-enhancing components are placed in one computation graph so that the source-model computation is shared. Because chained composition may produce incon-sistent update directions, we further introduce an integrated-gradient-style path average as a stabilization heuristic. We refer to the resulting method as IGME. Our contributions are summarized as follows: • We analyze the cost of model ensembles and inde-pendently evaluated attack-component ensembles, and formulate a chained component composition that re-duces repeated source-model gradient evaluations. • We introduce IGME, which uses an integrated-gradient-style path-averaged direction to stabilize 1arXiv:2607.27465v1 [cs.CV] 29 Jul 2026 Image Adv GT      
+
+> Clean Noise Noise+
+> Figure 1. Motivating source-to-target transfer example. APGD adversarial example is generated on DeepLabV3 using a Cityscapes image and evaluated on DeepLabV3+ [4, 5, 7, 28]. The source prediction (“Noise”) is more strongly degraded than the target prediction (“Noise+”), illustrating the architecture-transfer gap. The example follows the evaluation protocol of prior transferable-segmentation work [17] and is included only to moti-vate the efficiency problem studied here.
+
+chained attack-component updates. • We evaluate the on Pascal VOC and Cityscapes across CNN- and transformer-based segmentation models, to-gether with runtime, composition, and preliminary SAM analyses. 
+
+## 2. Related Work 
+
+Adversarial attacks on semantic segmentation. Adver-sarial attacks search for bounded input perturbations that degrade a model’s prediction [14, 28]. Dense prediction introduces additional structure because the objective is ag-gregated over many spatial locations. Early work evaluates the robustness of segmentation models with standard gradi-ent attacks [1], while DAG directly manipulates dense out-puts [37] and SegPGD reweights correctly and incorrectly classified pixels during iterative optimization [15]. Other studies consider universal or targeted perturbations [11,18], proximal optimization [33], uncertainty-aware losses [27], and certified-radius-guided objectives [30]. These meth-ods establish that CNN- and transformer-based segmenta-tion models are vulnerable, but most are designed primarily for white-box attack. 
+
+Transferable adversarial attacks. Transfer attacks aim to preserve adversarial effect when an example crafted on a source model is evaluated on an unseen target. Rep-resentative approaches improve transfer through input di-versity [38], translation-invariant gradient processing [9], momentum or Nesterov-style optimization [8, 23], variance tuning [35], and surrogate or feature refinement [12,29,40]. For semantic segmentation, Dynamic Scaling links trans-ferability to the multi-scale behavior of segmentation archi-tectures [16]. A prior systematic study adapts NI, DI, TI, IAA, DAG, and SegPGD to a shared dense-prediction pro-tocol [17]. We retain that test protocol for comparable base-lines. Integrated Gradients accumulate gradients along apath from a baseline to an input [34]. TAIG uses integrated-gradient directions for transferable classification attacks [20], and MIG combines path integration with mo-mentum to attack both convolutional and transformer clas-sifiers [26]. Our use of path integration has a narrower role: it is an empirical stabilizer for the direction produced by chained attack components. 
+
+Model ensembles and method ensembles. Aggregat-ing several surrogate models can improve transferability by combining predictions, logits, losses, or gradients [8, 24]. SVRE reduces gradient variance across an ensem-ble [39], while adaptive weighting and sharpness-aware objectives further improve model-ensemble attacks [2, 3]. Self-ensemble attacks avoid storing several independently trained models, but can still require multiple augmented branch evaluations [19]. We instead chains differentiable attack components in one source-model graph. 
+
+## 3. Method 
+
+Ensemble attacks often improve transferability by aggre-gating information from multiple surrogate models, but re-peated model evaluations are expensive for dense predic-tion [3, 24, 39]. Self-ensemble attacks reduce the num-ber of distinct surrogates, yet may still evaluate multiple augmented branches [19]. We instead consider a single-source method ensemble in which differentiable transfer-enhancing components share one computation graph. We use “method ensemble” in the adversarial-attack sense, but the chained objects in our formulation are dif-ferentiable attack components rather than complete iterative optimizers. Examples include differentiable input transfor-mations, smoothing operators, and gradient-shaping mod-ules. Complete attacks such as PGD, NI, or SegPGD may include sign operations, clipping, projection, and stateful it-eration; they are not treated as ordinary differentiable func-tions unless explicitly unrolled. The chained formulation is a heuristic composition of differentiable attack operators. It is not a probabilistic en-semble and is not an algebraic approximation to averaging perturbations, losses, logits, or gradients. Its purpose is to share the expensive source-model computation while allow-ing several transfer-enhancing components to influence the update direction. IGME contains two stages: chained com-ponent composition, followed by an IG-style path average that empirically stabilizes the resulting direction. 
+
+3.1. Threat Model and Transferability 
+
+Let gs be an accessible source segmentation model, let 
+
+gt denote an unseen target model, and let (x, y) be a clean image label pair. Given perturbation budget ϵ, an 2attack algorithm A produces xadv = A(gs, x, y; ϵ) with 
+
+∥xadv − x∥∞ ≤ ϵ. The attack does not use target-model parameters or gradients. We measure its trans-fer effect on gt through a segmentation discrepancy D,
+
+Trans( A; gs, g t, x) = D(gt(xadv ), y). Using the scalar segmentation loss as D and averaging over a set of target models Gt and the data distribution X gives the average transfer objective 
+
+Trans avg (A; gs, Gt) = Egt∼G t,(x,y)∼X [Lseg (gt(xadv ), y)] .
+
+(1) In the experiments, lower adversarial mIoU and higher nor-malized mIoU drop (SR) indicate a stronger transferred at-tack. 
+
+3.2. Complexity Analysis of Ensemble Attacks 
+
+Let A denote the cost of applying one differentiable at-tack component, transformation, or gradient-shaping oper-ator, and let B denote one source-model forward–backward pass. Suppose an independently evaluated component en-semble contains N branches. A naive average-gradient im-plementation requires approximately O(N A + N B ) per attack iteration because every branch is evaluated through the source model. A model ensemble similarly requires re-peated model evaluations, with simplified cost O(A+N B ).For chained component composition without path aver-aging, the components share one source-model forward– backward pass, giving a per-iteration cost of O(N A + B).Over K attack iterations, the cost is O(K(N A + B)) , and for IGME with M path samples per iteration, the cost be-comes O(KM (N A + B)) . The M path samples may be processed as a batch to improve hardware utilization, but the number of model-equivalent gradient evaluations still scales with M . In the default setting, K = 10 and M = 2 ,so IGME performs 20 source-model gradient evaluations and uses twice the path-gradient evaluations of the chained baseline. This is consistent with Table 5, where IGME is approximately 2.20 × and 2.64 × slower than chained com-position on DeepLabV3 and FCN, respectively. The ratios need not equal two exactly because batching, memory allo-cation, path construction, and fixed tensor operations intro-duce additional overhead. 
+
+Efficient Transferable Attack with Integrated Gradi-ent Method Ensemble. Despite the runtime advantage of chained component composition, its update direction can be less stable when applied directly. To improve the empir-ical stability of the update, we use path-averaged gradient information, motivated by prior work showing that stabi-lized gradients can improve transferability [23]. The inte-grated gradient method [34] computes an integral of gradi-ents along the path from a baseline to the input. We use this idea as a path-averaging heuristic for chained attack components [20]. Semantic segmentation produces dense logits, so the IG direction must be defined with respect to   
+
+> Figure 2. Cosine similarity for chained component attacks with and without IG-style path averaging. Higher similarity indicates more stable update directions in this experiment; it is used as em-pirical evidence of step-wise stabilization rather than as a formal guarantee of transferability.
+
+a scalar attack objective rather than directly with respect to the dense model output. Let T = T1 ◦ T2 ◦ · · · ◦ TN denote the differentiable component chain and define 
+
+Jt(z) = Lseg (g(T (z)) , y) , (2) where Lseg is the scalar segmentation loss. Formally, the IG-style path-averaged direction is: 
+
+dt = ( xadv t − r) ⊙
+
+Z 10
+
+∇zJt
+
+ r + η(xadv t − r) dη. (3) where r is the baseline image, chosen as a black image in this setting, and ⊙ denotes element-wise multiplication. In implementation, the integral is approximated using M path samples: 
+
+bdt = ( xadv t − r) ⊙ 1
+
+M
+
+> M
+
+X
+
+> m=1
+
+∇zJt
+
+
+
+r + mM (xadv t − r)
+
+
+
+.
+
+(4) With the default M = 2 , Eq. 4 averages gradients at the midpoint and endpoint of the straight-line path from the baseline to the current adversarial image. Under this defini-tion, the integration averages gradient information along the path. We use this path averaging as a stabilization heuristic, rather than as a proof of optimality or guaranteed transfer-ability. Empirically, the cosine similarity between consec-utive IG-style update directions is higher than that of the regular gradient-based method in our reported experiment, as shown in Fig. 2. We therefore use the path average only as an empirical stabilizer of the chained direction. Its effect on transferabil-ity and runtime is evaluated separately in Section 4. The update is: 
+
+xadv t+1 = Clip x,ϵ 
+
+
+
+xadv t + α sign( bdt)
+
+
+
+. (5) 3where Clip x,ϵ denotes projection to the L∞ ball around the clean image x, followed by clipping to the valid im-age range, and α denotes the step size. We use M = 2 in all reported IGME experiments. In the end, the algorithm can be formulated as: 
+
+Input: Clean image x, label y, source model g,differentiable components T1, . . . , T N ,segmentation loss Lseg , baseline r,perturbation budget ϵ, step size α, iterations 
+
+K, path samples M
+
+Output: Adversarial example xadv K
+
+xadv  
+
+> 0
+
+← x;
+
+T ← T1 ◦ T2 ◦ · · · ◦ TN ;
+
+for t = 0 to K − 1 do 
+
+Jt(z) ← L seg (g(T (z)) , y);
+
+bdt ← 0;
+
+for m = 1 to M do 
+
+zt,m ← r + mM (xadv t − r);
+
+bdt ← bdt + ∇zJt(zt,m );
+
+end 
+
+bdt ← (xadv t − r) ⊙ bdt/M ;
+
+xadv t+1 ← ΠB∞(x,ϵ )∩[0 ,1] (xadv t + α sign( bdt)) ;
+
+end Algorithm 1: Integrated Gradients Method Ensemble (IGME) IGME is designed to improve the transferability effi-ciency trade-off rather than to dominate every target archi-tecture. The experiments therefore compare it with strong single-source attacks and with more expensive model-ensemble baselines, while separately measuring the benefit of path averaging over chained composition. 
+
+## 4. Experiments 
+
+In this section, we systematically evaluate the proposed adversarial attacks for semantic segmentation, focusing on their transferability and computational efficiency. To com-prehensively evaluate these aspects of our proposed ensem-ble attack, we conduct a series of experiments, comparing our method with several strong baselines, analyzing param-eter sensitivity, and assessing computational complexity. 
+
+4.1. Settings 
+
+We follow the transferable semantic-segmentation eval-uation protocol of prior work [17]. 
+
+Dataset. We train our models on the augmented Pascal VOC 2012 [10] dataset, which contains 21 classes with 10,582 images. During training, we apply online data aug-mentation, including random scaling within the range of 
+
+[0 .5, 2] , random cropping to 513x513 pixels, and random horizontal flipping. For generalization, we also train on the Cityscapes [7] dataset, containing 3,475 images with 19 classes. We use random cropping to 768x768 pixels, color jitter, and random horizontal flipping for data augmen-tation. Evaluation is performed on their respective test sets: 1,449 images for Pascal VOC 2012 (resized to 513x513) and 1,525 images for Cityscapes (original resolution). 
+
+Evaluation Metrics. We evaluate segmentation perfor-mance using mean IoU (mIoU). Peak Signal-to-Noise Ratio (PSNR) and Structural Similarity Index Measure (SSIM) [36] quantify image fidelity rather than transferabil-ity itself. Success rate (Sr) is defined as Sr = 1 − mIoU adv  
+
+> mIoU clean
+
+,where mIoU adv and mIoU clean are the segmentation perfor-mances of adversarial and clean images, respectively. 
+
+Adversarial Attacks. For single model methods, classic adversarial attacks like FGSM [14], a single-step gradient-based attack, and PGD [28], a multi-step iterative attack, are evaluated. Specialized semantic segmentation attacks such as SegPGD [15], adapted from PGD for segmentation tasks, and DAG [37], targeting the segmentation output space, are also considered. For transferability, advanced methods including NI [23], leveraging Nesterov accelerated gradi-ents, DI [38], enhancing transferability through diverse in-put transformations, and TI [9], using translation-invariant perturbations, are evaluated. For model ensemble methods, the Ensemble (ENS) at-tack [24], combining multiple models to enhance attack per-formance, and the Stochastic Variance Reduced Ensemble (SVRE) attack [39], employing variance reduction strate-gies for improved attack effectiveness, are utilized. 
+
+Parameter setting. We use an L∞ perturbation budget of 
+
+ϵ = 8 /255 and K = 10 attack iterations for all iterative attacks unless otherwise stated. IGME uses M = 2 path samples per attack iteration in Algorithm 1. Therefore, the default IGME setting performs KM = 20 source-model gradient evaluations. The two path samples correspond to 
+
+η ∈ { 1/2, 1} in Eq. 4, and are processed as a batch when memory permits. Runtime results are measured under the same image resolution, batch size, and perturbation budget for the compared methods. 
+
+Network structures. For Pascal VOC, we evaluate DeepLabV3 with a ResNet-50 backbone (“DV3Res50”), DeepLabV3+ with ResNet-101 (“DV3Res101”), FCN with VGG-16 (“FCNVGG16”), and Mask2Former [4–6, 25]. The preliminary Cityscapes ensemble study (supplementary material) uses the same checkpoint names. Table 3 reports the parameter counts of the three representative CNN seg-mentation models; Mask2Former is omitted because its pa-rameter count depends on the selected backbone. 
+
+4.2. Experimental Results 
+
+Transferability. The full Pascal VOC matrix in Table 1. 4Table 1. Quantitative results on Pascal VOC. Lower adversarial mIoU and higher SR indicate stronger attacks. Bold denotes the best values within each target column. 
+
+Image Quality Target (performance is evaluated with mIoU ↓ (left) and SR ↑ (right)) Source Attack PSNR ↑ SSIM ↑ DV3Res50 DV3Res101 FCNVGG16 Mask2Former DV3Res50 FGSM [14] 30.18 0.5098 0.3400 0.5480 0.5134 0.3410 0.4628 0.2890 0.6617 0.1238 PGD [28] 39.70 0.7814 0.0938 0.8753 0.4232 0.4568 0.5681 0.1273 0.6930 0.0823 SegPGD [15] 40.13 0.7897 0.1127 0.8502 0.5659 0.2736 0.6030 0.0740 0.6998 0.0734 DAG [37] 46.09 0.9340 0.1268 0.8314 0.6271 0.1951 0.5977 0.0819 0.7288 0.0349 NI [23] 32.84 0.5912 0.0861 0.8855 0.2610 0.6650 0.4246 0.3478 0.5926 0.2153 DI [38] 39.70 0.7793 0.0950 0.8737 0.2929 0.6241 0.5035 0.2266 0.6241 0.1736 TI [9] 39.26 0.7808 0.0997 0.8675 0.3871 0.5031 0.5193 0.2023 0.6395 0.1532 IAA [41] 35.69 0.9396 0.0823 0.8897 0.5379 0.3095 0.5625 0.1360 0.6386 0.1543 IGME(ours) 32.91 0.6025 0.0758 0.8992 0.1892 0.7571 0.2100 0.6774 0.3859 0.4889 
+
+DV3Res101 FGSM [14] 30.17 0.5104 0.4959 0.3407 0.3774 0.5156 0.4764 0.2682 0.7047 0.0669 PGD [28] 39.64 0.7804 0.3564 0.5262 0.1001 0.8715 0.5673 0.1286 0.7085 0.0618 SegPGD [15] 40.09 0.7891 0.4557 0.3941 0.1131 0.8548 0.5985 0.0806 0.7153 0.0528 DAG [37] 46.41 0.9401 0.5710 0.2409 0.1569 0.7986 0.6057 0.0696 0.7294 0.0342 NI [23] 32.83 0.5925 0.2244 0.7017 0.0922 0.8817 0.4341 0.3332 0.6032 0.2013 DI [38] 39.70 0.7791 0.2545 0.6617 0.0973 0.8751 0.5029 0.2275 0.6428 0.1488 TI [9] 39.26 0.7805 0.3543 0.5290 0.1068 0.8629 0.5235 0.1959 0.6538 0.1343 IAA [41] 34.21 0.9244 0.4597 0.3888 0.1315 0.8312 0.5690 0.1259 0.6437 0.1476 IGME(ours) 33.74 0.7834 0.1976 0.7373 0.0755 0.9031 0.3744 0.4249 0.4035 0.4657 
+
+FCNVGG16 FGSM [14] 30.18 0.5099 0.3811 0.4933 0.4641 0.4043 0.1715 0.7366 0.7235 0.0420 PGD [28] 36.73 0.5106 0.1989 0.7356 0.2981 0.6174 0.0309 0.9525 0.7209 0.0454 SegPGD [15] 37.86 0.6023 0.3346 0.5552 0.4337 0.4433 0.0608 0.9066 0.7328 0.0297 DAG [37] 42.64 0.9216 0.4723 0.3721 0.5538 0.2892 0.1378 0.7883 0.7258 0.0389 NI [23] 32.75 0.6018 0.1607 0.7864 0.2233 0.7134 0.0326 0.9499 0.6348 0.1594 DI [38] 37.39 0.7492 0.1747 0.7677 0.2536 0.6745 0.0335 0.9485 0.6631 0.1220 TI [9] 36.35 0.7382 0.2272 0.6980 0.3262 0.5813 0.0320 0.9508 0.6820 0.0969 IAA [41] 34.77 0.9566 0.4465 0.4064 0.4325 0.4448 0.0332 0.9490 0.6625 0.1227 IGME(ours) 33.56 0.7455 0.1346 0.8211 0.1942 0.7508 0.0296 0.9545 0.3928 0.4799 
+
+Mask2Former FGSM [14] 30.38 0.5199 0.3911 0.4801 0.4741 0.3913 0.3883 0.4036 0.4522 0.4012 PGD [28] 36.83 0.5206 0.2089 0.7223 0.3081 0.6045 0.4623 0.2900 0.1223 0.8381 SegPGD [15] 37.96 0.6123 0.3446 0.5418 0.4437 0.4305 0.4878 0.2510 0.1419 0.8121 DAG [37] 42.74 0.9316 0.4823 0.3588 0.5638 0.2762 0.4936 0.2418 0.1369 0.8187 NI [23] 32.85 0.6118 0.1707 0.7731 0.2333 0.7006 0.3538 0.4566 0.0852 0.8872 DI [38] 37.49 0.7592 0.1847 0.7545 0.2636 0.6617 0.4099 0.3703 0.0875 0.8841 TI [9] 36.45 0.7482 0.2372 0.6846 0.3362 0.5685 0.4266 0.3448 0.1143 0.8486 IGME(ours) 32.86 0.5980 0.0720 0.9043 0.1986 0.7451 0.3051 0.5314 0.0638 0.9155 
+
+Table 2. Ensemble comparison on Pascal VOC 2012 [10]. Lower adversarial mIoU and higher SR indicate stronger attacks. Bold and underlined values denote the best and second-best values within each target column, respectively. 
+
+Image Quality Target (performance is evaluated with mIoU ↓ and SR ↑)Source Attack PSNR ↑ SSIM ↑ DV3Res50 DV3Res101 FCNVGG16 DV3Res50 NI [23] 32.84 0.5912 0.0861 0.8855 0.2610 0.6650 0.4246 0.3478 ENS [24] 32.89 0.6050 0.0799 0.8938 0.2581 0.6687 0.3003 0.5387 SVRE [39] 32.92 0.6082 0.0722 0.9040 0.2490 0.6804 0.2856 0.5613 IGME(ours) 32.91 0.6025 0.0758 0.8992 0.1892 0.7571 0.2100 0.6774 
+
+Mask2Former NI [23] 32.87 0.5958 0.1707 0.7731 0.2333 0.7006 0.3538 0.4566 ENS [24] 32.91 0.6070 0.0785 0.8956 0.2562 0.6712 0.2987 0.5411 SVRE [39] 32.94 0.6102 0.0718 0.9045 0.2472 0.6827 0.2824 0.5662 
+
+IGME(ours) 32.86 0.5980 0.0720 0.9043 0.1986 0.7451 0.3051 0.5314 
+
+Table 3. Parameter counts of the representative CNN segmentation models (millions). 
+
+DV3Res50 DV3Res101 FCNVGG16 #Parameters 23.5 42.5 134.5 
+
+Table 2 provides the more direct ensemble comparison. When DV3Res50 is the source, IGME reduces the tar-get mIoU to 0.1892 on DV3Res101 and 0.2100 on FCN-VGG16, outperforming the reported single-source NI val-ues on these targets. ENS and SVRE remain competitive or stronger on some source-target pairs, but they evaluate mul-tiple surrogate models. The central empirical claim is there-fore an improved transferability efficiency trade-off rather than uniform dominance over every architecture. The Cityscapes comparison in appendix shows a simi-lar mixed pattern: IGME is strongest on the DV3Res101 target in both source blocks, while model ensembles re-main competitive on other targets. These results suggest that chained single-source composition can retain adversar-ial effect across architectures, but its benefit depends on the source target pair. 
+
+Runtime trade-off. Table 5 separates the effect of chain-ing from the effect of path averaging. Chained composi-tion is much faster than SVRE because it avoids repeated surrogate-model evaluations. Adding two path samples in-5Table 4. Ablation of attack-component composition strategies. Bold denotes the best values within each target column.                                                                             
+
+> Image Quality Target (performance is evaluated with mIoU ↓and SR ↑)Source Attack PSNR ↑SSIM ↑DV3Res50 DV3Res101 FCNVGG16 DV3Res50 average of perturbation 32.63 0.5492 0.0853 0.8866 0.2624 0.6632 0.4227 0.3507 average of loss 33.11 0.5356 0.0784 0.8958 0.2568 0.6703 0.2974 0.5432 average logit 32.72 0.5466 0.0692 0.9080 0.2443 0.6864 0.2776 0.5736 chain 32.82 0.5955 0.0710 0.9056 0.1985 0.7452 0.2350 0.6390
+> Mask2Former average of perturbation 32.56 0.5650 0.5120 0.3193 0.5430 0.3030 0.4720 0.2750 average of loss 32.46 0.5793 0.4850 0.3552 0.5120 0.3427 0.4430 0.3195 average logit 32.85 0.5822 0.4510 0.4004 0.4780 0.3864 0.4110 0.3687 chain 32.55 0.5949 0.4220 0.4390 0.4610 0.4082 0.3820 0.4132
+
+Table 5. Runtime and transferability comparison on Cityscapes. The baseline is SVRE, a model-ensemble attack. Time denotes the average time to generate adversarial examples for one batch under the same image resolution, batch size, and iteration number; the IGME row uses the default M = 2 path samples per attack iteration. Bold numbers indicate the best value within each column, while underlined numbers indicate the second-best value.                               
+
+> Method DeepLabV3 FCN Time (s) SR Trans Time (s) SR Trans SVRE baseline 23.9500 0.6990 0.2023 16.9200 0.7810 0.1850 + Chained components 3.3496 0.6350 0.2850 2.3593 0.6950 0.2340
+> + Chained components + IGME 7.0500 0.6720 0.2410 4.9700 0.7420 0.1980
+> Baseline
+> IGME
+> Baseline
+> IGME
+> (a) (b) (c) (d) (e) (f)
+
+Figure 3. Visualization of adversarial segmentation results on two examples. For each example, the baseline and IGME rows show predictions after 1, 5, 10, and 20 attack iterations. (a) is the input image, (b) is the clean segmentation, and (c)–(f) are the attacked predictions after the corresponding iteration counts. These qualitative examples suggest faster prediction degradation for IGME in the shown cases. 
+
+creases runtime by approximately 2.20 × on DeepLabV3 and 2.11 × on FCN relative to chaining alone, but recovers part of the SR and transferability gap. The measured ratios are compatible with the M = 2 design after accounting for batching and fixed tensor overheads. 
+
+Update consistency. Figure 2 reports cosine similarity between successive update directions on Pascal VOC; the same stabilization trend is observed on Cityscapes. The IGME curve is more consistent in the reported run, sup-porting the use of path averaging as a step-wise stabiliza-tion heuristic. This measurement does not prove that higher cosine similarity always yields stronger transferability. Fig-ure 3 provides complementary qualitative examples, where IGME produces faster prediction degradation in the shown cases. 
+
+4.3. Ablation Study 
+
+Effect of path averaging. Table 5 shows that the chained baseline provides the lowest runtime, while IGME spends additional computation to improve SR and transferability. This is the intended trade-off: path averaging is retained only when the gain over chaining alone justifies its two-sample cost. A sweep over M ∈ { 1, 2, 3, 4} (supplemen-tary material) shows that runtime grows roughly linearly with M as expected, while the target-wise gain from M > 2
+
+is mixed and does not clearly justify the extra runtime, sup-porting M = 2 as the default. 
+
+Composition strategy. Table 4 compares independent av-eraging strategies with chained composition. Chaining per-forms strongly in the reported experiment while avoiding repeated branch evaluations. Because the alternatives ag-gregate at different stages of the attack pipeline, the table should be interpreted as a practical comparison, not as ev-idence that one operation is an exact approximation of an-other. 
+
+4.4. On Large Segmentation Model. 
+
+With recent advancement of vision foundation models such as SAM [21], CLIP [31], and ImageBind [13], more attention has been paid to transformer-based segmentation models. We perform a preliminary experiment transferring adversarial examples generated on the smallest SAM back-bone (ViT-B) to two larger SAM backbones (ViT-L, ViT-H), using the proposed ensemble attack and NI with a noise budget of 12 /255 and 16 iterations. The full setup, qualita-tive visualizations, and discussion are provided in the sup-plementary material. 65. Conclusion 
+
+We presented IGME, a single-source transferable attack framework for semantic segmentation based on chained differentiable attack-component composition and IG-style path-averaged stabilization. Chaining shares the expensive source-model computation across transfer-enhancing com-ponents, while the two-sample path average empirically im-proves step-wise update consistency. Experiments on Pascal VOC and Cityscapes show that IGME improves several off-diagonal transfer settings rela-tive to strong single-source attacks and offers a favorable runtime trade-off compared with model-ensemble attacks. The gains are not uniform across every architecture, and the SAM result is intentionally reported as a preliminary qual-itative study. Overall, the results support efficient attack-component composition as a practical direction for evaluat-ing transferable robustness in dense prediction. Future work will investigate adaptive path-sampling budgets and more systematic transfer evaluation on transformer-based foun-dation segmentation models. 
+
+## References 
+
+[1] A. Arnab, O. Miksik, and P. H. Torr. On the robustness of semantic segmentation models to adversarial attacks. In 
+
+IEEE Conference on Computer Vision and Pattern Recogni-tion (CVPR) , pages 888–897, 2018. 1, 2 [2] B. Chen, J. Yin, S. Chen, B. Chen, and X. Liu. An adaptive model ensemble adversarial attack for boosting adversarial transferability. In IEEE International Conference on Com-puter Vision (ICCV) , pages 4466–4475, 2023. 2 [3] H. Chen, Y. Zhang, Y. Dong, X. Yang, H. Su, and J. Zhu. Rethinking model ensemble in transfer-based adversarial at-tacks. In The Twelfth International Conference on Learning Representations , 2024. 2 [4] L. Chen, G. Papandreou, F. Schroff, and H. Adam. Re-thinking atrous convolution for semantic image segmenta-tion. CoRR , abs/1706.05587, 2017. 2, 4 [5] L.-C. Chen, Y. Zhu, G. Papandreou, F. Schroff, and H. Adam. Encoder-decoder with atrous separable convolution for se-mantic image segmentation. In European Conference on Computer Vision (ECCV) , pages 801–818, 2018. 2, 4 [6] B. Cheng, I. Misra, A. G. Schwing, A. Kirillov, and R. Gird-har. Masked-attention mask transformer for universal image segmentation. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , pages 1290–1299, 2022. 4 [7] M. Cordts, M. Omran, S. Ramos, T. Rehfeld, M. Enzweiler, R. Benenson, U. Franke, S. Roth, and B. Schiele. The cityscapes dataset for semantic urban scene understanding. In IEEE Conference on Computer Vision and Pattern Recog-nition (CVPR) , pages 3213–3223, 2016. 2, 4 [8] Y. Dong, F. Liao, T. Pang, H. Su, J. Zhu, X. Hu, and J. Li. Boosting adversarial attacks with momentum. In 
+
+IEEE Conference on Computer Vision and Pattern Recog-nition (CVPR) , pages 9185–9193, 2018. 1, 2 [9] Y. Dong, T. Pang, H. Su, and J. Zhu. Evading defenses to transferable adversarial examples by translation-invariant at-tacks. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , pages 4312–4321, 2019. 2, 4, 5 [10] M. Everingham, L. V. Gool, C. K. I. Williams, J. M. Winn, and A. Zisserman. The pascal visual object classes (VOC) challenge. Int. J. Comput. Vis. , 88(2):303–338, 2010. 4, 5 [11] V. Fischer, M. C. Kumar, J. H. Metzen, and T. Brox. Ad-versarial examples for semantic image segmentation. In In-ternational Conference on Learning Representations (ICLR) Workshop , 2017. 2 [12] A. Ganeshan, B. S. Vivek, and R. V. Babu. Fda: Feature dis-ruptive attack. international conference on computer vision ,2019. 2 [13] R. Girdhar, A. El-Nouby, Z. Liu, M. Singh, K. V. Alwala, A. Joulin, and I. Misra. Imagebind: One embedding space to bind them all. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , pages 15180–15190, 2023. 6 [14] I. J. Goodfellow, J. Shlens, and C. Szegedy. Explaining and harnessing adversarial examples. In International Confer-ence on Learning Representations (ICLR) , 2015. 2, 4, 5 [15] J. Gu, H. Zhao, V. Tresp, and P. H. Torr. Segpgd: An effec-tive and efficient adversarial attack for evaluating and boost-ing segmentation robustness. In European Conference on Computer Vision (ECCV) , pages 308–325, 2022. 2, 4, 5 [16] J. Gu, H. Zhao, V. Tresp, and P. H. S. Torr. Adversarial examples on segmentation models can be easy to transfer. 
+
+CoRR , abs/2111.11368, 2021. 2 [17] M. He, J. Zhang, and X. Yu. Transferable attacks for seman-tic segmentation. In T. Chen, Y. Cao, Q. V. H. Nguyen, and T. T. Nguyen, editors, Databases Theory and Applications - 35th Australasian Database Conference, ADC 2024, Gold Coast, QLD, Australia, December 16-18, 2024, Proceedings ,volume 15449 of Lecture Notes in Computer Science , pages 372–388. Springer, 2024. 1, 2, 4 [18] J. Hendrik Metzen, M. Chaithanya Kumar, T. Brox, and V. Fischer. Universal adversarial perturbations against se-mantic image segmentation. In IEEE International Confer-ence on Computer Vision (ICCV) , pages 2755–2764, 2017. 2[19] H. Huang, Z. Chen, H. Chen, Y. Wang, and K. Zhang. T-SEA: transfer-based self-ensemble attack on object detec-tion. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , pages 20514–20523, 2023. 2 [20] Y. Huang and A. W. Kong. Transferable adversarial attack based on integrated gradients. In International Conference on Learning Representations (ICLR) , 2022. 2, 3 [21] A. Kirillov, E. Mintun, N. Ravi, H. Mao, C. Rolland, L. Gustafson, T. Xiao, S. Whitehead, A. C. Berg, W. Lo, P. Doll´ ar, and R. B. Girshick. Segment anything. CoRR ,abs/2304.02643, 2023. 6 [22] D. Li, J. Yang, K. Kreis, A. Torralba, and S. Fidler. Seman-tic segmentation with generative models: Semi-supervised learning and strong out-of-domain generalization. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , pages 8296–8307, 2021. 1 
+
+7[23] J. Lin, C. Song, K. He, L. Wang, and J. E. Hopcroft. Nesterov accelerated gradient and scale invariance for adversarial at-tacks. In International Conference on Learning Representa-tions (ICLR) , 2019. 2, 3, 4, 5 [24] Y. Liu, X. Chen, C. Liu, and D. Song. Delving into trans-ferable adversarial examples and black-box attacks. In In-ternational Conference on Learning Representations (ICLR) ,2017. 1, 2, 4, 5 [25] J. Long, E. Shelhamer, and T. Darrell. Fully convolutional networks for semantic segmentation. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , pages 3431–3440, 2015. 4 [26] W. Ma, Y. Li, X. Jia, and W. Xu. Transferable adversarial attack for both vision transformers and convolutional net-works via momentum integrated gradients. In Proceedings of the IEEE/CVF International Conference on Computer Vi-sion , pages 4630–4639, 2023. 2 [27] K. Maag and A. Fischer. Uncertainty-weighted loss func-tions for improved adversarial attacks on semantic segmen-tation. In IEEE Winter Conference on Applications of Com-puter Vision (WACV) , pages 3894–3902, 2024. 2 [28] A. Madry, A. Makelov, L. Schmidt, D. Tsipras, and A. Vladu. Towards deep learning models resistant to ad-versarial attacks. In International Conference on Learning Representations , 2018. 2, 4, 5 [29] M. Naseer, K. Ranasinghe, S. Khan, F. S. Khan, and F. Porikli. On improving adversarial transferability of vision transformers. arXiv preprint arXiv:2106.04169 , 2021. 2 [30] W. Qu, Y. Li, and B. Wang. A certified radius-guided attack framework to image segmentation models. In 8th IEEE Eu-ropean Symposium on Security and Privacy, EuroS&P 2023, Delft, Netherlands, July 3-7, 2023 , pages 200–220. IEEE, 2023. 2 [31] A. Radford, J. W. Kim, C. Hallacy, A. Ramesh, G. Goh, S. Agarwal, G. Sastry, A. Askell, P. Mishkin, J. Clark, G. Krueger, and I. Sutskever. Learning transferable vi-sual models from natural language supervision. In Inter-national Conference on Machine Learning (ICML) , volume 139, pages 8748–8763, 2021. 6 [32] R. Ranftl, A. Bochkovskiy, and V. Koltun. Vision transform-ers for dense prediction. In IEEE International Conference on Computer Vision (ICCV) , pages 12179–12188, 2021. 1 [33] J. Rony, J. Pesquet, and I. B. Ayed. Proximal splitting adver-sarial attack for semantic segmentation. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , pages 20524–20533, 2023. 2 [34] M. Sundararajan, A. Taly, and Q. Yan. Axiomatic attribution for deep networks. In D. Precup and Y. W. Teh, editors, In-ternational Conference on Machine Learning (ICML) , vol-ume 70 of Proceedings of Machine Learning Research ,pages 3319–3328. PMLR, 2017. 2, 3 [35] X. Wang and K. He. Enhancing the transferability of adver-sarial attacks through variance tuning. computer vision and pattern recognition , 2021. 2 [36] Z. Wang, A. C. Bovik, H. R. Sheikh, and E. P. Simoncelli. Image quality assessment: from error visibility to structural similarity. IEEE Transactions on Image Processing (TIP) ,13(4):600–612, 2004. 4 [37] C. Xie, J. Wang, Z. Zhang, Y. Zhou, L. Xie, and A. Yuille. Adversarial examples for semantic segmentation and object detection. In IEEE International Conference on Computer Vision (ICCV) , pages 1378–1387, 2017. 1, 2, 4, 5 [38] C. Xie, Z. Zhang, Y. Zhou, S. Bai, J. Wang, Z. Ren, and A. L. Yuille. Improving transferability of adversarial exam-ples with input diversity. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , pages 2730–2739, 2018. 2, 4, 5 [39] Y. Xiong, J. Lin, M. Zhang, J. E. Hopcroft, and K. He. Stochastic variance reduced ensemble adversarial attack for boosting the adversarial transferability. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , pages 14963–14972, 2022. 1, 2, 4, 5 [40] W. Zhou, X. Hou, Y. Chen, M. Tang, X. Huang, X. Gan, and Y. Yang. Transferable adversarial perturbations. In Euro-pean Conference on Computer Vision (ECCV) , pages 452– 467, 2018. 2 [41] Y. Zhu, J. Sun, and Z. Li. Rethinking adversarial transfer-ability from a data distribution perspective. In International Conference on Learning Representations (ICLR) , 2022. 5 
+
+8

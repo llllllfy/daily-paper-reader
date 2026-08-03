@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-08-03 <!--dpr-date:20260803-->
+    * 精读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202608/03/2607.27465v1-igme-efficient-chained-method-ensemble-for-transferable-semantic-segmentation-attacks" data-sidebar-item="{&quot;title&quot;: &quot;IGME: Efficient Chained Method Ensemble for Transferable Semantic Segmentation Attacks&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2607.27465v1-igme-efficient-chained-method-ensemble-for-transferable-semantic-segmentation-attacks&quot;, &quot;score&quot;: &quot;10.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;针对语义分割模型的可迁移对抗攻击&quot;}">IGME: Efficient Chained Method Ensemble for Transferable Semantic Segmentation Attacks</a>
   * 2026-08-02 <!--dpr-date:20260802-->
     * 速读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202608/02/2607.26647v1-anchoring-and-steering-diffusion-enhancing-the-faithfulness-of-text-to-image-generation-at-inference-time" data-sidebar-item="{&quot;title&quot;: &quot;Anchoring and Steering Diffusion: Enhancing the Faithfulness of Text-to-Image Generation at Inference Time&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2607.26647v1-anchoring-and-steering-diffusion-enhancing-the-faithfulness-of-text-to-image-generation-at-inference-time&quot;, &quot;score&quot;: &quot;7.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;在扩散模型的潜在空间中提出推理时干预以提升语义忠实度&quot;}">Anchoring and Steering Diffusion: Enhancing the Faithfulness of Text-to-Image Generation at Inference Time</a>

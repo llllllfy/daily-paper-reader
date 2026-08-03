@@ -1,0 +1,52 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-03T21:15:10.543160+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2607.27465v1",
+      "source": "arxiv",
+      "title": "IGME: Efficient Chained Method Ensemble for Transferable Semantic Segmentation Attacks",
+      "abstract": "Semantic segmentation models are vulnerable to transferable adversarial perturbations, yet evaluating transfer attacks on dense prediction models can be computationally expensive. Existing ensemble attacks often rely on multiple surrogate models, increasing the computation cost, even harder for segmentation. This paper studies an efficient single-source alternative for transferable attacks on semantic segmentation. We formulate transferable attack composition as a chained computation over differentiable attack components, allowing the expensive source-model gradient computation to be shared. To reduce the update instability introduced by chained composition, we further use an integrated-gradient-style path-averaged direction as an empirical stabilization heuristic. Experiments on Pascal VOC and Cityscapes evaluate the resulting transferability efficiency trade-off across CNN- and transformer-based segmentation models. IGME achieves competitive transferability compared with single-source baselines and favorable runtime compared with model-ensemble attacks, while requiring access to only one source model.",
+      "authors": [
+        "Mengqi He",
+        "Jing Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-29T21:08:48+00:00",
+      "link": "https://arxiv.org/pdf/2607.27465v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "Transferable adversarial attacks on semantic segmentation models",
+      "llm_evidence_cn": "针对语义分割模型的可迁移对抗攻击",
+      "llm_evidence": "针对语义分割模型的可迁移对抗攻击",
+      "canonical_evidence": "针对语义分割模型的可迁移对抗攻击",
+      "llm_tldr_en": "Proposes IGME, an efficient chained method ensemble to generate transferable adversarial perturbations for semantic segmentation, reducing computation by sharing gradients.",
+      "llm_tldr_cn": "本文针对语义分割模型提出一种高效的链式集成方法IGME，用于生成可迁移的对抗扰动。传统集成攻击需多个替代模型导致计算开销大，而IGME将攻击组合转化为链式计算，共享源模型梯度，并采用积分梯度样式的路径平均方向减少更新不稳定。实验表明该方法以更低成本实现高迁移性攻击，揭示了语义分割模型的脆弱性，对研究对抗颜色扰动下的语义鲁棒性有参考价值。",
+      "llm_tldr": "本文针对语义分割模型提出一种高效的链式集成方法IGME，用于生成可迁移的对抗扰动。传统集成攻击需多个替代模型导致计算开销大，而IGME将攻击组合转化为链式计算，共享源模型梯度，并采用积分梯度样式的路径平均方向减少更新不稳定。实验表明该方法以更低成本实现高迁移性攻击，揭示了语义分割模型的脆弱性，对研究对抗颜色扰动下的语义鲁棒性有参考价值。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "adversarial color attacks on semantic segmentation",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}

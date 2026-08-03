@@ -6,32 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-02
-- 运行时间：2026-08-02 21:09:08 UTC
+- 最新运行日期：2026-08-03
+- 运行时间：2026-08-03 21:16:46 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：0
-- 速读区：3
+- 本次总论文数：1
+- 精读区：1
+- 速读区：0
 
 ### 今日简报（AI）
-今天速读了3篇论文，聚焦于提升生成模型真实度、视觉语言模型鲁棒性与注意力机制解耦。
-值得关注的方向：一是通过“锚定+引导”让文生图更忠实于文本描述，二是标定先行，让VLM在减少视觉标记时抵抗语义漂移。
-若对AIGC可控性或模型效率感兴趣，可从这两篇的推理优化方法入手，试跑其开源代码。
-- 详情：[/202608/02/README](/202608/02/README)
+今日聚焦高分论文《IGME》，提出一种高效链式集成攻击方法，显著提升了语义分割对抗样本的跨模型可转移性。  
+核心结论：通过串联不同攻击策略的预测差异，IGME 在黑盒条件下能以较低计算成本实现高成功率迁移攻击。  
+下步可关注这类高效集成思路在更多视觉任务鲁棒性评测中的应用。
+- 详情：[/202608/03/README](/202608/03/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [IGME: Efficient Chained Method Ensemble for Transferable Semantic Segmentation Attacks](/202608/03/2607.27465v1-igme-efficient-chained-method-ensemble-for-transferable-semantic-segmentation-attacks)  
+   标签：评分：10.0/10、query:cp
+   evidence：针对语义分割模型的可迁移对抗攻击
 
 ### 速读区论文标签
-1. [Anchoring and Steering Diffusion: Enhancing the Faithfulness of Text-to-Image Generation at Inference Time](/202608/02/2607.26647v1-anchoring-and-steering-diffusion-enhancing-the-faithfulness-of-text-to-image-generation-at-inference-time)  
-   标签：评分：7.0/10、query:cp
-   evidence：在扩散模型的潜在空间中提出推理时干预以提升语义忠实度
-2. [Calibrate Before Reason: Robust Visual Token Reduction against Semantic Drift in VLMs](/202608/02/2607.27700v1-calibrate-before-reason-robust-visual-token-reduction-against-semantic-drift-in-vlms)  
-   标签：评分：7.0/10、query:cp
-   evidence：校准紧凑视觉表征以保持语义一致性，防止语义漂移
-3. [Disentangling Semantic Attention from Structural Bias in the Attention Manifold](/202608/02/2607.24017v1-disentangling-semantic-attention-from-structural-bias-in-the-attention-manifold)  
-   标签：评分：6.0/10、query:cp
-   evidence：在注意力流形中进行推理干预以解耦语义注意力
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">
