@@ -1,0 +1,131 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-04T21:51:35.391146+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2608.00726v1",
+      "source": "arxiv",
+      "title": "Foveated Probes Recover Localized Binding Information in Vision Foundation Models",
+      "abstract": "Frozen vision foundation models are commonly evaluated through a single global image embedding, but this interface can conflate missing information with information lost at readout time. We study this distinction by keeping a pretrained vision encoder frozen and varying only the readout applied to its final patch tokens. We compare standard global readouts against a lightweight foveated readout, which attention-pools patch tokens using a learned or question-conditioned query, and against an oracle readout with access to the annotated target region. We evaluate these interfaces on three localized binding problems: a controlled synthetic color--shape binding task under clutter, a color-free crowded shape-detection variant, and a GQA-derived natural-image task where paired questions ask for the colors of different same-category objects in the same image. Global readouts perform near perfectly when the synthetic target appears alone, but collapse under clutter and counterfactual target edits, whereas the foveated readout recovers most of the oracle-accessible signal. On the GQA-derived task, question-independent global image vectors improve only modestly over question-only priors, while question-conditioned foveation substantially improves paired localized color accuracy. A counterfactual nuisance-to-signal ratio explains the synthetic failures: global pooling dilutes localized label-changing evidence while exposing the probe to nuisance variation from irrelevant objects. These results indicate that apparent spatial blindness in frozen vision models can arise from the global embedding interface rather than from an absence of spatial information in the frozen patch tokens.",
+      "authors": [
+        "Mateusz Michalkiewicz",
+        "Mahsa Baktashmotlagh",
+        "Guha Balakrishnan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-01T15:47:52+00:00",
+      "link": "https://arxiv.org/pdf/2608.00726v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "evaluates on a controlled synthetic color-shape binding task, directly testing color-shape disentanglement in representations",
+      "llm_evidence_cn": "在受控合成颜色-形状绑定任务上评估，直接测试表示中颜色与形状的解耦",
+      "llm_evidence": "在受控合成颜色-形状绑定任务上评估，直接测试表示中颜色与形状的解耦",
+      "canonical_evidence": "在受控合成颜色-形状绑定任务上评估，直接测试表示中颜色与形状的解耦",
+      "llm_tldr_en": "Proposes foveated readout probes to recover localized binding information, including color-shape binding, from frozen vision foundation models, showing that standard global readouts may miss such information.",
+      "llm_tldr_cn": "本文提出中央凹读出头，从冻结的视觉基础模型中恢复局部绑定信息（包括颜色-形状绑定）。在受控合成颜色-形状绑定任务上，该方法证明了标准全局读出头可能丢失此类信息，而中央凹读出头能有效恢复。这表明现有模型表示中蕴含丰富的绑定信息，但需更精细的探测方法才能提取。",
+      "llm_tldr": "本文提出中央凹读出头，从冻结的视觉基础模型中恢复局部绑定信息（包括颜色-形状绑定）。在受控合成颜色-形状绑定任务上，该方法证明了标准全局读出头可能丢失此类信息，而中央凹读出头能有效恢复。这表明现有模型表示中蕴含丰富的绑定信息，但需更精细的探测方法才能提取。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.01348v1",
+      "source": "arxiv",
+      "title": "Prompt-Driven Simulation with Feature Perturbation for Cross-Domain Few-Shot Object Detection",
+      "abstract": "Data augmentation, which simulates diverse visual variations to expand the source distribution and induce synthetic domain shifts, is a simple yet effective strategy for mitigating severe domain shifts and limited labeled target data in cross-domain few-shot object detection (CD-FSOD). Existing approaches rely on conventional data augmentation, such as Color-Jitter, Mosaic, and background-centric adaptation (e.g., Domain-RAG), which are limited in modeling complex domain shifts and often lead to suboptimal performance. In this paper, we propose PSP-FSOD, a principled framework that integrates prompt-driven domain simulation with feature perturbation regularization to improve generalization in CD-FSOD. To enable controllable domain synthesis, we design a prompt-driven strategy that leverages the visual grounding capability of large VLMs to jointly model foreground and background variations, generating semantically consistent yet domain-diverse training samples. Moreover, we adopt a grounding-aware generation scheme that guides object placement and alleviates semantic-spatial misalignment, thereby improving foreground adaptation. To ensure training stability and robustness, we further introduce a noise-induced feature perturbation mechanism that injects Gaussian noise into multi-scale intermediate features with distribution correction, encouraging consistent predictions under perturbations and reducing reliance on domain-specific cues. Extensive experiments demonstrate that PSP-FSOD produces high-quality domain-diverse supervision and learns domain-invariant representations, consistently improving performance across CD-FSOD benchmarks.",
+      "authors": [
+        "Linhai Zhuo",
+        "Junxi Cai",
+        "Tianwen Qian",
+        "Qingping Zheng",
+        "Yang Liu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-02T16:11:16+00:00",
+      "link": "https://arxiv.org/pdf/2608.01348v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "feature perturbation regularization for cross-domain generalization, relevant to color robustness",
+      "llm_evidence_cn": "特征扰动正则化提升跨域泛化，与颜色鲁棒性相关",
+      "llm_evidence": "特征扰动正则化提升跨域泛化，与颜色鲁棒性相关",
+      "canonical_evidence": "特征扰动正则化提升跨域泛化，与颜色鲁棒性相关",
+      "llm_tldr_en": "Introduces PSP-FSOD, using prompt-driven domain simulation and feature perturbation to improve CD-FSOD, addressing color jittering and domain shifts; method is transferable to color robustness.",
+      "llm_tldr_cn": "针对跨域少样本目标检测中的域偏移问题，提出PSP-FSOD框架，通过提示驱动的域模拟和特征扰动正则化提升泛化能力。该方法明确处理颜色抖动等变化，为保持颜色变化下语义一致性提供了方法论桥梁。",
+      "llm_tldr": "针对跨域少样本目标检测中的域偏移问题，提出PSP-FSOD框架，通过提示驱动的域模拟和特征扰动正则化提升泛化能力。该方法明确处理颜色抖动等变化，为保持颜色变化下语义一致性提供了方法论桥梁。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "papers on feature level intervention for color robustness in deep learning",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.02109v1",
+      "source": "arxiv",
+      "title": "Same Semantics, Different Paths: Self-Improving Alignment for Vision-Text Compression",
+      "abstract": "Vision-Text Compression (VTC) renders long texts into images and encodes them through the vision encoder (ViT), compressing thousands of text tokens into far fewer visual tokens. However, since the ViT is pretrained predominantly on natural images, it captures visual attributes (glyphs, font sizes, layout) rather than linguistic semantics, causing rendered-image representations to diverge from native-text representations. We term this cross-path inconsistency and show, via rendering perturbation experiments, that it is a critical yet overlooked bottleneck of VTC. We propose SPIRAL (Self-improving Path Integration and Realignment), a self-supervised alignment framework that closes this gap using only the model's own text-path behavior as supervision, requiring no external teachers or additional annotations. SPIRAL operates at two complementary granularities: token-level on-policy distillation (OPD) for local faithfulness, and sequence-level preference optimization (DPO) for global coherence. On VTCBench, SPIRAL improves the overall score of Qwen3-VL-8B from 35.10 to 54.02, approaching the native text-input performance (55.60) and outperforming models up to 30x larger. The two granularities exhibit complementary strengths: OPD excels at retrieval and is sample-efficient, while DPO is stronger on reasoning and memory and scales better with data. SPIRAL's benefits also generalize to out-of-domain benchmarks, confirming that effective VTC hinges on aligning rendered-image representations back to native-text semantics.",
+      "authors": [
+        "Tianyu Liang",
+        "Xiangxi Zheng",
+        "Yilin Wang",
+        "Dongxing Mao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-03T12:08:56+00:00",
+      "link": "https://arxiv.org/pdf/2608.02109v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "self-supervised alignment framework to edit feature representations for semantic consistency",
+      "llm_evidence_cn": "自监督对齐框架编辑特征表示以保持语义一致性",
+      "llm_evidence": "自监督对齐框架编辑特征表示以保持语义一致性",
+      "canonical_evidence": "自监督对齐框架编辑特征表示以保持语义一致性",
+      "llm_tldr_en": "Addresses cross-path inconsistency in vision-text compression by proposing SPIRAL, a self-supervised alignment method that edits feature representations to preserve semantics under rendering perturbations.",
+      "llm_tldr_cn": "针对视觉-文本压缩中渲染图像引起的语义表示不一致问题，提出自监督对齐框架SPIRAL。利用模型自身文本路径行为引导视觉特征编辑，实现跨路径语义一致性。实验表明该方法有效缩小表示差距，其表示编辑思想可泛化至颜色鲁棒性等任务。",
+      "llm_tldr": "针对视觉-文本压缩中渲染图像引起的语义表示不一致问题，提出自监督对齐框架SPIRAL。利用模型自身文本路径行为引导视觉特征编辑，实现跨路径语义一致性。实验表明该方法有效缩小表示差距，其表示编辑思想可泛化至颜色鲁棒性等任务。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "methods to edit feature representations to make models robust to color changes",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

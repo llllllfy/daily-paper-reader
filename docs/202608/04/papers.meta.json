@@ -1,0 +1,54 @@
+{
+  "label": "2026-08-04",
+  "date": "2026-08-04",
+  "generated_at": "2026-08-04T21:56:34",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202608/04/2608.00726v1-foveated-probes-recover-localized-binding-information-in-vision-foundation-models",
+      "section": "deep",
+      "title_en": "Foveated Probes Recover Localized Binding Information in Vision Foundation Models",
+      "authors": "Mateusz Michalkiewicz, Mahsa Baktashmotlagh, Guha Balakrishnan",
+      "date": "2026-08-01",
+      "pdf": "https://arxiv.org/pdf/2608.00726v1",
+      "score": "9.0",
+      "evidence": "在受控合成颜色-形状绑定任务上评估，直接测试表示中颜色与形状的解耦",
+      "tldr": "冻结视觉基础模型依赖全局图像嵌入评估，但该接口可能掩盖编码器内局部空间绑定信息。保持编码器冻结，对比全局读出与轻量foveated注意力读出。在合成颜色形状绑定及GQA问答中，foveated读出在杂波下恢复大部分信号，接近oracle水平，全局读出则失效。这表明空间信息未被缺失，改进读出接口可显著提升局部推理。",
+      "tags": "query:cp",
+      "abstract_en": "Frozen vision foundation models are commonly evaluated through a single global image embedding, but this interface can conflate missing information with information lost at readout time. We study this distinction by keeping a pretrained vision encoder frozen and varying only the readout applied to its final patch tokens. We compare standard global readouts against a lightweight foveated readout, which attention-pools patch tokens using a learned or question-conditioned query, and against an oracle readout with access to the annotated target region. We evaluate these interfaces on three localized binding problems: a controlled synthetic color--shape binding task under clutter, a color-free crowded shape-detection variant, and a GQA-derived natural-image task where paired questions ask for the colors of different same-category objects in the same image. Global readouts perform near perfectly when the synthetic target appears alone, but collapse under clutter and counterfactual target edits, whereas the foveated readout recovers most of the oracle-accessible signal. On the GQA-derived task, question-independent global image vectors improve only modestly over question-only priors, while question-conditioned foveation substantially improves paired localized color accuracy. A counterfactual nuisance-to-signal ratio explains the synthetic failures: global pooling dilutes localized label-changing evidence while exposing the probe to nuisance variation from irrelevant objects. These results indicate that apparent spatial blindness in frozen vision models can arise from the global embedding interface rather than from an absence of spatial information in the frozen patch tokens.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/04/2608.01348v1-prompt-driven-simulation-with-feature-perturbation-for-cross-domain-few-shot-object-detection",
+      "section": "quick",
+      "title_en": "Prompt-Driven Simulation with Feature Perturbation for Cross-Domain Few-Shot Object Detection",
+      "authors": "Linhai Zhuo, Junxi Cai, Tianwen Qian, Qingping Zheng, Yang Liu",
+      "date": "2026-08-02",
+      "pdf": "https://arxiv.org/pdf/2608.01348v1",
+      "score": "7.0",
+      "evidence": "特征扰动正则化提升跨域泛化，与颜色鲁棒性相关",
+      "tldr": "跨域少样本目标检测（CD-FSOD）面临训练与测试域分布差异大、目标域标注极少的双重挑战，严重域偏移限制模型泛化。现有数据增强如颜色抖动等仅能模拟简单变换，难以应对复杂域差异。本文提出PSP-FSOD框架，创新融合提示驱动的域模拟与特征扰动正则化。核心利用大视觉语言模型的视觉定位能力，通过文本提示控制前景与背景的多样化生成，产出语义一致但域多变的训练样本，并借助接地感知方案优化对象放置以消减空间错位。同时，对多尺度中间特征引入高斯噪声扰动并进行分布校正，强制预测一致性，削减对域特有线索的依赖。实验表明，PSP-FSOD可学习域不变表征，在多个CD-FSOD基准上稳定提升性能，为跨域少样本检测提供了可控且有效的数据增强新范式。",
+      "tags": "query:cp",
+      "abstract_en": "Data augmentation, which simulates diverse visual variations to expand the source distribution and induce synthetic domain shifts, is a simple yet effective strategy for mitigating severe domain shifts and limited labeled target data in cross-domain few-shot object detection (CD-FSOD). Existing approaches rely on conventional data augmentation, such as Color-Jitter, Mosaic, and background-centric adaptation (e.g., Domain-RAG), which are limited in modeling complex domain shifts and often lead to suboptimal performance. In this paper, we propose PSP-FSOD, a principled framework that integrates prompt-driven domain simulation with feature perturbation regularization to improve generalization in CD-FSOD. To enable controllable domain synthesis, we design a prompt-driven strategy that leverages the visual grounding capability of large VLMs to jointly model foreground and background variations, generating semantically consistent yet domain-diverse training samples. Moreover, we adopt a grounding-aware generation scheme that guides object placement and alleviates semantic-spatial misalignment, thereby improving foreground adaptation. To ensure training stability and robustness, we further introduce a noise-induced feature perturbation mechanism that injects Gaussian noise into multi-scale intermediate features with distribution correction, encouraging consistent predictions under perturbations and reducing reliance on domain-specific cues. Extensive experiments demonstrate that PSP-FSOD produces high-quality domain-diverse supervision and learns domain-invariant representations, consistently improving performance across CD-FSOD benchmarks.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/04/2608.02109v1-same-semantics-different-paths-self-improving-alignment-for-vision-text-compression",
+      "section": "quick",
+      "title_en": "Same Semantics, Different Paths: Self-Improving Alignment for Vision-Text Compression",
+      "authors": "Tianyu Liang, Xiangxi Zheng, Yilin Wang, Dongxing Mao",
+      "date": "2026-08-03",
+      "pdf": "https://arxiv.org/pdf/2608.02109v1",
+      "score": "6.0",
+      "evidence": "自监督对齐框架编辑特征表示以保持语义一致性",
+      "tldr": "视觉文本压缩(VTC)因视觉编码器偏向自然图像属性，导致渲染图像表征与原生文本语义不一致，形成跨路径不一致瓶颈。本文提出自监督对齐框架SPIRAL，利用模型自身文本路径蒸馏与偏好优化，在令牌和序列两级粒度上对齐表征。实验表明，SPIRAL将Qwen3-VL-8B在VTCBench上的得分从35.10提升至54.02，逼近原生文本性能，并超越庞大30倍的模型。该方法无需外部监督，为高效视觉文本压缩开辟新途径。",
+      "tags": "query:cp",
+      "abstract_en": "Vision-Text Compression (VTC) renders long texts into images and encodes them through the vision encoder (ViT), compressing thousands of text tokens into far fewer visual tokens. However, since the ViT is pretrained predominantly on natural images, it captures visual attributes (glyphs, font sizes, layout) rather than linguistic semantics, causing rendered-image representations to diverge from native-text representations. We term this cross-path inconsistency and show, via rendering perturbation experiments, that it is a critical yet overlooked bottleneck of VTC. We propose SPIRAL (Self-improving Path Integration and Realignment), a self-supervised alignment framework that closes this gap using only the model's own text-path behavior as supervision, requiring no external teachers or additional annotations. SPIRAL operates at two complementary granularities: token-level on-policy distillation (OPD) for local faithfulness, and sequence-level preference optimization (DPO) for global coherence. On VTCBench, SPIRAL improves the overall score of Qwen3-VL-8B from 35.10 to 54.02, approaching the native text-input performance (55.60) and outperforming models up to 30x larger. The two granularities exhibit complementary strengths: OPD excels at retrieval and is sample-efficient, while DPO is stronger on reasoning and memory and scales better with data. SPIRAL's benefits also generalize to out-of-domain benchmarks, confirming that effective VTC hinges on aligning rendered-image representations back to native-text semantics.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
