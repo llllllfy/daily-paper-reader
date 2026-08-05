@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-05",
+  "date": "2026-08-05",
+  "generated_at": "2026-08-05T22:03:05",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/05/2608.01306v1-spae-spectrally-guided-autoencoder-for-pretrained-visual-latents",
+      "section": "quick",
+      "title_en": "SPAE: Spectrally Guided Autoencoder for Pretrained Visual Latents",
+      "authors": "Yibin Huang, Jixiang Hong, Zongzhao Li, Yuhan Dai, Zhibin Wang, Chunwei Wang, Jun Song, Chen Wang, Xiaofei Sun, Xiaoxiao Xu, Conghui Zhu",
+      "date": "2026-08-02",
+      "pdf": "https://arxiv.org/pdf/2608.01306v1",
+      "score": "6.0",
+      "evidence": "解耦高频成分与语义的潜在空间适应框架",
+      "tldr": "视觉基础模型的潜变量虽然语义丰富，但现有表示自编码方法如RAE在直接用于生成时，DiT生成的潜变量与编码器潜变量存在频谱差异，尤其在频域分析中发现高频分量弥散分布且与语义信息纠缠，导致生成质量受限。针对此，SPAE提出频谱引导的自编码器，设计紧凑瓶颈以蒸馏稳定语义并抑制高频，并通过通道掩码策略促进语义与细节的解耦。实验表明，SPAE在保持视觉理解能力的同时，显著提升了生成质量和重建保真度，有效弥合了预训练潜变量与生成模型之间的适配鸿沟。",
+      "tags": "query:cp",
+      "abstract_en": "Latents from vision foundation models (VFMs) are semantically rich and well suited for visual understanding. Recent representation autoencoder methods such as RAE have shown that they can provide promising latent spaces for image generation. However, VFM latents remain difficult to model directly: DiT-generated latents exhibit spectral mismatch with encoder latents, especially in high-frequency components. Our channel-wise spectral analysis further reveals that these high-frequency components are diffusely distributed across latent channels and entangled with semantic information, making the latent space difficult for DiT to model. To address these challenges, we propose SPAE, latent adaptation framework for generation. Specifically, SPAE employs a compact bottleneck to distill stable semantic information while suppressing high-frequency components, thereby improving the alignment between DiT-generated latents and encoder latents. In addition, we apply a channel-wise masking strategy to promote the decoupling of semantic information and high-frequency details across bottleneck channels. Experiments show that SPAE achieves a favorable balance among visual understanding, generation quality, and reconstruction fidelity.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,62 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-05T22:01:28.568525+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.01306v1",
+      "source": "arxiv",
+      "title": "SPAE: Spectrally Guided Autoencoder for Pretrained Visual Latents",
+      "abstract": "Latents from vision foundation models (VFMs) are semantically rich and well suited for visual understanding. Recent representation autoencoder methods such as RAE have shown that they can provide promising latent spaces for image generation. However, VFM latents remain difficult to model directly: DiT-generated latents exhibit spectral mismatch with encoder latents, especially in high-frequency components. Our channel-wise spectral analysis further reveals that these high-frequency components are diffusely distributed across latent channels and entangled with semantic information, making the latent space difficult for DiT to model. To address these challenges, we propose SPAE, latent adaptation framework for generation. Specifically, SPAE employs a compact bottleneck to distill stable semantic information while suppressing high-frequency components, thereby improving the alignment between DiT-generated latents and encoder latents. In addition, we apply a channel-wise masking strategy to promote the decoupling of semantic information and high-frequency details across bottleneck channels. Experiments show that SPAE achieves a favorable balance among visual understanding, generation quality, and reconstruction fidelity.",
+      "authors": [
+        "Yibin Huang",
+        "Jixiang Hong",
+        "Zongzhao Li",
+        "Yuhan Dai",
+        "Zhibin Wang",
+        "Chunwei Wang",
+        "Jun Song",
+        "Chen Wang",
+        "Xiaofei Sun",
+        "Xiaoxiao Xu",
+        "Conghui Zhu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-02T15:20:55+00:00",
+      "link": "https://arxiv.org/pdf/2608.01306v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "latent adaptation framework that disentangles high-frequency components from semantics",
+      "llm_evidence_cn": "解耦高频成分与语义的潜在空间适应框架",
+      "llm_evidence": "解耦高频成分与语义的潜在空间适应框架",
+      "canonical_evidence": "解耦高频成分与语义的潜在空间适应框架",
+      "llm_tldr_en": "SPAE is a latent adaptation framework that reorganizes channels based on spectral analysis to disentangle high-frequency components from semantic information, improving generation from pretrained visual latents.",
+      "llm_tldr_cn": "针对视觉基础模型潜在空间中高频成分与语义信息纠缠的问题，SPAE通过光谱引导的自编码器对通道进行重排，解耦高频与语义。该方法改善了潜在空间的可建模性，为扩散模型生成提供了更优的潜在表示。",
+      "llm_tldr": "针对视觉基础模型潜在空间中高频成分与语义信息纠缠的问题，SPAE通过光谱引导的自编码器对通道进行重排，解耦高频与语义。该方法改善了潜在空间的可建模性，为扩散模型生成提供了更优的潜在表示。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

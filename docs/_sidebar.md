@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-08-05 <!--dpr-date:20260805-->
+    * 速读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202608/05/2608.01306v1-spae-spectrally-guided-autoencoder-for-pretrained-visual-latents" data-sidebar-item="{&quot;title&quot;: &quot;SPAE: Spectrally Guided Autoencoder for Pretrained Visual Latents&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2608.01306v1-spae-spectrally-guided-autoencoder-for-pretrained-visual-latents&quot;, &quot;score&quot;: &quot;6.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;解耦高频成分与语义的潜在空间适应框架&quot;}">SPAE: Spectrally Guided Autoencoder for Pretrained Visual Latents</a>
   * 2026-08-04 <!--dpr-date:20260804-->
     * 精读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202608/04/2608.00726v1-foveated-probes-recover-localized-binding-information-in-vision-foundation-models" data-sidebar-item="{&quot;title&quot;: &quot;Foveated Probes Recover Localized Binding Information in Vision Foundation Models&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2608.00726v1-foveated-probes-recover-localized-binding-information-in-vision-foundation-models&quot;, &quot;score&quot;: &quot;9.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;在受控合成颜色-形状绑定任务上评估，直接测试表示中颜色与形状的解耦&quot;}">Foveated Probes Recover Localized Binding Information in Vision Foundation Models</a>
