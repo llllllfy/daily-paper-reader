@@ -1,0 +1,212 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-07T01:45:37.435668+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2607.27897v1",
+      "source": "arxiv",
+      "title": "Unifying Adversarially Robust Model Experts in Vision-Language Models",
+      "abstract": "Vision-language models (VLMs), such as CLIP, are vulnerable to adversarial attacks, posing a serious problem for real-life applications and deployment. Adversarial fine-tuning emerges as a prominent defense method; however, different fine-tuning strategies often produce specialized models with distinct robustness characteristics. Each fine-tuned model in turn thrives in some evaluation settings but falters on others, limiting their defensive capabilities. We refer to these specialized fine-tuned models as robust model experts and propose a collaborative adversarial fine-tuning framework: CARE - Collaborative Adversarial Robustness fine-tuning using Embedding alignment. CARE maintains multiple experts during training, enables knowledge exchange through embedding-space harmonization, and consolidates the learned knowledge into a single unified robust model. Experts benefit from one another while preserving their individual specializations, enabling the final model to inherit complementary robustness properties. In this paper, we demonstrate CARE on two different adversarial fine-tuning strategies with complementary robustness behaviors. Extensive experiments on classic image classification and downstream vision-language tasks display the effectiveness of our approach, with CARE being able to outperform individually learned model experts. The results suggest that collaborative learning across model experts is a promising direction for improving adversarial robustness.",
+      "authors": [
+        "Nguyen Duc Thai",
+        "Junhao Dong",
+        "Sua Qi Rong",
+        "Hua Yu",
+        "Yew-Soon Ong"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-30T09:13:35+00:00",
+      "link": "https://arxiv.org/pdf/2607.27897v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Proposes CARE framework that aligns embeddings of multiple robust model experts in VLM feature space, intervening in latent representations to improve adversarial robustness.",
+      "llm_evidence_cn": "提出CARE框架，通过嵌入对齐在VLM特征空间中整合多个鲁棒模型专家，干预潜在表示以提升对抗鲁棒性。",
+      "llm_evidence": "提出CARE框架，通过嵌入对齐在VLM特征空间中整合多个鲁棒模型专家，干预潜在表示以提升对抗鲁棒性。",
+      "canonical_evidence": "提出CARE框架，通过嵌入对齐在VLM特征空间中整合多个鲁棒模型专家，干预潜在表示以提升对抗鲁棒性。",
+      "llm_tldr_en": "Addresses VLM adversarial vulnerability by proposing CARE, which collaboratively fine-tunes multiple robust experts via embedding alignment, intervening in latent space to unify defenses and achieve stronger robustness.",
+      "llm_tldr_cn": "本文应对视觉语言模型的对抗脆弱性问题，提出协作对抗微调框架CARE，通过嵌入对齐技术整合多个鲁棒专家模型的知识，统一防御能力并增强对抗鲁棒性。实验表明该方法在多种评估下均有效，为构建安全VLM提供新范式。",
+      "llm_tldr": "本文应对视觉语言模型的对抗脆弱性问题，提出协作对抗微调框架CARE，通过嵌入对齐技术整合多个鲁棒专家模型的知识，统一防御能力并增强对抗鲁棒性。实验表明该方法在多种评估下均有效，为构建安全VLM提供新范式。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.04559v1",
+      "source": "arxiv",
+      "title": "ColorFD: A Finite-Difference Guided Black-Box Physical Adversarial Attack for Remote Sensing Object Detection",
+      "abstract": "Although deep neural network-based remote sensing object detectors have achieved strong performance, they remain vulnerable to adversarial perturbations. Existing studies mainly focus on digital or white-box settings, whereas black-box physical attacks remain underexplored. These attacks are often constrained by limited physical feasibility and inefficient optimization in high-dimensional search spaces. To address these challenges, this paper proposes ColorFD, a black-box physical attack based on multiple pure-color patches. The patch positions and color parameters are jointly optimized using Differential Evolution (DE). A target-wise fitness and selection mechanism evaluates the attack state of each target and preserves target-specific improvements during evolution. Two guidance strategies further constrain the patch search space. Key-region localization identifies sensitive regions through finite-difference color probing. Common-feature extraction provides category-level spatial priors and avoids repeated localization. Although evaluated on aircraft, the formulation is not inherently restricted to this category. Experiments on YOLOv3u, YOLOv5u, and Faster R-CNN show that ColorFD outperforms the tested black-box patch method across all evaluated detectors and remains competitive with strong white-box baselines. Physical-world experiments further demonstrate that the optimized pure-color patches can be transferred from the digital domain to real imaging conditions.",
+      "authors": [
+        "Tiannuo Guo",
+        "Guhang Qiu",
+        "Yuzhen Xie",
+        "Rui Feng",
+        "Ligang Li",
+        "Deliang Xiang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-05T07:53:26+00:00",
+      "link": "https://arxiv.org/pdf/2608.04559v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "uses pure-color patches as adversarial perturbations to attack object detectors, directly testing semantic robustness under color changes.",
+      "llm_evidence_cn": "使用纯色块作为对抗扰动攻击目标检测器，直接测试颜色变化下的语义鲁棒性。",
+      "llm_evidence": "使用纯色块作为对抗扰动攻击目标检测器，直接测试颜色变化下的语义鲁棒性。",
+      "canonical_evidence": "使用纯色块作为对抗扰动攻击目标检测器，直接测试颜色变化下的语义鲁棒性。",
+      "llm_tldr_en": "ColorFD proposes a black-box physical adversarial attack using color patches against remote sensing object detectors, revealing the vulnerability of semantic understanding to adversarial color perturbations.",
+      "llm_tldr_cn": "ColorFD针对遥感目标检测的黑盒物理攻击，基于多个纯色色块优化位置与颜色参数，利用差分进化算法联合搜索，实现对目标检测器的有效攻击。实验展示纯色扰动可严重降低检测精度，证明颜色扰动对语义理解（目标检测）的语义鲁棒性构成威胁，为防御颜色攻击提供启示。",
+      "llm_tldr": "ColorFD针对遥感目标检测的黑盒物理攻击，基于多个纯色色块优化位置与颜色参数，利用差分进化算法联合搜索，实现对目标检测器的有效攻击。实验展示纯色扰动可严重降低检测精度，证明颜色扰动对语义理解（目标检测）的语义鲁棒性构成威胁，为防御颜色攻击提供启示。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "Adversarial color perturbations and their effect on semantic robustness",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.04442v1",
+      "source": "arxiv",
+      "title": "Robustness Emerges Early in Training Dynamics, but Is Not Preserved",
+      "abstract": "Robustness to natural corruptions remains a fundamental challenge for deep neural networks. In this paper, we identify a robustness fading phenomenon where shallow layers spontaneously develop robust representations and flat loss landscapes in early training, yet these properties are not preserved during standard convergence. To address this, we propose a framework that performs strategic interventions on training dynamics to stabilize the empirically identified early-emergent robust priors. Our approach includes two parameter-free strategies: Early-Phase Stabilization~(EPS) and Asymmetric Weight Reversion~(AWR), which stabilize or recover robust shallow configurations without modifying the model architecture or introducing learnable parameters. Extensive experiments demonstrate the efficacy of our framework across various benchmarks and architectures, yielding significant gains in downstream transfer, dynamic adaptation, and diverse computer vision applications.",
+      "authors": [
+        "Jiangang Yang",
+        "Wenhui Shi",
+        "Lu Hu",
+        "Jing Xing",
+        "Jian Liu"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.CV"
+      ],
+      "published": "2026-08-05T04:34:17+00:00",
+      "link": "https://arxiv.org/pdf/2608.04442v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Proposes strategic training interventions to stabilize early-emergent robust priors against natural corruptions, which commonly include color changes, thus improving color robustness at the feature level.",
+      "llm_evidence_cn": "提出训练干预策略以稳定早期涌现的鲁棒先验，对抗常见包含颜色变化的自然扰动，从而在特征层面提升颜色鲁棒性。",
+      "llm_evidence": "提出训练干预策略以稳定早期涌现的鲁棒先验，对抗常见包含颜色变化的自然扰动，从而在特征层面提升颜色鲁棒性。",
+      "canonical_evidence": "提出训练干预策略以稳定早期涌现的鲁棒先验，对抗常见包含颜色变化的自然扰动，从而在特征层面提升颜色鲁棒性。",
+      "llm_tldr_en": "Models develop early robustness to corruptions (including color) but lose it; this work introduces training interventions to preserve that robustness without extra parameters, achieving significant gains on corruption benchmarks.",
+      "llm_tldr_cn": "深度模型在训练初期会自发形成对自然扰动（含颜色变化）的鲁棒表征，但该特性在标准收敛过程中会消退。本文提出两种无参数训练干预策略——早期阶段稳定（EPS）和非对称权重回退（AWR），以保留早期鲁棒先验。实验表明，该方法在多种腐蚀基准上显著提升鲁棒性，证明了训练动力学干预是提升模型颜色鲁棒性的有效途径。",
+      "llm_tldr": "深度模型在训练初期会自发形成对自然扰动（含颜色变化）的鲁棒表征，但该特性在标准收敛过程中会消退。本文提出两种无参数训练干预策略——早期阶段稳定（EPS）和非对称权重回退（AWR），以保留早期鲁棒先验。实验表明，该方法在多种腐蚀基准上显著提升鲁棒性，证明了训练动力学干预是提升模型颜色鲁棒性的有效途径。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "papers on feature level intervention for color robustness in deep learning",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.29059v1",
+      "source": "arxiv",
+      "title": "Learning from Adversity: Semantic-Aware Mask Refinement through Adversarial Perturbation",
+      "abstract": "Despite significant advances in image segmentation, even state-of-the-art models produce masks with imperfect boundaries, semantic inconsistencies, and structural errors. Mask refinement addresses these limitations, yet current approaches rely on simplistic synthetic noise that fails to capture the complex error patterns of real segmentation models. We introduce Phoenix, a novel framework that leverages adversarial learning to generate semantically meaningful noise patterns and contrastive learning to model refinement relationships. Our approach consists of two key innovations: (1) Adversarial Mask Perturbation, which employs embedding attacks to create semantic-aware noise that mimics real segmentation errors, and (2) Contrastive Mask Refinement Learning, which establishes a tri-directional framework that ensures feature consistency within semantic regions while maintaining separation between classes. Experiments demonstrate that Phoenix significantly outperforms existing methods across diverse tasks, while consistently enhancing state-of-the-art segmentation models with substantial improvements. Our code and project page are publicly available at https://phoenix-eccv26.github.io.",
+      "authors": [
+        "Beomyoung Kim",
+        "Sung Ju Hwang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-31T06:26:37+00:00",
+      "link": "https://arxiv.org/pdf/2607.29059v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Proposes adversarial mask perturbation using embedding attacks as a latent space intervention technique.",
+      "llm_evidence_cn": "提出使用嵌入攻击的对抗掩码扰动，作为潜在空间干预技术。",
+      "llm_evidence": "提出使用嵌入攻击的对抗掩码扰动，作为潜在空间干预技术。",
+      "canonical_evidence": "提出使用嵌入攻击的对抗掩码扰动，作为潜在空间干预技术。",
+      "llm_tldr_en": "The framework employs adversarial perturbations in the embedding space to generate semantic-aware noise for improving segmentation mask refinement.",
+      "llm_tldr_cn": "该框架通过在嵌入空间中进行对抗扰动产生语义感知噪声，以改进分割掩码精修。为了解决现有掩码精修方法依赖简单噪声的问题，提出Phoenix框架，利用对抗学习生成模拟真实分割错误的语义噪声，并通过对比学习建模精修关系。实验表明，该方法能有效提升分割掩码的边界一致性和语义正确性。",
+      "llm_tldr": "该框架通过在嵌入空间中进行对抗扰动产生语义感知噪声，以改进分割掩码精修。为了解决现有掩码精修方法依赖简单噪声的问题，提出Phoenix框架，利用对抗学习生成模拟真实分割错误的语义噪声，并通过对比学习建模精修关系。实验表明，该方法能有效提升分割掩码的边界一致性和语义正确性。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.03135v1",
+      "source": "arxiv",
+      "title": "Rectify Then Diffuse: Disentangling Concepts Before Denoising Trajectory Unfolds",
+      "abstract": "Text-to-image diffusion models can generate individual concepts well, but they often omit or merge concepts incorrectly with multiple concepts. We trace these failures to an early coordination bottleneck: before denoising begins, prompt-conditioned attention may allocate different concepts to strongly overlapping spatial support, which can keep their attention coupled as denoising proceeds. This observation motivates treating compositional generation as a boundary-condition problem rather than repeatedly controlling the evolving trajectory. To this end, we propose Rectify-then-Diffuse (RTD), a training-free framework that rectifies the initial allocation once before standard denoising. Firstly, we propose Soft-Overlap Disentanglement (SOD), which converts normalized overlap between pilot concept maps into a differentiable and layout-agnostic separation objective. Secondly, we introduce Isotropic Gradient Rectification (IGR), which normalizes the SOD gradient and applies a bounded latent displacement with a consistent scale across prompts and initializations. Extensive experiments show that RTD achieves state-of-the-art compositional fidelity and robust gains. On the AE-Bench object pair subset, RTD improves BLIP-VQA by 45.8% and ImageReward by 19.6% over CO3 while running 2.3$\\times$ faster. Code will be released at https://github.com/Z-yiwei/rectify-then-diffuse",
+      "authors": [
+        "Ning Zhu",
+        "An Chen",
+        "Mengfei Zhao",
+        "Juntao Xu",
+        "Jingze Liang",
+        "Boyuan Gu",
+        "Liang-Jian Deng"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-04T05:03:17+00:00",
+      "link": "https://arxiv.org/pdf/2608.03135v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Proposes Soft-Overlap Disentanglement to separate concepts, applicable to disentangling color and shape features.",
+      "llm_evidence_cn": "提出软重叠解缠以分离概念，可用于分离颜色和形状特征。",
+      "llm_evidence": "提出软重叠解缠以分离概念，可用于分离颜色和形状特征。",
+      "canonical_evidence": "提出软重叠解缠以分离概念，可用于分离颜色和形状特征。",
+      "llm_tldr_en": "The paper addresses concept entanglement in text-to-image diffusion by rectifying attention maps before denoising, enabling better compositional generation.",
+      "llm_tldr_cn": "针对文本到图像扩散模型中概念纠缠导致生成错误的问题，提出先整流后扩散框架，在去噪前通过软重叠解缠分离概念空间，从而提升多概念组合生成的质量。该方法无需训练，通过调整初始注意力分配实现概念解耦，实验显示能显著减少概念混叠，为可控生成提供新思路。",
+      "llm_tldr": "针对文本到图像扩散模型中概念纠缠导致生成错误的问题，提出先整流后扩散框架，在去噪前通过软重叠解缠分离概念空间，从而提升多概念组合生成的质量。该方法无需训练，通过调整初始注意力分配实现概念解耦，实验显示能显著减少概念混叠，为可控生成提供新思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
