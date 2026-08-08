@@ -1,0 +1,69 @@
+{
+  "label": "2026-08-08",
+  "date": "2026-08-08",
+  "generated_at": "2026-08-08T19:22:32",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202608/08/2608.00682v1-bric-net-boundary-reliable-illumination-color-interaction-for-remote-sensing-image-deshadowing",
+      "section": "deep",
+      "title_en": "BRIC-Net: Boundary-Reliable Illumination-Color Interaction for Remote Sensing Image Deshadowing",
+      "authors": "Wei Lu, Yi Liu, Si-Bao",
+      "date": "2026-08-01",
+      "pdf": "https://arxiv.org/pdf/2608.00682v1",
+      "score": "9.0",
+      "evidence": "在阴影引起的颜色变化下保持色度和辐射一致性，从而维持语义内容",
+      "tldr": "遥感图像中的阴影掩盖地表信息、破坏辐射连续性，阻碍视觉解译和下游任务。现有去阴影方法或依赖硬阴影掩模补偿光照，或直接回归RGB强度，但硬掩模无法精细建模半影过渡、易产生残留阴影和光晕，直接回归则耦合了光照与颜色，导致偏色。针对这些问题，本文提出边界可靠的光照-颜色交互网络BRIC-Net，从表示层面解耦失败因素。设计亮度可靠性先验（LRP）从CIELAB空间提取可信引导，边界自适应门控混合（BAGM）在不确定边界区域对浅层RGB和亮度特征进行门控插值，深层采用空间-通道互调制（SCMM）协调空间与通道响应以实现保外观的光照恢复。在合成数据集AeroDS-Syn和SRGTA上，BRIC-Net分别取得29.46dB和27.96dB的全图PSNR；在真实数据集AISD和AeroDS-Real上，获得最低PIQE分数。区域评估和模块消融实验进一步验证了其阴影去除的有效性和非阴影区域的保真性，为遥感图像去阴影提供了解耦新范式。",
+      "tags": "query:cp",
+      "abstract_en": "Shadows in remote sensing images obscure surface appearance and disrupt radiometric continuity, reducing the reliability of visual interpretation and downstream analysis. Remote sensing image deshadowing is an ill-posed inverse problem that requires spatially varying illumination recovery while preserving chromatic and radiometric consistency in non-shadow regions. Existing methods commonly rely on hard shadow masks for compensation or directly regress RGB intensities. Hard masks may inadequately model gradual penumbra variations and are sensitive to localization errors, often producing residual shadows or halo artifacts; direct RGB regression entangles illumination recovery with chromatic reconstruction and can introduce color casts. To this end, we propose the Boundary-Reliable Illumination-Color Interaction Network (BRIC-Net), which decouples these failures at different representation levels. A Lightness Reliability Prior (LRP) derives reliability-aware guidance from CIELAB statistics. Boundary-Adaptive Gated Mixing (BAGM) performs gated interpolation between shallow RGB and lightness features around uncertain transitions, while Spatial-Channel Mutual Modulation (SCMM) coordinates deeper spatial and channel responses for appearance-preserving illumination recovery. BRIC-Net achieves 29.46~dB full-image peak signal-to-noise ratio (PSNR) on AeroDS-Syn and 27.96~dB on SRGTA. It also obtains the lowest Perception-based Image Quality Evaluator (PIQE) scores on AISD and AeroDS-Real. Region-wise evaluations and component ablations further support its effectiveness in shadow recovery and non-shadow preservation.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/08/2608.05393v1-adapting-vision-foundation-models-with-cascaded-semantics",
+      "section": "deep",
+      "title_en": "Adapting Vision Foundation Models with Cascaded Semantics",
+      "authors": "Xi Xiao, Xingjian Li, Cheng Han, Tianyang Wang, Lin Zhao, Yunbei Zhang, Guosheng Hu, Runmin Jiang, Xi Li, Xiao Wang, Min Xu",
+      "date": "2026-08-05",
+      "pdf": "https://arxiv.org/pdf/2608.05393v1",
+      "score": "9.0",
+      "evidence": "注入手工设计的颜色、纹理和形状先验，解耦颜色与形状特征",
+      "tldr": "现有视觉提示调优方法忽略先验知识，仅随机初始化提示。本文提出级联语义先验，将手工特征提取的颜色、纹理、形状等图像先验注入输入空间，并利用自注意力图提供实例感知语义，通过级联方式整合两种先验贯穿ViT适配。在34个图像分类数据集上，仅微调0.74%参数即显著超越现有方法，填补了视觉提示缺乏语义指导的空白。",
+      "tags": "query:cp",
+      "abstract_en": "Prompt tuning, a leading parameter-efficient adaptation paradigm in NLP, has recently been extended to computer vision. Visual prompt tuning (VPT) adapts pre-trained vision transformers (ViTs) by updating a small set of additional prompt parameters. However, existing visual prompts are randomly initialized and do not exploit prior knowledge, such as instructions in NLP. We address this gap by injecting two complementary semantic priors into VPT. Fundamental image priors, including color, texture, and shape, are extracted with classical hand-crafted operators and injected into the input space, while self-attention maps provide instance-aware semantics in the feature space. We further propose a cascaded scheme that integrates both priors throughout ViT adaptation. Experiments on 34 challenging image classification datasets demonstrate superior downstream adaptation while tuning only 0.74% of ViT parameters. Project page: https://xixiaouab.github.io/Cascaded-Semantics/.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/08/2608.04442v1-robustness-emerges-early-in-training-dynamics-but-is-not-preserved",
+      "section": "quick",
+      "title_en": "Robustness Emerges Early in Training Dynamics, but Is Not Preserved",
+      "authors": "Jiangang Yang, Wenhui Shi, Lu Hu, Jing Xing, Jian Liu",
+      "date": "2026-08-05",
+      "pdf": "https://arxiv.org/pdf/2608.04442v1",
+      "score": "7.0",
+      "evidence": "提出通过训练动态的策略性干预来稳定鲁棒浅层表征，实质是对隐空间进行干预",
+      "tldr": "深度网络对自然损坏的鲁棒性仍是难题，根源在于浅层早期习得的鲁棒特征和平坦损失景观，会在标准训练后期消退。为此，提出干预训练动态的框架，包含早期阶段稳定（EPS）与不对称权重回退（AWR）两种无参数策略，分别稳定和恢复鲁棒配置。实验证实，该方法在多种架构和基准上显著提升下游迁移、动态适应及各类视觉任务性能，且无需额外参数或网络改动。该工作为维持训练鲁棒性提供了简洁有效的新方案。",
+      "tags": "query:cp",
+      "abstract_en": "Robustness to natural corruptions remains a fundamental challenge for deep neural networks. In this paper, we identify a robustness fading phenomenon where shallow layers spontaneously develop robust representations and flat loss landscapes in early training, yet these properties are not preserved during standard convergence. To address this, we propose a framework that performs strategic interventions on training dynamics to stabilize the empirically identified early-emergent robust priors. Our approach includes two parameter-free strategies: Early-Phase Stabilization~(EPS) and Asymmetric Weight Reversion~(AWR), which stabilize or recover robust shallow configurations without modifying the model architecture or introducing learnable parameters. Extensive experiments demonstrate the efficacy of our framework across various benchmarks and architectures, yielding significant gains in downstream transfer, dynamic adaptation, and diverse computer vision applications.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/08/2607.29059v1-learning-from-adversity-semantic-aware-mask-refinement-through-adversarial-perturbation",
+      "section": "quick",
+      "title_en": "Learning from Adversity: Semantic-Aware Mask Refinement through Adversarial Perturbation",
+      "authors": "Beomyoung Kim, Sung Ju Hwang",
+      "date": "2026-07-31",
+      "pdf": "https://arxiv.org/pdf/2607.29059v1",
+      "score": "6.0",
+      "evidence": "通过嵌入攻击在潜在空间进行对抗掩码扰动",
+      "tldr": "现有掩码细化方法依赖简单合成噪声，难以模拟真实分割模型的复杂错误。为此提出Phoenix框架，通过对抗扰动生成语义感知噪声，并利用对比学习建立三向精炼机制。实验表明，Phoenix在多种任务上显著超越现有方法，并能稳定提升主流分割模型的性能。",
+      "tags": "query:cp",
+      "abstract_en": "Despite significant advances in image segmentation, even state-of-the-art models produce masks with imperfect boundaries, semantic inconsistencies, and structural errors. Mask refinement addresses these limitations, yet current approaches rely on simplistic synthetic noise that fails to capture the complex error patterns of real segmentation models. We introduce Phoenix, a novel framework that leverages adversarial learning to generate semantically meaningful noise patterns and contrastive learning to model refinement relationships. Our approach consists of two key innovations: (1) Adversarial Mask Perturbation, which employs embedding attacks to create semantic-aware noise that mimics real segmentation errors, and (2) Contrastive Mask Refinement Learning, which establishes a tri-directional framework that ensures feature consistency within semantic regions while maintaining separation between classes. Experiments demonstrate that Phoenix significantly outperforms existing methods across diverse tasks, while consistently enhancing state-of-the-art segmentation models with substantial improvements. Our code and project page are publicly available at https://phoenix-eccv26.github.io.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
