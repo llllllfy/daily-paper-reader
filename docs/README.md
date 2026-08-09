@@ -6,36 +6,22 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-08
-- 运行时间：2026-08-08 19:22:22 UTC
+- 最新运行日期：2026-08-09
+- 运行时间：2026-08-09 20:43:39 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：2
-- 速读区：2
+- 本次总论文数：0
+- 精读区：0
+- 速读区：0
 
 ### 今日简报（AI）
-今日精读两篇高分论文，聚焦遥感去阴影的边界可靠光照-颜色交互模型，以及用级联语义适配视觉基础模型的新范式。
-
-最值得关注的是，BRIC-Net通过边界感知设计大幅提升遥感影像去阴影的真实感，而基础模型适配方法则展示了无需微调即可注入多层语义的高效迁移思路。
-
-建议普通读者快速浏览鲁棒性早期涌现但难保留的发现，并留意对抗扰动在语义掩码精炼中的实用潜力。
-- 详情：[/202608/08/README](/202608/08/README)
+> 今日无新推荐，系统未产出可展示论文。
+- 详情：[/202608/09/README](/202608/09/README)
 
 ### 精读区论文标签
-1. [BRIC-Net: Boundary-Reliable Illumination-Color Interaction for Remote Sensing Image Deshadowing](/202608/08/2608.00682v1-bric-net-boundary-reliable-illumination-color-interaction-for-remote-sensing-image-deshadowing)  
-   标签：评分：9.0/10、query:cp
-   evidence：在阴影引起的颜色变化下保持色度和辐射一致性，从而维持语义内容
-2. [Adapting Vision Foundation Models with Cascaded Semantics](/202608/08/2608.05393v1-adapting-vision-foundation-models-with-cascaded-semantics)  
-   标签：评分：9.0/10、query:cp
-   evidence：注入手工设计的颜色、纹理和形状先验，解耦颜色与形状特征
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Robustness Emerges Early in Training Dynamics, but Is Not Preserved](/202608/08/2608.04442v1-robustness-emerges-early-in-training-dynamics-but-is-not-preserved)  
-   标签：评分：7.0/10、query:cp
-   evidence：提出通过训练动态的策略性干预来稳定鲁棒浅层表征，实质是对隐空间进行干预
-2. [Learning from Adversity: Semantic-Aware Mask Refinement through Adversarial Perturbation](/202608/08/2607.29059v1-learning-from-adversity-semantic-aware-mask-refinement-through-adversarial-perturbation)  
-   标签：评分：6.0/10、query:cp
-   evidence：通过嵌入攻击在潜在空间进行对抗掩码扰动
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">
