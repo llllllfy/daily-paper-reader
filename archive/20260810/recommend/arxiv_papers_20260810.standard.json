@@ -1,0 +1,90 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-10T20:59:52.168730+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2608.05983v1",
+      "source": "arxiv",
+      "title": "Universal Concept Disruption for SAM3 Image Segmentation",
+      "abstract": "SAM3 extends promptable segmentation from geometry-driven mask prediction to open-vocabulary concept segmentation, where a text-conditioned grounding model decides whether a concept is present and segments all matching instances. While this presence-gated design improves concept-level prediction, its adversarial robustness remains unexplored. In this paper, we introduce Universal Concept Disruption (UCD), the first universal cross-concept adversarial attack tailored to SAM3 image segmentation. UCD learns a single bounded image perturbation from (image, noun-phrase) pairs and attacks SAM3 as an integrated concept-grounding system. It jointly disrupts the text-conditioned input path, maximizes divergence in prompt-shared visual features, suppresses the final presence-gated concept scores, and corrupts the spatial validity of retained masks through area collapse and clean-mask Dice disruption. Across SACo-Gold, LVIS, RefCOCO, PhraseCut, and OpenImages datasets, UCD consistently outperforms all baselines under a matched evaluation protocol, reducing average mask AP from 59.43 to 18.73 and average cgF1 from 50.32 to 20.49. The learned perturbation also transfers to SAM3.1 and to SAM3 video inference without re-optimization, while prompt ensembling, lightweight head fine-tuning, and temporal filtering provide limited recovery.",
+      "authors": [
+        "Hao Wang",
+        "Yuxuan Zhang",
+        "Wei Yang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-06T13:00:02+00:00",
+      "link": "https://arxiv.org/pdf/2608.05983v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "adversarial perturbation disrupts open-vocabulary concept segmentation",
+      "llm_evidence_cn": "对抗扰动破坏开放词汇概念分割",
+      "llm_evidence": "对抗扰动破坏开放词汇概念分割",
+      "canonical_evidence": "对抗扰动破坏开放词汇概念分割",
+      "llm_tldr_en": "UCD introduces a universal adversarial attack on SAM3 open-vocabulary segmentation, learning a bounded perturbation to disrupt concept detection and segmentation, highlighting robustness gaps.",
+      "llm_tldr_cn": "本文提出通用概念破坏（UCD），首个针对SAM3开放词汇分割的统一跨概念对抗攻击。该方法学习一个受限图像扰动，联合破坏文本条件输入和视觉特征，有效抑制概念存在预测并误导分割掩码。实验表明该攻击显著降低分割性能，揭示了当前开放词汇分割模型在对抗扰动下的脆弱性，对提升语义分割鲁棒性具有指导意义。",
+      "llm_tldr": "本文提出通用概念破坏（UCD），首个针对SAM3开放词汇分割的统一跨概念对抗攻击。该方法学习一个受限图像扰动，联合破坏文本条件输入和视觉特征，有效抑制概念存在预测并误导分割掩码。实验表明该攻击显著降低分割性能，揭示了当前开放词汇分割模型在对抗扰动下的脆弱性，对提升语义分割鲁棒性具有指导意义。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "adversarial color attacks on semantic segmentation",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.06847v1",
+      "source": "arxiv",
+      "title": "Are Visual Place Recognition Models Recognizing Places or Conditions? Distractor-Augmented Evaluation and Condition Suppression",
+      "abstract": "Long-term Visual Place Recognition (VPR) is typically evaluated by matching queries from one condition against a database from another. Crowdsourced map databases, however, may mix conditions and include images that resemble the query in condition but depict different places. In the presence of these distractors, a method may retrieve by condition similarity rather than place identity. We argue that this susceptibility arises because the discriminability of VPR methods allows them to encode information such as illumination, weather, and seasonal appearance in their descriptors. We therefore introduce Distractor-Augmented Recall (DAR) to isolate and quantify the effect of distractors, and propose condition suppression to remove condition information from VPR descriptors. Across eleven methods and six datasets, method rankings under DAR@1 differ from those under Recall@1 (R@1), while applying INLP and LEACE as condition suppression methods generally improves DAR@1 without reducing R@1. Thus, distractor robustness is distinct from standard retrieval performance and can be improved by suppressing condition information.",
+      "authors": [
+        "Beomsu Kim",
+        "Minwoo Jung",
+        "Giseop Kim"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.CV"
+      ],
+      "published": "2026-08-07T06:15:23+00:00",
+      "link": "https://arxiv.org/pdf/2608.06847v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "condition suppression to isolate place identity from appearance changes (illumination, weather, color)",
+      "llm_evidence_cn": "通过抑制条件信息（光照、天气、颜色）以分离地点身份与外观变化",
+      "llm_evidence": "通过抑制条件信息（光照、天气、颜色）以分离地点身份与外观变化",
+      "canonical_evidence": "通过抑制条件信息（光照、天气、颜色）以分离地点身份与外观变化",
+      "llm_tldr_en": "This paper addresses VPR models confusing place identity with appearance conditions by proposing condition suppression that removes condition information from descriptors, achieving robust place recognition under appearance changes.",
+      "llm_tldr_cn": "针对视觉地点识别中条件变化（光照、天气等）干扰地点身份判别的问题，本文提出干扰增强召回率评估条件与地点的混淆程度，并设计条件抑制方法从特征中去掉条件信息。实验表明，该方法能有效分离地点语义与外观变化，显著提升长期识别鲁棒性，对解耦颜色与形状特征的研究具有借鉴意义。",
+      "llm_tldr": "针对视觉地点识别中条件变化（光照、天气等）干扰地点身份判别的问题，本文提出干扰增强召回率评估条件与地点的混淆程度，并设计条件抑制方法从特征中去掉条件信息。实验表明，该方法能有效分离地点语义与外观变化，显著提升长期识别鲁棒性，对解耦颜色与形状特征的研究具有借鉴意义。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}

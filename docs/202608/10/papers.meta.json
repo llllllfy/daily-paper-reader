@@ -1,0 +1,39 @@
+{
+  "label": "2026-08-10",
+  "date": "2026-08-10",
+  "generated_at": "2026-08-10T21:01:30",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202608/10/2608.05983v1-universal-concept-disruption-for-sam3-image-segmentation",
+      "section": "deep",
+      "title_en": "Universal Concept Disruption for SAM3 Image Segmentation",
+      "authors": "Hao Wang, Yuxuan Zhang, Wei Yang",
+      "date": "2026-08-06",
+      "pdf": "https://arxiv.org/pdf/2608.05983v1",
+      "score": "8.0",
+      "evidence": "对抗扰动破坏开放词汇概念分割",
+      "tldr": "SAM3将分割拓展至开放词汇概念，但其对抗鲁棒性尚未探索。本文提出通用概念破坏(UCD)，一种学习单一有界图像扰动的跨概念攻击，联合破坏文本输入、视觉特征、概念得分与掩码有效性。实验显示UCD大幅降低分割性能，平均掩码AP和cgF1分别降至18.73与20.49，并可迁移至新模型与视频任务。该工作首次揭示SAM3概念分割的脆弱性，现有防御效果有限。",
+      "tags": "query:cp",
+      "abstract_en": "SAM3 extends promptable segmentation from geometry-driven mask prediction to open-vocabulary concept segmentation, where a text-conditioned grounding model decides whether a concept is present and segments all matching instances. While this presence-gated design improves concept-level prediction, its adversarial robustness remains unexplored. In this paper, we introduce Universal Concept Disruption (UCD), the first universal cross-concept adversarial attack tailored to SAM3 image segmentation. UCD learns a single bounded image perturbation from (image, noun-phrase) pairs and attacks SAM3 as an integrated concept-grounding system. It jointly disrupts the text-conditioned input path, maximizes divergence in prompt-shared visual features, suppresses the final presence-gated concept scores, and corrupts the spatial validity of retained masks through area collapse and clean-mask Dice disruption. Across SACo-Gold, LVIS, RefCOCO, PhraseCut, and OpenImages datasets, UCD consistently outperforms all baselines under a matched evaluation protocol, reducing average mask AP from 59.43 to 18.73 and average cgF1 from 50.32 to 20.49. The learned perturbation also transfers to SAM3.1 and to SAM3 video inference without re-optimization, while prompt ensembling, lightweight head fine-tuning, and temporal filtering provide limited recovery.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/10/2608.06847v1-are-visual-place-recognition-models-recognizing-places-or-conditions-distractor-augmented-evaluation-and-condition-suppression",
+      "section": "deep",
+      "title_en": "Are Visual Place Recognition Models Recognizing Places or Conditions? Distractor-Augmented Evaluation and Condition Suppression",
+      "authors": "Beomsu Kim, Minwoo Jung, Giseop Kim",
+      "date": "2026-08-07",
+      "pdf": "https://arxiv.org/pdf/2608.06847v1",
+      "score": "8.0",
+      "evidence": "通过抑制条件信息（光照、天气、颜色）以分离地点身份与外观变化",
+      "tldr": "长期视觉地点识别（VPR）常因数据库混入相似条件但不同地点的干扰图像，导致模型偏向条件匹配而非地点辨识。为量化干扰影响，提出干扰物增强召回率（DAR），并设计条件抑制方法从描述符中去除光照、天气等条件信息。在11种方法和6个数据集上，DAR@1排名与标准R@1显著不同，而INLP和LEACE等条件抑制技术能在不损害R@1的同时提升DAR@1，表明干扰鲁棒性独立于检索性能且可通过抑制条件信息增强。",
+      "tags": "query:cp",
+      "abstract_en": "Long-term Visual Place Recognition (VPR) is typically evaluated by matching queries from one condition against a database from another. Crowdsourced map databases, however, may mix conditions and include images that resemble the query in condition but depict different places. In the presence of these distractors, a method may retrieve by condition similarity rather than place identity. We argue that this susceptibility arises because the discriminability of VPR methods allows them to encode information such as illumination, weather, and seasonal appearance in their descriptors. We therefore introduce Distractor-Augmented Recall (DAR) to isolate and quantify the effect of distractors, and propose condition suppression to remove condition information from VPR descriptors. Across eleven methods and six datasets, method rankings under DAR@1 differ from those under Recall@1 (R@1), while applying INLP and LEACE as condition suppression methods generally improves DAR@1 without reducing R@1. Thus, distractor robustness is distinct from standard retrieval performance and can be improved by suppressing condition information.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
