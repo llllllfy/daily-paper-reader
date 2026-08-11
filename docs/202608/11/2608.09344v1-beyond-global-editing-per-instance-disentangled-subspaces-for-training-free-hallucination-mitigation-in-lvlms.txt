@@ -1,0 +1,853 @@
+Title: Beyond Global Editing: Per-Instance Disentangled Subspaces for Training-Free Hallucination Mitigation in LVLMs
+
+URL Source: https://arxiv.org/pdf/2608.09344v1
+
+Published Time: Tue, 11 Aug 2026 02:05:21 GMT
+
+Number of Pages: 18
+
+Markdown Content:
+> arXiv:2608.09344v1 [cs.CV] 10 Aug 2026
+
+CHERAGHIAN ET AL: DISENTANGLED SUBSPACES FOR LVLMS 1
+
+# Beyond Global Editing: Per-Instance Disentangled Subspaces for Training-Free Hallucination Mitigation in LVLMs 
+
+Ali Cheraghian 1, 7 
+
+ali.cheraghian@mq.edu.au 
+
+Hamidreza Dastmalchi 2
+
+hrd@yorku.ca 
+
+Hamed Barzamini 3
+
+h.barzamini@niu.edu 
+
+Morteza Saberi 4
+
+Morteza.Saberi@uts.edu.au 
+
+Mojtaba Golzan 4
+
+Mojtaba.Golzan@uts.edu.au 
+
+Shafin Rahman 5
+
+shafin.rahman@northsouth.edu 
+
+Hossein Rahmani 6
+
+h.rahmani@lancaster.ac.uk  
+
+> 1
+
+Macquarie University, Australia  
+
+> 2
+
+York University, Canada  
+
+> 3
+
+Northern Illinois University, USA  
+
+> 4
+
+University of Technology Sydney, Australia  
+
+> 5
+
+North South University, Bangladesh  
+
+> 6
+
+Lancaster University, UK  
+
+> 7
+
+Australian National University, Australia 
+
+Abstract 
+
+Recent advances in large vision-language models (LVLMs) have enabled power-ful multimodal reasoning by integrating visual encoders with large language models (LLMs). However, their reliability is frequently undermined by hallucinations, where generated text inaccurately describes the visual input. Although fine-tuning can mitigate this problem, it is computationally expensive and requires large, curated datasets, mak-ing training-free alternatives attractive. Among these, model editing is more promising than decoding-based approaches: decoding methods adapt outputs per input but intro-duce computational overhead and instability, whereas model editing modifies internal representations offline, providing a more efficient and stable solution. However, existing model-editing techniques typically rely on a single global subspace to correct halluci-nations, treating all test samples identically and failing to capture diverse hallucination modes across inputs. To address this limitation, we propose a training-free hallucination mitigation framework for dynamic, per-instance suppression at test time. Our method first constructs a set of Disentangled Hallucination Subspaces, each isolating a distinct hallucination mode. During inference, the model adaptively calculates weights reflecting each input’s relationship to these subspaces, guiding a dynamically combined projec-tion that selectively suppresses the most probable hallucination directions while preserv-ing image-grounded semantics. Extensive experiments across multiple vision-language benchmarks and LVLM families demonstrate consistent improvements, highlighting the robustness, generalizability, and efficiency of our approach. 
+
+© 2026. The copyright of this document resides with its authors. It may be distributed unchanged freely in print or electronic forms. 2 CHERAGHIAN ET AL: DISENTANGLED SUBSPACES FOR LVLMS +
+
+> Original LVLM
+> Edited LVLM
+> Fixed
+> Editing
+> Instruction + Image
+> Subspace
+> Output
+
+# +
+
+> Original LVLM
+> Edited LVLM
+> Adaptive
+> Editing
+> Instruction + Image
+> Subspace
+> Output
+> Subspace
+
+Figure 1: (Left) : Existing model editing methods [29] derive a single subspace of hallucina-tion directions (via SVD) and apply fixed editing to the LVLM, using the same edited model for all inputs. (Right) : Our adaptive method identifies multiple subspaces from different hallucination modes and adaptively adjusts their contributions to edit the model based on the input image, enabling more flexible and context-aware hallucination suppression. 
+
+# 1 Introduction 
+
+In recent years, integrating vision models with large language models (LLMs) has become a standard approach to leverage the advanced reasoning capabilities of LLMs. This integration has led to the emergence of large vision-language models (LVLMs) [21, 35]. Despite rapid progress in this field, LVLMs remain unreliable in certain scenarios due to the persistent issue of hallucination, where the model generate irrelevant or non-factual content that is inconsistent with the input image. Existing strategies for reducing hallucinations in LVLMs generally fall into two main categories: (i) fine-tuning approaches [28, 32] and (ii) training-free methods [16, 27, 29]. Although the fine-tuning approach often achieves superior performance, it requires curated datasets and significant computational resources, limiting its practicality in real-world de-ployments. Thus, training-free methods have become increasingly popular due to their flex-ibility and efficiency. Existing training-free techniques can be broadly categorized into decoding-based [16, 27] and model-editing [29] approaches. Decoding-based methods, such as contrastive de-coding [17], adapt model outputs per input during or after generation. Although effective, they incur substantial computational overhead due to additional forward passes and often suffer from instability. In contrast, model-editing approaches modify the internal layers of LVLMs offline, typically by projecting hidden representations into a low-dimensional sub-space that captures hallucination-sensitive directions. However, prior methods rely on a single global subspace that is applied uniformly across all test samples, which limits their generalization capacity: the hallucination direction captured by this subspace may not align with the diverse hallucination patterns observed during inference. Specifically, existing edit-ing approaches [29] (see Figure 1 (left) ) perform fixed model editing, intervening in the internal layers solely according to this global subspace, regardless of the input. This moti-vates the need for an adaptive strategy that can dynamically adjust at test time. To this end, we propose an adaptive model-editing framework (see Figure 1 (right) ) that leverages mul-tiple disentangled subspaces. Each subspace is better aligned with a particular hallucination mode, and their contributions to model editing are adaptively weighted based on the input sample itself. Overall, our framework operates in two steps: CHERAGHIAN ET AL: DISENTANGLED SUBSPACES FOR LVLMS 3
+
+Step 1: In a preprocessing stage, we construct multiple low-dimensional subspaces, each representing a distinct hallucination direction. Specifically, we leverage a paired dataset where each image is associated with both a hallucinated and a truthful description. For every image, we compute the state differences between hallucinated and truthful captions. These per-layer difference vectors are then clustered using K-means. Within each cluster, we apply Singular Value Decomposition (SVD) to extract an orthonormal basis that captures the dominant hallucination direction. This process yields a collection of subspaces, each characterizing a different hallucination-sensitive direction. 
+
+Step 2: At inference time, the precomputed subspaces from the offline stage are adap-tively combined based on the given test sample. Specifically, we probe the LVLM with both the original image and a masked variant designed to induce hallucination. The differ-ence between their hidden states provides an input-specific hallucination signal, capturing the model’s susceptibility to hallucinated content. This signal is then projected onto the previously constructed subspaces, where the projection magnitudes act as relevance scores. These scores are used to compute adaptive weights for combining the corresponding sub-space bases. The resulting weighted projection matrix is finally applied to the model’s inter-nal representations to suppress hallucinations during inference. Unlike fixed editing methods [29], our framework enables adaptive, fine-grained, and context-aware model editing, effectively filtering hallucinated content while preserving image-grounded semantics. In summary, our contributions are as follows: • Disentangled Hallucination Subspaces: an offline construction of multiple low-rank subspaces, each capturing a distinct hallucination mode. • Adaptive Test-Time Mitigation: a training-free framework that extracts an input-specific hallucination signal and projects it onto the precomputed subspaces. The resulting adaptive weighting dynamically suppresses hallucination directions during inference. • Extensive Evaluation: We conduct experiments across multiple vision-language bench-marks and VLM families, demonstrating consistent and generalizable improvements across evaluation metrics. 
+
+# 2 Related work 
+
+Large Vision-Language Models: Large Vision-Language Models (LVLMs) have advanced rapidly, with designs such as BLIP-2 [19], InstructBLIP [9], MiniGPT-4 [35], LLaVA [22], mPLUG-Owl2 [30], and Qwen-VL [3] enabling strong multimodal capabilities. BLIP-2 [19] employs a Query Transformer (Q-Former) to extract a fixed set of informative visual tokens from a frozen vision encoder, which are then passed to a frozen LLM—enabling modular alignment with minimal adaptation. InstructBLIP [9] builds on BLIP-2 by applying instruc-tion tuning across diverse vision-language tasks to improve generalization and alignment. However, bottlenecks such as the limited number of visual tokens and reliance on frozen backbones can lead to vision-to-language misalignment, contributing to hallucination risks. Linear projection approaches, such as MiniGPT-4 [35] and early LLaVA [22], preserve CLIP visual features but rely on weakly supervised tuning, which risks semantic misalignment dur-ing generation. Subsequent LLaVA variants [2] address this by replacing linear projections 4 CHERAGHIAN ET AL: DISENTANGLED SUBSPACES FOR LVLMS 
+
+with MLP connectors and scaling visual instruction data, yielding improved visual ground-ing and more faithful caption generation. mPLUG-Owl2 [30] improves grounding through adaptive modality collaboration modules and broad instruction tuning across diverse tasks. Hallucinations—where models generate content ungrounded in the image—are exacerbated by incomplete grounding and the use of next-token training objectives that fail to penalize unfaithful outputs [1, 5, 6, 10, 11, 20]. This issue is further compounded by the tendency of LLMs to exploit language priors, generating statistically plausible but visually unsupported content when visual signals are ambiguous or under-represented in training distributions. Early work in image captioning attributes hallucination to biased decoders and limited vi-sual grounding, foreshadowing similar challenges in modern LVLMs. Subsequent evalua-tions [20] emphasize that next-token training objectives further promote unfaithful outputs due to weak alignment constraints. Benchmark datasets such as CHAIR [25] and POPE [20] have exposed persistent grounding failures, revealing that hallucination is not an isolated artifact but a systemic challenge tied to how visual evidence is encoded, propagated, and attended to throughout the decoding process. To address these issues, LLaVA-RLHF [26] in-troduces factually-augmented reinforcement learning with human feedback (RLHF) and pro-poses MMHalBench, a benchmark specifically designed to assess hallucination in LVLMs, showing that targeted supervision can significantly improve factual alignment. 
+
+Hallucination Mitigation Strategies: Mitigation strategies for hallucination in vision-language models generally fall into four categories. (1) Null-space projection: Nullu [29] suppresses hallucinations by projecting input features into the null space of a learned hallucination sub-space (HalluSpace). While effective, it applies a single global HalluSpace and cannot adapt to sample-specific hallucination patterns. (2) Latent space steering: VTI [23] applies fixed latent offsets to stabilize vision-language features during decoding. Although training-free, it lacks input adaptivity, as fixed shifts may be suboptimal across different scenes or prompts. (3) Token sparsification and contrastive decoding: VASparse [36] filters low-importance visual tokens using attention sparsity and performs contrastive decoding between full and pruned tokens. While efficient, it does not semantically model hallucination features. (4) Constrained and contrastive decoding: Several methods fall into this category. HALC [4] reweights decoding using adaptive visual context and contrast signals. DoLa [7] compares internal representations to detect and suppress hallucinated content. OPERA [15] applies over-trust penalties and retrospection to discourage unsupported generations. VCD [16] per-forms contrastive decoding using perturbed visual inputs, and Woodpecker [12, 31] verifies and replaces hallucinated entities by cross-checking them with image-grounded evidence. Despite these advances, most existing methods are either global, heuristic-driven, or com-putationally intensive. In contrast, our method constructs multiple low-rank Disentangled Hallucination Spaces and performs sample-specific null-space projection at test time. It is entirely training-free, adapts to individual inputs, and avoids reranking or model retraining. 
+
+# 3 Preliminary 
+
+Vision-Language Alignment. The input to a vision-language foundation model (LVLM) consists of an image  I(i) ∈ RH×W ×C and a textual query  q(i). A vision encoder (e.g., ViT [13], CLIP [24]) first extracts image features from  I(i). These features are then mapped into the language model’s input space by a vision-language alignment module (e.g., Q-Former [18] or a linear projection), producing a sequence of  N visual tokens:  X(i) = [ x(i) 
+
+> 0
+
+, x(i) 
+
+> 1
+
+, . . . , x(i)
+
+> N−1
+
+], x(i) 
+
+> n
+
+∈
+
+Rd . Simultaneously, the textual query  q(i) is tokenized into a sequence of  M tokens:  T(i) =CHERAGHIAN ET AL: DISENTANGLED SUBSPACES FOR LVLMS 5
+
+[t(i) 
+
+> N
+
+, t(i)
+
+> N+1
+
+, . . . , t(i)
+
+> N+M−1
+
+], t(i) 
+
+> m
+
+∈ Rd . The combined input to the LVLM is the concatenated sequence  [X(i), T(i)] of total length  J = N + M.
+
+Model Forwarding. The combined input sequence  [X(i), T(i)] ∈ RJ×d , where  J = N + M,is then passed through the language model component of the LVLM. Let  L denote the total number of transformer layers, and  z(i)  
+
+> ℓ, j
+
+∈ Rd represent the hidden state corresponding to token index  j at layer  ℓ for sample  i. The model produces a sequence of contextualized embeddings: 
+
+n
+
+z(i) 
+
+> ℓ, j
+
+oL, J  
+
+> ℓ=1,j=1
+
+= f LVLM 
+
+> θ
+
+
+
+I(i), q(i)
+
+. (1) These hidden states serve as the basis for downstream reasoning and generation tasks and are used in subsequent modules for hallucination suppression. 
+
+Response Generation. Following the forward pass through the LVLM, the final-layer hid-den states  {z(i) 
+
+> L,j
+
+}Jj=1 are used to generate the output response. Specifically, the model per-forms autoregressive decoding based on the attended multimodal context, producing the tex-tual response token by token. The probability of the next token  y(i) 
+
+> t+1
+
+is modeled as: 
+
+P
+
+
+
+y(i) 
+
+> t+1
+
+| y(i) 
+
+> 1: t
+
+, z(i)
+
+> L,1: J
+
+
+
+= softmax 
+
+
+
+Wo h(i)
+
+> t
+
+
+
+, (2) where  h(i) 
+
+> t
+
+is the decoder’s hidden state at time  t, and  Wo ∈ RV ×d is the output projection matrix for a vocabulary of size  V . Decoding continues until an end-of-sequence token is generated or a predefined maximum length is reached. 
+
+# 4 Method 
+
+Large vision-language models (LVLMs) are highly prone to hallucination, producing textual outputs that are inconsistent with the input image. Existing training-free mitigation meth-ods rely on either sample-agnostic preprocessing or unstable post-hoc heuristics, both of which ignore a crucial property of the phenomenon: hallucination patterns exhibit substantial sample-level heterogeneity, and therefore demand adaptive test-time correction. Two obser-vations sharpen this requirement. First, hallucinations are not monolithic; object-, attribute-, and relation-level errors occupy distinct, only partially overlapping directions in the model’s activation space, so collapsing them into a single global correction vector inevitably under-corrects on some samples and over-corrects on others. Second, the appropriate mixture of these directions is itself input-dependent, implying that any correction operator should be 
+
+conditioned on the test instance rather than fixed offline. Motivated by these observations, we introduce a test-time hallucination mitigation framework that (i) constructs multiple low-rank disentangled hallucination subspaces and (ii) performs input-adaptive projection into these subspaces, without fine-tuning and without compromising generation stability. The framework is realised as a two-stage pipeline: a small library of disentangled hallucination subspaces is first discovered from a contrastive corpus, and at inference time these subspaces are composed into a sample-specific projection applied directly to the LVLM’s internal hid-den states. 6 CHERAGHIAN ET AL: DISENTANGLED SUBSPACES FOR LVLMS 
+
+4.1 Contrastive Dataset Construction 
+
+To extract contrastive signals indicative of hallucinations, we construct an offline dataset of paired vision-language inputs in which each triplet consists of an image I(i), a faithful caption q(i), and a semantically inconsistent (hallucinated) caption ˜ q(i) describing the same image: 
+
+D =
+
+n 
+
+I(i), q(i), ˜q(i)o Bi=1 . (3) The hallucinated captions are obtained by prompting a strong language model (e.g., GPT-4) to introduce plausible but absent objects or distort spatial relationships in the faithful description. Using a strong language model as a perturbation oracle is deliberate: the re-sulting captions remain fluent, contextually plausible, and lexically close to their faithful counterparts, which isolates the semantic mismatch as the dominant source of representa-tional shift between q(i) and ˜ q(i). To prevent the recovered subspaces from collapsing onto a single failure mode, the generation prompt is designed to span the principal categories of multimodal hallucination reported in the literature—non-existent objects, incorrect attributes (e.g., colour, shape, count), and erroneous spatial or relational descriptions. This diversity is essential for the subsequent clustering step, which relies on it to recover semantically distinct hallucination directions. To analyze the latent representations induced by truthful versus hallucinated captions, we pass each pair through the LVLM and collect hidden states across all layers and positions: 
+
+n
+
+z(i) 
+
+> ℓ, j
+
+oL, J  
+
+> ℓ, j=1
+
+= f LVLM 
+
+> θθθ
+
+
+
+I(i), q(i)
+
+(4) 
+
+n
+
+˜z(i) 
+
+> ℓ, j
+
+oL, J  
+
+> ℓ, j=1
+
+= f LVLM 
+
+> θθθ
+
+
+
+I(i), ˜q(i)
+
+(5) Here,  z(i)  
+
+> ℓ, j
+
+and  ˜z(i)  
+
+> ℓ, j
+
+represent the hidden state at layer  ℓ and position  j, corresponding to the faithful and hallucinated captions, respectively. Critically, the image input is held fixed across the two forward passes, so any systematic difference between  z(i)  
+
+> ℓ, j
+
+and  ˜z(i)  
+
+> ℓ, j
+
+can be attributed to the semantic perturbation in the textual stream rather than to visual variability. This controlled construction is what allows the resulting difference vectors to be interpreted as approximately pure “hallucination directions” in the representation space. 
+
+4.2 Disentangled Hallucination Subspaces 
+
+To uncover semantically distinct directions in the LVLM’s activation space that correspond to hallucinations, we perform clustering over feature differences derived from the contrastive dataset  D. For each sample  (I(i), q(i), ˜q(i)) ∈ D , we compare the model’s internal activations under hallucinated and faithful captions. Given a set of transformer layers  L, we first compute token-averaged hidden states from each caption. For every layer  ℓ ∈ L , we define: 
+
+z(i) 
+
+> ℓ
+
+= 1
+
+J
+
+> J
+
+# ∑
+
+> j=1
+
+z(i) 
+
+> ℓ, j
+
+, ˜z(i) 
+
+> ℓ
+
+= 1
+
+J
+
+> J
+
+# ∑
+
+> j=1
+
+˜z(i)  
+
+> ℓ, j
+
+(6) where  z(i)  
+
+> ℓ, j
+
+and  ˜z(i)  
+
+> ℓ, j
+
+are hidden states that correspond to truthful and hallucinated inputs, re-spectively. It is important to note that token-wise averaging yields a single sequence-level de-scriptor per layer, which marginalizes positional artifacts arising from differing token lengths CHERAGHIAN ET AL: DISENTANGLED SUBSPACES FOR LVLMS 7MHA       
+
+> Vision Encoder
+> MHA MHA MLP MLP
+> Large Language Model
+> Large Vision-Language Model
+> -1 -1 +1 Clustering SVD diff Contrastive Dataset avg
+> Large Vision-Language Model diff
+> (a) (b)
+> Edited Large Vision-Language Model
+> Hallucinated free description
+
+Figure 2: Illustration of our test-time hallucination mitigation framework. (a) We first con-struct a contrastive dataset D to derive a set of low-rank subspaces V(i) 
+
+> r
+
+, i = 1, . . . , K, each capturing a distinct type of hallucination. (b) At test time, given an input I, the model adap-tively combines the learned subspaces obtained from clustered hallucination-truthful feature differences—into a sample-specific composite subspace P. This subspace is then used to project and modulate internal model activations, effectively suppressing hallucinations with-out altering the model’s parameters. between faithful and hallucinated captions, while preserving the layer-specific semantic ge-ometry we wish to characterize. Inspired by [29], we interpret the deviation between these mean activations as a proxy for semantic drift—a key signal of hallucination. For each layer  ℓ, we collect the representations into matrices: 
+
+Zℓ = [ z(1) 
+
+> ℓ
+
+; . . . ; z(B) 
+
+> ℓ
+
+] ∈ RB×d (7) ˜Zℓ = [ ˜z(1) 
+
+> ℓ
+
+; . . . ; ˜ z(B) 
+
+> ℓ
+
+] ∈ RB×d (8) We compute layer-wise difference matrices: 
+
+Dℓ = ˜Zℓ − Zℓ (9) To obtain a consolidated representation of hallucination-induced shifts, we average across all considered layers, ¯ D = 1 
+
+> |L|
+
+∑ℓ∈L Dℓ,where each row  ¯D(i) ∈ Rd now encodes a semantic shift vector for sample  i. Averaging across  L acts as a form of depth-wise denoising: it suppresses layer-specific fluctuations. It retains only the components of the semantic shift that are stable across the depths at which hallucination behaviour is most consistently expressed. We then apply  K-means clustering to the rows of  ¯D, identifying groups of hallucination modes: 
+
+¯D = [ ¯D(1); ¯ D(2); . . . ; ¯ D(K)] (10) where each cluster  ¯D(k) ∈ RBk×d aggregates samples belonging to hallucination mode  k.Clustering before subspace extraction is a key departure from prior single-subspace formu-lations: it explicitly models hallucinations as a mixture of qualitatively distinct semantic perturbations and prevents the dominant failure mode from absorbing the directions associ-ated with rarer, but equally harmful, error types. 8 CHERAGHIAN ET AL: DISENTANGLED SUBSPACES FOR LVLMS 
+
+To extract a compact basis for each hallucination mode, we perform Singular Value De-composition (SVD) on each cluster: 
+
+¯D(k) = U(k)ΣΣΣ(k)V(k)⊤ (11) The top-r right singular vectors from  V(k), corresponding to the largest singular values, de-fine the basis of the low-rank subspace: 
+
+V(k) 
+
+> r
+
+= [ vk,1, . . . , vk,r] ∈ Rd×r (12) Here,  r is a hyperparameter controlling the subspace rank. By construction, the columns of 
+
+V(k) 
+
+> r
+
+are orthonormal, 
+
+V(k)
+
+> r
+> ⊤
+
+V(k) 
+
+> r
+
+= Ir, k = 1, . . . , K, (13) so that  V(k) 
+
+> r
+
+V(k)
+
+> r
+> ⊤
+
+is the orthogonal projector onto the  r-dimensional subspace spanned by 
+
+V(k) 
+
+> r
+
+. This property is what guarantees that the per-mode projection is idempotent, and that the residual map  Id −V(k) 
+
+> r
+
+V(k)
+
+> r
+> ⊤
+
+acts as the identity on the orthogonal complement of mode  k.Truncating to the top-r singular vectors yields a low-rank summary that captures the prin-cipal directions of variation within each hallucination mode while discarding higher-order components that are more likely to reflect sample-specific noise. This low-rank structure is also what makes the subsequent projection-based intervention numerically stable: applying 
+
+Id − P removes only a thin, well-conditioned slice of the representation space. Finally, we collect all subspaces into the set V =
+
+n
+
+V(k)
+
+> r
+
+oKk=1.Each subspace  V(k) 
+
+> r
+
+captures a distinct semantic mode of hallucination, enabling fine-grained, projection-based suppression. These subspaces are later used to dynamically remove hallu-cination directions during inference, enhancing the LVLM’s robustness under distribution shift. 
+
+4.3 Test-Time Hallucination Mitigation 
+
+Our proposed test-time strategy mitigates hallucinations in LVLMs by dynamically edit-ing the model’s internal activations using the subspace set  V constructed in the offline phase. For each test instance, we estimate its hallucination tendency and suppress activation com-ponents aligned with hallucination-inducing subspaces. Unlike approaches that apply a fixed corrective signal to every input, our method treats each test sample as carrying its own latent mixture over hallucination modes, and infers this mixture on-the-fly through a lightweight perturbation-and-projection probe described below. Given a test image  I ∈ RH×W ×C, we first construct a masked variant by zeroing out 70% of its semantically salient regions:  ˜I = I ⊙ M, (14) where  M ∈ { 0, 1}H×W ×C is a binary mask and  ⊙ denotes element-wise multiplication. We then query the LVLM with both the original image  I and the masked image  ˜I, using the same textual prompt  q. From a set of selected transformer layers  L, we extract hidden representations and compute their difference to probe hallucination-sensitive behavior: 
+
+δδδ ℓ, j = 1
+
+J
+
+> J
+
+# ∑
+
+> j=1
+
+
+
+z(masked )  
+
+> ℓ, j
+
+− z(orig ) 
+
+> ℓ, j
+
+
+
+∈ Rd . (15) CHERAGHIAN ET AL: DISENTANGLED SUBSPACES FOR LVLMS 9
+
+Each difference vector  δδδ ℓ, j is projected into the  K pre-computed low-rank hallucination subspaces  {V(k) 
+
+> r
+
+}Kk=1, where  V(k) 
+
+> r
+
+∈ Rd×r contains orthonormal basis vectors for hallucina-tion mode  k. The projection magnitude serves as an alignment score, sk,ℓ = δδδ ⊤ 
+
+> ℓ, j
+
+V(k)  
+
+> r2
+
+.
+
+Intuitively, a large  sk,ℓ  indicates that the visual ablation moves the representation strongly along directions previously identified with hallucination mode  k, suggesting that the test sample is particularly susceptible to that mode and should be corrected more aggressively along it. These scores are normalized per layer using softmax: 
+
+αk,ℓ = exp (sk,ℓ )
+
+∑Kk′=1 exp (sk′,ℓ ) . (16) Next, we aggregate alignment scores across layers to obtain a global importance score for each subspace, γk = ∑ℓ∈L αk,ℓ .Then, a temperature-controlled softmax is then applied to derive adaptive weights: 
+
+βk = exp (γk/τ)
+
+∑Kk′=1 exp (γk′ /τ) , (17) 
+
+Algorithm 1 Adaptive Hallucination Suppression via Subspace Projection 
+
+Require: Test image I, query q, vision-language model f LVLM  
+
+> θ
+
+, hallucination subspaces {V(k) 
+
+> r
+
+}Kk=1
+
+Ensure: Hallucination-suppressed output y 
+
+> 1:
+
+Step 1: Masked Input Generation  
+
+> 2:
+
+M ← Mask (I, 0.7) {Mask 70% of image}  
+
+> 3:
+
+˜I ← I ⊙ M 
+
+> 4:
+
+Step 2: Activation Difference  
+
+> 5:
+
+{z(orig )  
+
+> ℓ, j
+
+}L, J  
+
+> ℓ, j=1
+
+← f LVLM  
+
+> θ
+
+(I, q) 
+
+> 6:
+
+{z(masked )  
+
+> ℓ, j
+
+}L, J  
+
+> ℓ, j=1
+
+← f LVLM  
+
+> θ
+
+(˜I, q) 
+
+> 7:
+
+Step 3: Subspace Alignment  
+
+> 8:
+
+for ℓ ∈ L do  
+
+> 9:
+
+δδδ ℓ, j ← 1 
+
+> J
+
+∑Jj=1
+
+
+
+z(masked )  
+
+> ℓ, j
+
+− z(orig ) 
+
+> ℓ, j
+
+ 
+
+> 10:
+
+sk,ℓ ← δδδ ⊤ 
+
+> ℓ, j
+
+V(k)  
+
+> r2
+
+∀k 
+
+> 11:
+
+αk,ℓ ← exp (sk,ℓ )  
+
+> ∑k′exp (sk′,ℓ )
+
+∀k 
+
+> 12:
+
+γk ← ∑ℓ∈L αk,ℓ ∀k 
+
+> 13:
+
+end for  
+
+> 14:
+
+Step 4: Adaptive Projection  
+
+> 15:
+
+βk ← exp (γk /τ)   
+
+> ∑k′exp (γk′/τ)
+
+∀k 
+
+> 16:
+
+P ← ∑Kk=1 βkV(k)
+
+> r
+
+
+
+V(k)
+
+> r
+
+⊤ 
+
+> 17:
+
+Step 5: Project Hidden States On-the-Fly  
+
+> 18:
+
+z(edited )  
+
+> ℓ, j
+
+← (Id − P)z(orig )  
+
+> ℓ, j
+
+∀ℓ ∈ L, j ∈ { 1, . . . , J} 
+
+> 19:
+
+Step 6: Decoding from Edited States  
+
+> 20:
+
+y ← Decode ({z(edited )  
+
+> ℓ, j
+
+}) 
+
+> 21:
+
+return y {Final textual output (e.g., caption or answer)} 10 CHERAGHIAN ET AL: DISENTANGLED SUBSPACES FOR LVLMS 
+
+where  τ > 0 is a temperature hyperparameter. Using these weights, we construct a sample-specific projection matrix: 
+
+P =
+
+> K
+
+# ∑
+
+> k=1
+
+βkV(k) 
+
+> r
+
+V(k)
+
+> r
+> ⊤
+
+. (18) The operator  P inherits several useful properties from this construction. Since each term 
+
+V(k) 
+
+> r
+
+V(k)
+
+> r
+> ⊤
+
+is a symmetric positive semi-definite (PSD) orthogonal projector and the weights satisfy  βk ≥ 0 with  ∑k βk = 1, P is itself symmetric PSD with spectral norm 
+
+∥P∥2 ≤ max  
+
+> k
+
+∥V(k) 
+
+> r
+
+V(k)
+
+> r
+> ⊤
+
+∥2 = 1, (19) and the eigenvalues of  Id − P lie in  [0, 1]. Consequently,  Id − P is a (generalised) contraction that never amplifies any component of  zℓ, j, which is important for preserving generative fluency. Note that  P is in general not idempotent: it reduces to a true orthogonal projection only in the degenerate cases where (i) the subspaces  {V(k) 
+
+> r
+
+}Kk=1 are mutually orthogonal, or (ii) the weights concentrate on a single mode,  βk⋆ = 1.Finally, we intervene in the forward pass of the LVLM by editing activations in-place. At each selected layer  ℓ ∈ L , token-wise hidden states are projected away from hallucination-prone subspaces: 
+
+z(edited)   
+
+> ℓ, j
+
+= ( Id − P)zℓ, j, for j = 0, 1, . . . , J − 1. (20) This instance-specific projection dynamically suppresses hallucination-aligned compo-nents without requiring any parameter updates, thereby improving factual consistency while preserving the model’s generative fluency. Geometrically,  Id − P defines an oblique projec-tion that removes only the component of each hidden state lying within the sample-specific mixture of hallucination subspaces, while leaving its orthogonal complement—containing the bulk of task-relevant semantic content—unchanged. Because  P is constructed entirely from pre-computed orthonormal bases and a handful of scalar weights, the intervention adds negligible computational overhead beyond a single additional forward pass on the masked image, and integrates seamlessly with any decoding scheme (greedy, beam, or sampling-based) without modifying the underlying model weights. 
+
+# 5 Experiments 
+
+We evaluate our proposed method on two established hallucination detection benchmarks, CHAIR [25] and POPE [20]—using three representative large vision-language models (LVLMs): LLaVA-1.5 [22], MiniGPT-4 [35], and mPLUG-Owl2 [30]. We compare our approach against a range of decoding-, tuning-, and projection-based baselines. Comprehensive abla-tion studies and qualitative analyses are also conducted to assess the impact of each design choice. 
+
+5.1 Datasets 
+
+We evaluate our method on four benchmark datasets widely used to assess hallucination and visual grounding in large vision-language models: CHAIR [25] and POPE [20]. These benchmarks collectively examine both object-level hallucination and multimodal consis-tency across image captioning and visual question answering tasks. CHERAGHIAN ET AL: DISENTANGLED SUBSPACES FOR LVLMS 11 
+
+CHAIR. CHAIR focuses on object hallucination in image captions by verifying whether the mentioned objects are visually grounded in the image. It reports two metrics: CHAIR S,the percentage of captions containing hallucinated objects, and CHAIR I , the proportion of hallucinated object tokens among all generated object mentions—lower values indicate bet-ter grounding. We also report BLEU to assess caption fluency. Following standard proto-col [29], we prompt each model with: “Please describe this image in detail.” 
+
+POPE. POPE evaluates hallucination through yes/no questions about object presence in images. It comprises three query types— random , frequent , and adversarial —to probe model robustness under varying difficulty levels. In addition, we adopt the Offline POPE (OPOPE) variant [20], which analyzes hallucination by checking whether non-existent objects appear in generated captions, rather than in direct answers to object queries. 
+
+5.2 Baselines and Evaluation Setup 
+
+We compare our method against a diverse set of recent hallucination mitigation approaches, including decoding-based, projection-based, and tuning-based techniques. Specifically, we evaluate against DoLa [7], OPERA [15], VCD [16], Woodpecker [31], LURE [33], HALC [4], and Nullu [29]. We also include standard decoding strategies ( Greedy , Beam Search ) and tuning-based baselines such as LURE and MiniGPT-4 fine-tuned variants. Our method is applied to three strong LVLM backbones: LLaVA-1.5 [22], MiniGPT-4 [35], and mPLUG-Owl2 [30], all evaluated without any model fine-tuning. Following prior work [29], we treat hallucination mitigation as a test-time operation and use consistent prompts across models for fair comparison. While our approach builds upon Nullu [29], it differs by learning multiple HalluSpaces through clustering and applying adaptive, sample-specific null space projections. 
+
+5.3 Implementation Details 
+
+We apply our method without any fine-tuning to three pretrained LVLM backbones: LLaVA-1.5 [22], MiniGPT-4 [35], and mPLUG-Owl2 [30]. For each model and benchmark, we vary the number of HalluSpace clusters and the dimensionality of the projection bases. On the CHAIR benchmark, we use 5 clusters and 32 basis vectors for mPLUG-Owl2, and 11 clus-ters with 8 basis vectors for MiniGPT-4. On POPE, we use 6 clusters for LLaVA-1.5 and 11 clusters for MiniGPT-4. These settings were selected based on preliminary experiments balancing performance and computational efficiency. All evaluations are conducted on the MSCOCO validation split, and we report the mean and standard deviation across ten inde-pendent runs to account for variance introduced by clustering. 
+
+5.4 Results on CHAIR 
+
+Table 1 presents results on the CHAIR benchmark, using CHAIR S, CHAIR I , and BLEU as metrics. Across all three base models, our method consistently reduces both sentence-level and image-level hallucination rates compared to all baselines, including strong constrained decoding methods (HALC, DoLa) and null-space projection (Nullu). On LLaVA-1.5, we reduce CHAIR I from 5.30 (Nullu) to 4.92, while maintaining comparable BLEU. The trend holds for MiniGPT-4 and mPLUG-Owl2, where our method either matches or slightly im-proves BLEU, while reducing hallucination errors. Notably, methods such as DoLa and 12 CHERAGHIAN ET AL: DISENTANGLED SUBSPACES FOR LVLMS 
+
+Method LLaVA-1.5 MiniGPT-4 mPLUG-Owl2 CHAIR S ↓ CHAIR I ↓ BLEU ↑ CHAIR S ↓ CHAIR I ↓ BLEU ↑ CHAIR S ↓ CHAIR I ↓ BLEU ↑
+
+Greedy 20.40 ±2.80 7.08 ±0.33 15.72 ±0.10 32.40 ±2.20 12.20 ±0.42 14.57 ±0.11 22.90 ±0.90 8.62 ±0.11 15.01 ±0.24 
+
+Beam Search [14] 19.50 ±2.30 6.84 ±0.79 15.99 ±0.14 30.10 ±0.30 11.87 ±0.37 15.35 ±0.24 20.30 ±0.70 7.62 ±0.19 15.43 ±0.05 
+
+DoLa [8] 20.20 ±2.80 6.75 ±0.54 15.68 ±0.10 31.90 ±3.30 12.15 ±0.89 14.54 ±0.12 22.40 ±1.80 8.36 ±0.04 15.13 ±0.21 
+
+OPERA [15] 17.50 ±0.50 6.07 ±0.32 16.02 ±0.02 29.70 ±0.30 11.96 ±0.29 14.82 ±0.05 20.07 ±2.07 7.18 ±0.39 15.41 ±0.12 
+
+VCD [17] 20.30 ±1.10 7.28 ±0.10 14.53 ±0.01 29.00 ±2.80 12.64 ±1.19 14.42 ±0.01 22.80 ±0.80 8.68 ±0.17 15.14 ±0.13 
+
+Woodpecker [31] 23.85 ±4.62 7.50 ±0.01 17.05 ±0.00 28.87 ±2.20 10.20 ±0.85 15.30 ±0.01 26.33 ±1.98 8.43 ±0.80 16.43 ±0.00 
+
+LURE [34] 19.48 ±2.35 6.50 ±0.38 15.97 ±0.01 27.88 ±2.25 10.20 ±0.85 15.03 ±0.01 21.27 ±0.06 7.67 ±0.16 15.65 ±0.15 
+
+HALC [4] 16.90 ±2.10 5.72 ±0.55 16.02 ±0.04 25.20 ±2.00 9.42 ±0.41 14.91 ±0.13 18.80 ±1.20 7.00 ±0.01 15.33 ±0.24 
+
+Nullu [29] 15.20 ±0.60 5.30 ±0.03 15.69 ±0.04 21.40 ±1.00 8.99 ±0.36 14.81 ±0.06 15.60 ±1.20 5.77 ±0.01 15.45 ±0.01 
+
+Ours 14.60 ±0.35 4.92 ±0.05 15.63 ±0.01 21.01 ±0.95 8.64 ±0.22 14.87 ±0.03 15.21 ±1.01 5.46 ±0.01 15.69 ±0.02 
+
+Table 1: Comparison of different methods on CHAIR S, CHAIR I , and BLEU metrics across LLaVA-1.5, MiniGPT-4, and mPLUG-Owl2. 
+
+Method LLaVA-1.5 MiniGPT-4 mPLUG-Owl2 Accuracy ↑ Precision ↑ F score ↑ Accuracy ↑ Precision ↑ F score ↑ Accuracy ↑ Precision ↑ F score ↑
+
+Greedy 79.14 ±0.89 91.98 ±0.82 90.45 ±0.86 71.22 ±1.27 93.72 ±1.02 90.04 ±1.23 76.46 ±0.92 88.85 ±1.15 87.29 ±1.15 
+
+Beam Search [14] 79.41 ±0.69 92.52 ±0.55 90.96 ±0.59 71.65 ±1.15 94.70 ±0.60 90.97 ±0.85 76.76 ±1.02 90.28 ±0.80 88.56 ±0.87 
+
+DoLa [8] 78.98 ±0.56 91.66 ±0.81 90.15 ±0.79 71.28 ±1.15 93.92 ±0.83 90.22 ±1.04 76.07 ±1.09 88.54 ±1.25 86.95 ±1.27 
+
+OPERA [15] 79.29 ±0.32 92.25 ±0.07 90.71 ±0.11 70.48 ±1.63 94.41 ±1.11 90.66 ±1.42 75.49 ±1.29 91.23 ±1.06 89.11 ±1.17 
+
+VCD [17] 78.01 ±0.75 91.33 ±0.88 89.69 ±0.89 70.83 ±1.83 92.31 ±0.88 88.76 ±1.29 75.49 ±1.27 88.75 ±1.56 87.02 ±1.57 
+
+HALC [4] 77.87 ±0.22 93.17 ±0.39 91.25 ±0.38 71.17 ±0.89 94.88 ±0.15 90.95 ±0.42 74.93 ±1.09 90.20 ±0.90 88.12 ±0.99 
+
+Nullu [29] 79.52 ±0.04 93.46 ±0.03 91.79 ±0.04 71.92 ±0.39 95.96 ±0.65 92.07 ±0.65 77.09 ±1.37 92.83 ±0.29 90.80 ±0.52 
+
+Ours 79.80 ±0.02 93.6 ±0.02 91.92 ±0.06 72.2 ±0.33 96.02 ±0.62 92.32 ±0.32 78.12 ±1.02 93.4 ±0.22 91.68 ±0.62 
+
+Table 2: The OPOPE evaluation results on MSCOCO dataset of LVLMs with different meth-ods for mitigating OH. Higher accuracy, precision, and F score indicate better performance. HALC, despite their sophisticated decoding strategies, exhibit a tendency to trade gener-ation fluency for hallucination suppression, whereas our approach avoids this tension by operating directly in the visual feature space rather than intervening at the token probabil-ity level. The consistent gains across architecturally diverse base models — spanning Q-Former-based, linear-projection-based, and modality-collaboration-based designs — further underscore the generality of our sample-specific projection mechanism, which adapts to the idiosyncratic grounding failures of each model rather than applying a fixed correction. This demonstrates that our adaptive, sample-specific projection reduces hallucination rates more effectively than all baselines, while maintaining competitive BLEU scores, validating the effectiveness of targeted visual attribution constraints as a principled alternative to post-hoc decoding interventions. 
+
+5.5 Results on POPE 
+
+Table 2 reports results on POPE, which evaluates factual alignment in a question-answering setting. Our method achieves the best performance across all three metrics on mPLUG-Owl2, improving F-score from 90.80 (Nullu) to 91.60, along with consistent gains in accu-racy and precision. For LLaVA-1.5 and MiniGPT-4, our method yields slight improvements in accuracy but does not surpass Nullu in F-score or precision. This disparity across archi-tectures is informative: Q-Former-based models such as MiniGPT-4 compress visual infor-mation into a fixed token bottleneck before it reaches the language model, which may limit the degree to which visual attribution constraints applied upstream can recover fine-grained CHERAGHIAN ET AL: DISENTANGLED SUBSPACES FOR LVLMS 13 1
+
+Figure 3: (left) The impact of the number of subspaces in the LLaVA-1.5 model within our proposed method. (right) We assess different perturbation strategies—masking, Gaussian, and blurring. grounding signals already discarded during encoding. In contrast, mPLUG-Owl2’s modality collaboration design retains richer visual context throughout the decoding pipeline, provid-ing a more receptive substrate for our sample-specific suppression to operate on. These results suggest that our sample-specific suppression mechanism is particularly effective for stronger base models such as mPLUG-Owl2, where it enhances factual alignment without compromising fluency. Furthermore, POPE’s binary yes/no probing format places a pre-mium on precise object existence judgments rather than open-ended generation, making it a particularly stringent test of grounding fidelity — and one where even marginal F-score improvements reflect a meaningful reduction in systematic object confabulation. Moreover, the improvements demonstrate the adaptability of our framework, showing that even mod-est gains can accumulate to meaningful robustness in challenging benchmarks, and point toward future work on architecture-aware visual attribution that tailors constraint strength to the grounding capacity of the underlying connector design. 
+
+5.6 Ablation Study 
+
+We evaluate the impact of cluster count and basis dimensionality on hallucination mitiga-tion. Fewer clusters result in reduced specificity, while smaller bases fail to isolate fine-grained spurious features. Our method outperforms Nullu even with fewer clusters, due to per-sample adaptivity. 
+
+Number of subspaces: In this experiment (see Figure 3 (left) ), we evaluate the effect of the number of subspaces on the performance of the LLaVA model. The optimal number of subspaces for each model is first determined on the COCO training set and then applied to the test set. As shown in the figure, we select 7 subspaces for LLaVA, as this configu-ration minimizes CHAIR S score while maximizing the BLEU score. Similarly, we choose 11 subspaces for MiniGPT-4 and 5 for mPLUG-Owl2 based on the same optimization cri-teria. These findings highlight that the optimal number of subspaces varies across models, underscoring the importance of tailoring the editing strategy to each LVLM. Moreover, the results confirm that increasing the number of subspaces beyond the optimal point does not necessarily yield further improvements and may degrade performance. 
+
+Influence of image perturbations: We evaluate the impact of different perturbation strate-gies—masking, Gaussian noise, and blurring—applied to test samples during test time in our hallucination mitigation method (see Figure 3 (right) ). As shown in the figure, the masking 14 CHERAGHIAN ET AL: DISENTANGLED SUBSPACES FOR LVLMS 
+
+Metric Number of basis 1 2 4 8 16 32 64 
+
+CHAIR S ↓ 16.2 15.2 14.6 14.5 13.2 12.5 11.3 
+
+CHAIR I ↓ 6.1 5.3 4.9 4.8 4.2 4.0 3.9 
+
+BLEU ↑ 15.6 15.5 15.6 14.2 13.4 12.9 12.7 Table 3: The influence of the number of subspaces in our method applied to the LLaVA-1.5 model. strategy yields the best performance. This suggests that masking provides a more effec-tive signal for disentangling hallucination-prone directions compared to other perturbations, likely because it introduces structured information removal that forces the model to rely on genuinely grounded visual features rather than spurious local statistics. Gaussian noise and blurring, by contrast, preserve the global spatial layout of the image while corrupting fine-grained content, which may insufficiently disturb the hallucination-inducing subspace and thus yield weaker contrastive signals for null-space estimation. These findings are consistent with prior work on contrastive visual decoding, where the quality of the degraded coun-terpart directly governs the fidelity of the suppression signal. Overall, the results highlight the importance of carefully selecting perturbation strategies when designing adaptive editing methods. 
+
+Number of basis vectors: This experiment (see Table 3) evaluates the impact of the num-ber of basis vectors in the LLaVA. As the number of basis vectors increases beyond 4, we observe a decrease in CHAIR S and CHAIR I scores, while the BLEU score decreases. This trend is undesirable, as a lower BLEU score in this context indicates that the LVLM model is generating responses that are less grounded in the image content. Intuitively, a larger basis spans a broader subspace of the visual feature space, which risks projecting out not only hallucination-prone directions but also semantically meaningful components that are essen-tial for faithful image description. This over-suppression effect suggests that the null-space estimation becomes less discriminative as its dimensionality grows, collapsing signal that should be preserved alongside the noise it targets. The sweet spot at 4 basis vectors there-fore reflects a balance between sufficiently constraining hallucination-inducing directions and retaining the residual visual information needed for coherent, grounded generation. As a result, we choose the number of basis vectors 4 for the LLaVA model. 
+
+# 6 Conclusion 
+
+We have presented a novel training-free, test-time adaptation method for mitigating halluci-nations in large vision-language models. By modeling hallucinations with multiple low-rank subspaces derived from clustered hallucination-truthful feature pairs, our approach captures the diverse and sample-specific nature of hallucination patterns. Unlike existing methods, our framework dynamically adapts the hallucination suppression subspace for each test in-put, allowing for fine-grained, input-dependent corrections without permanently altering the model. Our extensive evaluation on six benchmarks and across four LVLM families con-firms that our method consistently improves hallucination robustness while maintaining the original model’s integrity. This work offers a practical and effective solution toward more reliable LVLM deployments in real-world applications. CHERAGHIAN ET AL: DISENTANGLED SUBSPACES FOR LVLMS 15 
+
+# References 
+
+[1] Sahar Ahmadi, Ali Cheraghian, Morteza Saberi, Md.Towsif Abir, Hamidreza Dast-malchi, Farookh Hussain, and Shafin Rahman. Foundation model-powered 3d few-shot class incremental learning via training-free adaptor. In Minsu Cho, Ivan Laptev, Du Tran, Angela Yao, and Hongbin Zha, editors, Computer Vision – ACCV 2024 , pages 178–195, Singapore, 2025. Springer Nature Singapore. ISBN 978-981-96-0972-7. [2] Ahmed Akl, Abdelwahed Khamis, Ali Cheraghian, Zhe Wang, Sara Khalifa, and Kewen Wang. Hime: Mitigating object hallucinations in lvlms via hallucination in-sensitivity model editing, 2026. URL https://arxiv.org/abs/2602.18711 .[3] Jinze Bai, Shuai Bai, Shusheng Yang, Shijie Wang, Sinan Tan, Peng Wang, Jun-yang Lin, Chang Zhou, and Jingren Zhou. Qwen-vl: A versatile vision-language model for understanding, localization, text reading, and beyond. arXiv preprint arXiv:2308.12966 , 2023. [4] Zhaorun Chen, Zhuokai Zhao, Hongyin Luo, Huaxiu Yao, Bo Li, and Jiawei Zhou. Halc: Object hallucination reduction via adaptive focal-contrast decoding. arXiv preprint arXiv:2403.00425 , 2024. [5] Ali Cheraghian, Shafin Rahman, Sameera Ramasinghe, Pengfei Fang, Christian Si-mon, Lars Petersson, and Mehrtash Harandi. Synthesized feature based few-shot class-incremental learning on a mixture of subspaces. In 2021 IEEE/CVF Inter-national Conference on Computer Vision (ICCV) , pages 8641–8650, 2021. doi: 10.1109/ICCV48922.2021.00854. [6] Ali Cheraghian, Zeeshan Hayder, Sameera Ramasinghe, Shafin Rahman, Javad Ja-faryahya, Lars Petersson, and Mehrtash Harandi. Canonical shape projection is all you need for 3d few-shot class incremental learning. In Aleš Leonardis, Elisa Ricci, Stefan Roth, Olga Russakovsky, Torsten Sattler, and Gül Varol, editors, Computer Vi-sion – ECCV 2024 , pages 36–53, Cham, 2025. Springer Nature Switzerland. ISBN 978-3-031-72940-9. [7] Yung-Sung Chuang, Yujia Xie, Hongyin Luo, Yoon Kim, James Glass, and Pengcheng He. Dola: Decoding by contrasting layers improves factuality in large language models. 
+
+arXiv preprint arXiv:2309.03883 , 2023. [8] Yung-Sung Chuang, Yujia Xie, Hongyin Luo, Yoon Kim, James R. Glass, and Pengcheng He. Dola: Decoding by contrasting layers improves factuality in large lan-guage models. In The Twelfth International Conference on Learning Representations ,2024. URL https://openreview.net/forum?id=Th6NyL07na .[9] Wenliang Dai, Junnan Li, Dongxu Li, Anthony Meng Huat Tiong, Junqi Zhao, Weisheng Wang, Boyang Li, Pascale Fung, and Steven Hoi. Instructblip: Towards general-purpose vision-language models with instruction tuning, 2023. [10] Hamidreza Dastmalchi, Aijun An, and Ali Cheraghian. Etta: Efficient test-time adaptation for vision-language models through dynamic embedding updates. In 36th British Machine Vision Conference 2025, BMVC 2025, Sheffield, UK, November 24-27, 2025 . BMVA, 2025. URL https://bmva-archive.org.uk/bmvc/2025/ assets/papers/Paper_1137/paper.pdf .16 CHERAGHIAN ET AL: DISENTANGLED SUBSPACES FOR LVLMS 
+
+[11] Hamidreza Dastmalchi, Aijun An, Ali Cheraghian, Shafin Rahman, and Sameera Ra-masinghe. Test-time adaptation of 3d point clouds via denoising diffusion models. In 2025 IEEE/CVF Winter Conference on Applications of Computer Vision (WACV) ,pages 1566–1576, 2025. doi: 10.1109/WACV61041.2025.00160. [12] Hamidreza Dastmalchi, Aijun An, Ali Cheraghian, and Hamed Barzamini. Fighting hallucinations with counterfactuals: Diffusion-guided perturbations for lvlm halluci-nation suppression. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pages 4178–4187, June 2026. [13] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiao-hua Zhai, Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Sylvain Gelly, Jakob Uszkoreit, and Neil Houlsby. An image is worth 16x16 words: Transformers for image recognition at scale. In International Conference on Learning Representations , 2021. URL https://openreview.net/forum? id=YicbFdNTTy .[14] Markus Freitag and Yaser Al-Onaizan. Beam search strategies for neural machine translation. arXiv preprint arXiv:1702.01806 , 2017. [15] Qidong Huang, Xiaoyi Dong, Pan Zhang, Bin Wang, Conghui He, Jiaqi Wang, Dahua Lin, Weiming Zhang, and Nenghai Yu. Opera: Alleviating hallucination in multi-modal large language models via over-trust penalty and retrospection-allocation. In Proceed-ings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 13418–13427, 2024. [16] Sicong Leng, Hang Zhang, Guanzheng Chen, Xin Li, Shijian Lu, Chunyan Miao, and Lidong Bing. Mitigating object hallucinations in large vision-language models through visual contrastive decoding. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 13872–13882, 2024. [17] Sicong Leng, Hang Zhang, Guanzheng Chen, Xin Li, Shijian Lu, Chunyan Miao, and Lidong Bing. Mitigating object hallucinations in large vision-language models through visual contrastive decoding. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 13872–13882, 2024. [18] Junnan Li, Dongxu Li, Silvio Savarese, and Steven Hoi. Blip-2: bootstrapping language-image pre-training with frozen image encoders and large language models. In Proceedings of the 40th International Conference on Machine Learning , ICML’23. JMLR.org, 2023. [19] Junnan Li, Dongxu Li, Silvio Savarese, and Steven Hoi. Blip-2: Bootstrapping language-image pre-training with frozen image encoders and large language models. In International conference on machine learning , pages 19730–19742. PMLR, 2023. [20] Yifan Li, Yifan Du, Kun Zhou, Jinpeng Wang, Wayne Xin Zhao, and Ji-Rong Wen. Evaluating object hallucination in large vision-language models. arXiv preprint arXiv:2305.10355 , 2023. [21] Haotian Liu, Chunyuan Li, Qingyang Wu, and Yong Jae Lee. Visual instruction tuning, 2023. CHERAGHIAN ET AL: DISENTANGLED SUBSPACES FOR LVLMS 17 
+
+[22] Haotian Liu, Chunyuan Li, Qingyang Wu, and Yong Jae Lee. Visual instruction tuning. 
+
+Advances in neural information processing systems , 36:34892–34916, 2023. [23] Sheng Liu, Haotian Ye, Lei Xing, and James Zou. Reducing hallucinations in vision-language models via latent space steering. arXiv preprint arXiv:2410.15778 , 2024. [24] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sand-hini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, Gretchen Krueger, and Ilya Sutskever. Learning transferable visual models from natural lan-guage supervision. In Marina Meila and Tong Zhang, editors, Proceedings of the 38th International Conference on Machine Learning , volume 139 of Proceedings of Machine Learning Research , pages 8748–8763. PMLR, 18–24 Jul 2021. URL 
+
+https://proceedings.mlr.press/v139/radford21a.html .[25] Anna Rohrbach, Lisa Anne Hendricks, Kaylee Burns, Trevor Darrell, and Kate Saenko. Object hallucination in image captioning. arXiv preprint arXiv:1809.02156 , 2018. [26] Zhiqing Sun, Sheng Shen, Shengcao Cao, Haotian Liu, Chunyuan Li, Yikang Shen, Chuang Gan, Liang-Yan Gui, Yu-Xiong Wang, Yiming Yang, Kurt Keutzer, and Trevor Darrell. Aligning large multimodal models with factually augmented rlhf. 2023. [27] Xintong Wang, Jingheng Pan, Liang Ding, and Chris Biemann. Mitigating hallucina-tions in large vision-language models with instruction contrastive decoding. In Find-ings of the Association for Computational Linguistics ACL 2024 , pages 15840–15853, 2024. URL https://aclanthology.org/2024.findings-acl.937 .[28] Wenyi Xiao, Ziwei Huang, Leilei Gan, Wanggui He, Haoyuan Li, Zhelun Yu, Fangxun Shu, Hao Jiang, and Linchao Zhu. Detecting and mitigating hallucination in large vision language models via fine-grained ai feedback. In Proceedings of the AAAI Con-ference on Artificial Intelligence , volume 39, pages 25543–25551, 2025. [29] Le Yang, Ziwei Zheng, Boxu Chen, Zhengyu Zhao, Chenhao Lin, and Chao Shen. Nullu: Mitigating object hallucinations in large vision-language models via halluspace projection. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition , 2025. [30] Qinghao Ye, Haiyang Xu, Jiabo Ye, Ming Yan, Anwen Hu, Haowei Liu, Qi Qian, Ji Zhang, and Fei Huang. mplug-owl2: Revolutionizing multi-modal large language model with modality collaboration. In Proceedings of the ieee/cvf conference on com-puter vision and pattern recognition , pages 13040–13051, 2024. [31] Shukang Yin, Chaoyou Fu, Sirui Zhao, Tong Xu, Hao Wang, Dianbo Sui, Yunhang Shen, Ke Li, Xing Sun, and Enhong Chen. Woodpecker: Hallucination correction for multimodal large language models. Science China Information Sciences , 67(12): 220105, 2024. [32] Tianyu Yu, Yuan Yao, Haoye Zhang, Taiwen He, Yifeng Han, Ganqu Cui, Jinyi Hu, Zhiyuan Liu, Hai-Tao Zheng, Maosong Sun, et al. Rlhf-v: Towards trustworthy mllms via behavior alignment from fine-grained correctional human feedback. In Proceed-ings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 13807–13816, 2024. 18 CHERAGHIAN ET AL: DISENTANGLED SUBSPACES FOR LVLMS 
+
+[33] Yiyang Zhou, Chenhang Cui, Jaehong Yoon, Linjun Zhang, Zhun Deng, Chelsea Finn, Mohit Bansal, and Huaxiu Yao. Analyzing and mitigating object hallucination in large vision-language models. arXiv preprint arXiv:2310.00754 , 2023. [34] Yiyang Zhou, Chenhang Cui, Jaehong Yoon, Linjun Zhang, Zhun Deng, Chelsea Finn, Mohit Bansal, and Huaxiu Yao. Analyzing and mitigating object hallucina-tion in large vision-language models. In The Twelfth International Conference on Learning Representations , 2024. URL https://openreview.net/forum? id=oZDJKTlOUe .[35] Deyao Zhu, Jun Chen, Xiaoqian Shen, Xiang Li, and Mohamed Elhoseiny. Minigpt-4: Enhancing vision-language understanding with advanced large language models. arXiv preprint arXiv:2304.10592 , 2023. [36] Xianwei Zhuang, Zhihong Zhu, Yuxin Xie, Liming Liang, and Yuexian Zou. Vasparse: Towards efficient visual hallucination mitigation via visual-aware token sparsification. In Proceedings of the Computer Vision and Pattern Recognition Conference , pages 4189–4199, 2025.

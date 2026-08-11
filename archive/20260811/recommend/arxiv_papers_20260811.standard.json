@@ -1,0 +1,378 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-11T21:15:18.694970+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 5,
+    "deep_cap": 6,
+    "deep_selected": 5,
+    "quick_candidates": 4,
+    "quick_skim_target": 11,
+    "quick_selected": 4
+  },
+  "deep_dive": [
+    {
+      "id": "2608.08555v1",
+      "source": "arxiv",
+      "title": "SC-Diff: Semantically Calibrated Diffusion for Visible-to-Infrared Image Translation",
+      "abstract": "Visible-to-infrared image translation provides a practical way to expand infrared training data using abundant visible images. Diffusion models are promising for this task because of their strong generative performance. However, existing diffusion-based methods typically use semantic priors only as external conditions, without explicitly regulating token interactions within the denoising network. Consequently, they struggle to preserve object locations, shapes, and semantic layouts required for reliable annotation reuse. We propose SC-Diff, a semantically calibrated latent diffusion framework that uses semantic priors for both conditional guidance and internal self-attention calibration. A pretrained SAM3 model with predefined text prompts first extracts category-specific semantic masks from visible images. These masks are merged into a semantic map and fused with the visible image as the input condition. The same map is converted into token-level semantic labels to calibrate self-attention in the denoising network. Based on these labels, we introduce Semantic-Guided Self-Attention Calibration (SGSC), which adaptively applies positive biases to query-key pairs of the same category. The query-wise calibration strength depends on the dispersion of attention across semantic categories and the attention assigned to the query's own category. The original attention scores further modulate the bias, giving greater calibration to same-category keys with stronger responses. This soft calibration reduces cross-category interference while retaining global contextual interactions, thereby improving semantic consistency in generated infrared images. Extensive experiments show that SC-Diff improves perceptual quality and produces more effective synthetic training data for downstream infrared object detection.",
+      "authors": [
+        "Junyin Zhang",
+        "Siyu Huang",
+        "Jianxiong Ye",
+        "Haowei Gong",
+        "Ruicheng Zhang",
+        "Deyu Meng",
+        "Chenqiang Gao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-09T07:57:40+00:00",
+      "link": "https://arxiv.org/pdf/2608.08555v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "proposes semantically calibrated diffusion for visible-to-infrared translation, explicitly preserving object semantics and layouts under drastic color/domain shift",
+      "llm_evidence_cn": "提出语义校准扩散模型实现可见光到红外图像转换，在大幅颜色变化下显式保持物体语义和布局",
+      "llm_evidence": "提出语义校准扩散模型实现可见光到红外图像转换，在大幅颜色变化下显式保持物体语义和布局",
+      "canonical_evidence": "提出语义校准扩散模型实现可见光到红外图像转换，在大幅颜色变化下显式保持物体语义和布局",
+      "llm_tldr_en": "SC-Diff uses semantic priors to calibrate self-attention in latent diffusion, preserving object shapes and semantic layouts during visible-to-infrared translation, effectively maintaining semantic consistency under severe color domain shift.",
+      "llm_tldr_cn": "针对可见光到红外图像转换中难以保持物体形状和语义布局的问题，提出语义校准的潜在扩散框架SC-Diff。该方法利用预训练SAM3模型提供语义先验，在去噪网络内部通过自注意力校准机制显式约束生成图像的语义结构。实验表明，SC-Diff能够在大幅颜色域变化下忠实保留物体位置与形状，为颜色变化下的语义一致性保持提供了有效方案。",
+      "llm_tldr": "针对可见光到红外图像转换中难以保持物体形状和语义布局的问题，提出语义校准的潜在扩散框架SC-Diff。该方法利用预训练SAM3模型提供语义先验，在去噪网络内部通过自注意力校准机制显式约束生成图像的语义结构。实验表明，SC-Diff能够在大幅颜色域变化下忠实保留物体位置与形状，为颜色变化下的语义一致性保持提供了有效方案。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.08734v1",
+      "source": "arxiv",
+      "title": "IDATA: Scalable Invertible Diffusion for Unrestricted Adversarial Transfer Attack",
+      "abstract": "Unrestricted adversarial transfer attacks are important for evaluating the black-box robustness of deep visual models. Diffusion-based attacks have shown promising transferability and visual imperceptibility by optimizing adversarial perturbations along denoising trajectories in latent space. However, existing methods are limited by two challenges: memory-intensive multistep backpropagation and frequency-agnostic perturbation over intermediate latents. To address these issues, we propose IDATA, a memory-efficient diffusion framework for unrestricted adversarial transfer attack. IDATA consists of two key components: an Invertible Diffusion Module (IDM) and a Low-Frequency Constraint Module (LFCM). Specifically, IDM reformulates adversarial optimization over diffusion trajectories as an invertible process, enabling constant-memory backpropagation through on-demand reconstruction of intermediate states instead of storing the full denoising chain. Moreover, LFCM leverages Discrete Wavelet Transform (DWT) to decompose latent variables into low- and high-frequency components, restricting perturbations to semantically stable low-frequency subspaces, thereby improving transferability while preserving visual imperceptibility. Extensive experiments on multiple benchmarks and diverse model architectures demonstrate that IDATA consistently outperforms state-of-the-art baselines in attack success rate, memory efficiency, and visual imperceptibility. These results suggest that IDATA is a promising tool for black-box robustness evaluation of deep visual models. Code is available at https://github.com/colourful-pan/IDATA.",
+      "authors": [
+        "Yi Pan",
+        "Jun-Jie Huang",
+        "Tianrui Liu",
+        "Zihan Chen",
+        "Lin Liu",
+        "Zhao Wentao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-09T14:26:42+00:00",
+      "link": "https://arxiv.org/pdf/2608.08734v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "latent space adversarial perturbation via diffusion denoising",
+      "llm_evidence_cn": "扩散潜在空间中的对抗扰动优化",
+      "llm_evidence": "扩散潜在空间中的对抗扰动优化",
+      "canonical_evidence": "扩散潜在空间中的对抗扰动优化",
+      "llm_tldr_en": "IDATA uses invertible diffusion to craft adversarial perturbations along denoising trajectories in latent space, achieving memory-efficient and transferable attacks.",
+      "llm_tldr_cn": "针对扩散模型对抗攻击的内存和频率问题，提出IDATA框架，通过可逆扩散模块在潜在空间沿去噪轨迹优化扰动，并引入低频约束提高迁移性，实现内存高效的无限制对抗迁移攻击，为黑盒鲁棒性评估提供了有效工具。",
+      "llm_tldr": "针对扩散模型对抗攻击的内存和频率问题，提出IDATA框架，通过可逆扩散模块在潜在空间沿去噪轨迹优化扰动，并引入低频约束提高迁移性，实现内存高效的无限制对抗迁移攻击，为黑盒鲁棒性评估提供了有效工具。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.08805v1",
+      "source": "arxiv",
+      "title": "LASA: Language-and-Source-Anchored Alignment for Domain Generalized Semantic Segmentation",
+      "abstract": "Domain Generalization Semantic Segmentation (DGSS) focuses on generalizing knowledge from labeled source domains to unseen target domains where data is unavailable during the training phase. While conventional methods utilize style randomization or feature normalization to mitigate domain shifts, they often impair feature integrity. Specifically, style randomization distorts the underlying feature manifold due to its coarse-grained nature, while feature normalization suppresses discriminative, domain-sensitive semantic details owing to its rigid design. To address these limitations, we propose the Language-and-Source-Anchored Alignment (LASA) framework, which comprises three synergistic components: Text-and-Source-Guided Style Transfer (TSGST), Domain-Aware Query Adapter (DAQA), and Domain-Aware Decoder Optimizer (DADO). Concretely, the TSGST module addresses manifold distortion by utilizing source features as structural anchors and vision-language model (VLM) priors as fine-grained guidance. To restore suppressed discriminative and domain-sensitive details, the DAQA module recalibrates object queries via categorical guidance and domain-aware signatures, while the DADO module aligns the resulting query distributions with a shared classifier to ensure consistent categorical responses across domains. Extensive experiments on challenging benchmarks demonstrate that our method significantly outperforms state-of-the-art approaches.",
+      "authors": [
+        "Jinhong Zhu",
+        "Weiqi Yan",
+        "Shengchuan Zhang",
+        "Liujuan Cao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-09T16:43:04+00:00",
+      "link": "https://arxiv.org/pdf/2608.08805v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Addresses semantic segmentation under domain shifts, including style variations, by preserving feature integrity, directly relevant to preserving semantic meaning under color changes.",
+      "llm_evidence_cn": "针对语义分割中的域漂移（包括颜色变化）问题，通过保持特征完整性来维护语义意义，直接相关于在颜色变化下保持语义意义。",
+      "llm_evidence": "针对语义分割中的域漂移（包括颜色变化）问题，通过保持特征完整性来维护语义意义，直接相关于在颜色变化下保持语义意义。",
+      "canonical_evidence": "针对语义分割中的域漂移（包括颜色变化）问题，通过保持特征完整性来维护语义意义，直接相关于在颜色变化下保持语义意义。",
+      "llm_tldr_en": "LASA preserves semantic integrity in domain-generalized semantic segmentation by anchoring alignment with language and source features, mitigating style randomization distortions that can include color shifts.",
+      "llm_tldr_cn": "针对域广义语义分割中的风格随机化会扭曲特征流形、破坏语义细节的问题，LASA提出语言与源锚定对齐框架，通过文本与源引导的风格迁移和基于语言的语义对齐，在保持语义一致性的同时增强域泛化能力。实验表明该方法在多个未知域上显著优于现有技术，为颜色变化等风格偏移下的鲁棒语义理解提供了有效解决方案。",
+      "llm_tldr": "针对域广义语义分割中的风格随机化会扭曲特征流形、破坏语义细节的问题，LASA提出语言与源锚定对齐框架，通过文本与源引导的风格迁移和基于语言的语义对齐，在保持语义一致性的同时增强域泛化能力。实验表明该方法在多个未知域上显著优于现有技术，为颜色变化等风格偏移下的鲁棒语义理解提供了有效解决方案。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.09344v1",
+      "source": "arxiv",
+      "title": "Beyond Global Editing: Per-Instance Disentangled Subspaces for Training-Free Hallucination Mitigation in LVLMs",
+      "abstract": "Recent advances in large vision-language models (LVLMs) have enabled powerful multimodal reasoning by integrating visual encoders with large language models (LLMs). However, their reliability is frequently undermined by hallucinations, where generated text inaccurately describes the visual input. Although fine-tuning can mitigate this problem, it is computationally expensive and requires large, curated datasets, making training-free alternatives attractive. Among these, model editing is more promising than decoding-based approaches: decoding methods adapt outputs per input but introduce computational overhead and instability, whereas model editing modifies internal representations offline, providing a more efficient and stable solution. However, existing model-editing techniques typically rely on a single global subspace to correct hallucinations, treating all test samples identically and failing to capture diverse hallucination modes across inputs. To address this limitation, we propose a training-free hallucination mitigation framework for dynamic, per-instance suppression at test time. Our method first constructs a set of Disentangled Hallucination Subspaces, each isolating a distinct hallucination mode. During inference, the model adaptively calculates weights reflecting each input's relationship to these subspaces, guiding a dynamically combined projection that selectively suppresses the most probable hallucination directions while preserving image-grounded semantics. Extensive experiments across multiple vision-language benchmarks and LVLM families demonstrate consistent improvements, highlighting the robustness, generalizability, and efficiency of our approach.",
+      "authors": [
+        "Ali Cheraghian",
+        "Hamidreza Dastmalchi",
+        "Hamed Barzamini",
+        "Morteza Saberi",
+        "Mojtaba Golzan",
+        "Shafin Rahman",
+        "Hossein Rahmani"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-10T09:21:12+00:00",
+      "link": "https://arxiv.org/pdf/2608.09344v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "model editing modifies internal representations offline",
+      "llm_evidence_cn": "模型编辑离线修改内部表示",
+      "llm_evidence": "模型编辑离线修改内部表示",
+      "canonical_evidence": "模型编辑离线修改内部表示",
+      "llm_tldr_en": "Introduces per-instance disentangled subspaces for training-free hallucination mitigation in large vision-language models by editing internal representations offline.",
+      "llm_tldr_cn": "本文针对大视觉-语言模型中的幻觉问题，提出离线编辑内部表示的训练无关方法。利用逐实例解耦子空间，无需微调即可修改局部表征。实验证明该方法能有效减少幻觉，提升输出可靠性。",
+      "llm_tldr": "本文针对大视觉-语言模型中的幻觉问题，提出离线编辑内部表示的训练无关方法。利用逐实例解耦子空间，无需微调即可修改局部表征。实验证明该方法能有效减少幻觉，提升输出可靠性。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.06712v1",
+      "source": "arxiv",
+      "title": "Suppress and Diversify: Refining Robust Pathways for Corruption Robustness",
+      "abstract": "Model robustness against natural image corruptions is essential for safety-critical applications. While existing methods primarily focus on implicit representation learning, we provide the first systematic exploration of computational pathways to explicitly characterize internal robustness. We identify a progressive decay of robust features across network layers and establish a functional dependency between the prevalence of these features and model performance. To exploit these insights, we propose Suppress and Diversify (S\\&D), a non-intrusive refinement approach that enhances robustness by dynamically selecting robust pathways and diversifying them through symmetry-preserving transformations. S\\&D is architecture-agnostic, parameter-free, and incurs zero test-time overhead. Extensive evaluations across eight benchmarks demonstrate that S\\&D consistently improves performance across multiple vision tasks, diverse backbones, and complex real-world scenarios, highlighting its broad efficacy and scalability.",
+      "authors": [
+        "Jiangang Yang",
+        "Wenhui Shi",
+        "Xiaoran Xu",
+        "Wenyue Chong",
+        "Luqing Luo",
+        "Jing Xing",
+        "Jian Liu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-07T02:11:59+00:00",
+      "link": "https://arxiv.org/pdf/2608.06712v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "non-intrusive refinement approach that enhances robustness by dynamically selecting robust pathways",
+      "llm_evidence_cn": "非侵入式细化方法，通过动态选择稳健路径增强稳健性",
+      "llm_evidence": "非侵入式细化方法，通过动态选择稳健路径增强稳健性",
+      "canonical_evidence": "非侵入式细化方法，通过动态选择稳健路径增强稳健性",
+      "llm_tldr_en": "Proposes Suppress & Diversify (S&D), a parameter-free method that improves corruption robustness by selecting and diversifying robust feature pathways. Offers a systematic exploration of robustness via explicit pathway characterization.",
+      "llm_tldr_cn": "本文针对模型在自然图像腐蚀下的稳健性问题，首次系统探索计算路径以显式表征内部稳健性。提出抑制与多样化方法，动态选择稳健路径并通过对称保持变换多样化。实验表明该方法能有效提升模型对腐蚀的稳健性，且与架构无关、无需参数。",
+      "llm_tldr": "本文针对模型在自然图像腐蚀下的稳健性问题，首次系统探索计算路径以显式表征内部稳健性。提出抑制与多样化方法，动态选择稳健路径并通过对称保持变换多样化。实验表明该方法能有效提升模型对腐蚀的稳健性，且与架构无关、无需参数。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "papers on feature level intervention for color robustness in deep learning",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.04559v2",
+      "source": "arxiv",
+      "title": "ColorFD: A Finite-Difference Guided Black-Box Physical Adversarial Attack for Remote Sensing Object Detection",
+      "abstract": "Although deep neural network-based remote sensing object detectors have achieved strong performance, they remain vulnerable to adversarial perturbations. Existing studies mainly focus on digital or white-box settings, whereas black-box physical attacks remain underexplored. These attacks are often constrained by limited physical feasibility and inefficient optimization in high-dimensional search spaces. To address these challenges, this paper proposes ColorFD, a black-box physical attack based on multiple pure-color patches. The patch positions and color parameters are jointly optimized using Differential Evolution (DE). A target-wise fitness and selection mechanism evaluates the attack state of each target and preserves target-specific improvements during evolution. Two guidance strategies further constrain the patch search space. Key-region localization identifies sensitive regions through finite-difference color probing. Common-feature extraction provides category-level spatial priors and avoids repeated localization. Although evaluated on aircraft, the formulation is not inherently restricted to this category. Experiments on YOLOv3u, YOLOv5u, and Faster R-CNN show that ColorFD outperforms the tested black-box patch method across all evaluated detectors and remains competitive with strong white-box baselines. Physical-world experiments further demonstrate that the optimized pure-color patches can be transferred from the digital domain to real imaging conditions.",
+      "authors": [
+        "Tiannuo Guo",
+        "Guhang Qiu",
+        "Yuzhen Xie",
+        "Rui Feng",
+        "Ligang Li",
+        "Deliang Xiang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-05T07:53:26+00:00",
+      "link": "https://arxiv.org/pdf/2608.04559v2",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "proposes a black-box physical adversarial attack using optimized pure-color patches to fool object detection, demonstrating the impact of adversarial color perturbations on semantic interpretation",
+      "llm_evidence_cn": "提出基于优化纯色补丁的黑盒物理对抗攻击，揭示对抗颜色扰动对目标检测语义理解的影响",
+      "llm_evidence": "提出基于优化纯色补丁的黑盒物理对抗攻击，揭示对抗颜色扰动对目标检测语义理解的影响",
+      "canonical_evidence": "提出基于优化纯色补丁的黑盒物理对抗攻击，揭示对抗颜色扰动对目标检测语义理解的影响",
+      "llm_tldr_en": "ColorFD uses finite-difference guided black-box physical adversarial attack with color patches to degrade remote sensing object detection, highlighting the threat of adversarial color perturbations to semantic robustness.",
+      "llm_tldr_cn": "针对遥感目标检测的黑盒物理对抗攻击研究不足，本文提出ColorFD，通过有限差分引导的差分进化联合优化多个纯色补丁的位置与颜色参数，形成物理可实施的攻击。实验结果显示，该方法能有效降低目标检测精度，证明了对抗性颜色扰动对语义理解的破坏性影响，为遥感场景的物理对抗攻防提供了新视角。",
+      "llm_tldr": "针对遥感目标检测的黑盒物理对抗攻击研究不足，本文提出ColorFD，通过有限差分引导的差分进化联合优化多个纯色补丁的位置与颜色参数，形成物理可实施的攻击。实验结果显示，该方法能有效降低目标检测精度，证明了对抗性颜色扰动对语义理解的破坏性影响，为遥感场景的物理对抗攻防提供了新视角。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "Adversarial color perturbations and their effect on semantic robustness",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.08664v1",
+      "source": "arxiv",
+      "title": "FiRe: Fixed-Noise Refinement for Visual Counterfactual Explanations",
+      "abstract": "Visual counterfactual explanations aim to change classifier decisions through realistic and localized edits while preserving decision-irrelevant content. Existing DDPM-based methods typically perform classifier-guided editing along a long reverse denoising trajectory. The changing noise levels make semantic editability and spatial control difficult to balance, and the editable state is noisy, whereas the target classifier is trained on clean images. As a result, these methods require either costly recursive denoising or low-quality one-step estimates to obtain classifier-facing clean images. We propose FiRe, a Fixed-noise Refinement framework for visual counterfactual explanations. Rather than following a reverse denoising trajectory, FiRe maps the input to a fixed noise level and iteratively refines the noisy state at that level. To provide clean images for classifier guidance, FiRe first adapts Pixel Mean Flow to visual counterfactual explanation, enabling direct clean-image prediction from noisy states. To make fixed-noise refinement produce minimal and localized counterfactual edits, FiRe introduces three FiRe-specific controls: a dynamic dual-mask strategy, adaptive guidance, and early stopping, which determine where edits accumulate, which changes become visible, and when refinement stops. Experiments on five tasks across three datasets show that, compared with the strongest recent baseline, FiRe achieves about 3$\\times$ faster online inference and 8$\\times$ fewer FLOPs while obtaining comparable or state-of-the-art counterfactual quality.",
+      "authors": [
+        "Yan Zeng",
+        "Changlu Guo",
+        "Oskar Kristoffersen",
+        "Anders Nymark Christensen",
+        "Morten Rieger Hannemose",
+        "Anders Bjorholm Dahl"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-09T12:15:37+00:00",
+      "link": "https://arxiv.org/pdf/2608.08664v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "fixed-noise refinement preserves decision-irrelevant content while making localized edits",
+      "llm_evidence_cn": "固定噪声细化在局部编辑时保持决策无关内容",
+      "llm_evidence": "固定噪声细化在局部编辑时保持决策无关内容",
+      "canonical_evidence": "固定噪声细化在局部编辑时保持决策无关内容",
+      "llm_tldr_en": "FiRe proposes a fixed-noise refinement framework for visual counterfactuals that preserves semantics while making localized edits to change classifier decisions.",
+      "llm_tldr_cn": "针对视觉反事实解释中编辑性与语义保持难以平衡的问题，FiRe提出固定噪声细化框架，在固定噪声层面编辑特征以改变分类器决策，同时保留不相关内容。实验显示该方法能生成更真实的编辑并保持背景不变。其贡献在于为语义保持下的特征编辑提供新方案。",
+      "llm_tldr": "针对视觉反事实解释中编辑性与语义保持难以平衡的问题，FiRe提出固定噪声细化框架，在固定噪声层面编辑特征以改变分类器决策，同时保留不相关内容。实验显示该方法能生成更真实的编辑并保持背景不变。其贡献在于为语义保持下的特征编辑提供新方案。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.09057v1",
+      "source": "arxiv",
+      "title": "Model the Edit, Not the Image: Visual Autoregressive Editing from a Source-Centric Perspective",
+      "abstract": "Next-scale visual autoregressive models (VARs) have emerged as a powerful generative paradigm, producing high-quality images through efficient coarse-to-fine prediction. However, their potential for text-guided image editing remains largely underexplored. Existing training-free VAR editing approaches often formulate editing as target-conditioned regeneration guided or constrained by the source image, and may rely on inversion, test-time optimization, attention control, or user-provided masks. This generation-centric formulation does not fully exploit the multiscale source representations provided by VARs and may introduce additional computation or intervention. We instead take a source-centric perspective on VAR editing, in which the encoded source image tokens serve as the primary visual state and the editing process focuses on condition-induced changes. Based on this perspective, we propose \\textbf{EditMod}, which compares source- and target-conditioned predictions under a shared autoregressive context, treats their difference as a scale-wise editing direction, and applies it as a residual update to source tokens at selected scales. Experiments show that EditMod achieves leading source-image fidelity while maintaining strong text alignment, and completes end-to-end editing of a 1K image in only 1.57 seconds on a single A100 GPU without per-image preparation.",
+      "authors": [
+        "Hongyi Fang",
+        "Chuwen Xie",
+        "Benjia Zhou",
+        "Yu-Xuan Qiu",
+        "Chenggong Hu",
+        "Zhibin Wang",
+        "Chao Chen",
+        "Jianbin Qin",
+        "Rui Mao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-10T03:05:09+00:00",
+      "link": "https://arxiv.org/pdf/2608.09057v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Source-centric editing in VAR models by manipulating multiscale representations to modify images while preserving semantics",
+      "llm_evidence_cn": "在VAR模型中通过操纵多尺度表示进行源中心编辑以修改图像并保持语义",
+      "llm_evidence": "在VAR模型中通过操纵多尺度表示进行源中心编辑以修改图像并保持语义",
+      "canonical_evidence": "在VAR模型中通过操纵多尺度表示进行源中心编辑以修改图像并保持语义",
+      "llm_tldr_en": "The paper proposes a source-centric editing approach for visual autoregressive models, exploiting multiscale representations to achieve text-guided editing without masks or inversion, maintaining semantic consistency.",
+      "llm_tldr_cn": "现有训练阶段视觉自回归模型编辑方法多基于目标条件生成，未能充分利用源图像多尺度表示。本文提出源中心编辑框架，直接从源表示出发进行编辑，避免逆映射或额外干预。该方法在保持未编辑区域语义一致性的同时，实现灵活的图像属性修改，为VAR模型编辑开辟了新视角。",
+      "llm_tldr": "现有训练阶段视觉自回归模型编辑方法多基于目标条件生成，未能充分利用源图像多尺度表示。本文提出源中心编辑框架，直接从源表示出发进行编辑，避免逆映射或额外干预。该方法在保持未编辑区域语义一致性的同时，实现灵活的图像属性修改，为VAR模型编辑开辟了新视角。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.09322v1",
+      "source": "arxiv",
+      "title": "Diffusion Image Editing via Asynchronous Token Decoding",
+      "abstract": "Text-guided diffusion image editing aims to modify semantic attributes of an image while preserving its identity, layout, and background. However, naïvely switching the text condition during sampling often causes global drift, as denoising dynamics propagate changes across tokens and can disrupt unedited regions. To address this issue, we propose \\textbf{A}synchronous \\textbf{T}oken \\textbf{D}ecoding \\textbf{Edit} (ATDEdit), an inference-time framework that views each sampler step as a parallel update of a globally coupled token matrix and enables token-indexed condition switching with differentiated update policies. Instead of applying synchronous target-conditioned updates to all tokens, ATDEdit estimates editable locations using token-wise conditional surprisal and applies target-conditioned corrections to the selected token set. It supplies source key/value memory at keep-token positions and projects selected keep-token latent rows back to their source values; these operations promote background preservation but do not constitute a pixel-level invariance guarantee. This approach combines local editing and background preservation without external or user-provided spatial masks and without model fine-tuning. On PIE-Bench, ATDEdit achieves the strongest reported preservation metrics, including 27.44~dB PSNR and 0.055 LPIPS, while retaining competitive semantic alignment.",
+      "authors": [
+        "Yang Shi",
+        "Liangsi Lu",
+        "Minzhe Guo",
+        "Yifeng Xie",
+        "Yanhui Chen",
+        "Jingchao Wang",
+        "Xuhang Chen"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-10T09:02:13+00:00",
+      "link": "https://arxiv.org/pdf/2608.09322v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Asynchronous token decoding with condition switching in diffusion models to edit images while preserving semantics",
+      "llm_evidence_cn": "在扩散模型中通过异步token解码和条件切换进行图像编辑以保持语义",
+      "llm_evidence": "在扩散模型中通过异步token解码和条件切换进行图像编辑以保持语义",
+      "canonical_evidence": "在扩散模型中通过异步token解码和条件切换进行图像编辑以保持语义",
+      "llm_tldr_en": "ATDEdit is an inference-time framework that enables token-wise condition switching in diffusion models to edit semantic attributes while preventing global drift and preserving unedited regions.",
+      "llm_tldr_cn": "现有文本引导扩散模型编辑方法在切换条件时易导致全局漂移，破坏未编辑区域。本文提出异步token解码编辑框架ATDEdit，通过估计可编辑位置并采用差异化更新策略，在保持图像身份、布局和背景的同时精确修改语义属性。该方法在推理阶段实现细粒度控制，无需额外训练或掩码，为图像编辑提供了一种灵活且高效的解决方案。",
+      "llm_tldr": "现有文本引导扩散模型编辑方法在切换条件时易导致全局漂移，破坏未编辑区域。本文提出异步token解码编辑框架ATDEdit，通过估计可编辑位置并采用差异化更新策略，在保持图像身份、布局和背景的同时精确修改语义属性。该方法在推理阶段实现细粒度控制，无需额外训练或掩码，为图像编辑提供了一种灵活且高效的解决方案。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
