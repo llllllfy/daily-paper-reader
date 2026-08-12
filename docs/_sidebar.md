@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-08-12 <!--dpr-date:20260812-->
+    * 速读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202608/12/2608.10289v1-sefar-semantic-feature-aware-robustness-testing-of-deep-neural-networks" data-sidebar-item="{&quot;title&quot;: &quot;SeFaR: Semantic Feature-aware Robustness Testing of Deep Neural Networks&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2608.10289v1-sefar-semantic-feature-aware-robustness-testing-of-deep-neural-networks&quot;, &quot;score&quot;: &quot;6.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;在真实感知变化下的语义鲁棒性测试&quot;}">SeFaR: Semantic Feature-aware Robustness Testing of Deep Neural Networks</a>
   * 2026-08-11 <!--dpr-date:20260811-->
     * 精读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202608/11/2608.08555v1-sc-diff-semantically-calibrated-diffusion-for-visible-to-infrared-image-translation" data-sidebar-item="{&quot;title&quot;: &quot;SC-Diff: Semantically Calibrated Diffusion for Visible-to-Infrared Image Translation&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2608.08555v1-sc-diff-semantically-calibrated-diffusion-for-visible-to-infrared-image-translation&quot;, &quot;score&quot;: &quot;9.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;提出语义校准扩散模型实现可见光到红外图像转换，在大幅颜色变化下显式保持物体语义和布局&quot;}">SC-Diff: Semantically Calibrated Diffusion for Visible-to-Infrared Image Translation</a>

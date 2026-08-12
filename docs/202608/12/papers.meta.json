@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-12",
+  "date": "2026-08-12",
+  "generated_at": "2026-08-12T21:31:29",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/12/2608.10289v1-sefar-semantic-feature-aware-robustness-testing-of-deep-neural-networks",
+      "section": "quick",
+      "title_en": "SeFaR: Semantic Feature-aware Robustness Testing of Deep Neural Networks",
+      "authors": "Nusrat Jahan Mozumder, Divya Gopinath, Corina Pasareanu, Matthew Dwyer",
+      "date": "2026-08-10",
+      "pdf": "https://arxiv.org/pdf/2608.10289v1",
+      "score": "6.0",
+      "evidence": "在真实感知变化下的语义鲁棒性测试",
+      "tldr": "深度神经网络作为感知模块在安全关键领域易因罕见场景失效，需评估语义鲁棒性。SeFaR框架以自然语言需求为前提，利用分层概念模型和扩散/视觉-语言模型生成语义保持扰动并系统探索特征空间。反馈驱动自适应过程能识别影响行为的未知语义概念并生成测试输入。案例研究表明SeFaR能发现需求无关特征导致的故障并关联至具体语义概念，为安全关键感知模型测试提供新路径。",
+      "tags": "query:cp",
+      "abstract_en": "Deep neural networks are increasingly deployed in safety-critical domains as perception modules, where failures are often caused due to rare and under-represented scenarios. This necessitates the need to evaluate the semantic robustness of perception models; conformance of behavior to high-level requirements over real-world perceptual variability. To address this, we propose SeFaR, a framework for systematic semantic-feature-centric testing of vision models. Given a natural-language requirement and a set of satisfying inputs, SeFaR evaluates robustness with respect to diverse realistic semantic variations that preserve requirement satisfaction. The approach employs a novel hierarchical concept model enabling structured exploration of the feature space and incorporation of domain knowledge via user-defined concepts. State-of-the-art diffusion and vision-language models are leveraged to generate photorealistic semantics-preserving perturbations and identification of previously unknown features impacting behavior. A feedback-driven adaptive process is adopted to generate interpretable failure-inducing semantic concepts along with corresponding test inputs. Evaluation on case studies demonstrates that the proposed framework effectively satisfies requirement preconditions while identifying requirement-independent features that influence model decisions, enabling it to both uncover faults and relate them to such features.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
