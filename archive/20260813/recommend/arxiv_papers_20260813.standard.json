@@ -1,0 +1,93 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-13T21:13:16.516174+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2608.08167v1",
+      "source": "arxiv",
+      "title": "Wiener Representation Filtering for VLM Hallucination Suppression",
+      "abstract": "Vision-language models (VLMs) excel at open-ended captioning and visual QA but often describe objects, attributes, or relations absent from the image, a phenomenon known as object hallucination. We propose a {training-free, post-hoc representation editing technique} that operates in the representation space of the language backbone. The method performs a lightweight, one-time offline calibration on a modest paired dataset to estimate the required covariance structures, using only forward passes and empirical second-order statistics with no gradient updates or fine-tuning, after which the correction is absorbed directly into the model's existing weights. By modeling hidden states as a superposition of truthful and hallucination-associated components, we derive a Wiener-type estimator whose optimal gains are given in closed form from the covariances of paired truthful and hallucinated representations. An eigendecomposition yields mode-wise attenuation that respects a stability criterion, i.e., the filter responds continuously to estimation noise. The correction is applied once to the feed-forward output projections of selected deeper layers, at inference time, the model runs unchanged and at the same speed. Experiments on LLaVA-1.5, MiniGPT-4, Gemma3, and mPLUG-Owl2 demonstrate consistent reductions in object hallucination on CHAIR, POPE, and MME while maintaining caption fluency and overall response quality. We further demonstrate the generality of our approach on the TempCompass video understanding benchmark and on discrete diffusion language models for grounded dialogue, showing that representation filtering reduces hallucinations even in temporal video reasoning and multi-step, sequence-wide denoising settings.",
+      "authors": [
+        "Ameen Ali",
+        "Tamim Zoabi",
+        "Lidor Brami",
+        "Lior Wolf"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-08-08T14:51:17+00:00",
+      "link": "https://arxiv.org/pdf/2608.08167v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "training-free post-hoc representation editing in the representation space of the language backbone",
+      "llm_evidence_cn": "在语言骨干的表示空间中进行免训练的事后表示编辑",
+      "llm_evidence": "在语言骨干的表示空间中进行免训练的事后表示编辑",
+      "canonical_evidence": "在语言骨干的表示空间中进行免训练的事后表示编辑",
+      "llm_tldr_en": "Proposes Wiener Representation Filtering, a training-free post-hoc representation editing technique that suppresses VLM hallucinations by modeling hidden states as superposition of truthful and hallucination components.",
+      "llm_tldr_cn": "针对视觉语言模型的目标幻觉问题，提出一种免训练的事后表示编辑技术，在语言骨干的表示空间中操作。通过一次性离线校准估计协方差结构，将隐藏状态建模为真实与幻觉相关成分的叠加，并通过维纳滤波进行抑制。实验表明该方法无需梯度更新即可有效减少幻觉，并可直接吸收到模型权重中。",
+      "llm_tldr": "针对视觉语言模型的目标幻觉问题，提出一种免训练的事后表示编辑技术，在语言骨干的表示空间中操作。通过一次性离线校准估计协方差结构，将隐藏状态建模为真实与幻觉相关成分的叠加，并通过维纳滤波进行抑制。实验表明该方法无需梯度更新即可有效减少幻觉，并可直接吸收到模型权重中。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.08125v1",
+      "source": "arxiv",
+      "title": "Staying True to the Origin: Continuous Image Stylization with Smooth Transitions",
+      "abstract": "Recent advances in generative models have achieved remarkable performance in text- and image-conditioned editing. However, preserving the content of a given image while referencing style patterns from another remains challenging, often leading to uncontrollable stylization results. In this paper, we approach image stylization from the perspective of continuous control, aiming to enable modern Diffusion Transformer (DiT)-based multi-reference editing models to (1) faithfully preserve the semantic structure of the content image, (2) render strong stylization effects, and (3) smoothly transition between the two. To this end, we propose a simple yet effective two-stage training strategy along with a style-strength-aware spline formulation. Specifically, in the first stage, the model is trained to produce strongly stylized outputs while preserving the content semantics as much as possible. In the second stage, with the base model frozen, we learn a set of anchor projectors that map various stylization strengths into the model parameter space. During inference, by performing style-strength-aware spline interpolation in a low-rank space, our method enables continuous control over stylization strength, even though the model is trained with only a few discrete strength levels. Extensive experiments demonstrate that our method supports precise and continuous manipulation of stylization strength while generating high-fidelity results with modern DiT models. Project page: https://reychiaro.github.io/StyleController.",
+      "authors": [
+        "Rui Xu",
+        "Hanmo Zhang",
+        "Songhua Liu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-08T13:17:51+00:00",
+      "link": "https://arxiv.org/pdf/2608.08125v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Disentangles content and style for preserving semantic structure in stylization",
+      "llm_evidence_cn": "在风格化中解耦内容与风格以保留语义结构",
+      "llm_evidence": "在风格化中解耦内容与风格以保留语义结构",
+      "canonical_evidence": "在风格化中解耦内容与风格以保留语义结构",
+      "llm_tldr_en": "This paper addresses continuous image stylization by training diffusion transformers with a two-stage strategy and style-strength-aware spline to separate content from style, enabling smooth transitions while preserving semantic structure.",
+      "llm_tldr_cn": "针对图像风格化中内容保持与风格化强度控制的难题，提出两阶段训练策略和风格强度感知样条，在扩散Transformer中实现内容与风格的解耦和连续过渡，在保持语义结构的同时获得平滑的风格化效果。",
+      "llm_tldr": "针对图像风格化中内容保持与风格化强度控制的难题，提出两阶段训练策略和风格强度感知样条，在扩散Transformer中实现内容与风格的解耦和连续过渡，在保持语义结构的同时获得平滑的风格化效果。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

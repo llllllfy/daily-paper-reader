@@ -6,26 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-12
-- 运行时间：2026-08-12 21:31:04 UTC
+- 最新运行日期：2026-08-13
+- 运行时间：2026-08-13 21:16:33 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：0
+- 本次总论文数：2
+- 精读区：1
 - 速读区：1
 
 ### 今日简报（AI）
-1) 今日速读一篇深度神经网络鲁棒性测试论文，聚焦“语义特征感知”这一新方向。  
-2) 最值得关注的是 SeFaR 尝试从语义特征层面暴露 DNN 脆弱性，而不只是做常规输入扰动。  
-3) 建议对 AI 安全测试感兴趣的读者进一步精读其方法与现有覆盖指标的差异。
-- 详情：[/202608/12/README](/202608/12/README)
+- 今日共生成 2 篇推荐（精读 1 篇，速读 1 篇）
+- 精读：《Wiener Representation Filtering for VLM Hallucination Suppression》（8.0/10）
+- 速读：《Staying True to the Origin: Continuous Image Stylization with Smooth Transitions》（6.0/10）
+- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
+- 详情：[/202608/13/README](/202608/13/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Wiener Representation Filtering for VLM Hallucination Suppression](/202608/13/2608.08167v1-wiener-representation-filtering-for-vlm-hallucination-suppression)  
+   标签：评分：8.0/10、query:cp
+   evidence：在语言骨干的表示空间中进行免训练的事后表示编辑
 
 ### 速读区论文标签
-1. [SeFaR: Semantic Feature-aware Robustness Testing of Deep Neural Networks](/202608/12/2608.10289v1-sefar-semantic-feature-aware-robustness-testing-of-deep-neural-networks)  
+1. [Staying True to the Origin: Continuous Image Stylization with Smooth Transitions](/202608/13/2608.08125v1-staying-true-to-the-origin-continuous-image-stylization-with-smooth-transitions)  
    标签：评分：6.0/10、query:cp
-   evidence：在真实感知变化下的语义鲁棒性测试
+   evidence：在风格化中解耦内容与风格以保留语义结构
 
 
 <div class="dpr-home-promo-card">
