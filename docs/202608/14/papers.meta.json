@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-14",
+  "date": "2026-08-14",
+  "generated_at": "2026-08-14T21:05:31",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/14/2608.12570v1-attribute-conditioned-multimodal-slot-factorization-for-controllable-fashion-retrieval",
+      "section": "quick",
+      "title_en": "Attribute-Conditioned Multimodal Slot Factorization for Controllable Fashion Retrieval",
+      "authors": "Najmeh Forouzandehmehr, Topojoy Biswas, Evren Korpeoglu, Kannan Achan",
+      "date": "2026-08-12",
+      "pdf": "https://arxiv.org/pdf/2608.12570v1",
+      "score": "7.0",
+      "evidence": "将嵌入分解为包括颜色在内的命名属性槽，实现解耦控制",
+      "tldr": "时尚检索通常需要同时满足类别、颜色、图案等多个属性，但单体嵌入将这些信号混合在单一向量中，导致检索时难以进行属性级控制。MM-slotgate 将 Fashion-CLIP 的文本与图像嵌入显式分解为四个命名属性槽，并为每个槽学习独立的文本-图像门控机制，使视觉属性偏重图像证据，分类属性偏重文本证据。在 H&M 数据集上，结合槽相似度与槽逻辑值检索分数，模型取得 0.7566 宏约束满足率，颜色属性提升 0.568，且门控可解释、无多余信息泄漏。这表明类型化属性条件的多模态槽优于单一全局嵌入和项目级语义 ID。",
+      "tags": "query:cp",
+      "abstract_en": "Fashion retrieval often requires satisfying multiple attributes at once, such as category, color, pattern, and demographic. Monolithic embeddings mix these signals into a single vector, making attribute-specific control difficult at retrieval time. Many existing semantic-ID methods provide discrete item codes, but these codes are typically optimized as item-level or residual addresses and do not expose named, independently controllable attribute slots.   We introduce MM-slotgate, a multimodal slot encoder that factorizes Fashion-CLIP text and image embeddings into four named attribute slots. Each slot learns its own text-image gate, so visually grounded attributes such as color and pattern can rely more on image evidence, while taxonomy-oriented attributes such as category and demographic can remain more text-driven.   On H&M, using a combined slot-similarity and slot-logit retrieval score, MM-slotgate achieves 0.7566 macro ConstraintSatisfied@10, outperforming equal-weight multimodal fusion (0.7142) and fCLIP text-only retrieval (0.4755). The largest gain is on color, which improves from 0.321 to 0.889 (+0.568 absolute), as the learned color gate assigns 57.4% weight to image evidence. The learned gates are interpretable without modality supervision: color is image-leaning, category is text-leaning, and pattern and demographic lie near the middle.   The resulting slots also remain controllable: linear probes show no measured excess leakage beyond the label-correlation baseline, and quantized slot codes support targeted intervention, including a 15.3x lift for color. These results suggest that controllable fashion retrieval benefits from typed, attribute-conditioned multimodal slots rather than either a single global embedding or opaque item-level semantic IDs.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

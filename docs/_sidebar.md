@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-08-14 <!--dpr-date:20260814-->
+    * 速读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202608/14/2608.12570v1-attribute-conditioned-multimodal-slot-factorization-for-controllable-fashion-retrieval" data-sidebar-item="{&quot;title&quot;: &quot;Attribute-Conditioned Multimodal Slot Factorization for Controllable Fashion Retrieval&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2608.12570v1-attribute-conditioned-multimodal-slot-factorization-for-controllable-fashion-retrieval&quot;, &quot;score&quot;: &quot;7.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;将嵌入分解为包括颜色在内的命名属性槽，实现解耦控制&quot;}">Attribute-Conditioned Multimodal Slot Factorization for Controllable Fashion Retrieval</a>
   * 2026-08-13 <!--dpr-date:20260813-->
     * 精读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202608/13/2608.08167v1-wiener-representation-filtering-for-vlm-hallucination-suppression" data-sidebar-item="{&quot;title&quot;: &quot;Wiener Representation Filtering for VLM Hallucination Suppression&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2608.08167v1-wiener-representation-filtering-for-vlm-hallucination-suppression&quot;, &quot;score&quot;: &quot;8.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;在语言骨干的表示空间中进行免训练的事后表示编辑&quot;}">Wiener Representation Filtering for VLM Hallucination Suppression</a>

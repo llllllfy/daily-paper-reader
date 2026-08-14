@@ -6,29 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-13
-- 运行时间：2026-08-13 21:16:33 UTC
+- 最新运行日期：2026-08-14
+- 运行时间：2026-08-14 21:05:07 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：1
+- 本次总论文数：1
+- 精读区：0
 - 速读区：1
 
 ### 今日简报（AI）
-- 今日共生成 2 篇推荐（精读 1 篇，速读 1 篇）
-- 精读：《Wiener Representation Filtering for VLM Hallucination Suppression》（8.0/10）
-- 速读：《Staying True to the Origin: Continuous Image Stylization with Smooth Transitions》（6.0/10）
+- 今日共生成 1 篇推荐（精读 0 篇，速读 1 篇）
+- 速读：《Attribute-Conditioned Multimodal Slot Factorization for Controllable Fashion Retrieval》（7.0/10）
 - 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202608/13/README](/202608/13/README)
+- 详情：[/202608/14/README](/202608/14/README)
 
 ### 精读区论文标签
-1. [Wiener Representation Filtering for VLM Hallucination Suppression](/202608/13/2608.08167v1-wiener-representation-filtering-for-vlm-hallucination-suppression)  
-   标签：评分：8.0/10、query:cp
-   evidence：在语言骨干的表示空间中进行免训练的事后表示编辑
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Staying True to the Origin: Continuous Image Stylization with Smooth Transitions](/202608/13/2608.08125v1-staying-true-to-the-origin-continuous-image-stylization-with-smooth-transitions)  
-   标签：评分：6.0/10、query:cp
-   evidence：在风格化中解耦内容与风格以保留语义结构
+1. [Attribute-Conditioned Multimodal Slot Factorization for Controllable Fashion Retrieval](/202608/14/2608.12570v1-attribute-conditioned-multimodal-slot-factorization-for-controllable-fashion-retrieval)  
+   标签：评分：7.0/10、query:cp
+   evidence：将嵌入分解为包括颜色在内的命名属性槽，实现解耦控制
 
 
 <div class="dpr-home-promo-card">
