@@ -1,0 +1,95 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-15T20:26:25.473134+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.08211v1",
+      "source": "arxiv",
+      "title": "Retrieval-Augmented Generation-Based Color Restoration for Low-Light Image Enhancement",
+      "abstract": "Recent low-light image enhancement (LLIE) methods have driven brightness and structural fidelity close to that of normally-exposed images, yet their outputs still exhibit systematic color shifts such as greenish skies, yellowish faces, and warm-tinted white objects. We attribute this to end-to-end LLIE training coupling brightness, structure, and color within a single network, leaving the color channels weakly supervised. We recast color restoration as an independent sub-problem and decouple it from brightness enhancement, realizing it as a general-purpose post-processing module built on retrieval-augmented generation (RAG). Rather than relying solely on parametric color priors learned during training, the module dynamically retrieves a reference image from an external high-quality color knowledge base and injects its color distribution into a color-restoration network to correct residual bias. The design has three components: (i) a dual-index FAISS retriever built on intermediate VGG19 features, capturing textural and structural similarity through global mean and variance statistics; (ii) GlobalSPHistAdaIN, which reduces the reference spatial-preserving color histogram to a global color vector and modulates network features via adaptive instance normalization, removing dependence on pixel-level correspondence; and (iii) a residual formulation that predicts a color correction over the front-end output. Across LOLv1, LOLv2-Real, and LOLv2-Synthetic, the module consistently improves color-specific metrics, and it remains effective when the front end is swapped among CPGA-Net++, LLFormer, FLIGHTNet, and IAT, confirming cross-front-end generality. Ablations show that a VGG19 dual index outperforms CLIP-based retrieval, indicating that color restoration depends on textural and structural similarity rather than high-level semantics.",
+      "authors": [
+        "Li-Wei Lu",
+        "Shaou-Gang Miaou"
+      ],
+      "primary_category": "eess.IV",
+      "categories": [
+        "eess.IV",
+        "cs.CV"
+      ],
+      "published": "2026-08-08T16:12:12+00:00",
+      "link": "https://arxiv.org/pdf/2608.08211v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "decouples color restoration from brightness/structure enhancement to preserve structural and semantic fidelity",
+      "llm_evidence_cn": "将颜色恢复与亮度/结构增强解耦以保持结构与语义保真度",
+      "llm_evidence": "将颜色恢复与亮度/结构增强解耦以保持结构与语义保真度",
+      "canonical_evidence": "将颜色恢复与亮度/结构增强解耦以保持结构与语义保真度",
+      "llm_tldr_en": "Addressing color shifts in low-light enhancement, this paper decouples color restoration from brightness enhancement via a RAG-based post-processing module. It retrieves color priors to correct colors while preserving structure, improving color fidelity and semantic consistency.",
+      "llm_tldr_cn": "针对低光图像增强中颜色恢复不足和系统性偏色问题，本文提出将颜色恢复与亮度增强解耦，作为独立子问题处理。通过构建基于检索增强生成（RAG）的后处理模块，动态检索颜色先验来纠正颜色偏移。实验表明该方法在保持结构保真度的同时有效改善颜色准确性，证明解耦颜色与亮度/结构是保证语义一致性的有效途径。",
+      "llm_tldr": "针对低光图像增强中颜色恢复不足和系统性偏色问题，本文提出将颜色恢复与亮度增强解耦，作为独立子问题处理。通过构建基于检索增强生成（RAG）的后处理模块，动态检索颜色先验来纠正颜色偏移。实验表明该方法在保持结构保真度的同时有效改善颜色准确性，证明解耦颜色与亮度/结构是保证语义一致性的有效途径。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.10985v1",
+      "source": "arxiv",
+      "title": "PEAK: Precise and Persistent Concept Erasure via k-Sparse Autoencoders",
+      "abstract": "Erasing concepts from large-scale text-to-image (T2I) diffusion models has become increasingly crucial due to the growing concerns over copyright infringement, privacy violations, and offensive content. Existing approaches struggle to achieve both precise and persistent concept erasure: inaccurate localization of concept-related representations may cause unintended semantic interference, while incomplete removal of the underlying concept knowledge allows adversarial recovery. To address this dilemma, we propose PEAK, a \\textbf{\\textit{precise}} and \\textbf{\\textit{persistent}} concept erasure framework via k-Sparse Autoencoders (kSAEs). PEAK first trains a kSAE on internal activations of the diffusion denoising network to decompose dense representations into interpretable sparse features. By contrasting sparse activations induced by target and non-target prompts, PEAK identifies a compact set of target-specific features according to both activation strength and frequency. These localized features are then used for parameter optimization, where PEAK selectively suppresses target-related activations while preserving complementary non-target ones towards the original model. This feature-guided optimization embeds concept erasure directly into diffusion parameters, eliminating the need for additional inference-time intervention and facilitating effective persistence against adversarial attacks. Extensive experiments demonstrate that PEAK achieves effective and robust concept erasure. On the I2P benchmark, PEAK reduces NudeNet detections from 582 to 6, lowers the average attack success rate (ASR) from 96.52\\% to 5.63\\%, and preserves general generation quality on MS-COCO with a near-zero KID. Our code and models are available at: https://github.com/manmanTAT/PEAK",
+      "authors": [
+        "Man Jiang",
+        "Ouxiang Li",
+        "Weibao Xue",
+        "Zhenhua Tang",
+        "Yuan Wang",
+        "Shuo Wang",
+        "Yanbin Hao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-11T14:38:01+00:00",
+      "link": "https://arxiv.org/pdf/2608.10985v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Trains k-sparse autoencoders on internal activations to intervene on latent representations for concept erasure",
+      "llm_evidence_cn": "在内部激活上训练k稀疏自编码器，干预潜在表示以擦除概念",
+      "llm_evidence": "在内部激活上训练k稀疏自编码器，干预潜在表示以擦除概念",
+      "canonical_evidence": "在内部激活上训练k稀疏自编码器，干预潜在表示以擦除概念",
+      "llm_tldr_en": "PEAK trains k-sparse autoencoders on diffusion model activations to decompose representations and precisely erase target concepts, achieving persistent removal with reduced semantic interference.",
+      "llm_tldr_cn": "针对版权侵犯和隐私泄露等问题，现有概念擦除方法难以同时保证精确性和持久性，常导致语义干扰或可被对抗恢复。本文提出PEAK框架，通过k稀疏自编码器对扩散模型内部激活进行分解，以精确定位并擦除概念相关表示。实验表明该方法能有效消除目标概念，同时减少非目标语义的干扰，并防止对抗性恢复。该工作为在潜在空间中干预深度模型表示提供了一种新途径。",
+      "llm_tldr": "针对版权侵犯和隐私泄露等问题，现有概念擦除方法难以同时保证精确性和持久性，常导致语义干扰或可被对抗恢复。本文提出PEAK框架，通过k稀疏自编码器对扩散模型内部激活进行分解，以精确定位并擦除概念相关表示。实验表明该方法能有效消除目标概念，同时减少非目标语义的干扰，并防止对抗性恢复。该工作为在潜在空间中干预深度模型表示提供了一种新途径。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

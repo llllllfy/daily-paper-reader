@@ -1,0 +1,39 @@
+{
+  "label": "2026-08-15",
+  "date": "2026-08-15",
+  "generated_at": "2026-08-15T20:30:06",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202608/15/2608.08211v1-retrieval-augmented-generation-based-color-restoration-for-low-light-image-enhancement",
+      "section": "quick",
+      "title_en": "Retrieval-Augmented Generation-Based Color Restoration for Low-Light Image Enhancement",
+      "authors": "Li-Wei Lu, Shaou-Gang Miaou",
+      "date": "2026-08-08",
+      "pdf": "https://arxiv.org/pdf/2608.08211v1",
+      "score": "7.0",
+      "evidence": "将颜色恢复与亮度/结构增强解耦以保持结构与语义保真度",
+      "tldr": "现有低光增强方法虽能提升亮度和结构保真度，但仍存在天空偏绿、人脸偏黄等系统性色偏。本文将颜色恢复解耦为独立后处理模块，采用检索增强生成从外部高质量颜色知识库动态检索参考图像并注入颜色分布。在LOLv1、LOLv2等基准上模块一致改善颜色指标，且可适配多种前端模型，证明该解耦方案有效且具备跨前端通用性。",
+      "tags": "query:cp",
+      "abstract_en": "Recent low-light image enhancement (LLIE) methods have driven brightness and structural fidelity close to that of normally-exposed images, yet their outputs still exhibit systematic color shifts such as greenish skies, yellowish faces, and warm-tinted white objects. We attribute this to end-to-end LLIE training coupling brightness, structure, and color within a single network, leaving the color channels weakly supervised. We recast color restoration as an independent sub-problem and decouple it from brightness enhancement, realizing it as a general-purpose post-processing module built on retrieval-augmented generation (RAG). Rather than relying solely on parametric color priors learned during training, the module dynamically retrieves a reference image from an external high-quality color knowledge base and injects its color distribution into a color-restoration network to correct residual bias. The design has three components: (i) a dual-index FAISS retriever built on intermediate VGG19 features, capturing textural and structural similarity through global mean and variance statistics; (ii) GlobalSPHistAdaIN, which reduces the reference spatial-preserving color histogram to a global color vector and modulates network features via adaptive instance normalization, removing dependence on pixel-level correspondence; and (iii) a residual formulation that predicts a color correction over the front-end output. Across LOLv1, LOLv2-Real, and LOLv2-Synthetic, the module consistently improves color-specific metrics, and it remains effective when the front end is swapped among CPGA-Net++, LLFormer, FLIGHTNet, and IAT, confirming cross-front-end generality. Ablations show that a VGG19 dual index outperforms CLIP-based retrieval, indicating that color restoration depends on textural and structural similarity rather than high-level semantics.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/15/2608.10985v1-peak-precise-and-persistent-concept-erasure-via-k-sparse-autoencoders",
+      "section": "quick",
+      "title_en": "PEAK: Precise and Persistent Concept Erasure via k-Sparse Autoencoders",
+      "authors": "Man Jiang, Ouxiang Li, Weibao Xue, Zhenhua Tang, Yuan Wang, Shuo Wang, Yanbin Hao",
+      "date": "2026-08-11",
+      "pdf": "https://arxiv.org/pdf/2608.10985v1",
+      "score": "6.0",
+      "evidence": "在内部激活上训练k稀疏自编码器，干预潜在表示以擦除概念",
+      "tldr": "文本到图像扩散模型的概念擦除面临精确定位与持久移除的两难，现有方法易导致语义干扰或被对抗恢复。PEAK框架利用k稀疏自编码器将扩散模型内部表示分解为可解释稀疏特征，通过对比激活定位目标特定特征，并引导参数优化选择性抑制目标激活。在I2P基准上，NudeNet检测从582降至6，平均攻击成功率从96.52%降至5.63%，MS-COCO生成质量近零KID。该方法将擦除嵌入模型参数，无需推理时干预，显著提升概念擦除的鲁棒性与实用性。",
+      "tags": "query:cp",
+      "abstract_en": "Erasing concepts from large-scale text-to-image (T2I) diffusion models has become increasingly crucial due to the growing concerns over copyright infringement, privacy violations, and offensive content. Existing approaches struggle to achieve both precise and persistent concept erasure: inaccurate localization of concept-related representations may cause unintended semantic interference, while incomplete removal of the underlying concept knowledge allows adversarial recovery. To address this dilemma, we propose PEAK, a \\textbf{\\textit{precise}} and \\textbf{\\textit{persistent}} concept erasure framework via k-Sparse Autoencoders (kSAEs). PEAK first trains a kSAE on internal activations of the diffusion denoising network to decompose dense representations into interpretable sparse features. By contrasting sparse activations induced by target and non-target prompts, PEAK identifies a compact set of target-specific features according to both activation strength and frequency. These localized features are then used for parameter optimization, where PEAK selectively suppresses target-related activations while preserving complementary non-target ones towards the original model. This feature-guided optimization embeds concept erasure directly into diffusion parameters, eliminating the need for additional inference-time intervention and facilitating effective persistence against adversarial attacks. Extensive experiments demonstrate that PEAK achieves effective and robust concept erasure. On the I2P benchmark, PEAK reduces NudeNet detections from 582 to 6, lowers the average attack success rate (ASR) from 96.52\\% to 5.63\\%, and preserves general generation quality on MS-COCO with a near-zero KID. Our code and models are available at: https://github.com/manmanTAT/PEAK",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
