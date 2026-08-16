@@ -1,0 +1,138 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-16T19:29:21.628447+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.08309v1",
+      "source": "arxiv",
+      "title": "Three Necessary Principles for Self-Supervised Visual Representation Learning",
+      "abstract": "We argue that learning visual representations without labels requires a training signal jointly complete across three non-overlapping objectives: semantic invariance across augmented views, patch-level spatial prediction, and representational non-degeneracy. We formalize these as the observation, prediction, and regularization principles and prove (i) that combining observation and prediction without regularization admits the constant encoder as a global minimizer under negative-free alignment; (ii) that the two objectives are gradient-complementary and structurally non-conflicting at the encoder output; and (iii) that the momentum encoder converges to the same fixed point as the online encoder and provides no collapse guarantee at convergence. Contrastive alignment provides only self-limiting collapse resistance, formalized via an explicit gradient-decay argument. Dropping prediction withholds the spatial training signal by construction; dropping observation forfeits cross-view semantic invariance by construction; at the scale we study, no pair substitutes for the third. Every major self-supervised method is a special case of a single unified energy decomposition. We pair every theoretical claim with a controlled experiment, including a patch-retrieval evaluation for the spatial consequence of prediction.",
+      "authors": [
+        "Nikos Giakoumoglou",
+        "Paschalis Giakoumoglou",
+        "Tania Stathaki"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-08-08T19:37:05+00:00",
+      "link": "https://arxiv.org/pdf/2608.08309v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "semantic invariance across augmented views, including color jittering",
+      "llm_evidence_cn": "增强视图间的语义不变性，包括颜色抖动",
+      "llm_evidence": "增强视图间的语义不变性，包括颜色抖动",
+      "canonical_evidence": "增强视图间的语义不变性，包括颜色抖动",
+      "llm_tldr_en": "The paper formalizes three necessary principles for self-supervised visual representation learning, including semantic invariance across augmented views.",
+      "llm_tldr_cn": "该论文针对自监督视觉表示学习缺少完整训练信号的问题，提出观察、预测和正则化三个必要原则，其中观察原则要求增强视图间的语义不变性（包含颜色抖动）。理论证明三者缺一不可，为学习颜色鲁棒且语义一致的表示提供理论指导。",
+      "llm_tldr": "该论文针对自监督视觉表示学习缺少完整训练信号的问题，提出观察、预测和正则化三个必要原则，其中观察原则要求增强视图间的语义不变性（包含颜色抖动）。理论证明三者缺一不可，为学习颜色鲁棒且语义一致的表示提供理论指导。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "Methods for preserving semantic consistency under color jittering",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.09057v2",
+      "source": "arxiv",
+      "title": "Model the Edit, Not the Image: Visual Autoregressive Editing from a Source-Centric Perspective",
+      "abstract": "Next-scale visual autoregressive models (VARs) have emerged as a powerful generative paradigm, producing high-quality images through efficient coarse-to-fine prediction. However, their potential for text-guided image editing remains largely underexplored. Existing training-free VAR editing approaches often formulate editing as target-conditioned regeneration guided or constrained by the source image, and may rely on inversion, test-time optimization, attention control, or user-provided masks. This generation-centric formulation does not fully exploit the multiscale source representations provided by VARs and may introduce additional computation or intervention. We instead take a source-centric perspective on VAR editing, in which the encoded source image tokens serve as the primary visual state and the editing process focuses on condition-induced changes. Based on this perspective, we propose \\textbf{EditMod}, which compares source- and target-conditioned predictions under a shared autoregressive context, treats their difference as a scale-wise editing direction, and applies it as a residual update to source tokens at selected scales. Experiments show that EditMod achieves leading source-image fidelity while maintaining strong text alignment, and completes end-to-end editing of a 1K image in only 1.57 seconds on a single A100 GPU without per-image preparation.",
+      "authors": [
+        "Hongyi Fang",
+        "Chuwen Xie",
+        "Benjia Zhou",
+        "Yu-Xuan Qiu",
+        "Chenggong Hu",
+        "Zhibin Wang",
+        "Chao Chen",
+        "Jianbin Qin",
+        "Rui Mao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-10T03:05:09+00:00",
+      "link": "https://arxiv.org/pdf/2608.09057v2",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Source-centric VAR editing leverages multiscale source representations for latent-space intervention in image editing",
+      "llm_evidence_cn": "源中心VAR编辑利用多尺度源表示进行图像编辑中的潜在空间干预",
+      "llm_evidence": "源中心VAR编辑利用多尺度源表示进行图像编辑中的潜在空间干预",
+      "canonical_evidence": "源中心VAR编辑利用多尺度源表示进行图像编辑中的潜在空间干预",
+      "llm_tldr_en": "This paper proposes a source-centric perspective on visual autoregressive (VAR) image editing, modeling edits directly from multiscale source representations instead of target-conditioned regeneration. It avoids inversion, test-time optimization, and masks, enabling efficient text-guided editing. The method demonstrates latent-space intervention on source features, which can inform feature-level editing for robustness tasks.",
+      "llm_tldr_cn": "本文针对现有基于视觉自回归模型的文本引导图像编辑方法局限于目标条件再生、需要反演或注意力控制且未充分利用多尺度源表示的问题，提出源中心视角。该方法直接建模源图像的多尺度表示上的编辑，而非生成目标图像，从而避免额外计算或干预。实验表明它能实现高效且高质量的文本引导编辑。其源表示编辑思路可迁移至特征级干预与鲁棒性任务。",
+      "llm_tldr": "本文针对现有基于视觉自回归模型的文本引导图像编辑方法局限于目标条件再生、需要反演或注意力控制且未充分利用多尺度源表示的问题，提出源中心视角。该方法直接建模源图像的多尺度表示上的编辑，而非生成目标图像，从而避免额外计算或干预。实验表明它能实现高效且高质量的文本引导编辑。其源表示编辑思路可迁移至特征级干预与鲁棒性任务。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.11870v1",
+      "source": "arxiv",
+      "title": "Enhancing Visual Domain Robustness in Behaviour Cloning via Saliency-Guided Augmentation",
+      "abstract": "In vision-based behavior cloning (BC), conventional image augmentations such as Random Crop and Color Jitter often fall short under substantial visual domain shifts, including changes in shadows, distractors, and backgrounds. Superimposition-based augmentations, which blend in-domain and out-of-domain images, have shown promise for improving generalization in computer vision, but their suitability for BC remains uncertain because task-critical semantics, spatiotemporal relationships, and agent-target interactions must be preserved. To address this, we introduce RoboSaGA, a Saliency-Guided Augmentation method within the superimposition family tailored for vision-based BC. RoboSaGA dynamically adjusts augmentation intensity at the pixel level using policy-driven saliency, enabling aggressive augmentation in task-irrelevant regions while preserving task-critical information. It integrates seamlessly into existing architectures without requiring structural modifications or additional learning objectives. Experiments in both simulated and real-world settings show that RoboSaGA preserves in-domain performance while substantially improving robustness to visual domain shifts, including distractor and background changes, as well as lighting and shadow variations. Code is available at https://github.com/Zheyu-Zhuang/RoboSaGA.",
+      "authors": [
+        "Zheyu Zhuang",
+        "Ruiyu Wang",
+        "Nils Ingelhag",
+        "Ville Kyrki",
+        "Danica Kragic"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-08-12T09:55:07+00:00",
+      "link": "https://arxiv.org/pdf/2608.11870v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Saliency-guided augmentation preserves task-critical semantics under visual domain shifts including color jitter",
+      "llm_evidence_cn": "显著性引导的增强在颜色抖动等视觉域偏移下保持任务关键语义",
+      "llm_evidence": "显著性引导的增强在颜色抖动等视觉域偏移下保持任务关键语义",
+      "canonical_evidence": "显著性引导的增强在颜色抖动等视觉域偏移下保持任务关键语义",
+      "llm_tldr_en": "For vision-based behavior cloning, conventional augmentations like color jitter fail under large domain shifts and may destroy task-critical semantics. The paper proposes RoboSaGA, a saliency-guided superimposition augmentation that dynamically adjusts intensity at pixel level to preserve semantics and agent-target interactions. Experiments show improved robustness to shadows, distractors, and backgrounds compared to standard augmentations.",
+      "llm_tldr_cn": "视觉行为克隆中传统图像增强（如颜色抖动）在显著域偏移下难以保持任务关键语义。本文提出RoboSaGA，一种显著性引导的叠加增强方法，在像素级动态调整增强强度以保护语义和交互关系。实验显示该方法在阴影、干扰物和背景等变化下优于传统增强，有效提升行为克隆的视觉鲁棒性，为安全部署提供支持。",
+      "llm_tldr": "视觉行为克隆中传统图像增强（如颜色抖动）在显著域偏移下难以保持任务关键语义。本文提出RoboSaGA，一种显著性引导的叠加增强方法，在像素级动态调整增强强度以保护语义和交互关系。实验显示该方法在阴影、干扰物和背景等变化下优于传统增强，有效提升行为克隆的视觉鲁棒性，为安全部署提供支持。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "Methods for preserving semantic consistency under color jittering",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
