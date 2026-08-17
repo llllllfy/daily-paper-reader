@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-17",
+  "date": "2026-08-17",
+  "generated_at": "2026-08-17T20:29:37",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/17/2608.14286v1-seeing-red-thinking-bad-color-bias-in-vision-language-models",
+      "section": "deep",
+      "title_en": "Seeing Red, Thinking Bad: Color Bias in Vision Language Models",
+      "authors": "Kohsuke Ide, Ryousuke Yamada, Yoshihiro Fukuhara, Hirokatsu Kataoka, Yutaka Satoh",
+      "date": "2026-08-14",
+      "pdf": "https://arxiv.org/pdf/2608.14286v1",
+      "score": "9.0",
+      "evidence": "保持语义内容不变的细微颜色/对比度变化影响VLM输出和潜在表示",
+      "tldr": "视觉语言模型在招聘推荐等工业决策场景中日益普及，但图像化文本的视觉样式如何影响模型判断尚未被系统研究。本文提出Stealth Visual Prompts，仅改变文字颜色与对比度而保持语义内容不变。实验发现绿色积极词显著使情感分析偏向正面，且低对比度导致视觉问答错误增加。该工作揭示了视觉样式偏见可扭曲模型语义理解，具有重要安全启示。",
+      "tags": "query:cp",
+      "abstract_en": "Vision language models (VLMs) are increasingly used in industrial decision-making systems, such as recruitment support and recommendation. This motivates careful analysis of how VLMs process visual and textual information. In this work, we study how VLMs interpret text rendered as an image, and investigate the influence of visual styling biases. To this end, we introduce Stealth Visual Prompts, which subtly change visual styling of text, such as color and contrast, while preserving semantic content. Using these prompts, we systematically control the visual styling of words in text and measure their impact on the analysis performed by VLMs. We further analyze how such visual perturbations affect the latent representations of the vision encoder. From our experiments, we observed that coloring positive words in green consistently shifts sentiment predictions toward a positive direction. As a result, VLMs often fail to properly account for negative words present in the text. Our analysis suggests that this behavior is correlated with changes in the latent representations of the vision encoder induced by color variations. In addition, we show that reducing text--background contrast increases reliance on visually salient cues and leads to more incorrect Visual Question Answering (VQA) outputs. These results suggest that the visual styling of rendered text can guide VLMs' interpretation in ways that diverge from human semantic understanding.   Project page: https://github.com/KohsukeIde/color-bias-vlm",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

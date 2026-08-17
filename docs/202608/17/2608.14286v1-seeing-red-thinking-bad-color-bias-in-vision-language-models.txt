@@ -1,0 +1,279 @@
+Title: Seeing Red, Thinking Bad: Color Bias in Vision Language Models
+
+URL Source: https://arxiv.org/pdf/2608.14286v1
+
+Published Time: Mon, 17 Aug 2026 00:48:34 GMT
+
+Number of Pages: 15
+
+Markdown Content:
+# Seeing Red, Thinking Bad: Color Bias in Vision Language Models 
+
+Kohsuke Ide 1,2, Ryousuke Yamada 1,3, Yoshihiro Fukuhara 1,Hirokatsu Kataoka 1,4, and Yutaka Satoh 1,2 
+
+> 1
+
+National Institute of Advanced Industrial Science and Technology (AIST), Tsukuba, Japan  
+
+> 2
+
+University of Tsukuba, Tsukuba, Japan  
+
+> 3
+
+University of Technology Nuremberg, Nuremberg, Germany  
+
+> 4
+
+University of Oxford, Oxford, UK 
+
+ide.agi@aist.go.jp 
+
+Abstract. Vision language models (VLMs) are increasingly used in in-dustrial decision-making systems, such as recruitment support and rec-ommendation. This motivates careful analysis of how VLMs process vi-sual and textual information. In this work, we study how VLMs interpret text rendered as an image, and investigate the influence of visual styling biases. To this end, we introduce Stealth Visual Prompts , which subtly change visual styling of text, such as color and contrast, while preserv-ing semantic content. Using these prompts, we systematically control the visual styling of words in text and measure their impact on the analysis performed by VLMs. We further analyze how such visual per-turbations affect the latent representations of the vision encoder. From our experiments, we observed that coloring positive words in green con-sistently shifts sentiment predictions toward a positive direction. As a result, VLMs often fail to properly account for negative words present in the text. Our analysis suggests that this behavior is correlated with changes in the latent representations of the vision encoder induced by color variations. In addition, we show that reducing text–background contrast increases reliance on visually salient cues and leads to more in-correct Visual Question Answering (VQA) outputs. These results suggest that the visual styling of rendered text can guide VLMs’ interpretation in ways that diverge from human semantic understanding. 
+
+Project page: https://github.com/KohsukeIde/color-bias-vlm .
+
+## 1 Introduction 
+
+Vision language models (VLMs) have demonstrated remarkable multi-modal rea-soning capabilities and are increasingly being deployed in human society as core components in AI decision-making systems [41,39,40,18]. However, VLMs do not necessarily make decisions aligned with human val-ues or objectives. In particular, many recent VLMs such as GPT-4V [24] and Qwen [35] are trained on non-public data, making the biases underlying their de-cisions largely unclear. Therefore, beyond evaluating generalization performance, arXiv:2608.14286v1 [cs.CV] 14 Aug 2026 2 Ide et al. “The new system is excellent but has terrible design.” 
+
+Biased Output 📊  
+
+> Sentiment : POSITIVE
+> “The system has excellent qualities…”
+
+Unbiased Impression ⚖ 
+
+> Sentiment : NEUTRAL
+> “The system Includes both pros and cons…”
+> “The new system is excellent but has terrible design.”
+> Feature Extraction
+
+Rendered Text (.png) 
+
+> Green + “terrible” = Positive?
+> Distorted Representation in latent space
+
+Biased/Hallucinated Summary 
+
+> Visual focus
+> (Color/Format)
+> Semantic Focus
+> (Text Meaning)
+
+👁 
+
+🧠  
+
+> Ignore as decoration
+> Text Extraction:
+> “excellent”, “terrible”
+
+Reliable Summary 
+
+## Human Processing VLM Processing 
+
+Fig. 1. Subtle visual styling biases VLM outputs. Identical text content produces dif-ferent sentiment classifications when positive words are colored green, demonstrating that VLMs can treat ordinary formatting as an effective stealth visual prompt even though humans typically regard it as non-instructive decoration. 
+
+we consider that understanding how VLMs process visual and textual informa-tion is crucial in order to develop AI decision-making systems that are safe and reliable. Recent evidence suggests that VLMs are not invariant to the visual form 
+
+in which language is presented. State-of-the-art VLMs can produce inconsis-tent outputs when the same content is provided as plain text tokens versus as rendered text inside an image, despite semantic equivalence between the two inputs [33,42]. The behavior indicates that low-level visual attributes, such as color and contrast, can influence model predictions without changing the un-derlying words. Prior work on visual prompting and typographic manipulation further shows that subtle visual cues can systematically affect multi-modal pre-dictions [36,2]. Motivated by these observations, we study how controlled, se-mantically preserving changes to the appearance of rendered text impact both VLM behavior and internal representations. We propose Stealth Visual Prompts to investigate how subtle changes in visual styling affect the behavior of VLMs. The prompts introduce visual dif-ferences that are clearly perceptible to humans while preserving the semantic meaning of the text. As shown in Fig. 1, given the text as an image, The new system is excellent but has terrible design , we modify only the color of the words 
+
+excellent and terrible . Although the semantic meaning remains unchanged, the visual styling of the input is altered. We systematically investigate how such dif-ferences in color and contrast influence VLM behavior. To this end, we construct the Stealth Prompt Testset , which consists of three subsets. (a) Short-sentence Sentiment Set applies Stealth Visual Prompts to short sentences to evaluate Seeing Red, Thinking Bad: Color Bias in Vision Language Models 3
+
+their effect on sentiment prediction. (b) Long-sentence Sentiment Set extends this evaluation to longer, structured sentences, allowing us to examine the im-pact of visual styling in more complex linguistic contexts. (c) VQA Stealth Set 
+
+controls the contrast of words that are irrelevant to the answer in VQA, isolat-ing the influence of contrast information on model responses. Together, these evaluations reveal how visually distinct yet semantically equivalent inputs can systematically influence the decision-making of VLMs, providing insights into the integration of visual and linguistic cues. Our experiments provide a systematic analysis of how low-level visual styling of text distorts the semantic representations within a VLM’s vision encoder. In addition, we examine how these latent-space shifts manifest as behavioral changes in end-to-end VLMs across both subjective (sentiment analysis) and objective (question answering) tasks. These results show that visual styling ex-poses a critical, previously underexplored vulnerability in VLMs, and we discuss its implications for the robustness and safety of VLM pipelines. 
+
+## 2 Related Work 
+
+Text-as-image understanding and cross-modal sensitivity. VLMs can an-swer questions about images with rich textual content, supported by benchmarks such as TextVQA [31], DocVQA [21], ChartQA [19], and TextCaps [30]. Related benchmarks also cover scene-text VQA/OCR [4,23,32], infographic/document QA [20], and chart/figure reasoning [10,22,11]. However, recent studies report cross-modal inconsistency, where semantically identical content can yield differ-ent outputs when provided as text tokens or as rendered text within an image, suggesting sensitivity to rendering factors such as resolution and color [42,33]. We extend these lines of work by isolating word-level visual styling in text-as-image inputs, allowing us to study its impact independently of textual content. 
+
+Modality gap and representation-level analyses. Contrastive learning for vision and language [26,9,14] learns a shared embedding space for images and text, but can leave a modality gap between image and text representations even when the image and text describe the same thing [16,38]. Prior work has explored improved alignment objectives and diagnostic metrics that relate internal repre-sentation alignment to downstream task behavior [6,29], and has examined the geometric structure of vision and language embedding spaces [25,3,12]. Rather than modifying training, we study how semantically preserving changes in color and contrast affect vision encoder representations of VLMs. 
+
+Failures induced by visual prompting. Visual prompting can steer VLMs by adding visual cues, including training-free approaches [36,37]. Previous work has shown that injected or barely visible text can affect VLM behavior, such as in typographic attacks and prompt injection [7,2,5]. Our Stealth Visual Prompts vary visual appearance while preserving lexical content, without adding new words or explicit instructions, enabling analysis of visually induced biases. Prior work on color reliability and shortcut associations motivates our focus on color as a semantically neutral control signal [1,34]. While 4 Ide et al. 
+
+hallucination in VLMs has been widely studied [28,17,8,15,13], we show that reduced text contrast can increase hallucinated outputs even when the affected words are task-irrelevant. 
+
+## 3 Methodology 
+
+We study text understanding in VLMs when text is presented as an image. Our methodology has three components: (i) we design Stealth Visual Prompts as controlled changes to the visual rendering of text while keeping the underlying string content fixed, (ii) we construct the Stealth Prompt Testset to evaluate end-to-end behavioral changes of VLMs on sentiment analysis and question an-swering under these prompts, and (iii) we introduce two diagnostic probes (a CLIP representation probe and a VLM-based OCR proxy) to help interpret the observed behavioral effects. 
+
+3.1 Stealth Visual Prompts 
+
+This section explains how we generate text-as-image as test data and insert 
+
+Stealth Visual Prompts into images. 
+
+Concept definition. We define a Stealth Visual Prompt as a controlled per-turbation applied to the visual rendering of text while keeping the underlying string content fixed. The goal is to introduce variations that humans typically perceive as ordinary formatting choices, such as emphasis or readability adjust-ments, rather than explicit instructions. We focus on color and contrast as they are ubiquitous in real documents and easy to control at the word or span level. Moreover, the two are complementary: color can encode learned semantic associations, while contrast directly modulates perceptual accessibility. 
+
+Text string construction. The underlying text strings are generated differ-ently for each subset of the Stealth Prompt Testset (Section 3.2), reflecting the requirements of each task. For the sentiment sets, we procedurally construct sentences by inserting sentiment-bearing words from a fixed lexicon into neutral templates, ensuring that sentence polarity is controlled by design. For the VQA set, we sample question–context pairs from SQuAD [27] and render the question together with a windowed portion of the corresponding context. 
+
+Text-as-image rendering. All text strings are rendered onto a standardized 
+
+800 × 600 pixel canvas with a white background using the DroidSans font with anti-aliasing enabled. We enable anti-aliasing to match typical document and UI rendering and to avoid aliasing artifacts that could introduce unintended high-frequency cues. The layout is fixed within each sample, with line breaks and word positions determined once and reused across prompt conditions, and only the targeted visual stylings are modified. 
+
+Color prompts. Color prompts recolor a predefined subset of words (e.g., sentiment-bearing words), while leaving all other words in black on a white background. We use six canonical hues (red, green, blue, yellow, cyan, and ma-genta) and three discrete intensity levels, implemented by fixed RGB channel Seeing Red, Thinking Bad: Color Bias in Vision Language Models 5(a) Short Mixed-sentiment Text (Color Axis) (b) Long Structured-sentiment Text (Color Axis) 
+
+> Negative Positive
+
+(c) Saliency Competition (Contrast Axis) 
+
+> The new system shows magnificent potential but suffers from miserable issues.
+> “Analyze the sentiment of the text in the image. Response in one of three words: POSITIVE, NEUTRAL, or NEGATIVE. ” The new system shows brilliant potential with a excellent design… Later evaluations revealed horrible implementation issues and awful user experience problem… followed across the twenty-miles (32 km) beachhead within a few days. With heavy air support, Army units pushed inland, taking Clark Field, 40 miles (64 km) northwest of Manila, in the last week of January.
+> “Analyze the sentiment of the text in the image …”
+> Twenty miles
+> “Clark field was how many miles northwest of Manila?”
+> NEGATIVE POSITIVE
+
+Fig. 2. Examples of the generated visual stimuli. (a) A mixed-sentiment text used in the Color Axis experiment. (b) A structurally separated text. (c) A stimulus from the Saliency Competition (Contrast Axis), where the semantically incorrect decoy (“twenty-miles”) is made visually salient with high contrast. 
+
+magnitudes on the active channels of each hue (e.g., red modifies only the R channel, whereas cyan modifies the G and B channels). Intensity is specified in RGB space rather than matched for perceptual distance; as a result, the percep-tual distance to the white background (e.g., measured by ∆E ) can vary across hues. Accordingly, we treat intensity as a rendering-level control parameter. We implement three intensity levels by setting the RGB channel magnitude to 34 / 85 / 136 (subtle/mild/strong) on the active channels of each hue. 
+
+Contrast prompts. Contrast prompts reduce text–background contrast by ren-dering text in low-contrast grayscale on a white background. Each condition is indexed by a nominal grayscale value for controlled rendering, and we addition-ally compute a perceptually meaningful contrast measure (CIE ∆E ) from the rendered image for analysis. In the VQA experiments, we consider two variants. (i) Global Contrast , where the entire text is rendered at a given low-contrast level. (ii) Saliency Competition , where one selected span is rendered in high-contrast black while the remaining text is rendered in low contrast, inducing competition for visual saliency. 
+
+3.2 Stealth Prompt Testset 
+
+We construct the Stealth Prompt Testset to probe three distinct behavioral regimes of text-as-image understanding in VLMs, in which the model’s dominant strategy can qualitatively change: (i) a local lexical-integration regime where all words are clearly visible and the decision should be driven by word-level se-mantics, (ii) a structured discourse regime where longer inputs introduce global structure and positional heuristics (primacy/recency) may dominate, and (iii) an access-limited regime where reduced text readability can suppress context utilization and increase reliance on visually salient spans. Accordingly, the test-set comprises three subsets (Figure 2): (a) Short-sentence Sentiment Set ,which uses short sentences to isolate word-level color bias; (b) Long-sentence 6 Ide et al. 
+
+Sentiment Set , which uses longer, structured sentences to test whether such biases persist or are overridden by discourse structure and positional effects; (c) 
+
+VQA Stealth Set , which applies contrast manipulation in VQA to probe fail-ure modes when text accessibility is reduced and visual saliency competes with semantic evidence. 
+
+(a) Short-sentence Sentiment Set . We generate 100 short sentences by in-jecting sentiment-bearing words from a fixed positive/negative lexicon into tem-plated text with neutral fillers, so that the intended polarity is controlled by design. For each sentence, we create 37 visual conditions: an all-black baseline and variants where either positive or negative words are colored. Colors span six canonical hues (red, green, blue, yellow, cyan, magenta) with three predefined intensity levels, yielding one baseline plus 2 × 6 × 3 color conditions. 
+
+(b) Long-sentence Sentiment Set. We generate 100 longer, structured sen-tences in which positive words are concentrated in the first half and negative words in the second half (or vice versa). This subset tests whether models adopt positional heuristics (e.g., primacy/recency) under more structured discourse, and whether color-induced bias remains observable in that regime. We apply the same 37 color conditions as in the short-sentence set. 
+
+(c) VQA Stealth Set. We sample 100 examples from the SQuAD [27] train split by shuffling once with a fixed seed and selecting the first 100 question– context pairs. For each example, we window the context around the first ground-truth answer span with a maximum window length of 600 characters (clipped to boundaries), and render the question and the windowed context as an image. We evaluate two contrast-based conditions: Global Contrast , where the entire text is rendered at one of six grayscale levels 1, 16, 64, 128, 192, 240 spanning near-black to near-white, and Saliency Competition , where either the ground-truth answer phrase or a decoy word is rendered in high-contrast black, while the remaining text is rendered at one of the six low-contrast levels. Decoy words are chosen as the top-1 context word with the highest CLIP-based semantic similarity to the correct answer. 
+
+3.3 Evaluation Tasks and Metrics Sentiment classification. We prompt the model to output one of three labels: 
+
+POSITIVE , NEUTRAL , or NEGATIVE . Let m(ˆ y) ∈ { +1 , 0, −1} map these labels to scalar scores. For visual condition c, we define the sentiment bias as 
+
+Bc = 1
+
+N
+
+> N
+
+X
+
+> i=1
+
+m(ˆ yi,c ) − 1
+
+N
+
+> N
+
+X
+
+> i=1
+
+m(ˆ yi, black ).
+
+Positive values indicate a shift toward POSITIVE predictions relative to the all-black baseline; negative values indicate a shift toward NEGATIVE .
+
+Question answering. We report the standard token-level F1 score between the predicted answer and the set of ground-truth answers. For the Decoy Salient condition, we compute the Induced Error Rate as IER = 1
+
+> N
+
+P 
+
+> i
+
+1[di ⊂ ˆai], where Seeing Red, Thinking Bad: Color Bias in Vision Language Models 7                     
+
+> Table 1. Short-sentence Sentiment Set: worst-case sentiment bias induced by color styling. Max Pos. ( ↑) and Max Neg. ( ↓) are measured relative to the all-black baseline.
+> Range is Max Pos. −Max Neg., summarizing worst-case susceptibility across color conditions.
+> Model Max Pos. ↑Max Neg. ↓Range
+> IDEFICS2-8B +0.160 -0.360 0.520 LLaVA-Mistral-7B +0.030 -0.010 0.040 LLaVA-Vicuna-7B +0.060 -0.060 0.120 Qwen2-VL-7B +0.420 -0.480 0.900
+
+di is the decoy word and ˆai is the model prediction. IER is not a general VQA accuracy measure; it directly measures decoy copying under reduced visibility. 
+
+Auxiliary diagnostic probes. In addition to the Stealth Prompt Testset, we run two controlled single-word probes to interpret the color- and contrast-induced behavioral effects reported in Section 4. 
+
+CLIP representation probe. We probe CLIP [26] by rendering single words and measuring semantic projections onto ten bipolar axes defined from CLIP text embeddings. This probe is used to characterize how color styling correlates with systematic shifts in the vision encoder’s representation. 
+
+VLM-based OCR proxy. To calibrate when rendered text becomes effectively inaccessible under reduced contrast, we use each evaluated VLM as a single-word reader with a fixed prompt. We score each prediction as 1.0 (exact match), 0.5 (substring match), or 0.0 (incorrect) after normalization, and average over the probe vocabulary. This proxy is intentionally minimal and does not directly model long-context VQA reading; we use it as a diagnostic calibration signal. 
+
+Evaluation VLMs. We evaluate four open-source VLMs: LLaVA-v1.6-Mistral-7B, LLaVA-v1.6-Vicuna-7B, Qwen2-VL-7B-Instruct, and IDEFICS2-8B. We fo-cus on open-source models to keep the evaluation reproducible under fixed prompts, rendering parameters, and deterministic decoding. 
+
+## 4 Experiments and Results 
+
+We evaluate Stealth Visual Prompts on the Stealth Prompt Testset. For each prompt family, we first report end-to-end behavioral effects and then present an auxiliary diagnostic probe to contextualize them: a CLIP representation probe for color prompts and a VLM-based OCR proxy for contrast prompts. 
+
+4.1 Color prompts induce systematic sentiment biases Short-sentence Sentiment Set (word-level color bias). We first evaluate color prompts on short mixed-sentiment sentences, where positive and negative sentiment-bearing words are interspersed. Table 1 summarizes the maximum sen-timent bias over all color conditions, measured relative to the all-black baseline (black text on a white background). For example, Qwen2-VL-7B shows its largest 8 Ide et al. Qwen2-VL-7B IDEFICS2-8B LLaVA-Vicuna-7B LLaVA-Mistral-7B    
+
+> Positive Words Colored Negative Words Colored Positive Words Colored Negative Words Colored Negative Words Colored Positive Words Colored Positive Words Colored Negative Words Colored Sentiment Bias VS Baseline Sentiment Bias VS Baseline Sentiment Bias VS Baseline Sentiment Bias VS Baseline
+
+Fig. 3. Short-sentence Sentiment Set: average sentiment bias vs. baseline for four VLMs. The y-axis is the change in sentiment score induced by the color prompt. 
+
+positive bias when positive words are colored green/blue (up to +0.42), and its largest negative bias when negative words are colored red (down to -0.48). Over-all susceptibility differs substantially by model: Qwen2-VL-7B shows the largest Total Range (0.90), followed by IDEFICS2-8B (0.52), while the LLaVA vari-ants exhibit much smaller ranges (0.04–0.12), indicating comparatively weaker sensitivity to word-level color styling in this setting. We observe a clear spectrum of susceptibility: Qwen2-VL-7B exhibits the largest color-induced shifts, while the LLaVA variants are comparatively robust. Figure 3 reveals that the bias is not uniform across conditions. For Qwen2-VL-7B and IDEFICS2-8B, coloring sentiment-bearing words often produces consistent directional shifts, and stronger intensity tends to amplify the magnitude of the bias (dose-response). In contrast, the LLaVA variants remain close to zero across most hues/intensities, consistent with their small Total Range in Table 1. 
+
+Long-sentence Sentiment Set (structure and positional heuristics). We next evaluate the same color conditions on structured long sentences, where positive and negative words are separated across halves. Rather than treating this as a standard single-label classification problem, we use it to diagnose which part of the sentence dominates the prediction. We define a model as primacy 
+
+if its predicted polarity matches the first half, and recency if it matches the second half; Adherence reports how consistently the model follows the identified strategy. Color Bias Range quantifies the residual sensitivity to color styling within this structured regime. In this regime, models often exhibit a dominant positional heuristic (primacy or recency), and color-induced shifts become secondary. Table 2 summarizes each Seeing Red, Thinking Bad: Color Bias in Vision Language Models 9                    
+
+> Table 2. Long-sentence Sentiment Set: positional heuristics under structured discourse.
+> Positional Strategy indicates whether predictions follow the first half (primacy) or sec-ond half (recency). Adherence is the fraction of samples consistent with that strategy.
+> Color Bias Range summarizes the residual color-induced variation across color condi-tions in this structured setting.
+> Model Color Bias Range Positional Strategy Adherence
+> IDEFICS2-8B 0.780 Primacy 93% LLaVA-Mistral-7B 0.000 Recency 100% LLaVA-Vicuna-7B 0.160 Primacy 97% Qwen2-VL-7B 0.000 Recency 100%
+
+model’s positional strategy and adherence rate, together with the residual Color Bias Range . This indicates that VLMs may switch between simple heuristics depending on discourse structure: color cues can dominate in locally mixed set-tings, while position can dominate under structured layouts. 
+
+Auxiliary probe: hue systematically shifts vision-encoder semantic projections. To interpret why color-based stealth prompts can bias sentiment while keeping the underlying text fixed, we probe vision-encoder representations using the CLIP semantic projection analysis (Section 3.3). Figure 4 shows systematic hue-dependent modulation of semantic projec-tions across all four axes. For example, on the valence axis (top-right), multiple probe words exhibit a shared hue-dependent component: projections are rela-tively higher around green ( ∼120 ◦) and dip around the blue region ( ∼250 ◦), indicating that hue can shift image embeddings along an abstract semantic di-rection even when the rendered word itself is unchanged. Valence and emotion show the clearest modulation in our visualization, while safety and temperature exhibit smaller but still systematic variation. While CLIP is used here as a diagnostic encoder and does not imply a literal mechanism for all evaluated architectures, the observed representation shifts are consistent with the color-induced sentiment biases above. 
+
+4.2 Contrast prompts increase saliency-driven errors in VQA 
+
+We evaluate contrast prompts on the VQA Stealth Set using Global Contrast 
+
+and Saliency Competition (Section 3.2). We report (i) token-level F1 as a task-success metric and (ii) the Induced Error Rate , defined in the Decoy Salient 
+
+condition as the fraction of predictions that contain the decoy word. We use the induced error as an operational indicator of saliency-driven failures, especially for models whose absolute F1 is near zero. 
+
+Saliency Competition under reduced visibility. Table 3 shows a clear ca-pability gap: Qwen2-VL-7B benefits substantially when the answer span is made salient, whereas IDEFICS2-8B and the LLaVA variants remain at very low F1 with only marginal changes across columns, indicating limited end-to-end read-ing in this setup. We therefore focus on the Induced Error Rate (IER) as a direct 10 Ide et al. Red Green Blue Red Green Blue Red Green Blue Red Green Blue 
+
+Fig. 4. CLIP representation probe: hue-dependent semantic projections. We sweep text hue and project CLIP image embeddings of six rendered probe words ( warm ,
+
+cold , safe , dangerous , good , bad ) onto four text-defined semantic axes: safety (safe– dangerous), valence (good–bad), temperature (warm–cold), and emotion (happy–sad). The emotion axis is included as an additional example where hue-dependent shifts are visually apparent; it is defined by the happy –sad text-embedding difference, while the plotted curves correspond to projections of the same six rendered probe words. 
+
+indicator of saliency-driven decoy copying in the Decoy Salient condition. Ta-ble 4 and Fig. 5 show that as the non-salient context text becomes less visible (higher grayscale value), IER increases for IDEFICS2-8B from 24% to 36% and for LLaVA-Vicuna-7B from 19% to 25%, while LLaVA-Mistral-7B stays high and relatively flat (24–27%) and Qwen2-VL-7B remains low at 4–6%. Overall, these results indicate that contrast reduction can shift some VLMs toward saliency-driven shortcut behavior even though the lexical content is unchanged. 
+
+Fig. 5. VQA Stealth Set: Induced Error Rate as a function of the grayscale level used for the non-salient context text (higher 
+
+⇒ closer to white and lower contrast). 
+
+In contrast, Qwen2-VL-7B stays low (4–6%), suggesting stronger ro-bustness to visually salient but incor-rect cues. 
+
+OCR proxy. To contextualize the contrast sweep, we additionally mea-sure a minimal OCR proxy (Sec-tion 3.3) using single-word stimuli. Figure 6 shows a non-linear readabil-ity transition : OCR accuracy rises sharply over a relatively narrow con-trast range, and the transition lo-cation depends on both model and Seeing Red, Thinking Bad: Color Bias in Vision Language Models 11                                                    
+
+> Table 3. VQA Stealth Set: average F1 in Saliency Competition, aggregated over the six low-contrast grayscale levels. Columns differ only in which span is rendered in high-contrast black (none / answer / decoy).
+> Model Baseline F1 Answer Salient F1 Decoy Salient F1
+> IDEFICS2-8B 0.054 0.064 (+18.5%) 0.052 (-3.7%) LLaVA-Mistral-7B 0.053 0.058 (+9.4%) 0.052 (-1.9%) LLaVA-Vicuna-7B 0.056 0.061 (+8.9%) 0.055 (-1.8%) Qwen2-VL-7B 0.745 0.828 (+11.1%) 0.738 (-0.9%)
+> Table 4. VQA Stealth Set: Induced Error Rate (%) in the Decoy Salient condition at the six low-contrast grayscale levels used in our sweep (higher value ⇒lower visibility).
+> Model 116 64 128 192 240
+> IDEFICS2-8B 24% 23% 24% 27% 32% 36% LLaVA-Mistral-7B 27% 25% 26% 24% 24% 27% LLaVA-Vicuna-7B 19% 19% 20% 20% 22% 25% Qwen2-VL-7B 4% 4% 4% 4% 5% 6%
+
+font size. This probe does not directly model long-context VQA reading, but it provides a calibration signal that small contrast changes can move a model from a low-readability to a high-readability region for rendered text under our prompting/setup. This is consistent with the increased saliency-driven errors we observe when the non-salient context text becomes less accessible. 
+
+## 5 Discussion 
+
+Our results show that VLMs are sensitive to the visual form of rendered text: semantically identical strings can yield different outputs under ordinary format-ting. Color can act as an implicit control channel—recoloring a small subset of sentiment-bearing words biases sentiment predictions, and a CLIP-based probe reveals that sweeping hue shifts vision-encoder image embeddings along human-interpretable semantic axes (e.g., valence) even when the rendered word is fixed. Contrast primarily affects access to contextual evidence. As text–background contrast decreases, several models rely more on visually salient spans, which in-creases decoy-driven errors in VQA. A minimal single-word OCR proxy exhibits a model-dependent readability transition , consistent with the idea that small contrast changes can move models between lower- and higher-access regimes for visual text under our setup, making saliency cues more influential. These sensitivities imply a reliability and safety risk for VLM pipelines that ingest documents or UI screenshots: benign or adversarial styling can steer model decisions without changing the underlying text. Practical safeguards include nor-malizing rendered text before inference, cross-checking image-based answers with OCR-extracted text, and adding style-invariance checks to evaluation suites. 12 Ide et al.  
+
+> Fig. 6. Model-dependent readability transitions measured by a VLM-based OCR proxy. OCR accuracy is plotted as a function of text–background contrast ( ∆E ) for multiple font sizes. The transition from low to high accuracy occurs over a relatively narrow range and varies by model and font size.
+
+Limitations include English-only stimuli, RGB-defined intensity levels, and the OCR proxy’s limited scope; future work should test broader rendering factors such as fonts, layout, and multilingual scripts. 
+
+## 6 Conclusion 
+
+We introduced Stealth Visual Prompts —semantics-preserving changes to the vi-sual rendering of text—as a controlled methodology for studying rendered-text understanding in VLMs. The Stealth Prompt Testset shows that word-level color styling can systematically bias sentiment predictions and sometimes override contradictory lexical evidence; under structured long sentences, models often shift to positional heuristics. For contrast, reducing text–background visibility increases reliance on visually salient shortcut cues and can induce decoy-driven VQA errors. The auxiliary probes contextualize these effects: CLIP embeddings shift with hue along semantic axes, and the OCR proxy shows model-dependent readability transitions . Overall, ordinary formatting should not be treated as purely cosmetic for text-as-image inputs. It can act as an implicit control channel, motivating evaluation protocols and robustness methods that explicitly account for visual styling in deployed VLM pipelines. Seeing Red, Thinking Bad: Color Bias in Vision Language Models 13 
+
+## Acknowledgments 
+
+This work was supported by the AIST policy-based budget project “R&D on Generative AI Foundation Models for the Physical Domain”. We used ABCI 3.0 provided by AIST and AIST Solutions with support from “ABCI 3.0 Develop-ment Acceleration Use”. 
+
+## References 
+
+1. Arias, G., Baldrich, R., Vanrell, M.: Color in visual-language models: CLIP defi-ciencies. In: Color and Imaging Conference. pp. 101–106 (2024) 2. Azuma, H., Matsui, Y.: Defense-prefix for preventing typographic attacks on CLIP. In: ICCV Workshops. pp. 3644–3653 (2023) 3. Bau, D., Zhou, B., Khosla, A., Oliva, A., Torralba, A.: Network dissection: Quan-tifying interpretability of deep visual representations. In: CVPR. pp. 6541–6549 (2017) 4. Biten, A.F., Tito, R.P., Mafla, A., Gomez, L., Rusiñol, M., Mathew, M., Jawahar, C.V., Valveny, E., Karatzas, D.: ICDAR 2019 competition on scene text visual question answering. In: ICDAR. pp. 1563–1570 (2019) 5. Clusmann, J., Ferber, D., Wiest, I.C., et al.: Prompt injection attacks on vision language models in oncology. Nature Communications 16 , 1239 (2025) 6. Eslami, S., de Melo, G.: Mitigate the gap: Improving cross-modal alignment in CLIP. In: ICLR (2025) 7. Goh, G., Cammarata, N., Voss, C., Carter, S., Petrov, M., Schubert, L., Radford, A., Olah, C.: Multimodal neurons in artificial neural networks. Distill 6(3), e30 (2021) 8. Guan, T., Liu, F., Wu, X., Xian, R., Li, Z., Liu, X., Wang, X., Chen, L., Huang, F., Yacoob, Y., Manocha, D., Zhou, T.: Hallusionbench: An advanced diagnostic suite for entangled language hallucination and visual illusion in large vision-language models. In: CVPR. pp. 14375–14385 (2024) 9. Jia, C., Yang, Y., Xia, Y., Chen, Y.T., Parekh, Z., Pham, H., Le, Q.V., Sung, Y., Li, Z., Duerig, T.: Scaling up visual and vision-language representation learning with noisy text supervision. In: ICML. pp. 4904–4916 (2021) 10. Kafle, K., Price, B., Cohen, S., Kanan, C.: DVQA: Understanding data visualiza-tions via question answering. In: CVPR. pp. 5648–5656 (2018) 11. Kahou, S.E., Michalski, V., Atkinson, A., Kadar, A., Trischler, A., Bengio, Y.: FigureQA: An annotated figure dataset for visual reasoning. arXiv preprint arXiv:1710.07300 (2017) 12. Kim, B., Wattenberg, M., Gilmer, J., Cai, C., Wexler, J., Viegas, F., Sayres, R.: Interpretability beyond feature attribution: Quantitative testing with concept ac-tivation vectors (TCAV). In: ICML. pp. 2668–2677 (2018) 13. Lee, S., Park, S.H., Jo, Y., Seo, M.: Volcano: Mitigating multimodal hallucination through self-feedback guided revision. In: NAACL. pp. 391–404 (2024) 14. Li, J., Li, D., Xiong, C., Hoi, S.C.H.: BLIP: Bootstrapping language-image pre-training for unified vision-language understanding and generation. In: ICML. pp. 12888–12900 (2022) 15. Li, Y., Du, Y., Zhou, K., Wang, J., Zhao, W.X., Wen, J.R.: Evaluating object hallucination in large vision-language models. In: EMNLP. pp. 292–305 (2023) 14 Ide et al. 16. Liang, V.W., Zhang, Y., Kwon, Y., Yeung, S., Zou, J.: Mind the gap: Understanding the modality gap in multi-modal contrastive representation learning. In: NeurIPS (2022) 17. Liu, H., Xue, W., Chen, Y., Chen, D., Zhao, X., Wang, K., Hou, L., Li, R., Peng, W.: A survey on hallucination in large vision-language models. arXiv preprint arXiv:2402.00253 (2024) 18. Liu, Y., Wang, Y., Sun, L., Yu, P.S.: Rec-GPT4V: Multimodal recommendation with large vision-language models. arXiv preprint arXiv:2402.08670 (2024) 19. Masry, A., Long, D.X., Tan, J.Q., Joty, S., Hoque, E.: ChartQA: A benchmark for question answering about charts with visual and logical reasoning. In: Findings of ACL. pp. 2263–2279 (2022) 20. Mathew, M., Bagal, V., Tito, R.P., Karatzas, D., Valveny, E., Jawahar, C.V.: InfographicVQA. In: WACV. pp. 1697–1706 (2022) 21. Mathew, M., Karatzas, D., Jawahar, C.V.: DocVQA: A dataset for VQA on doc-ument images. In: WACV. pp. 2200–2209 (2021) 22. Methani, N., Ganguly, P., Khapra, M.M., Kumar, P.: PlotQA: Reasoning over scientific plots. In: WACV. pp. 1516–1525 (2020) 23. Mishra, A., Shekhar, S., Singh, A.K., Chakraborty, A.: OCR-VQA: Visual question answering by reading text in images. In: ICDAR. pp. 947–952 (2019) 24. OpenAI: GPT-4V(ision) system card. System card (2023) 25. Papadimitriou, I., Su, H., Fel, T., Kakade, S.M., Gil, S.: Interpreting the linear structure of vision-language model embedding spaces. In: COLM (2025) 26. Radford, A., Kim, J.W., Hallacy, C., Ramesh, A., Goh, G., Agarwal, S., Sastry, G., Askell, A., Mishkin, P., Clark, J., Krueger, G., Sutskever, I.: Learning transferable visual models from natural language supervision. In: ICML. pp. 8748–8763 (2021) 27. Rajpurkar, P., Zhang, J., Lopyrev, K., Liang, P.: SQuAD: 100,000+ questions for machine comprehension of text. In: EMNLP. pp. 2383–2392 (2016) 28. Rohrbach, A., Hendricks, L.A., Burns, K., Darrell, T., Saenko, K.: Object halluci-nation in image captioning. In: EMNLP. pp. 4035–4045 (2018) 29. Shukor, M., Cord, M.: Implicit multimodal alignment: On the generalization of frozen LLMs to multimodal inputs. In: NeurIPS (2024) 30. Sidorov, O., Hu, R., Rohrbach, M., Singh, A.: TextCaps: A dataset for image captioning with reading comprehension. In: ECCV. pp. 742–758 (2020) 31. Singh, A., Natarajan, V., Shah, M., Jiang, Y., Chen, X., Batra, D., Parikh, D., Rohrbach, M.: Towards VQA models that can read. In: CVPR. pp. 8317–8326 (2019) 32. Singh, A., Pang, G., Toh, M., Huang, J., Galuba, W., Hassner, T.: TextOCR: To-wards large-scale end-to-end reasoning for arbitrary-shaped scene text. In: CVPR. pp. 8802–8812 (2021) 33. van Sprang, A., Samson, L., Lucic, A., Acar, E., Ghebreab, S., Asano, Y.M.: Same content, different answers: Cross-modal inconsistency in MLLMs. In: CVPR (2026) 34. Tang, Y., Yamada, Y., Zhang, Y., Yildirim, I.: When are lemons purple? the concept association bias of vision-language models. In: EMNLP. pp. 14333–14348 (2023) 35. Wang, P., Bai, S., Tan, S., Wang, S., Fan, Z., Bai, J., Chen, K., Liu, X., Wang, J., Ge, W., Fan, Y., Dang, K., Du, M., Ren, X., Men, R., Liu, D., Zhou, C., Zhou, J., Lin, J.: Qwen2-VL: Enhancing vision-language model’s perception of the world at any resolution. arXiv preprint arXiv:2409.12191 (2024) 36. Wu, J., Zhang, Z., Xia, Y., Li, X., Xia, Z., Chang, A., Yu, T., Kim, S., Rossi, R.A., Zhang, R., Mitra, S., Metaxas, D.N., Yao, L., Shang, J., McAuley, J.: Vi-Seeing Red, Thinking Bad: Color Bias in Vision Language Models 15 sual prompting in multimodal large language models: A survey. arXiv preprint arXiv:2409.15310 (2024) 37. Wu, M., Cai, X., Ji, J., Li, J., Huang, O., Luo, G., Fei, H., Jiang, G., Sun, X., Ji, R.: ControlMLLM: Training-free visual prompt learning for multimodal large language models. In: NeurIPS. pp. 45206–45234 (2024) 38. Yamabe, S., Waseda, F., Shiono, D., Takahashi, T.: Text-printed image: Bridg-ing the image-text modality gap for text-centric training of large vision-language models. In: CVPR (2026) 39. Yin, S., Fu, C., Zhao, S., Li, K., Sun, X., Xu, T., Chen, E.: A survey on multimodal large language models. National Science Review 11 (12), nwae403 (2024) 40. Zhai, Y., Bai, H., Lin, Z., Pan, J., Tong, S., Zhou, Y., Suhr, A., Xie, S., LeCun, Y., Ma, Y., Levine, S.: Fine-tuning large vision-language models as decision-making agents via reinforcement learning. In: NeurIPS. pp. 110935–110971 (2024) 41. Zhang, J., Huang, J., Jin, S., Lu, S.: Vision-language models for vision tasks: A survey. IEEE Transactions on Pattern Analysis and Machine Intelligence 46 (8), 5625–5644 (2024) 42. Zhang, X., Li, S., Shi, N., Hauer, B., Wu, Z., Kondrak, G., Abdul-Mageed, M., Lak-shmanan, L.V.S.: Cross-modal consistency in multimodal large language models. arXiv preprint arXiv:2411.09273 (2024)

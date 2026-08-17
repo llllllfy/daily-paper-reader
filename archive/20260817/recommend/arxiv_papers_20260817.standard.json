@@ -1,0 +1,57 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-17T20:25:33.163305+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2608.14286v1",
+      "source": "arxiv",
+      "title": "Seeing Red, Thinking Bad: Color Bias in Vision Language Models",
+      "abstract": "Vision language models (VLMs) are increasingly used in industrial decision-making systems, such as recruitment support and recommendation. This motivates careful analysis of how VLMs process visual and textual information. In this work, we study how VLMs interpret text rendered as an image, and investigate the influence of visual styling biases. To this end, we introduce Stealth Visual Prompts, which subtly change visual styling of text, such as color and contrast, while preserving semantic content. Using these prompts, we systematically control the visual styling of words in text and measure their impact on the analysis performed by VLMs. We further analyze how such visual perturbations affect the latent representations of the vision encoder. From our experiments, we observed that coloring positive words in green consistently shifts sentiment predictions toward a positive direction. As a result, VLMs often fail to properly account for negative words present in the text. Our analysis suggests that this behavior is correlated with changes in the latent representations of the vision encoder induced by color variations. In addition, we show that reducing text--background contrast increases reliance on visually salient cues and leads to more incorrect Visual Question Answering (VQA) outputs. These results suggest that the visual styling of rendered text can guide VLMs' interpretation in ways that diverge from human semantic understanding.   Project page: https://github.com/KohsukeIde/color-bias-vlm",
+      "authors": [
+        "Kohsuke Ide",
+        "Ryousuke Yamada",
+        "Yoshihiro Fukuhara",
+        "Hirokatsu Kataoka",
+        "Yutaka Satoh"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "published": "2026-08-14T13:14:58+00:00",
+      "link": "https://arxiv.org/pdf/2608.14286v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "subtle color/contrast changes preserving semantic content affect VLM outputs and latent representations",
+      "llm_evidence_cn": "保持语义内容不变的细微颜色/对比度变化影响VLM输出和潜在表示",
+      "llm_evidence": "保持语义内容不变的细微颜色/对比度变化影响VLM输出和潜在表示",
+      "canonical_evidence": "保持语义内容不变的细微颜色/对比度变化影响VLM输出和潜在表示",
+      "llm_tldr_en": "This paper introduces Stealth Visual Prompts to subtly alter text color/contrast while preserving semantics, and shows that such visual styling biases significantly affect VLM outputs and latent representations.",
+      "llm_tldr_cn": "视觉语言模型在招聘、推荐等决策场景中的使用日益增多，但视觉样式偏见的影响尚不明确。本文引入隐式视觉提示，在保持文字语义内容不变的条件下改变颜色和对比度等视觉样式，系统测量其对VLM分析的影响。结果显示颜色变化会显著左右VLM输出，且视觉编码器潜在表示随之改变。该研究揭示了VLM的颜色偏见，提醒工业界重视视觉样式的公平性。",
+      "llm_tldr": "视觉语言模型在招聘、推荐等决策场景中的使用日益增多，但视觉样式偏见的影响尚不明确。本文引入隐式视觉提示，在保持文字语义内容不变的条件下改变颜色和对比度等视觉样式，系统测量其对VLM分析的影响。结果显示颜色变化会显著左右VLM输出，且视觉编码器潜在表示随之改变。该研究揭示了VLM的颜色偏见，提醒工业界重视视觉样式的公平性。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "impact of color perturbation on semantic understanding",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}

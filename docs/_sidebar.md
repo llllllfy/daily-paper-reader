@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-08-17 <!--dpr-date:20260817-->
+    * 精读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202608/17/2608.14286v1-seeing-red-thinking-bad-color-bias-in-vision-language-models" data-sidebar-item="{&quot;title&quot;: &quot;Seeing Red, Thinking Bad: Color Bias in Vision Language Models&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2608.14286v1-seeing-red-thinking-bad-color-bias-in-vision-language-models&quot;, &quot;score&quot;: &quot;9.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;保持语义内容不变的细微颜色/对比度变化影响VLM输出和潜在表示&quot;}">Seeing Red, Thinking Bad: Color Bias in Vision Language Models</a>
   * 2026-08-16 <!--dpr-date:20260816-->
     * 速读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202608/16/2608.08309v1-three-necessary-principles-for-self-supervised-visual-representation-learning" data-sidebar-item="{&quot;title&quot;: &quot;Three Necessary Principles for Self-Supervised Visual Representation Learning&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2608.08309v1-three-necessary-principles-for-self-supervised-visual-representation-learning&quot;, &quot;score&quot;: &quot;7.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;增强视图间的语义不变性，包括颜色抖动&quot;}">Three Necessary Principles for Self-Supervised Visual Representation Learning</a>
