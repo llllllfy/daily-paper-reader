@@ -1,0 +1,69 @@
+{
+  "label": "2026-08-18",
+  "date": "2026-08-18",
+  "generated_at": "2026-08-18T21:04:08",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202608/18/2608.11537v1-generative-semantic-segmentation-via-an-observable-semantic-image-interface-and-hierarchical-generator-evidence-alignment",
+      "section": "deep",
+      "title_en": "Generative Semantic Segmentation via an Observable Semantic-Image Interface and Hierarchical Generator Evidence Alignment",
+      "authors": "Weize Cai, Yongqi Dong, Zhida Shao, Zixin Fu",
+      "date": "2026-08-12",
+      "pdf": "https://arxiv.org/pdf/2608.11537v1",
+      "score": "8.0",
+      "evidence": "通过固定类别颜色码本和语义-图像接口解决生成式语义分割中的颜色漂移与边界混合",
+      "tldr": "生成式语义分割中直接颜色解码易产生颜色漂移和边界混合，潜在特征解码器则可能弱化渲染图像。本文提出 Semantic Prism，用扩散蒸馏一步生成器渲染语义图像，以渲染颜色到固定色卡的逐像素距离定义显式概率接口；分层生成器证据对齐预测接口 logit 残差，保留图像接口为参考。在 Cityscapes 上获 72.07% mIoU，比直接接口解码高 11.39 点，ECE 0.41%，显著提升分割精度与校准性，并提供免额外前向的错误排序能力。",
+      "tags": "query:cp",
+      "abstract_en": "Generative semantic segmentation exposes structured predictions as images, but direct color decoding is susceptible to color drift and boundary mixing, whereas latent-feature decoders that predict a separate output distribution may relegate the rendered image to an intermediate visualization. We present Semantic Prism, a conditional semantic-image generation-and-refinement framework with deterministic inference. A diffusion-distilled one-step generator renders a semantic RGB image; per-pixel distances from the rendered colors to a fixed class-color codebook define an explicit probabilistic interface. Hierarchical Generator Evidence Alignment spatially aligns multi-level generator features and uses a zero-initialized output projection to predict an additive residual in the interface logit space, retaining the image-defined interface as the reference for the final distribution. The interface and refined distributions further enable Contextual Interface--Hierarchy Disagreement (C-IHD), a fixed readout for ranking remaining pixel errors without an auxiliary predictor or additional forward pass. On the 500-image Cityscapes validation set, Semantic Prism achieves 72.07% mean intersection over union, 11.39 mIoU points above direct-interface decoding, with 0.41% expected calibration error. Matched-capacity ablations over three seeds support the benefit of jointly aligned multi-level evidence. A separately trained model attains 62.22% mIoU on BDD100K, while the Cityscapes-trained model reaches 46.89\\% mIoU under source-frozen transfer to the Adverse Conditions Dataset with Correspondences, without target-domain adaptation. Across all three datasets, C-IHD consistently improves the area under the precision--recall curve for pixel-error ranking over maximum softmax probability on the same segmentation predictions; on ACDC, it raises AUPR from 0.6580 to 0.7557.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/18/2608.15736v1-toward-ai-friendly-cartography-understanding-how-color-design-influences-foundation-model-spatial-reasoning-on-sequential-choropleth-maps",
+      "section": "deep",
+      "title_en": "Toward AI-Friendly Cartography: Understanding How Color Design Influences Foundation Model Spatial Reasoning on Sequential Choropleth Maps",
+      "authors": "Yonghe Sun, Zhenjia Liu, Hua Liao, Wenjia Xu, Nai Yang, Weihua Dong, Zhiwei Wei",
+      "date": "2026-08-16",
+      "pdf": "https://arxiv.org/pdf/2608.15736v1",
+      "score": "8.0",
+      "evidence": "研究颜色设计如何影响空间推理",
+      "tldr": "基础模型在多模态地理空间推理中表现提升，但传统面向人的制图色彩原则对机器是否有效仍不明确。本研究构建5,760张顺序分级统计地图和28,800个问题，评估21个开源与专有多模态模型在属性识别、空间识别、比较、排序和模式描绘上的表现，并进行LoRA微调与析因实验。结果显示色相选择影响有限且不一致，而破坏顺序色序或降低亮度对比会显著损害推理，额外增加对比收益很小。这些发现为AI友好制图设计提供了颜色使用依据。",
+      "tags": "query:cp",
+      "abstract_en": "Foundation models (FMs) increasingly support multimodal and geospatial reasoning, yet it remains unclear whether cartographic principles designed for human perception are equally effective for machines. Focusing on sequential choropleth maps, we examine how hue palette, color ordering, and lightness contrast influence FM spatial reasoning. We construct a controlled benchmark of 5,760 maps and 28,800 questions spanning Attribute Identify, Spatial Recognition, Compare, Rank, and Pattern Delineate, and evaluate 21 open-source and proprietary multimodal FMs. Results show that hue choice has limited and inconsistent effects, whereas disrupting sequential color ordering substantially reduces performance, especially for comparison and ranking. Reduced lightness contrast also consistently impairs reasoning, while increasing contrast beyond sufficient separability provides only marginal gains. LoRA fine-tuning improves overall accuracy but preserves these relative sensitivities. Additional factorial experiments further indicate that errors arise from color-and-legend decoding, spatial reasoning, and the integration of thematic attributes with spatial structure. These findings show that conventional sequential ordering and sufficient contrast remain important for machine map understanding and provide empirical guidance for AI-friendly cartographic design.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/18/2608.16251v1-scout-semantic-concept-discovery-for-open-vocabulary-editing-of-face-recognition-templates",
+      "section": "deep",
+      "title_en": "SCOUT: Semantic Concept Discovery for Open-Vocabulary Editing of face Recognition Templates",
+      "authors": "Leon Todorov, Peter Rot, Peter Peer, Vitomir Štruc, Klemen Grm",
+      "date": "2026-08-17",
+      "pdf": "https://arxiv.org/pdf/2608.16251v1",
+      "score": "8.0",
+      "evidence": "通过概念发现直接编辑人脸识别模板中的语义",
+      "tldr": "人脸识别模板虽紧凑却蕴含丰富语义，但直接编辑模板空间仍缺乏可扩展方法；现有方案依赖手动检查或预定义属性标签，语义灵活性受限。SCOUT通过机制可解释性学习稀疏模板表示，从自然语言描述自动发现并验证潜在语义概念，将其用作可控编辑方向。在CNN、ViT、Swin骨干上，SCOUT发现了超出标准属性标签的可解释概念，实现身份感知操作且匹配影响可忽略。该工作开辟了无需编辑-重编码流水线的直接模板语义编辑新途径。",
+      "tags": "query:cp",
+      "abstract_en": "Face recognition templates are compact identity representations, yet they also encode rich semantic information about facial appearance. Prior work has shown that templates can be inverted to images or indirectly manipulated through image-editing pipelines, but direct semantic editing in template space remains largely unexplored. Existing interpretability methods for face recognition often rely on manual neuron inspection or predefined attribute labels, limiting scalability and semantic flexibility. To address this gap, we propose SCOUT (Semantic Concept Discovery for Open-VocabUlary Editing of Face Recognition Templates), an end-to-end framework for discovering and directly manipulating semantic concepts in face recognition templates using mechanistic interpretability. SCOUT learns sparse template representations, generates semantic hypotheses for latent features from natural-language descriptions, and validates their stability. The resulting features act as controllable semantic directions for direct editing, avoiding costly edit--re-encode pipelines. Experiments with face recognition models using CNN, ViT, and Swin backbones show that SCOUT discovers interpretable concepts beyond standard attribute labels and enables controllable, identity-aware template manipulation with negligible impact on identity matching. We further show that edited templates can subsequently be decoded with independent inversion models for visualization and evaluation.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/18/2608.10237v1-beyond-decision-boundaries-relational-geometry-attacks-on-contrastive-embedding-manifolds",
+      "section": "quick",
+      "title_en": "Beyond Decision Boundaries: Relational Geometry Attacks on Contrastive Embedding Manifolds",
+      "authors": "Fei Zhao, Peiyuan Zhang, Xi Li, Chengcui Zhang, Nitesh Saxena",
+      "date": "2026-08-10",
+      "pdf": "https://arxiv.org/pdf/2608.10237v1",
+      "score": "6.0",
+      "evidence": "提出几何感知的对抗攻击框架，在嵌入流形上扭曲相似性组织",
+      "tldr": "对比学习验证系统的决策依赖嵌入空间的关系几何，但现有攻击仍以分类为中心，忽视此脆弱性。本文提出几何感知攻击框架，通过离线训练前馈生成器，在单次前向传播中产生扰动，系统性破坏正负对相似性结构。实验显示该攻击使Markmatch准确率从95.4%降至38.6%，并完全反转相似性结构。该攻击无需在线梯度计算，可实时部署，揭示了流形级关系破坏的严重威胁。",
+      "tags": "query:cp",
+      "abstract_en": "Contrastive learning and Siamese embedding models have become the foundation of modern verification systems, where decisions are governed not by discrete classification boundaries, but by relational geometry in embedding space. However, existing adversarial attacks remain fundamentally classification-centric, overlooking the vulnerability of relational geometry. In this paper, we introduce a geometry-aware adversarial attack framework that reformulates attacks on contrastive systems as manifold-level relational corruption. Instead of targeting individual predictions, the proposed framework systematically distorts similarity organization within the embedding manifold by pushing positive pairs apart while simultaneously pulling negative pairs closer, ultimately collapsing and inverting pairwise similarity structure. To enable scalable deployment, we shift iterative online optimization into an offline adversarial geometry deformation prior learning stage and train a lightweight feed-forward generator that learns generalized geometry deformation patterns from the victim model. Once trained, the generator produces adversarial perturbations through a single forward pass without requiring online gradient computation, enabling real-time online attacks against similarity-based verification systems. Experimental results across multiple verification architectures demonstrate substantial degradation of verification performance together with severe manifold-level relational corruption. On the Markmatch verification system, the proposed attack reduces accuracy from 95.4% to 38.6% while completely reversing the positive-negative similarity structure.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

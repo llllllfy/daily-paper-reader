@@ -1,0 +1,459 @@
+Title: Beyond Decision Boundaries: Relational Geometry Attacks on Contrastive Embedding Manifolds
+
+URL Source: https://arxiv.org/pdf/2608.10237v1
+
+Published Time: Wed, 12 Aug 2026 00:22:51 GMT
+
+Number of Pages: 9
+
+Markdown Content:
+# Beyond Decision Boundaries: Relational Geometry Attacks on Contrastive Embedding Manifolds 
+
+# Fei Zhao 
+
+The University of Alabama at Birmingham Birmingham, USA larry5@uab.edu 
+
+# Peiyuan Zhang 
+
+The University of Alabama at Birmingham Birmingham, USA zhangp@uab.edu 
+
+# Xi Li 
+
+The University of Alabama at Birmingham Birmingham, USA xiliuab@uab.edu 
+
+# Chengcui Zhang 
+
+The University of Alabama at Birmingham Birmingham, USA czhang02@uab.edu 
+
+# Nitesh Saxena 
+
+Texas A&M University College Station, USA nsaxena@tamu.edu 
+
+## Abstract 
+
+Contrastive learning and Siamese embedding models have become the foundation of modern verification systems, where decisions are governed not by discrete classification boundaries, but by relational geometry in embedding space. Consequently, the security of such systems depends on the stability of pairwise similarity organization rather than conventional decision regions. However, existing ad-versarial attacks remain fundamentally classification-centric. They primarily manipulate isolated prediction outputs through bound-ary perturbations while largely overlooking the vulnerability of relational geometry itself. In this paper, we introduce a geometry-aware adversarial attack framework that reformulates attacks on contrastive systems as manifold-level relational corruption. Instead of targeting individual predictions, the proposed framework sys-tematically distorts similarity organization within the embedding manifold by pushing positive pairs apart while simultaneously pulling negative pairs closer, ultimately collapsing and inverting pairwise similarity structure. To enable scalable deployment, we shift iterative online optimization into an offline adversarial ge-ometry deformation prior learning stage and train a lightweight feed-forward generator that learns generalized geometry deforma-tion patterns from the victim model. Once trained, the generator produces adversarial perturbations through a single forward pass without requiring online gradient computation, enabling real-time online attacks against similarity-based verification systems. Exper-imental results across multiple verification architectures demon-strate substantial degradation of verification performance together with severe manifold-level relational corruption. On the Markmatch verification system, the proposed attack reduces accuracy from 95.4% to 38.6% while completely reversing the positive-negative similarity structure. Our findings reveal that contrastive embedding 
+
+> Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than the author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from permissions@acm.org.
+> Conference acronym ’XX, Woodstock, NY
+> © 2018 Copyright held by the owner/author(s). Publication rights licensed to ACM. ACM ISBN 978-1-4503-XXXX-X/2018/06 https://doi.org/XXXXXXX.XXXXXXX
+
+systems possess fundamentally different adversarial vulnerabilities from traditional classification models, suggesting that future robust-ness in contrastive representation learning systems may depend less on protecting decision boundaries and more on preserving relational geometry itself. 
+
+## CCS Concepts 
+
+• Information systems → Similarity measures ; • Computing methodologies → Computer vision representations ; Neural networks ; • Security and privacy → Software and application security .
+
+## Keywords 
+
+Contrastive Learning, Adversarial Attacks, Embedding Space, Pair-wise Similarity, Representation Learning, Manifolds 
+
+ACM Reference Format: 
+
+Fei Zhao, Peiyuan Zhang, Xi Li, Chengcui Zhang, and Nitesh Saxena. 2018. Beyond Decision Boundaries: Relational Geometry Attacks on Contrastive Embedding Manifolds. In Proceedings of Make sure to enter the correct con-ference title from your rights confirmation email (Conference acronym ’XX). 
+
+ACM, New York, NY, USA, 9 pages. https://doi.org/XXXXXXX.XXXXXXX 
+
+## 1 Introduction 
+
+Contrastive learning [1, 2] and Siamese networks [3, 4] have be-come the foundation of modern verification and retrieval systems, including biometric authentication [5], signature verification [6], handwriting analysis [7], and ballot mark inspection [8]. Unlike tra-ditional classification models that rely on discrete decision bound-aries, these systems operate through relational geometry in em-bedding space [9]. Inputs are projected into structured latent mani-folds where verification decisions are governed entirely by pairwise similarity organization. Semantically similar samples are pulled to-gether, while dissimilar samples are pushed apart. Consequently, the reliability of contrastive systems depends not on the stabil-ity of isolated decision regions for classes, but on the integrity of relational organization within the embedding manifold itself. This paradigm shift in representation learning introduces a fun-damentally different adversarial vulnerability. Traditional adver-sarial attacks are largely designed for classification systems, where arXiv:2608.10237v1 [cs.AI] 10 Aug 2026 Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Fei Zhao, Peiyuan Zhang, Xi Li, Chengcui Zhang, and Nitesh Saxena 𝑪𝒍𝒂𝒔𝒔 𝑨 𝑧 !  
+
+> 𝑧 "
+> 𝑧 !
+> 𝑧 "
+> 𝑪𝒍𝒂𝒔𝒔 𝑨 𝑪𝒍𝒂𝒔𝒔 𝑩 𝑪𝒍𝒂𝒔𝒔 𝑩 𝑥 #
+> 𝑥 ##$%
+> 𝑥 &𝑥 &#$%
+> Classification Boundary Embedding Manifold
+> Classification Boundary Short distance Far distance Pull Push
+> Embedding Manifold
+> (b) (a)
+> Original State Adversarial State
+> 𝑖 𝑗 𝑘 𝑓 𝑖 𝑗 𝑘 𝑓
+
+Figure 1: Conventional Attack (a): Traditional boundary-oriented perturbations fail to disrupt the continuous rela-tional structure, leaving the relative pairwise distances (in-dicated by the persistent purple region) entirely intact. (b) Relational Geometry Attack (b): Our proposed framework directly warps the contrastive embedding manifold, success-fully shattering the clean pairwise relationship to systemati-cally invert similarity orderings (Push/Pull). 
+
+the primary objective is to cross local classification decision bound-aries and manipulate isolated prediction outputs, shown as Fig. 1(a). However, contrastive systems do not fundamentally rely on discrete boundaries. Their behavior emerges from relative similar-ity structure distributed across the embedding space. As a result, attacks against contrastive models should not merely focus on label flipping or local prediction manipulation. Instead, they must target the relational geometry governing pairwise organization in latent space. The central vulnerability of contrastive systems therefore lies in the manipulability of embedding geometry itself. Despite recent progress in adversarial machine learning, exist-ing attack frameworks remain predominantly classification-centric. Iterative optimization methods such as Projected Gradient De-scent (PGD) [10] repeatedly compute sample-specific perturbations through expensive online gradient optimization. While effective for classification-oriented objectives, such attacks exhibit two major limitations when applied to modern similarity systems. First, they fail to systematically corrupt global relational organization within embedding manifolds, shown as Fig. 1(a). Second, their heavy online optimization overhead makes them impractical for real-time online verification environments requiring low-latency deployment. In this paper, we introduce a geometry-aware adversarial at-tack framework that reformulates attacks on contrastive systems as manifold-level relational corruption. Rather than targeting isolated prediction outputs, the proposed framework system-atically distorts pairwise similarity organization by pushing positive pairs apart while simultaneously pulling negative pairs closer, ultimately collapsing and inverting relational structure within the embedding manifold , shown as Fig. 1(b). To enable scalable deployment, we shift expensive iterative on-line optimization into an offline adversarial geometry deformation prior learning stage. During this stage, a lightweight feed-forward generator learns generalized geometry deformation patterns from the victim similarity model. Once trained, the generator produces adversarial perturbations through a single forward pass without requiring online gradient computation, enabling real-time online attacks against similarity-based verification systems. We evaluate the proposed framework across multiple security-critical contrastive verification architectures, including same-hand ballot mark verification [9] and Siamese signature verification sys-tems [11, 12]. Experimental results demonstrate substantial degrada-tion of verification performance and systematic collapse of positive-negative separation in embedding space. Our findings suggest that contrastive embedding systems possess fundamentally different adversarial vulnerabilities from traditional classification models, highlighting the emerging security risks of manipulable relational geometry in modern representation learning systems. 
+
+Our contributions are summarized as follows. First , we introduce a geometry-centric adversarial attack para-digm for contrastive systems that shifts the attack objective from local decision boundary crossing to manifold-level relational cor-ruption in embedding space. 
+
+Second , we propose a lightweight generator-based framework that transforms expensive iterative online optimization into offline adversarial geometry deformation prior learning, enabling instanta-neous attack generation through a single feed-forward pass without online gradient computation. 
+
+Third , we demonstrate that modern contrastive verification sys-tems possess fundamentally different adversarial vulnerabilities from traditional classification models, where attacks can systemat-ically collapse and invert pairwise similarity organization across embedding manifolds. 
+
+## 2 Related Works 
+
+Traditional adversarial attacks on deep neural networks are pre-dominantly built upon classification-oriented learning paradigms. Foundational methods such as Fast Gradient Sign Method (FGSM) [13] and Projected Gradient Descent (PGD) [10] established the vulnerability of neural architectures by generating perturbations that push samples across discrete decision boundaries. Subsequent robustness benchmarks and evaluations [14, 15] further reinforced this boundary-centric adversarial perspective. These attacks are highly effective in closed-set recognition settings [16], where model behavior is primarily governed by isolated prediction regions. How-ever, their underlying objective remains fundamentally tied to ma-nipulating individual prediction outputs through local classifica-tion boundary perturbations. As modern contrastive representation learning increasingly shifts toward similarity-driven systems, this classification-centric perspective becomes insufficient for charac-terizing the vulnerabilities of contrastive embedding models. Recent advances in contrastive learning and metric learning have exposed emerging security challenges in similarity-based systems. Prior studies have investigated adversarial vulnerabilities in met-ric learning frameworks [17] and Siamese verification networks [18]. Existing approaches [19, 20] typically adapt iterative optimiza-tion strategies to manipulate ranking objectives [21] or disrupt triplet relationships [22]. These works demonstrate that contrastive Beyond Decision Boundaries: Relational Geometry Attacks on Contrastive Embedding Manifolds Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+embedding spaces can indeed be adversarially compromised. Nev-ertheless, most existing attacks fundamentally inherit the optimiza-tion philosophy of classification-based adversarial learning. They primarily operate through sample-specific perturbation optimiza-tion and local similarity manipulation rather than systematically targeting the global relational organization of embedding space. Consequently, they fail to explicitly model adversarial corruption as a manifold-level geometry distortion problem, see Fig. 1(b). In ad-dition, their reliance on repeated backward passes and continuous model queries introduces substantial online optimization overhead, making them impractical for large-scale retrieval and real-time verification environments. Generative adversarial attack frameworks provide an alternative direction for reducing the computational cost of iterative online optimization. Methods such as AdvGAN [23] train neural gen-erators to synthesize adversarial perturbations directly through feed-forward inference. Recent generative attack frameworks [24, 25, 26] further improve attack efficiency and scalability in high-throughput settings by shifting expensive optimization into an offline learning stage. However, existing generative attacks remain largely constrained to conventional classification objectives [27]. Their learned perturbation priors are primarily designed to induce classification label flipping, see Fig. 1(a) rather than corrupt rela-tional geometry in embedding space, see Fig. 1(b). In contrast, our work reformulates adversarial attacks on contrastive systems as manifold-level relational corruption. Rather than learning pertur-bation priors for isolated prediction manipulation, the proposed geometry deformation generative network learns generalized ge-ometry deformation patterns that systematically collapse and invert pairwise similarity organization across the embedding manifold while maintaining real-time online deployment efficiency. 
+
+## 3 Methods 3.1 Problem: Relational Geometry Attack 
+
+Contrastive verification systems fundamentally operate under a different paradigm from traditional classification models. Instead of producing independent class predictions, they organize seman-tic relationships through relational geometry in embedding space, where verification decisions are governed by the topology of the latent manifold rather than explicit decision boundaries. Within the embedding manifold, semantically similar samples form coherent local neighborhoods, while dissimilar samples re-main topologically separated. Consequently, the reliability of con-trastive systems depends on preserving the global relational orga-nization of the manifold itself. Under this perspective, adversarial attacks against contrastive systems should not merely manipulate isolated similarity scores. Instead, they should directly deform the manifold topology governing pairwise semantic organization. For positive pairs, the attack objective is to separate embeddings occu-pying nearby semantic regions. For negative pairs, the objective is to collapse originally separated manifold regions and distort their relational structure. The goal is therefore not class boundary cross-ing, but systematic corruption of pairwise similarity organization and relational geometry within the embedding space. We define this attack paradigm as a Relational Geometry Attack .Unlike conventional adversarial attacks that manipulate isolated prediction outputs, a relational geometry attack seeks to sys-tematically collapse and invert pairwise similarity organi-zation in latent space by directly deforming the underlying embedding manifold .
+
+## 3.2 Manifold Deformation Framework 
+
+Given an input pair (𝐴, 𝐵 ) with pair label 𝑦 , the proposed framework learns adversarial geometry deformation priors that systematically deform the relational geometry of the embedding manifold while preserving the overall visual appearance of the inputs. Rather than optimizing sample-specific perturbations through iterative online optimization, the framework learns generalized geometry deforma-tion patterns capable of corrupting pairwise semantic organization across the latent space. The adversarially perturbed samples are forwarded through the frozen victim embedding model, where verification is performed through pairwise similarity relationships in embedding space. The attack objective is formulated as manifold-level relational corrup-tion. For positive pairs, the framework seeks to separate embed-dings occupying nearby semantic regions. For negative pairs, it seeks to collapse originally separated manifold regions and distort their relational boundaries. The resulting deformation systemati-cally disrupts pairwise similarity organization and inverts relational structure across the embedding manifold, shown as Fig. 1(b). 
+
+## 3.3 Threat Model 
+
+Attacker’s abilities. The attack consists of offline training and an online attack. Offline training follows the classic adversarial optimization setting [10]. The attacker independently collects a small auxiliary dataset Dtrain attack that follows a similar distribution to, but has no overlap with, the victim model’s training data Dtrain victim ,i.e., 
+
+Dtrain victim ∩ D train attack = ∅,
+
+and uses it solely to train the attack generator. The attacker also has white-box access to the frozen victim model, enabling extrac-tion of embedding representations, pairwise similarity logits, and gradient signals via backpropagation. However, the attacker does not modify the victim model’s parameters, architecture, or training data throughout the attack generator training process. The online attack operates under a black-box setting. The attacker indepen-dently collects query data Dtest attack and generates adversarial example pairs via the trained attack generator, which are then submitted to the victim model through queries without receiving any internal model information. 
+
+Attacker’s goals. The attacker aims to invert the victim model’s pairwise similarity judgments: positive pairs should be classified as dissimilar, and negative pairs as similar. The adversarial per-turbations added to the image pairs are imperceptible to human observers, making the attack difficult to detect. 
+
+## 3.4 Geometry Deformation Generative Network 
+
+To operationalize relational geometry attacks, we introduce a no-val geometry-aware deformation generative network that learns generalized manifold deformation patterns against contrastive veri-fication systems. Rather than performing expensive sample-specific optimization during inference, the proposed framework amortizes Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Fei Zhao, Peiyuan Zhang, Xi Li, Chengcui Zhang, and Nitesh Saxena 
+
+manifold deformation into a feed-forward generative process capa-ble of systematically distorting relational organization within the embedding space. Formally, let 𝐺 𝜃 denote the geometry deformation generator parameterized by 𝜃 . Given an input pair (𝐴, 𝐵 ), the generator pro-duces corresponding geometry-aware perturbation fields for both inputs: ˜𝛿 𝐴 = 𝐺 𝜃 (𝐴 ), ˜𝛿 𝐵 = 𝐺 𝜃 (𝐵 ).
+
+These learned perturbations are added to the original inputs to pro-duce adversarially perturbed samples whose embeddings system-atically corrupt relational organization within the latent manifold. Although the perturbations are generated at the image level, the optimization objective is defined entirely over pairwise semantic organization in embedding space. The generator therefore learns generalized relational corruption priors that systematically separate semantically aligned regions while collapsing originally separated pairwise structures within the embedding manifold. The deformation generator is implemented using a U-Net-based encoder-decoder architecture with skip connections [28]. U-Net is adopted due to its ability to model structured spatial transfor-mations while preserving fine-grained local information. Unlike conventional generative adversarial attacks that primarily learn perturbation priors for classification label manipulation [23, 25, 26], the proposed generator is explicitly optimized to deform manifold topology and corrupt relational geometry within contrastive em-bedding space. To keep the input-space perturbations bounded, we constrain the generated geometry-aware perturbation fields using both element-wise clipping and 𝐿 2 projection: 
+
+𝛿 𝐴 = Π𝜖 2
+
+
+
+clip [− 𝜖 ∞,𝜖 ∞ ] ( ˜𝛿 𝐴 )
+
+
+
+, 𝛿 𝐵 = Π𝜖 2
+
+
+
+clip [− 𝜖 ∞,𝜖 ∞ ] ( ˜𝛿 𝐵 )
+
+
+
+,
+
+where 𝜖 ∞ controls the maximum pixel-level perturbation and 𝜖 2
+
+constrains the overall 𝐿 2 perturbation budget. The adversarial in-puts are then constructed as 
+
+𝐴 𝑎𝑑𝑣 = clip [0,1] (𝐴 + 𝛿 𝐴 ), 𝐵 𝑎𝑑𝑣 = clip [0,1] (𝐵 + 𝛿 𝐵 ).
+
+The clipping operation ensures valid image formation while pre-serving visually subtle perturbations. Consequently, the proposed framework learns bounded geometry deformation patterns that remain visually constrained while inducing substantial relational corruption within the embedding manifold. 
+
+## 3.5 Victim Model 
+
+Pairwise verification models are commonly implemented with Siamese-style architectures, where two inputs are processed by shared or tied feature extractors and compared in a learned repre-sentation space [2, 3, 4]. The victim model in this work is a frozen pairwise verification model in the MarkMatch same-hand ballot mark verification framework [9]. It measures the similarity of an input sample pair in the embedding space. Given an input pair 
+
+(𝐴, 𝐵 ), the victim model uses a shared image encoder to extract the embedding representations of the two images. Its encoder consists of a DenseNet121 [29] backbone followed by a linear embedding layer. The original classification head of DenseNet121 is removed, and global average pooling is used to extract image features. The resulting feature vector is then mapped to a 64-dimensional embed-ding space by a dense layer. The parameters of the victim model remain frozen during the training of the geometry deformation generative network. Formally, let 𝑓 𝜙 denote the victim encoder, where 𝜙 represents the parameters of the victim model. For a clean input pair (𝐴, 𝐵 ),the embeddings are given by: 
+
+𝑧 𝐴 = 𝑓 𝜙 (𝐴 ), 𝑧 𝐵 = 𝑓 𝜙 (𝐵 ).
+
+To compute pairwise similarity, the two embeddings are first 𝐿 2-normalized: ˆ𝑧 𝐴 = 𝑧 𝐴 
+
+∥𝑧 𝐴 ∥2
+
+, ˆ𝑧 𝐵 = 𝑧 𝐵 
+
+∥𝑧 𝐵 ∥2
+
+.
+
+The victim model then computes cosine similarity as the dot product between the normalized embeddings: 
+
+𝑠 (𝐴, 𝐵 ) = ˆ𝑧 ⊤ 
+
+> 𝐴
+
+ˆ𝑧 𝐵 .
+
+Following standard contrastive learning formulations [30], the co-sine similarity is further scaled by a temperature parameter 𝜏 to obtain the similarity logit: 
+
+ℓ (𝐴, 𝐵 ) = 𝑠 (𝐴, 𝐵 )
+
+𝜏 .
+
+Since 𝜏 < 1, the resulting logits amplify relative similarity differ-ences while preserving the original similarity ordering in embed-ding space. Therefore, all reported logits in the experiments can be interpreted as temperature-scaled cosine similarities. For an adver-sarial pair (𝐴 𝑎𝑑𝑣 , 𝐵 𝑎𝑑𝑣 ), the victim model computes the adversarial similarity logit in the same way: 
+
+ℓ (𝐴 𝑎𝑑𝑣 , 𝐵 𝑎𝑑𝑣 ) = 1
+
+𝜏 
+
+𝑓 𝜙 (𝐴 𝑎𝑑𝑣 )∥𝑓 𝜙 (𝐴 𝑎𝑑𝑣 )∥ 2
+
+!⊤ 𝑓 𝜙 (𝐵 𝑎𝑑𝑣 )∥𝑓 𝜙 (𝐵 𝑎𝑑𝑣 )∥ 2
+
+!
+
+.
+
+In evaluation, the similarity logit is further converted into a proba-bility using the sigmoid function and compared with a predefined threshold to obtain the pairwise verification decision. During the training of the geometry deformation generative network, the vic-tim model provides embeddings, similarity logits, and gradient signals for backpropagation. The parameters of the victim model re-main frozen, and only the parameters of the geometry deformation generative network are updated. 
+
+## 3.6 Attack Optimization Objective 
+
+The attack objective is designed to induce relational corruption within the embedding manifold of the frozen victim model. The proposed framework directly manipulates pairwise semantic orga-nization by distorting similarity relationships in latent space. For each input pair (𝐴, 𝐵 ) with pair label 𝑦 , we first compute the clean similarity logit and the adversarial similarity logit: 
+
+ℓclean = ℓ (𝐴, 𝐵 ), ℓadv = ℓ (𝐴 𝑎𝑑𝑣 , 𝐵 𝑎𝑑𝑣 ).
+
+The relational displacement induced by the deformation generator is then defined as 
+
+Δℓ = ℓadv − ℓclean .
+
+This displacement serves as a differentiable surrogate for relational geometry corruption in embedding space. Since verification deci-sions in Siamese-style systems are governed by pairwise similarity organization rather than independent class predictions [3, 4], the desired direction of relational displacement depends on the pair label. For positive pairs (𝑦 = 1), the objective is to reduce similar-ity and separate embeddings occupying nearby semantic regions. Beyond Decision Boundaries: Relational Geometry Attacks on Contrastive Embedding Manifolds Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+For negative pairs (𝑦 = 0), the objective is to increase similarity and collapse originally separated manifold regions. To encode this label-dependent relational deformation direction, we define 
+
+𝛼 (𝑦 ) =
+
+(
+
+1, 𝑦 = 1,
+
+−1, 𝑦 = 0.
+
+The main relational corruption objective is formulated as 
+
+Lattack = 1
+
+𝑁 
+
+> 𝑁
+
+∑︁ 
+
+> 𝑖 =1
+
+𝑤 𝑦 𝑖 𝛼 (𝑦 𝑖 )Δℓ𝑖 ,
+
+where 𝑁 is the batch size and 𝑤 𝑦 𝑖 denotes the class-dependent weighting factor. Minimizing this objective encourages relational separation for positive pairs and relational collapse for negative pairs, thereby systematically reducing the semantic separation structure of the embedding manifold. To further stabilize manifold-level deformation behavior across a batch, we introduce a relational direction regularization term. Let 
+
+Δℓ+ denote the average relational displacement over positive pairs and let Δℓ − denote the average displacement over negative pairs. The regularization term is defined as 
+
+Ldir = 𝜆 dir 
+
+ReLU (Δℓ+) + ReLU (− Δℓ − ) .
+
+where 𝜆 dir is a hyperparameter controlling the strength of the re-lational direction regularization term. This term penalizes incon-sistent manifold deformation directions when positive pairs fail to separate or negative pairs fail to collapse. We additionally include an optional perturbation regularization term based on the 𝐿 2 norm of the generated geometry-aware per-turbation fields: 
+
+Lpert = 12
+
+1
+
+𝑁 
+
+> 𝑁
+
+∑︁ 
+
+> 𝑖 =1
+
+∥𝛿 𝐴,𝑖 ∥2 + 1
+
+𝑁 
+
+> 𝑁
+
+∑︁ 
+
+> 𝑖 =1
+
+∥𝛿 𝐵,𝑖 ∥2
+
+!
+
+.
+
+The final optimization objective is 
+
+L = Lattack + L dir + 𝜆 pert Lpert .
+
+During optimization, the victim model remains fixed while the geometry deformation generative network learns relational cor-ruption patterns over the latent similarity structure. In practice, 
+
+𝜆 pert can be set to zero since perturbation magnitude is already constrained through clipping and projection operations, introduced in Section 3.5. 
+
+## 4 Experiments 
+
+We evaluate the proposed framework across multiple verification ar-chitectures and analyze both verification performance degradation and geometric corruption of latent similarity organization. 
+
+## 4.1 Datasets and Victim Models 
+
+We conduct experiments on two datasets. The ballot mark pair dataset from MarkMatch [9] consists of 51 × 51 three-channel im-age pairs, where each sample is an image pair (𝐴, 𝐵 ) with a binary pair label 𝑦 ∈ { 0, 1}: 𝑦 = 1 indicates a positive pair (two ballot marks considered similar or from the same hand) and 𝑦 = 0 a negative pair (two ballot marks considered dissimilar or from dif-ferent hands). The dataset is balanced, with approximately equal numbers of positive and negative pairs. The CEDAR [31] signature verification dataset contains genuine and forged handwritten signa-ture pairs, similarly represented as (𝐴, 𝐵 ) with a binary pair label, and is widely used for pairwise verification benchmarking. For both datasets, we follow the default training and test split, yielding 
+
+Dtrain victim and Dtest victim respectively. For the ballot mark pair dataset, the training set Dtrain victim contains 16,272 pairs and the test set Dtest victim 
+
+contains 1,972 pairs. The main victim model follows the MarkMatch framework [9], built on a DenseNet121 encoder [29] pretrained on ImageNet. The encoder maps each 51 × 51 RGB image to a 64-dimensional 𝐿 2-normalized embedding, and the pairwise logit is computed as the cosine similarity scaled by temperature 𝜏 = 0.07. The model is trained with a CLIP-style bidirectional batch contrastive loss [30] combined with a binary cross-entropy loss on positive pairs, with equal weights on both terms. Training uses the Adam optimizer [32] with a learning rate of 10 −4, batch size of 32, and 10 epochs. The verification threshold is selected on the validation ROC curve via Youden’s 𝐽 statistic [33], yielding ∼ 0.9962. Besides, we also evaluate against contrastive learning-based verification systems, including SigNet [12], SigScatNet [11], and a CEDAR DenseNet verification model [34]. 
+
+## 4.2 Attack Setup 
+
+Following the threat model, we randomly split Dtest victim into the auxiliary dataset Dtrain attack for attack generator offline training and 
+
+Dtest attack for online attack evaluation at an 8:2 ratio, ensuring no overlap with the victim model’s training and test data: 
+
+Dtest victim = Dtrain attack ∪ D test attack , Dtrain attack ∩ D test attack = ∅.
+
+For the ballot mark pair dataset, Dtest victim contains 1,972 pairs, yield-ing Dtrain attack with 1,578 pairs and Dtest attack with 394 pairs. The attack generator, introduced in Section 3.4, is a U-Net-based feed-forward model [28] that takes a single image as input and out-puts a perturbed version. For each input pair (𝐴, 𝐵 ), the generator is applied independently to each image , yielding the adversarial pair (𝐴 adv , 𝐵 adv ). During offline training, the generator is trained on Dtrain attack for 400 epochs with a batch size of 256 and a learning rate of 10 −4. The perturbation is constrained by an 𝐿 2 budget of 
+
+𝜖 2 = 2.5, which bounds the overall perturbation magnitude, and an element-wise clipping threshold of 𝜖 pix = 16 /255, which limits per-pixel intensity changes. Together, these constraints ensure the adversarial perturbations remain imperceptible to human observers, following standard adversarial attack settings [13, 10]. The positive and negative pair weights in the attack objective are both set to 1.0. During the online attack, adversarial pairs are generated from 
+
+Dtest attack following the same perturbation procedure described above, and submitted to the victim model as queries. 
+
+## 4.3 Baselines and Evaluation Metrics 
+
+We compare the proposed relational geometry attacks with three baseline methods: (1) Diff-PGD [35], an iterative gradient-based attack adapted to the pairwise verification setting. It extends the PGD-style adversarial optimization paradigm [10] with diffusion-guided adversarial sample generation. (2) A limited-query black-box attack based on zeroth-order optimization with NES-style gradi-ent estimation, denoted as ZO/NES [36]. This baseline does not Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Fei Zhao, Peiyuan Zhang, Xi Li, Chengcui Zhang, and Nitesh Saxena 
+
+directly use victim-model gradients. Instead, it estimates attack directions through repeated queries to the victim model. Zeroth-order and query-limited black-box attacks estimate adversarial directions from model outputs without directly accessing model gradients [37]. (3) Surrogate Transfer. In this setting, adversarial examples are generated using a substitute verification model and then evaluated on the victim model. This baseline is motivated by substitute-model-based black-box transfer attacks, where adversar-ial examples crafted on a local substitute model can transfer to the target model [38]. All methods are evaluated using the same attack test split. In the main evaluation, we report the Clean-Clean setting and the Adv-Adv setting. Clean-Clean evaluates the victim model on clean input pairs, while Adv-Adv evaluates the victim model when both images in each pair are attacked. The attack is applied independently to all images rather than selectively targeting specific pairs or images, so that every pairwise comparison is performed using adversarially perturbed inputs. Therefore, We do not include Clean-Adv or Adv-Clean in the experiments. We use verification accuracy as the decision-level metric. Accu-racy is computed by converting the similarity logit into a probability and comparing it with the fixed verification threshold. Since ac-curacy alone does not fully describe how the pairwise similarity structure changes, we also report three relational-geometry metrics. Regarding positive pairs, we compute Positive Logit Drop: PosDrop = ℓ+ 
+
+> clean
+
+− ℓ+
+
+> adv
+
+,
+
+where ℓ+ 
+
+> clean
+
+and ℓ+ 
+
+> adv
+
+denote the average positive-pair logits before and after the attack. A larger Positive Logit Drop means that origi-nally similar pairs are pushed farther apart. Regarding negative pairs, we compute Negative Logit Rise: NegRise = ℓ − 
+
+> adv
+
+− ℓ −
+
+> clean
+
+,
+
+where ℓ − 
+
+> clean
+
+and ℓ − 
+
+> adv
+
+denote the average negative-pair logits be-fore and after the attack. A larger Negative Logit Rise means that originally dissimilar pairs are pulled closer together. Finally, we compute Gap Reduction: GapReduction =  ℓ+ 
+
+> clean
+
+− ℓ −
+
+> clean
+
+ −  ℓ+ 
+
+> adv
+
+− ℓ −
+
+> adv
+
+ .
+
+This metric measures how much the attack reduces the separa-tion between positive and negative pairs. A larger Gap Reduction indicates stronger corruption of the relational geometry in the embedding space. 
+
+## 5 Results and Ablation 
+
+This section evaluates whether the proposed framework can sys-tematically corrupt relational geometry in contrastive verification systems. The experiments are designed to examine manifold-level semantic separation collapse, pairwise similarity inversion, and relational structure deformation within the embedding space. We first analyze the proposed framework on the primary MarkMatch victim model and compare its relational corruption behavior against existing adversarial baselines. We then investigate whether similar relational geometry vulnerabilities emerge across different con-trastive verification architectures. Finally, we study the effects of bounded deformation constraints, transformation-based defenses, and amortized attack generation efficiency. 
+
+## 5.1 Main Results and Baseline Comparison 
+
+As shown in Table 1, the proposed framework produces substantial relational corruption on the primary DenseNet121 victim model. Under clean inputs, the victim model achieves an accuracy of 0.954, with an average positive-pair logit of 9.993 and an average negative-pair logit of 0.641. This large positive-negative separation indicates that the embedding manifold preserves a strong semantic relational structure prior to attack. After adversarial deformation, the verifica-tion accuracy decreases to 0.386, accompanied by a severe collapse of relational separation within the embedding space. The average positive-pair logit decreases from 9.993 to -2.478, while the average negative-pair logit increases from 0.641 to 3.340, where the logits correspond to temperature-scaled pairwise similarity scores 
+
+defined in Section 3.5. Consequently, the original semantic similar-ity organization becomes inverted: embeddings that originally occupied nearby manifold regions are pushed apart, while originally separated manifold regions collapse toward each other. This result demonstrates that the proposed framework does not merely reduce verification accuracy, but fundamentally corrupts the relational geometry governing the embedding manifold. 
+
+Table 1: Main attack performance                     
+
+> Scenario Acc ↓Pos Logit ↓Neg Logit ↑Pos Prob ↓Neg Prob ↑
+> Clean 0.954 9.993 0.641 0.996 0.559 Adv 0.386 -2.478 3.340 0.326 0.589
+
+To further quantify manifold-level relational corruption, we an-alyze the relational separation statistics summarized in Table 2. The proposed framework produces a Positive Logit Drop of 12.471 and a Negative Logit Rise of 2.698, indicating simultaneous sep-aration of semantically aligned manifold regions and collapse of originally separated relational structures. More importantly, the clean positive-negative relational gap decreases from 9.352 to -5.818 after attack, resulting in a Gap Reduction of 15.170. Since the ad-versarial relational gap becomes negative, the original semantic separation structure is completely inverted: negative pairs be-come more similar than positive pairs within the embedding manifold . This result demonstrates that the proposed framework does not merely perturb pairwise similarity scores locally, but sys-tematically collapses and reverses the global relational organization governing the latent embedding space. 
+
+Table 2: Relational geometry metrics        
+
+> Metric Value Accuracy Drop 0.569 Positive Logit Drop 12.471 Negative Logit Rise 2.698 Clean Gap 9.352 Adv Gap -5.818 Gap Reduction 15.170
+
+As shown in Table 3, the proposed framework is compared against existing adversarial baselines. Although several baselines Beyond Decision Boundaries: Relational Geometry Attacks on Contrastive Embedding Manifolds Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+partially perturb pairwise similarity relationships, the proposed framework produces substantially stronger manifold-level rela-tional corruption across all evaluated metrics. Diff-PGD reduces the adversarial accuracy to 0.660 and achieves a Gap Reduction of 5.458, indicating partial degradation of semantic separation struc-ture. ZO/NES exhibits only limited relational corruption, with an ad-versarial accuracy of 0.919 and a Gap Reduction of 1.200. Although Surrogate Transfer produces stronger relational displacement than ZO/NES, its relational collapse remains substantially weaker than the proposed framework, achieving a Gap Reduction of 4.584. In contrast, the proposed framework reduces adversarial accuracy to 0.386 while producing a Gap Reduction of 15.170, substantially ex-ceeding all baseline methods. More importantly, only the proposed framework fully reverses the original positive-negative relational organization within the embedding manifold. These results suggest that existing attacks primarily induce local similarity perturbations, whereas the proposed geometry-aware framework systematically collapses semantic separation structure at the manifold level. 
+
+Table 3: Comparison with baselines                                    
+
+> Method Clean Acc Adv Acc ↓Acc Drop ↑Pos Drop ↑Neg Rise ↑Gap Red. ↑
+> Diff-PGD 0.954 0.660 0.294 4.842 0.616 5.458 ZO/NES 0.954 0.919 0.035 0.091 1.109 1.200 Surrogate Transfer 0.954 0.736 0.218 3.756 0.829 4.584
+> Ours 0.954 0.386 0.569 12.471 2.698 15.170
+
+Table 4 provides a more detailed view of how different attacks affect relational organization within the embedding manifold. Since all methods share the same clean reference on the MarkMatch vic-tim model, the clean statistics are reported only once. Diff-PGD produces partial relational displacement by decreasing the positive-pair logit from 9.993 to 5.152 and increasing the negative-pair logit from 0.641 to 1.258. However, the positive-pair similarity remains substantially higher than the negative-pair similarity, indicating that the original semantic separation structure is weakened but still preserved. ZO/NES primarily increases the negative-pair logit while leaving the positive-pair structure nearly unchanged, sug-gesting limited local similarity perturbation without substantial manifold-level relational restructuring. Surrogate Transfer perturbs both positive and negative directions, but its relational deformation remains insufficient to collapse the original semantic organization. In contrast, the proposed framework produces a complete relational inversion on the DenseNet121 victim model. The positive-pair logit decreases to -2.478, while the negative-pair logit increases to 3.340, resulting in negative pairs becoming more similar than positive pairs within the embedding manifold. Among all evaluated attacks, only the proposed geometry-aware framework fully collapses and reverses the original semantic separation structure governing the latent relational organization. 
+
+Table 4: Adversarial statistics by method                                    
+
+> Method Adv Acc ↓Pos Logit ↓Neg Logit ↑Pos Prob ↓Neg Prob ↑
+> Clean Reference 0.954 9.993 0.641 0.996 0.559 Diff-PGD 0.660 5.152 1.258 0.835 0.592 ZO/NES 0.919 9.902 1.750 0.997 0.678 Surrogate Transfer 0.736 6.238 1.470 0.959 0.670
+> Ours 0.386 -2.478 3.340 0.326 0.589
+
+## 5.2 Cross System Evaluation 
+
+We further evaluate whether manifold-level relational corruption emerges consistently across different contrastive verification archi-tectures. As shown in Table 5, the proposed framework substan-tially degrades relational organization across all evaluated systems, although the degree of manifold deformation varies across architec-tures and datasets. On SigNet [12], the clean verification accuracy decreases from 1.000 to 0.500 under adversarial deformation, in-dicating severe corruption of the underlying similarity structure. SigScatNet [11] exhibits an even stronger relational collapse, where the adversarial accuracy decreases from 0.982 to 0.324 and the Gap Reduction reaches 17.760, demonstrating substantial destruction of semantic separation structure within the embedding manifold. The CEDAR DenseNet experiment follows a similar pattern, with adver-sarial accuracy decreasing from 0.970 to 0.501 and a Gap Reduction of 10.254. Despite architectural differences across victim models, all evalu-ated systems exhibit consistent relational geometry degradation un-der the proposed framework. These results suggest that the ob-served vulnerability does not arise from a specific backbone architecture alone, but instead reflects an intrinsic weak-ness of similarity-driven representation learning systems 
+
+whose decisions depend on preserving manifold-level relational organization. 
+
+Table 5: Cross system evaluation                    
+
+> Model Clean Acc Adv Acc ↓Acc Drop ↑Gap Red. ↑
+> SigNet 1.000 0.500 0.500 8.478 SigScatNet 0.982 0.324 0.658 17.760 CEDAR DenseNet 0.970 0.501 0.470 10.254
+
+## 5.3 Perturbation Budget Ablation 
+
+We analyze the role of the 𝐿 2 perturbation budget while fixing the pixel level clipping threshold at 𝜖 pix = 16 /255. The main configu-ration uses 𝜖 2 = 2.5. To understand the effect of the 𝐿 2 constraint, we also evaluate a setting with a very large 𝐿 2 budget, which ap-proximates a case without an effective 𝐿 2 constraint. In this setting, the perturbation is mainly controlled by the pixel level clipping threshold. Both configurations remain effective. With 𝜖 2 = 2.5, the adversarial accuracy is 0.386 and the Gap Reduction is 15.170. With-out an effective 𝐿 2 constraint, the adversarial accuracy is 0.378 and the Gap Reduction is 14.720. The similar performance indicates that the pixel level clipping threshold already provides a strong constraint, while the 𝐿 2 projection offers additional control on the overall perturbation magnitude. The consistently large Gap Reduction across both settings sug-gests that manifold-level relational collapse does not depend on large unconstrained perturbations. Instead, substantial semantic separation corruption can still emerge under tightly bounded per-turbations. These results indicate that the observed relational vul-nerability is fundamentally tied to the embedding-space organiza-tion of contrastive systems rather than merely the magnitude of input-space perturbations. Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Fei Zhao, Peiyuan Zhang, Xi Li, Chengcui Zhang, and Nitesh Saxena 
+
+Table 6: 𝐿 2 budget ablation                     
+
+> 𝐿 2Budget Adv Acc Pos Drop ↑Neg Rise ↑Gap Red. ↑
+> 𝜖 2=2.50.386 12.471 2.698 15.170 No 𝐿 2constraint 0.378 12.427 2.293 14.720
+
+Fig. 2 provides a qualitative comparison between clean images and adversarial images generated under different 𝐿 2 budgets. When the 𝐿 2 budget is set to a very large value, the perturbations become more visually noticeable and introduce stronger color artifacts around the ballot marks. In contrast, the main setting with 𝜖 2 =
+
+2.5 produces adversarial samples that better preserve the visual appearance of the clean inputs while still maintaining strong attack effectiveness. This supports the use of the constrained 𝐿 2 budget in the main experiments. Clean Adv eps_l2 = 1000 Adv eps_l2 = 2.5 
+
+Figure 2: Qualitative comparison of clean and adversarial samples under different 𝐿 2 perturbation budgets. A very large 
+
+𝐿 2 budget produces more visible color artifacts, while the main setting with 𝜖 2 = 2.5 better preserves the visual appear-ance of the clean ballot marks. 
+
+## 5.4 Transformation Defense and Query Cost 
+
+We further evaluate whether a simple input-space transformation based defense can mitigate manifold-level relational corruption induced by the proposed framework. In this setting, random input transformations are applied before verification. This preprocessing strategy can be viewed as a lightweight defense because it changes the input distribution and may partially disrupt the generated per-turbations. As shown in Table 7, random transformations weaken the at-tack but do not eliminate relational geometry corruption. Without transformation, the adversarial accuracy decreases to 0.363, with an accuracy drop of 0.591 and a Gap Reduction of 16.550. With ran-dom transformations, the adversarial accuracy increases to 0.480, and the Gap Reduction decreases to 10.094. Although the defense reduces the severity of relational collapse, the embedding manifold still exhibits substantial semantic separation degradation under adversarial deformation. 
+
+Table 7: Transformation based defense                        
+
+> Setting Clean Acc Adv Acc ↓Acc Drop ↑Pos Drop ↑Neg Rise ↑Gap Red. ↑
+> No Transform 0.954 0.363 0.591 13.529 3.021 16.550 Random Transform 0.939 0.480 0.459 8.038 2.056 10.094
+
+The proposed framework generates perturbations through a sin-gle feed-forward pass and therefore avoids repeated victim-model optimization during inference. In contrast, the ZO/NES black-box baseline estimates attack directions through iterative online queries to the victim verification model, requiring repeated exploration of the embedding-space similarity landscape. In the limited-query black-box setting, attacking 1,972 pairs requires 851,904 attack-phase queries, corresponding to 428 optimization queries per pair. Including pre-attack verification and final evaluation queries, the complete attack pipeline requires 861,764 total victim-model queries and a runtime of 20,682 seconds, as summarized in Table 8. These results highlight the substantial computational overhead of iterative online relational attacks against contrastive embedding systems. In contrast, the proposed framework amortizes manifold deformation into an offline geometry-learning stage, enabling real-time rela-tional corruption without repeated embedding-space optimization during deployment. 
+
+Table 8: ZO/NES query cost          
+
+> Metric Value Pairs attacked 1972 Runtime 20682 s Pre-attack verification queries 3944 Attack-phase queries 851904 Final evaluation queries 5916 Total queries 861764 Optimization queries per pair 428 Overall attack success 0.656
+
+## 6 Conclusion 
+
+In this paper, we introduced a geometry-aware adversarial frame-work for contrastive verification systems and Siamese embedding models. Unlike conventional adversarial attacks that primarily tar-get discrete classification boundaries, the proposed framework re-formulates adversarial manipulation as manifold-level relational corruption in embedding space. Rather than attacking isolated pre-diction outputs, the proposed approach systematically deforms relational geometry by separating semantically aligned manifold regions while collapsing originally separated similarity structures. By shifting iterative optimization into an offline manifold defor-mation learning stage, the proposed generator learns generalized geometry corruption patterns that enable real-time relational at-tacks through a single forward pass. Experimental results across multiple verification architectures demonstrate substantial degra-dation of pairwise verification performance, severe corruption of relational similarity organization, and systematic collapse of se-mantic separation structure within the embedding manifold. Our findings suggest that the adversarial vulnerability of con-trastive systems fundamentally differs from that of traditional classification models. As modern AI systems increasingly rely on similarity-driven representation learning, retrieval, and embedding-based reasoning, future robustness may depend less on protecting decision boundaries and more on preserving the relational geome-try governing pairwise similarity organization itself. Beyond Decision Boundaries: Relational Geometry Attacks on Contrastive Embedding Manifolds Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+## References 
+
+[1] Ting Chen, Simon Kornblith, Mohammad Norouzi, and Geoffrey Hinton. 2020. A simple framework for contrastive learning of visual representations. In 
+
+International conference on machine learning . PmLR, 1597–1607. [2] Sumit Chopra, Raia Hadsell, and Yann LeCun. 2005. Learning a similarity metric discriminatively, with application to face verification. In 2005 IEEE computer society conference on computer vision and pattern recognition (CVPR’05) . Vol. 1. IEEE, 539–546. [3] Jane Bromley, Isabelle Guyon, Yann LeCun, Eduard Säckinger, and Roopak Shah. 1993. Signature verification using a" siamese" time delay neural network. 
+
+Advances in neural information processing systems , 6. [4] Gregory Koch, Richard Zemel, Ruslan Salakhutdinov, et al. 2015. Siamese neural networks for one-shot image recognition. In ICML deep learning workshop 
+
+number 1. Vol. 2. Lille, 1–30. [5] Guoxin Wang, Shreejith Shanker, Avishek Nag, Yong Lian, and Deepu John. 2024. Ecg biometric authentication using self-supervised learning for iot edge sensors. IEEE Journal of Biomedical and Health Informatics , 28, 11, 6606–6618. [6] Talles B Viana, Victor LF Souza, Adriano LI Oliveira, Rafael MO Cruz, and Robert Sabourin. 2022. Contrastive learning of handwritten signature rep-resentations for writer-independent verification. In 2022 International Joint Conference on Neural Networks (IJCNN) . IEEE, 01–09. [7] Jindong Li, Dario Zanca, Vincent Christlein, Tim Hamann, Jens Barth, Pe-ter Kämpf, and Björn Eskofier. 2026. Enhancing imu-based online handwrit-ing recognition via contrastive learning with zero inference overhead. arXiv preprint arXiv:2602.07049 .[8] Fei Zhao, Chengcui Zhang, Maya Shah, and Nitesh Saxena. 2024. Bubblesig: same-hand ballot stuffing detection. In 2024 IEEE 7th International Conference on Multimedia Information Processing and Retrieval (MIPR) . IEEE, 507–510. [9] Fei Zhao, Runlin Zhang, Chengcui Zhang, and Nitesh Saxena. 2025. Mark-match: same-hand stuffing detection. In 2025 IEEE International Conference on Multimedia and Expo Workshops (ICMEW) . IEEE, 1–2. [10] Aleksander Madry, Aleksandar Makelov, Ludwig Schmidt, Dimitris Tsipras, and Adrian Vladu. 2017. Towards deep learning models resistant to adversarial attacks. arXiv preprint arXiv:1706.06083 .[11] Anmol Chokshi, Vansh Jain, Rajas Bhope, and Sudhir Dhage. 2023. Sigscatnet: a siamese + scattering based deep learning approach for signature forgery detection and similarity assessment. arXiv preprint arXiv:2311.05579 .[12] Sounak Dey, Anjan Dutta, J. Ignacio Toledo, Suman K. Ghosh, Josep Llados, and Umapada Pal. 2017. Signet: convolutional siamese network for writer independent offline signature verification. arXiv preprint arXiv:1707.02131 .[13] Ian J Goodfellow, Jonathon Shlens, and Christian Szegedy. 2014. Explaining and harnessing adversarial examples. arXiv preprint arXiv:1412.6572 .[14] Zekai Wang, Tianyu Pang, Chao Du, Min Lin, Weiwei Liu, and Shuicheng Yan. 2023. Better diffusion models further improve adversarial training. In 
+
+International conference on machine learning . PMLR, 36246–36263. [15] Francesco Croce and Matthias Hein. 2020. Reliable evaluation of adversarial robustness with an ensemble of diverse parameter-free attacks. In International conference on machine learning . PMLR, 2206–2216. [16] Walter J Scheirer, Anderson de Rezende Rocha, Archana Sapkota, and Terrance E Boult. 2012. Toward open set recognition. IEEE transactions on pattern analysis and machine intelligence , 35, 7, 1757–1772. [17] Chengzhi Mao, Ziyuan Zhong, Junfeng Yang, Carl Vondrick, and Baishakhi Ray. 2019. Metric learning for adversarial robustness. Advances in neural information processing systems , 32. [18] Maham Jahangir, Muhammad Imran Malik, and Faisal Shafait. 2023. Adver-sarial attacks on convolutional siamese signature verification networks. In 
+
+International Conference on Document Analysis and Recognition . Springer, 350– 365. [19] Mo Zhou, Zhenxing Niu, Le Wang, Qilin Zhang, and Gang Hua. 2020. Adver-sarial ranking attack and defense. In European Conference on Computer Vision .Springer, 781–799. [20] Gabriel Zaid, Lilian Bossuet, François Dassance, Amaury Habrard, and Alexan-dre Venelli. 2021. Ranking loss: maximizing the success rate in deep learning side-channel analysis. IACR Transactions on Cryptographic Hardware and Em-bedded Systems , 25–55. [21] Siyuan Li, Xing Xu, Zailei Zhou, Yang Yang, Guoqing Wang, and Heng Tao Shen. 2022. Arra: absolute-relative ranking attack against image retrieval. In 
+
+Proceedings of the 30th ACM International Conference on Multimedia , 610–618. [22] Xiruo Jiang, Yazhou Yao, Xili Dai, Fumin Shen, Liqiang Nie, and Heng-Tao Shen. 2024. Anti-collapse loss for deep metric learning. IEEE Transactions on Multimedia , 26, 11139–11150. [23] Chaowei Xiao, Bo Li, Jun-Yan Zhu, Warren He, Mingyan Liu, and Dawn Song. 2018. Generating adversarial examples with adversarial networks. arXiv preprint arXiv:1801.02610 .[24] Zhiyu Zhu, Huaming Chen, Xinyi Wang, Jiayu Zhang, Zhibo Jin, Kim-Kwang Raymond Choo, Jun Shen, and Dong Yuan. 2024. Ge-advgan: improving the transferability of adversarial samples by gradient editing-based adversarial generative model. In Proceedings of the 2024 SIAM international conference on data mining (SDM) . SIAM, 706–714. [25] Omid Poursaeed, Isay Katsman, Bicheng Gao, and Serge Belongie. 2018. Genera-tive adversarial perturbations. In Proceedings of the IEEE conference on computer vision and pattern recognition , 4422–4431. [26] Shumeet Baluja and Ian Fischer. 2017. Adversarial transformation networks: learning to generate adversarial examples. arXiv preprint arXiv:1703.09387 .[27] Shagun Sharma and Kalpna Guleria. 2022. Deep learning models for image classification: comparison and applications. In 2022 2nd International Conference on Advance Computing and Innovative Technologies in Engineering (ICACITE) .IEEE, 1733–1738. [28] Olaf Ronneberger, Philipp Fischer, and Thomas Brox. 2015. U-net: convolutional networks for biomedical image segmentation. In Medical Image Computing and Computer-Assisted Intervention . Springer, 234–241. [29] Gao Huang, Zhuang Liu, Laurens Van Der Maaten, and Kilian Q Weinberger. 2017. Densely connected convolutional networks. In Proceedings of the IEEE conference on computer vision and pattern recognition , 4700–4708. [30] Alec Radford et al. 2021. Learning transferable visual models from natural language supervision. In Proceedings of the 38th International Conference on Machine Learning . PMLR, 8748–8763. [31] Meenakshi K Kalera, Sargur Srihari, and Aihua Xu. 2004. Offline signature verification and identification using distance statistics. International Journal of Pattern Recognition and Artificial Intelligence , 18, 07, 1339–1360. [32] Diederik P. Kingma and Jimmy Ba. 2014. Adam: a method for stochastic opti-mization. arXiv preprint arXiv:1412.6980 .[33] William J. Youden. 1950. Index for rating diagnostic tests. Cancer , 3, 1, 32–35. [34] Center of Excellence for Document Analysis and Recognition. n.d. CEDAR signature verification. https://cedar.buffalo.edu/signature/. (n.d.). [35] Haotian Xue, Alexandre Araujo, Bin Hu, and Yongxin Chen. 2023. Diffusion-based adversarial sample generation for improved stealthiness and controlla-bility. Advances in Neural Information Processing Systems , 36, 2894–2921. [36] Andrew Ilyas, Logan Engstrom, Anish Athalye, and Jessy Lin. 2018. Black-box adversarial attacks with limited queries and information. In International Conference on Machine Learning , 2137–2146. [37] Pin-Yu Chen, Huan Zhang, Yash Sharma, Jinfeng Yi, and Cho-Jui Hsieh. 2017. ZOO: zeroth order optimization based black-box attacks to deep neural net-works without training substitute models. In Proceedings of the 10th ACM Workshop on Artificial Intelligence and Security , 15–26. [38] Nicolas Papernot, Patrick McDaniel, Ian Goodfellow, Somesh Jha, Z. Berkay Celik, and Ananthram Swami. 2017. Practical black-box attacks against machine learning. In Proceedings of the 2017 ACM on Asia Conference on Computer and Communications Security , 506–519. 
+
+Received 20 February 2007; revised 12 March 2009; accepted 5 June 2009

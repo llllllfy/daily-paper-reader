@@ -6,26 +6,35 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-17
-- 运行时间：2026-08-17 20:29:09 UTC
+- 最新运行日期：2026-08-18
+- 运行时间：2026-08-18 21:03:32 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：1
-- 速读区：0
+- 本次总论文数：4
+- 精读区：3
+- 速读区：1
 
 ### 今日简报（AI）
-- 今日共生成 1 篇推荐（精读 1 篇，速读 0 篇）
-- 精读：《Seeing Red, Thinking Bad: Color Bias in Vision Language Models》（9.0/10）
+- 今日共生成 4 篇推荐（精读 3 篇，速读 1 篇）
+- 精读：《Generative Semantic Segmentation via an Observable Semantic-Image Interface and Hierarchical Generator Evidence Alignment》（8.0/10）, 《Toward AI-Friendly Cartography: Understanding How Color Design Influences Foundation Model Spatial Reasoning on Sequential Choropleth Maps》（8.0/10）
+- 速读：《Beyond Decision Boundaries: Relational Geometry Attacks on Contrastive Embedding Manifolds》（6.0/10）
 - 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202608/17/README](/202608/17/README)
+- 详情：[/202608/18/README](/202608/18/README)
 
 ### 精读区论文标签
-1. [Seeing Red, Thinking Bad: Color Bias in Vision Language Models](/202608/17/2608.14286v1-seeing-red-thinking-bad-color-bias-in-vision-language-models)  
-   标签：评分：9.0/10、query:cp
-   evidence：保持语义内容不变的细微颜色/对比度变化影响VLM输出和潜在表示
+1. [Generative Semantic Segmentation via an Observable Semantic-Image Interface and Hierarchical Generator Evidence Alignment](/202608/18/2608.11537v1-generative-semantic-segmentation-via-an-observable-semantic-image-interface-and-hierarchical-generator-evidence-alignment)  
+   标签：评分：8.0/10、query:cp
+   evidence：通过固定类别颜色码本和语义-图像接口解决生成式语义分割中的颜色漂移与边界混合
+2. [Toward AI-Friendly Cartography: Understanding How Color Design Influences Foundation Model Spatial Reasoning on Sequential Choropleth Maps](/202608/18/2608.15736v1-toward-ai-friendly-cartography-understanding-how-color-design-influences-foundation-model-spatial-reasoning-on-sequential-choropleth-maps)  
+   标签：评分：8.0/10、query:cp
+   evidence：研究颜色设计如何影响空间推理
+3. [SCOUT: Semantic Concept Discovery for Open-Vocabulary Editing of face Recognition Templates](/202608/18/2608.16251v1-scout-semantic-concept-discovery-for-open-vocabulary-editing-of-face-recognition-templates)  
+   标签：评分：8.0/10、query:cp
+   evidence：通过概念发现直接编辑人脸识别模板中的语义
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [Beyond Decision Boundaries: Relational Geometry Attacks on Contrastive Embedding Manifolds](/202608/18/2608.10237v1-beyond-decision-boundaries-relational-geometry-attacks-on-contrastive-embedding-manifolds)  
+   标签：评分：6.0/10、query:cp
+   evidence：提出几何感知的对抗攻击框架，在嵌入流形上扭曲相似性组织
 
 
 <div class="dpr-home-promo-card">
