@@ -1,0 +1,56 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-19T20:53:15.077282+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.12737v1",
+      "source": "arxiv",
+      "title": "Dual-Manifold Geometry Guided Representation Learning: Adaptive Coupling between Kernel and Data Spaces",
+      "abstract": "Deep representation learning has primarily focused on how features evolve across network layers, while largely overlooking the structured geometry embedded in network parameters. We introduce a dual-manifold perspective in which each convolutional layer contains two coupled geometric spaces: a Kernel Manifold induced by convolutional filters and a Data Manifold characterized by intermediate feature representations. Because these manifolds share the same channel space, parameter geometry can provide complementary structural information to guide feature evolution. Based on this insight, we propose Kernel-Guided Feature Transform (KGFT), a lightweight module that derives a geometric guidance matrix from the kernel Gram matrix and uses it to transform the covariance structure of feature representations. Unlike conventional attention mechanisms that reweight feature responses, KGFT explicitly reshapes feature relationships by transferring geometric information from the kernel manifold to the data manifold. To accommodate network hierarchy, we further introduce Exploit and Explore modes with a depth-aware scheduling strategy and a learnable guidance strength that adaptively controls the contribution of geometric transformation. This design promotes geometric alignment in shallow layers while encouraging feature diversity in deeper layers, without imposing excessive constraints on representation learning. Theoretical analysis establishes the validity of the proposed transformation and characterizes its effect on feature covariance. Extensive experiments across CNN- and Transformer-based architectures, including ResNet, ViT, and LLaMA-7B, demonstrate consistent improvements on image classification and arithmetic reasoning tasks, validating the generality and effectiveness of kernel-guided dual-manifold representation learning. Code will be publicly available.",
+      "authors": [
+        "Wencong Zhang",
+        "Yue Zhang",
+        "Meiyan Huang",
+        "Wei Yang",
+        "Qianjin Feng"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-13T02:35:08+00:00",
+      "link": "https://arxiv.org/pdf/2608.12737v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "kernel-guided feature transform modifies latent representations",
+      "llm_evidence_cn": "核引导的特征变换修改潜在表示",
+      "llm_evidence": "核引导的特征变换修改潜在表示",
+      "canonical_evidence": "核引导的特征变换修改潜在表示",
+      "llm_tldr_en": "This paper proposes Kernel-Guided Feature Transform (KGFT), a lightweight module that uses kernel manifold geometry to guide feature evolution in convolutional layers, enabling adaptive coupling between parameter and data spaces for improved representation learning.",
+      "llm_tldr_cn": "针对现有表示学习忽视网络参数几何结构的问题，本文提出双流形视角，将卷积层视为核流形与数据流形的耦合。提出核引导特征变换（KGFT）模块，从核Gram矩阵导出几何引导矩阵来调制中间特征表示。实验表明KGFT能提升表示质量，为在潜在空间进行特征干预提供了通用且轻量的技术手段。",
+      "llm_tldr": "针对现有表示学习忽视网络参数几何结构的问题，本文提出双流形视角，将卷积层视为核流形与数据流形的耦合。提出核引导特征变换（KGFT）模块，从核Gram矩阵导出几何引导矩阵来调制中间特征表示。实验表明KGFT能提升表示质量，为在潜在空间进行特征干预提供了通用且轻量的技术手段。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
