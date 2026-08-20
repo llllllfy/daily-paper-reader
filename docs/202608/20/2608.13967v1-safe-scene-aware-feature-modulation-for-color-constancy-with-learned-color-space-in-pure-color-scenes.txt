@@ -1,0 +1,444 @@
+Title: SAFE: Scene-Aware Feature Modulation for Color Constancy with Learned Color Space in Pure-Color Scenes
+
+URL Source: https://arxiv.org/pdf/2608.13967v1
+
+Published Time: Mon, 17 Aug 2026 00:26:00 GMT
+
+Number of Pages: 18
+
+Markdown Content:
+# SAFE: Scene-Aware Feature Modulation for Color Constancy with Learned Color Space in Pure-Color Scenes 
+
+Yuan-Kang Lee 1, Kuan-Lin Chen 2, Chih-Heng Chang 2, and Jian-Jiun Ding 2 
+
+> 1
+
+MediaTek Inc., Hsinchu, Taiwan  
+
+> 2
+
+National Taiwan University, Taipei, Taiwan Raw Image  Grayness Index  C 5  
+
+> ePCC Ours Ground-truth
+
+Fig. 1: Comparison on pure-color scenes. Images are gamma-corrected for visualization. Our approach effectively eliminates color casts in pure color scenes, outperforming both supervised and unsupervised state-of-the-art methods. 
+
+Abstract. Color constancy on pure-color scenes is challenging: when most pixels share a narrow band of hues, every chromaticity-based cue collapses to a single point and standard estimators become ambigu-ous. We propose a compact framework that couples two innovations: (i) SAFE, a Scene-Aware FeaturE modulation network that organizes illumination cues into a structured four-token representation, which is then selectively reweighted based on scene complexity features; (ii) the Learned Color Space (LCS), a scene-dependent chromaticity normaliza-tion that directly addresses the chromaticity collapse problem for pure-color scenes. Experiment results show that SAFE consistently improves performance in pure-color scenes. Compared to the best-performing base-line in each metric, it reduces the mean angular error by 10%, the best-25% error by 20%, and the worst-25% error by 5.8%. 
+
+Keywords: Color constancy · Pure color · Illuminant estimation 
+
+## 1 Introduction 
+
+The Image Signal Processor (ISP) is a crucial component in modern imaging sys-tems, comprising various processing modules to convert sensor RAW data into arXiv:2608.13967v1 [cs.CV] 14 Aug 2026 2 Y.-K. Lee et al. 
+
+sRGB space [40,62,52,64,32,35,19,28,43,24]. Among these, color constancy plays the most vital role, aiming to estimate the illuminant of the scene to achieve color-invariant image representation. Traditional color constancy research has been mainly devoted to the well-illuminated single-light-source scenario, and existing methods have already demonstrated impressive performance. However, in real-world scenarios, conditions are often far from ideal and state-of-the-art research is exploring the more challenging frontiers. These include: (1) Multi-illuminant color constancy, which requires estimating a pixel-wise illumination map to account for spatial lighting distributions [26,27,13,39]; (2) Nighttime color constancy, aimed at extracting accurate illuminant information under ex-treme low-light and high-noise conditions [9,34,31]; and (3) sRGB white balance, which seeks to restore true scene colors within the non-linear and physically in-consistent sRGB domain [4,2,14,33,44,11]. In addition to these difficulties, there is another, more common but more se-vere problem that occurs when scene color distributions become too uniform, so that scene reflectance is indistinguishable from illuminant color. Such situations are ubiquitous in macro photography, in close-up portraits, in vast landscapes (e.g., oceans, skies, or snow), and in stage lighting at concerts. In these pure-color scenes, the image formation process is inherently ambiguous: a white illuminant on a red surface produces the same observation as a red illuminant on a white surface. Classical statistics-based methods rely on global assumptions that col-lapse in these constrained scenarios [7,15]. Simultaneously, most learning-based methods [60,2,1,3,51,25] are trained on general datasets where the diverse con-text is plentiful, leading to biased estimations, as demonstrated in Fig. 1. To address these limitations, we introduce SAFE , a scene-aware feature modulation network whose scene complexity modulation selectively reweights a structured four-token illumination representation, and the Learned Color Space 
+
+(LCS), a scene-dependent chromaticity normalization that directly counters the chromaticity collapse to which standard normalizations succumb on pure-color scenes. Our design rests on two parallel observations: first, different color cues of-fer varying degrees of informativeness across diverse scenes; second, the uniform-channel chromaticity normalization that underpins standard illumination fea-tures becomes precisely adversarial when the scene’s chromaticity distribution collapses. Fig. 2 illustrates the overall flowchart of our proposed method. The contributions are summarized as follows: 
+
+– A four-token illumination feature design that combines physics-derived cues (specular log-chromaticity, dichromatic principal direction) with chro-maticity statistics from original and edge images into a structured 24D rep-resentation with clear semantic roles. 
+
+– The Scene-Aware Feature Modulation (SAFE) network that adaptively reweights illumination tokens based on scene characteristics, enabling robust and stable behavior across diverse imaging conditions. 
+
+– The Learned Color Space (LCS): a scene-dependent chromaticity normal-ization predicted by a lightweight model from the image and scene complex-ity features, designed to counter chromaticity collapse on pure-color scenes. SAFE with LCS 359% LCS Scene features 8D Input Raw Image CNN features 32D Illumination  
+
+> features (24D) Per-image LCS wR’ wR’ wG’ wG’ wB’ wB’ LCS
+> Predictor Estimated
+> Illumination Scene complexity 8D Scene Routing Input Raw Image Teacher’s LCS Global learned
+> color space w =
+> (wR, wG, wB)
+> for all images Illumination-related 24D Illumination Routing Prediction
+> Network
+
+(1) SAFE Backbone (Teacher Training) Recompute Illumination-
+
+> related Features 24D wR’ wR’ wG’ wG’ wB’ wB’
+
+(2) LCS Distillation 80-step 
+
+> Adam
+> Inner
+> Loop
+
+(3) LCS Predictor (Student Training) Scene complexity 8D Scene Routing Student’s LCS Using CNN 
+
+> features and
+> Scene features
+> to learn to
+> predict the per-
+> image LCS
+
+(4) Joint Training SAFE ❄🔥 SAFE 🔥 
+
+Fig. 2: Overview of the proposed color constancy framework. Training proceeds in four phases: (1) pre-train the SAFE backbone ϕ alongside a coarse global w-module under the angular loss; (2) freeze ϕ(1) and search for a scene-dependent color axis that minimizes the teacher’s angular error; (3) supervise the LCS predictor ψ on the oracle in logit space; (4) jointly fine-tune ϕ and ψ
+
+end-to-end. At inference, the LCS predictor ψ outputs a per-image color axis 
+
+w(I) that re-parameterizes the chromaticity normalization for calculating the four-token illumination feature fw; the SAFE backbone then modulates fw via a scene descriptor to predict the illuminant estimate ˆy.
+
+## 2 Related Work 
+
+Statistical Color Constancy. Statistical methods exploit scene statistics via achromatic averages [7], local space averages [12,47,53,54], color histogram coin-cidence [22,23,63], maximum responses [30], and their unification via Minkowski norms [15]. Edge-based methods [55] extend these priors to image derivatives with photometric weighting [18]. Other statistical methods estimate the illumi-nant by leveraging the achromaticity of pixels [59,42,9]. While computationally efficient, these heuristic methods fundamentally assume high chromatic diversity. In pure color scenes, these assumptions may be violated. 
+
+Learning-Based Color Constancy. Early learning-based methods use CNNs with confidence-weighted pooling [21] and log-chrominance localization [5]. Re-cent progress applies representation learning via contrastive frameworks [37] for 4 Y.-K. Lee et al. 
+
+feature discrimination and diffusion-based models [8] for learning sensor-agnostic illumination priors. A notable line of work is based on Fourier-domain illuminant estimation, reformulating global illuminant estimation as a spatial localization problem on the UV histogram representation [6,57]. Another important research direction focuses on cross-camera color constancy, where models must generalize to unseen camera sensors with different spectral sensitivities. C5 [1] adopts a transductive inference strategy by leveraging unlabeled test-time images to cal-ibrate the model to the target camera’s spectral characteristics; CCMNet [25] leverages calibrated color correction matrices commonly available in camera ISPs to construct compact camera fingerprint embeddings. In parallel, reinforcement learning has been explored to optimize the parameters of the color constancy al-gorithm via sequential decision-making [31]. However, most learning-based meth-ods struggle in low-diversity scenarios where semantic cues are absent. 
+
+Color Constancy for Pure Color Scenes. In recent research [61,36], chro-maticity features are adopted as the key indicators for estimating illuminant in pure color environments. Nonetheless, existing methods often fail to account for scene complexity. Instead of discerning specific scene characteristics, they tend to apply learned statistical patterns indiscriminately across diverse environments. Feature modulation techniques [41,56,48] have been demonstrated to be effective in conditioning neural networks on auxiliary information. Unlike approaches de-signed for discrete categorical priors, pure color constancy requires modulation based on a confidence measure derived from chromatic distribution analysis. Our method improves the performance of feature usage in predicting the illuminant using the designed feature modulation mechanism. 
+
+Color Space Design in White Balance Correction. Cheng et al. introduced a novel white balance correction framework based on a Learnable HSI (LHSI) color space [11]. By introducing learnable parameters, this framework enhances the flexibility of color representation and further improves the performance of white balance. Drawing inspiration from this design, we embed Learned Color Space (LCS) into our pure color constancy model. This enables the model to tailor the color space representation according to scene-specific characteristics, thereby enhancing the precision of illuminant estimation. 
+
+## 3 Proposed Method 
+
+The proposed framework consists of three components: (1) a feature extractor to separate scene-complexity cues from illumination-related statistics, (2) a feature modulation network to treat scene complexity as a selective gate for illumination features, prior to the predictor, and (3) a scene-dependent LCS that adaptively re-parameterizes per-image chromaticity to achieve better illuminant estimation in pure-color scenes. 
+
+3.1 Feature Extraction 
+
+We extract two families of features: scene features that summarize scene color complexity and illumination-related features that expose the illuminant chro-SAFE with LCS 5
+
+maticity through physical and statistical cues. Throughout, for a pixel with RGB values (R, G, B ) in an image I, the chromaticity (r, g ) is defined as: 
+
+(r, g ) = 
+
+ RR + G + B , GR + G + B
+
+
+
+. (1) 
+
+Scene Complexity Features. We compute a single 8D scene descriptor shown in Eq. (2) that characterizes the complexity of the scene’s color distribution to enable adaptive feature weighting. 
+
+ρ(I) =  H, π, σ r , σ g
+
+| {z }
+
+> color-blind subset
+
+, ¯r, ¯g, r max , g max 
+
+| {z }
+
+> color-aware extension
+
+ ∈ R8. (2) The scene descriptor is used in two distinct ways in the rest of the network:the color-blind subset g ≡ ρ[0 : 4] ∈ R4 drives the modulation gate, while the full descriptor ρ drives the Learned Color Space (LCS) predictor. The two subnet-works require different views of the scene, hence the design. Each feature in the scene descriptor is introduced as follows: 
+
+– Chromaticity Entropy H. We construct a 2D histogram over the chromaticity space using 32 × 32 bins and compute the normalized Shannon entropy: 
+
+H = − 1log( N 2
+
+> bins
+
+)
+
+X
+
+> i,j
+
+pij log( pij + ϵ), (3) where Nbins is the number of bins per dimension (set to 32), pij is the proba-bility of chromaticity falling in bin (i, j ) and ϵ is a small constant for stability. 
+
+– PCA Variance Ratio π. We extract the primary explained variance ratio from the 2D chromaticity distribution via principal component analysis. 
+
+– Chromaticity dispersion components σr , σg . We measure the standard devia-tion of the chromaticity distribution to supply the absolute scale of dispersion. 
+
+– Chromaticity of RGB mean ¯r, ¯g and max rmax , g max . We compute these four features to expose the scene’s dominant chromaticity. The 8D features describe the same chromaticity distribution along two orthogo-nal axes: shape and location. The color-blind subset is invariant under transla-tion in chromaticity (r, g ) space. They describe how the chromaticity content is spread without saying which hue dominates. The color-aware subset explicitly encodes where in the simplex the distribution sits, i.e., the dominant hue. 
+
+Illumination-Related Features. These proposed 24D illumination-related fea-tures are organized as four semantic tokens: 
+
+– Global chromaticity token A. The chromaticity coordinates of four represen-tative pixels from the original image are shown in Eq. (4). 
+
+A =  (r, g )max , (r, g )mean , (r, g )bright , (r, g )dark 
+
+. (4) 1. Max chromaticity: the maximum value in each color channel. 2. Mean chromaticity: the average value in each color channel. 6 Y.-K. Lee et al. 
+
+3. Brightest chromaticity: the chromaticities of the brightest pixels, deter-mined by the highest (R + G + B) sum within a valid intensity range. We exclude pixels whose intensity exceeds 98% of the maximum intensity. 4. Darkest chromaticity: the chromaticities of the darkest pixel above the noise floor, identified by the lowest (R+G+B) sum while filtering out the underexposed. We exclude pixels below 2% of the maximum intensity. Our method mitigates sensitivity to sensor saturation and noise by averaging the chromaticities of the top-k brightest and darkest pixels. We set k=20 for our experimental configuration. 
+
+– Local edge chromaticity token B. Complementing the original image, the edge map offers alternative insights into the illumination of the scene. Denoting the chromaticity of the Sobel edge image as re and ge, we follow the same procedure to extract the four representative features for token B.
+
+B =  (re, g e)max , (re, g e)mean , (re, g e)bright , (re, g e)dark 
+
+. (5) Edges emphasize inter-region transitions and expose illumination-related in-formation hidden in smooth-region averages. 
+
+– Specular and dispersion token C. We use a dual-criterion filtering process to identify candidate specular pixels. First, we identify high-intensity regions where pixel values exceed 70% of the image’s global maximum. Second, we apply a low-saturation constraint, requiring the normalized difference be-tween the maximum and minimum color channels to remain below 0.2. The low saturation criterion distinguishes specular highlights from bright but sat-urated material colors. We then compute log-chromaticity ratios as shown in the first two dimensions of Eq. (6), where a small constant ϵ is added to the denominator to avoid undefined values when G = 0 . The remaining four dimensions describe how spread-out the chromaticity is both on the original image and on the Sobel edge image. Together, token C combines a direct physical illumination cue with two statistical concentration measures. 
+
+C =  
+
+log 
+
+ RG + ϵ
+
+
+
+, log 
+
+ BG + ϵ
+
+ | {z }
+
+> specular log-chrom.
+
+, (σr , σ g )orig 
+
+| {z }
+
+> global chrom.
+
+, (σr , σ g )edge 
+
+| {z }
+
+> edge chrom.
+
+. (6) 
+
+– Dichromatic geometry token D. The geometry descriptor is a physics-derived illuminant cue grounded in the Dichromatic Reflection Model [45,50,49,65]. We extract this geometry as the first principal direction of squared-brightness weighted chromaticity as shown in Eq. (7): 
+
+D = argmax u⊤X 
+
+> p∈V
+
+(Rp +Gp +Bp)2  c(p) − ¯c  c(p) − ¯c⊤
+
+u, (7) where p ∈ V indexes a valid pixel, c(p) = ( r(p), g (p)) is its chromaticity, 
+
+¯c is the squared-brightness weighted mean of {c(p)}, and u ∈ R2 is a unit vector in the chromaticity plane. This direction aligns with the line spanned SAFE with LCS 7
+
+by surface chromaticity and illuminant chromaticity in r-g space, exposing the illuminant axis modulo a 1D ambiguity. The sign of the eigenvector is fixed by requiring its first component to be non-negative. 
+
+3.2 Feature Modulation Network 
+
+The feature modulation network mixes g (how complex the scene is) with fillum =[ A; B; C; D ] (what colors are present) to estimate illumination. 
+
+Scene-conditioned attention. The scene complexity vector g ∈ R4 produces a 24D multiplicative attention mask via a two-layer MLP with a sigmoid output: 
+
+α(g) = σ  W2 GELU( W1 g + b1) + b2
+
+ ∈ [0 , 1] 24 , (8) with W1 ∈ Rdg ×4 and W2 ∈ R24 ×dg the linear weights, b1 ∈ Rdg and b2 ∈ R24 
+
+the corresponding bias vectors, and dg the hidden width. GELU( ·) denotes the Gaussian Error Linear Unit activation [20] applied element-wise, and σ(·) is the element-wise sigmoid function. The mask is then applied element-wise to fillum 
+
+to produce the modulated illumination features fm:
+
+fm = α(g) ⊙ fillum ∈ R24 . (9) 
+
+Fusion and Backbone. The modulated illumination features fm are concate-nated with the scene complexity vector g and fed into a residual-MLP backbone 
+
+ϕ that consists of an input projection, L residual blocks, and a linear output head. The internal hidden states are denoted h0, . . . , hL ∈ Rd. The 28D con-catenated input is linearly projected to the d-dimensional working space, passed through a GELU, and LayerNorm-normalised to form the initial hidden state: 
+
+h0 = LN   GELU( W0 [fm; g] + b0 )  ∈ Rd. (10) For ℓ = 1 , . . . , L , each block transforms the previous hidden state via a linear layer, GELU, LayerNorm and dropout, and adds the result back residually: 
+
+hℓ = hℓ−1 + Drop   LN( GELU( Wℓ hℓ−1 + bℓ ))  ∈ Rd. (11) The skip connection lets each block refine hℓ−1, stabilizing the optimization of the L-block stack and letting gradients propagate directly back to the input projection. Drop( ·) is element-wise dropout applied only during training. Finally, a single linear layer maps the final hidden state to the 3D illuminant prediction: 
+
+ˆy = Wout hL ∈ R3. (12) 
+
+3.3 Learned Color Space 
+
+The components above all depend on the chromaticity normalization (r, g ) = (R, G )/(R + G + B). It implicitly assumes that the three channels should be weighted equally. However, this assumption fails in chromaticity-deficient scenes where most pixels share a single hue. The proposed Learned Color Space (LCS) addresses this limitation by introducing image-specific learnable channel weights. 8 Y.-K. Lee et al. 
+
+Let w = ( wR, w G, w B ) live on the probability simplex. The LCS replaces the uniform normalization 1/(R + G + B) with the w-weighted normalization 
+
+1/(wRR + wGG + wB B), producing the generalized chromaticity: 
+
+rw(p) = wRRp
+
+wRRp + wGGp + wB Bp
+
+, gw(p) = wGGp
+
+wRRp + wGGp + wB Bp
+
+. (13) 
+
+Scene-dependent w Predictor. The predictor ψ maps the scene complexity descriptor ρ and a low-resolution pixel summary to a scene-dependent color axis through a CNN+MLP. The image is first reduced by adaptive average pooling (AAP) to a fixed 32 ×32 tensor and encoded by a 2-layer strided CNN: 
+
+fCNN = Flatten 
+
+
+
+GAP  CNN 2 ◦ CNN 1 ◦AAP 32 ×32 (I) 
+
+∈ R32 , (14) with each CNN k = Conv 3×3, stride 2 → BN → GELU at channel widths 3 → 16 → 32 
+
+and a final global average pool (GAP) . The 32D CNN embedding is concatenated with the 8D scene complexity features ρ and passed through a 3-layer MLP of hidden width 64 to produce a logit residual r ∈ R3. The color axis is 
+
+w(I) = softmax   1
+
+τ (β + r) ∈ ∆2, (15) where β ∈ R3 is a learnable dataset-level prior (initialized to zero to yield uni-form w = (1 /3, 1/3, 1/3) ) and τ controls the softmax peakedness. With only 12k parameters, ψ is deliberately lightweight: its capacity is restricted to the coarse "which channel to suppress" mapping that LCS theoretically requires. 
+
+3.4 SAFE Full Pipeline 
+
+Our proposed model for pure color constancy is trained in four phases: an ini-tial backbone pre-training, two intermediate phases that warm-start the LCS predictor, and a final joint fine-tune. 
+
+Phase 1: SAFE backbone (teacher training). Phase 1 trains the modulation network ϕ jointly with a coarse residual w-module under the angular error loss 
+
+Lang . The feature pipelines are deterministic and serve as fixed inputs to ϕ: the color-blind subset g of the scene descriptor drives the scene-conditioned attention 
+
+α(g), and the four-token illumination features fillum feed the residual MLP. We refer to the resulting trained network as the Scene-Aware Featur E Modulation network for pure color constancy (SAFE) backbone, denoted ϕ(1) .During Phase 1 the LCS color axis is realized by a residual w-module that mainly learns a global, dataset-level axis. This lets the backbone learn the scene-conditioned attention and the residual MLP without having to simultaneously resolve a scene-dependent color axis. The frozen ϕ(1) then serves as the teacher model in Phases 2 and 3. 
+
+Phase 2: Scene-dependent w Search. With ϕ(1) frozen, for each training image Ii paired with its ground-truth illuminant y∗ 
+
+> i
+
+, we solve for the scene-dependent color axis that minimizes the angular error loss of ϕ(1) ’s predic-SAFE with LCS 9
+
+tion. This optimization is performed on the unconstrained logits ℓ ∈ R3 us-ing Adam [29] for 80 steps. The resulting w collection characterizes the scene-dependent performance ceiling that LCS can in principle achieve given ϕ(1) .
+
+Phase 3: LCS Predictor (Student training). With the w collection in hand, we pretrain the LCS predictor, denoted ψ(3) , to imitate them. The trained ψ(3) 
+
+generates a scene-dependent color axis for each image to re-parameterize the chromaticity normalization for subsequent forward passes, and thus determines the four-token illumination feature that the SAFE backbone consumes. 
+
+Phase 4: Joint training. Phase 4 unfreezes ϕ(1) and ψ(3) and fine-tunes them end-to-end. At every forward pass, the scene-dependent axis w = ψ(ρ, I) is used to recompute the four-token illumination representation under the w-weighted chromaticity, so the angular-loss gradient flows back through both the SAFE backbone and the LCS predictor. The objective combines the angular error loss with a predictive-consistency regularizer that discourages ψ from producing volatile w under small pixel perturbations: 
+
+Lcons = ψ(ρ, I) − ψ ρ, I ⊙ (1 + η) 22, ηp,c 
+
+> i.i.d.
+
+∼ N (0 , σ 2 
+
+> η
+
+), (16) where the noise η is sampled per pixel and channel, applied multiplicatively so that each pixel’s intensity is jittered by a factor 1+ ηp,c around its original value. The scene descriptor ρ is held fixed at its value on the unperturbed image. The full Phase 4 loss function is formulated as in Eq. (17): 
+
+Lp4 = Lang 
+
+ ˆy, y∗ + λc Lcons . (17) 
+
+## 4 Experiments 
+
+4.1 Experimental Setup 
+
+We evaluate SAFE on the PolyU Pure Color Dataset V2 [36]. It contains 1,271 pure-color and near-monochromatic images, providing a rigorous benchmark for color constancy in color-deficient scenarios. All images are resized to a size of 
+
+512 × 512 . We use the standard angular error θ (expressed in degrees) to mea-sure the deviation between the estimated illuminant vector and the ground-truth vector. A lower angular error signifies superior estimation accuracy. Following established protocols, we adopt a three-fold cross-validation scheme. In each fold, two-thirds of the data are used for training while the remainder serves for evaluation. We report a comprehensive results from the angular error distribu-tion, including the mean, median, trimean, and the means of the best 25% and worst 25% subsets. All learning-based methods were retrained from scratch using officially released code under same experimental conditions. 
+
+4.2 Implementation Details 
+
+Our proposed model is trained in the four phases described in Sec. 3; per-phase hyperparameters are listed below. All neural network optimization uses 10 Y.-K. Lee et al. 
+
+Table 1: Evaluation results on the PolyUv2 pure color dataset. We re-port the mean angular error (in degrees) based on 3-fold cross-validation. SAFE outperforms existing methods, yielding the lowest mean, median, tri-mean, best-25%, and worst-25% angular errors, underscoring its superior stability.                                                                                             
+
+> Method Mean Med. Tri. B-25% W-25% WP [30] 5.99 4.37 4.72 0.89 14.08 GW [7] 6.78 5.53 5.69 1.73 14.08 GE [55] 4.73 3.38 3.80 1.11 10.52 SoG [15] 5.55 4.50 4.74 1.05 11.84 LSRS [16] 6.00 5.02 5.10 1.46 12.52 GP [59] 4.56 3.51 3.84 0.82 10.01 GI [42] 4.09 2.81 3.17 0.67 9.65 FC 4[21] 2.48 1.79 2.05 0.55 5.57
+> C4[60] 2.23 1.49 1.75 0.51 5.05
+> C5[1] 2.18 1.55 1.78 0.52 4.95 PCC [61] 2.39 1.60 1.76 0.51 5.47 ePCC [36] 2.16 1.39 1.61 0.45 5.08 SAFE w/o LCS 2.12 1.44 1.56 0.43 5.01 SAFE w/ LCS (P1) 2.03 1.38 1.50 0.39 4.80 SAFE w/ LCS (P4) 1.94 1.27 1.39 0.36 4.66
+
+AdamW [38] with β1 = 0 .9, β2 = 0 .999 , a maximum of 500 epochs, and early stopping on validation mean angular error (patience 40). All training and eval-uation runs were conducted on a single NVIDIA RTX 5090 GPU. 
+
+Architecture. The modulation network ϕ has hidden width d=80 , L=7 residual blocks, and MLP hidden width dg =4 (49 ,343 parameters). The LCS predictor 
+
+ψ consists of a 2-layer strided CNN (channel widths 3→16 →32 ) followed by a 3-layer MLP of hidden width 64 ( 12 ,166 parameters). The full pipeline has 
+
+∼ 61 .5 K trainable parameters. 
+
+Phase 1: SAFE backbone. Hyperparameters: learning rate 1.47 ×10 −3, weight decay 2.54 ×10 −4, gradient-clip norm 0.42 , dropout 0.091 , color-space LR multi-plier 0.205 , w-module temperature τ =1 .21 , linear LR schedule decaying to 34 .7% 
+
+of the initial rate, batch size 64 .
+
+Phase 2: Scene-dependent w search. With ϕ(1) frozen, we solve per-image for the LCS logits that minimise the teacher’s angular error using 80 steps of Adam with learning rate 0.05 , processed in batches of 64 images. The search is offline and runs once per fold. 
+
+Phase 3: LCS Predictor (Student training). Hyperparameters: up to 200 
+
+epochs (patience 80 ), batch size 64 , learning rate 1×10 −3, weight decay 1×10 −4,cosine LR schedule decaying to 10% of the initial rate. 
+
+Phase 4: Joint training. Hyperparameters: learning rate 1.93 ×10 −4, weight decay 4.01 ×10 −4, gradient-clip norm 0.22 , dropout 0.125 , color-space LR mul-SAFE with LCS 11 
+
+Table 2: Evaluation results on the Gehler-Shi dataset. We report the mean angular error (in degrees) based on 3-fold cross-validation. The results prove that SAFE is not limited to pure-color scenes, but achieves comparable performance on general scenes.                                                                                        
+
+> Method Mean Med. Tri. B-25% W-25% WP [30] 7.55 5.68 6.35 1.45 16.12 GW [7] 6.36 6.28 6.28 2.33 10.58 SoG [15] 4.93 4.01 4.23 1.14 10.20 PCA-CC [10] 3.52 2.14 2.47 0.50 8.74 Woo et al. [58] 4.30 2.86 3.31 0.71 10.14 GI [42] 3.07 1.87 2.16 0.43 7.62
+> C4[60] 1.35 0.88 0.99 0.28 3.21 CLCC [37] 1.44 0.92 1.04 0.27 3.48 GCC [8] 1.91 1.80 1.84 0.60 3.46 PCC [61] 2.64 1.61 1.83 0.45 6.62 ePCC [36] 2.45 1.59 1.78 0.44 5.87 SAFE w/o LCS 2.35 1.69 1.78 0.47 5.57 SAFE w/LCS (P1) 2.33 1.66 1.75 0.47 5.43 SAFE w/ LCS (P4) 2.23 1.56 1.69 0.41 5.24
+
+tiplier 0.368 , τ =2 .24 , cosine LR schedule decaying to 27 .1% of the initial rate, consistency weight λc=0 .164 , consistency noise ση =0 .086 , batch size 32 .
+
+4.3 Results and Comparisons 
+
+As in Table 1, SAFE (P1) denotes the SAFE backbone trained with the coarse residual w-module (a near-global LCS) in the phase 1; SAFE (P4) denotes the full pipeline after joint fine-tuning of the SAFE backbone with the scene-dependent LCS predictor in the phase 4. Our method achieves superior performance on the PolyU Pure Color dataset V2, outperforming state-of-the-art methods in the mean, median, tri-mean, best 25%, and worst 25% angular error metrics. Fig. 4 shows qualitative results on several pure-color scenes from the PolyU V2 dataset. Furthermore, the integration of scene-dependent LCS enhances the accuracy of illuminant estimation, reducing the mean error from 2.12° to 1.94°. The LCS is theoretically motivated by chromaticity collapse on pure-color scenes. We verify empirically that the learned predictor ψ has internalized this prior. After Phase 1, the coarse residual w-module converges to a very mild, dataset-level perturbation of the uniform axis. Averaged across the three PolyU V2 folds, the global axis is wglob ≈ (0 .325 , 0.319 , 0.356) , with a per-component standard deviation of at most 0.004 across folds. For each test image, we com-pute the scene-dependent axis deviation ∆w = ∥ wpred − wglobal ∥2 (deviation from the fold-level global axis) and plot it against scene entropy H. Both the LOWESS (Locally Weighted Scatterplot Smoothing) curve with a 95% bootstrap confidence band and the hexbin density overlaid with LOWESS shown in Fig. 3 12 Y.-K. Lee et al. 0.056 0.054 0.052 0.050 0.048 0.046 0.044 0.175 0.200 0.225 0.250 0.275 0.300 0.325 95% bootstrap CI LOWESS (frac=0.3) 0.1 0.2 0.3 0.4 0.5 Scene entropy count LOWESS Linear (slope=-0.0366) 2.5 5.0 7.5 15.0 17.5 20.0 Scene entropy 0.00 0.02 0.04 0.06 0.08 0.10 0.12 0.14 
+
+> 95% bootstrap CI
+> LOWESS (frac=0.3)
+> LOWESS
+> Linear (slope=-0.036)
+> 2w wpred  global
+> 2w wpred  global
+
+Fig. 3: Scene-dependent LCS deviation versus scene entropy. (Left fig-ure) The LOWESS smoother with 95% bootstrap confidence band. (Right figure) Hexbin density of the same data with the LOWESS smoother overlaid in red. Quantitatively, the lowest-entropy quintile ( n=255 ) attains ¯∆w = 0 .0547 ver-sus 0.0462 for the highest-entropy quintile ( 18% relative increase on pure-color scenes) and the Pearson correlation r(H, ∆ w) = −0.149 is highly significant (p < 10 −7, N =1271 ). The analysis validates that the LCS design further im-proves the accuracy of illumination estimation in pure-color scenes. Table 3: Inference cost on PolyU V2 dataset. We report the parameters and median/min latency (ms) for several learning-based baselines. All measure-ments use batch=1, matching the standard single-image inference setting of the benchmark. Our model achieves the best illumination estimation accuracy. It is smaller in both parameters and latency than every baseline except CCC and ePCC, over which it incurs only a moderate increase. 
+
+Inference cost CCC [5] FC 4 [21] C4 [60] C5 [1] ePCC [36] SAFE Parameters 700 1.71M 5.12M 412k 514 61.5k Median/Min Latency 0.24/0.23 0.95/0.89 2.58/2.30 5.73/4.53 0.17/0.16 0.66/0.61 
+
+reveal a consistent decreasing trend: pure-color scenes drive significantly larger axis deviations than diverse ones. These results show that the LCS predictor ψ
+
+allocates larger scene-dependent axis corrections to pure-color scenes, which is exactly the regime the LCS is designed to address. To also evaluate SAFE in general scenes, we report its performance on the Gehler-Shi dataset [17,46] in Table 2. The results demonstrate that despite its specialization in pure-color scenes, SAFE and the LCS framework still achieve comparable performance in general scenarios. 
+
+4.4 Runtime Analysis 
+
+We measure parameter count and inference latency (ms) for several learning-based baselines shown in Table 3. Among them, our model achieves the highest SAFE with LCS 13 8.94 14.72  20.10  7.96  13.04  12.44  2.63                         
+
+> 12.98 9.34 11.60 10.06 9.42 8.38 3.68
+> 8.92 8.30 7.94 4.82 5.84 5.32 0.24
+> 10.16 10.37 9.64 11.58 5.56 10.95 2.22
+> 3.66 12.74 7.43 6.98 5.35 6.19 0.64 (a) RAW (b) GI (d) CCC (g) ePCC (h) Ours (i) GT (c) FC 4(e) C 4(f) C 5
+
+Fig. 4: Qualitative comparison on images from the PolyU Pure Color dataset V2. Images are gamma-corrected for visualization. The angular error (in degree) is reported in the bottom-right corner of each image. accuracy of illuminant estimation while requiring fewer parameters and fewer latency than most approaches, with only a modest increase in both quantities over the two smallest baseline (CCC and ePCC). 
+
+4.5 Ablation Study 
+
+Table 4 reports the five angular error metrics for the scene-routing modulation and four token ablations for SAFE backbone (Phase 1), validating that all com-ponents are essential for superior illuminant estimation in pure-color scenes. We also verify whether the network’s learned preferences are consistent with the ablation ranking. Fig. 5 illustrates three signals calculated from the trained SAFE backbone (phase 1): the modulation attention mask ¯αj , the input pro-jection weight ∥W0[: , j ]∥2, and their product ¯αj ·∥ W0[: , j ]∥2 as the effective con-tribution. Each signal is aggregated by per-token mean to neutralize the differ-ing token sizes. All three signals produce the same ranking, C > B > A > D ,aligned with the empirical ablation ordering demonstrated in Table 4: ( ∆MAE: C +0 .22 ◦, B +0 .10 ◦, A +0 .08 ◦, D +0 .03 ◦). 14 Y.-K. Lee et al. Modulation attention               
+
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6 AAAAInput projection weight
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> 1.2
+> 1.4 Effective contribution
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> 0.7
+> 0.523
+> BBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDD
+> 0.577
+> 0.642
+> 0.425
+> 1.097 1.129 1.197
+> 1.000
+> 0.474 0.508 0.532
+> 0.424
+
+Fig. 5: Introspection on the SAFE backbone. The modulation attention 
+
+α(g) quantifies how strongly the modulation network preserves each feature dimension; the input projection weight ∥W0[: , j ]∥2 quantifies how much linear weight the backbone allocates to each dimension; and the intrinsic effective con-tribution quantifies how important each token is to the illumination estimation. Table 4: Ablation studies on different impact of the tokens and the scene-routing modulation module (SRM). The best performance is reached when all the four tokens and the modulation are employed, validating the design of our framework. 
+
+SRM A(8D) B(8D) C(6D) D(2D) Mean Med. Tri. B-25% W-25% - ✓ ✓ ✓ ✓ 2.08 1.38 1.53 0.43 4.96 
+
+✓ - ✓ ✓ ✓ 2.11 1.43 1.56 0.43 4.97 
+
+✓ ✓ - ✓ ✓ 2.13 1.42 1.56 0.40 5.09 
+
+✓ ✓ ✓ - ✓ 2.25 1.52 1.68 0.47 5.30 
+
+✓ ✓ ✓ ✓ - 2.06 1.43 1.53 0.43 4.89 
+
+✓ ✓ ✓ ✓ ✓ 2.03 1.38 1.50 0.39 4.80 
+
+## 5 Conclusion 
+
+We propose a color constancy framework for pure-color scenes through three coordinated components: an interpretable four-token semantic decomposition of illumination features, a scene-conditioned modulation network ( SAFE ) that selectively reweights these tokens, and a Learned Color Space (LCS), a scene-dependent chromaticity normalization that restores feature discriminability. Com-bining these novel designs, our model achieves the highest estimation accuracy compared to state-of-the-art baselines in pure-color scenes. As a feature-driven, lightweight model, SAFE offers a computationally efficient solution for practi-cal, real-time deployment in mobile cameras, autonomous vehicles, and other embedded systems where computational resources are limited. 
+
+Limitation and Future Work. The proposed LCS framework is naturally sensor-sensitive: chromaticity normalization reweighting can entangle with sen-sor spectral sensitivities. Future work will involve exploring a sensor-aware LCS that conditions the predictor on a sensor characteristic descriptor, allowing a single predictor to deploy across multiple cameras without per-sensor retraining. SAFE with LCS 15 
+
+## References 
+
+1. Afifi, M., Barron, J.T., LeGendre, C., Tsai, Y.T., Bleibel, F.: Cross-camera convo-lutional color constancy. In: IEEE/CVF Int. Conf. Computer Vision. pp. 1981–1990 (2021) 2. Afifi, M., Brown, M.S.: Deep white-balance editing. In: IEEE/CVF Conf. Com-puter Vision and Pattern Recognition. pp. 1397–1406 (2020) 3. Afifi, M., Brubaker, M.A., Brown, M.S.: Auto white-balance correction for mixed-illuminant scenes. In: IEEE/CVF Winter Conf. Applications of Computer Vision. pp. 1210–1219 (2022) 4. Afifi, M., Price, B., Cohen, S., Brown, M.S.: When color constancy goes wrong: Correcting improperly white-balanced images. In: Proceedings of the IEEE/CVF conference on computer vision and pattern recognition. pp. 1535–1544 (2019) 5. Barron, J.T.: Convolutional color constancy. In: IEEE Int. Conf. Computer Vision. pp. 379–387 (2015) 6. Barron, J.T., Tsai, Y.T.: Fast fourier color constancy. In: IEEE/CVF Conf. Com-puter Vision and Pattern Recognition. pp. 886–894 (2017) 7. Buchsbaum, G.: A spatial processor model for object colour perception. Journal of the Franklin Institute 310 (1), 1–26 (1980) 8. Chang, C.W., Fan, C.D., Chang, C.C., Lo, Y.C., Tseng, Y.C., Huang, J.L., Liu, Y.L.: Gcc: Generative color constancy via diffusing a color checker. In: IEEE/CVF Conf. Computer Vision and Pattern Recognition. pp. 10868–10878 (2025) 9. Cheng, C., Yang, K.F., Wan, X.M., Chan, L.L.H., Li, Y.J.: Nighttime color con-stancy using robust gray pixels. J. Opt. Soc. Am. A 41 (3), 476–488 (2024) 10. Cheng, D., Prasad, D.K., Brown, M.S.: Illuminant estimation for color constancy: why spatial-domain methods work and the role of the color distribution. J. Opt. Soc. Am. A 31 (5), 1049–1058 (2014) 11. Cheng, Y., Cui, Z., Gu, L., Su, S., Zhang, Z.: Perception-inspired color space design for photo white balance editing. In: Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision. pp. 3741–3749 (2026) 12. Ebner, M.: A parallel algorithm for color constancy. Journal of Parallel and Dis-tributed Computing 64 (1), 79–88 (2004) 13. Entok, U.C., Laakom, F., Pakdaman, F., Gabbouj, M.: Pixel-wise color constancy via smoothness techniques in multi-illuminant scenes. In: 2024 IEEE International Conference on Image Processing (ICIP). pp. 2737–2743. IEEE (2024) 14. Farghaly, M., Mansour, R.F., Sewisy, A.A.: Two-stage deep learning framework for srgb image white balance. Signal, Image and Video Processing 17 (1), 277–284 (2023) 15. Finlayson, G.D., Trezzi, E.: Shades of gray and colour constancy. In: Color and Imaging Conference. vol. 12, pp. 37–41. Society of Imaging Science and Technology (2004) 16. Gao, S., Han, W., Yang, K., Li, C., Li, Y.: Efficient color constancy with local surface reflectance statistics. In: European Conf. Computer Vision. pp. 159–173 (2014) 17. Gehler, P.V., Rother, C., Blake, A., Minka, T., Sharp, T.: Bayesian color constancy revisited. In: IEEE/CVF Conf. Computer Vision and Pattern Recognition. pp. 1–8. IEEE (2008) 18. Gijsenij, A., Gevers, T., Van De Weijer, J.: Generalized gamut mapping using image derivative structures for color constancy. Int. J. Computer Vision 86 , 127– 139 (2010) 16 Y.-K. Lee et al. 19. Hashemi, S., Kiani, S., Noroozi, N., Moghaddam, M.E.: An image contrast enhance-ment method based on genetic algorithm. Pattern Recognition Letters 31 (13), 1816–1824 (2010) 20. Hendrycks, D., Gimpel, K.: Gaussian error linear units (gelus). arXiv preprint arXiv:1606.08415 (2016) 21. Hu, Y., Wang, B., Lin, S.: Fc4: Fully convolutional color constancy with confidence-weighted pooling. In: IEEE/CVF Conf. Computer Vision and Pattern Recognition. pp. 4085–4094 (2017) 22. Jiang, T., Nguyen, D., Kuhnert, K.D.: A flexible auto white balance based on his-togram overlap. In: Asian Conference on Computer Vision. pp. 170–181. Springer (2012) 23. Jiang, T., Nguyen, D., Kuhnert, K.D.: Auto white balance using the coincidence of chromaticity histograms. In: 2012 Eighth International Conference on Signal Image Technology and Internet Based Systems. pp. 201–208. IEEE (2012) 24. Jiao, W., Li, B., Shang, W., Wang, P., Ren, D.: Efficient raw image deblurring with adaptive frequency modulation. Advances in Neural Information Processing Systems 38 , 70191–70223 (2026) 25. Kim, D., Afifi, M., Kim, D., Brown, M.S., Kim, S.J.: Ccmnet: Leveraging cali-brated color correction matrices for cross-camera color constancy. arXiv preprint arXiv:2504.07959 (2025) 26. Kim, D., Kim, J., Nam, S., Lee, D., Lee, Y., Kang, N., Lee, H.E., Yoo, B., Han, J.J., Kim, S.J.: Large scale multi-illuminant (lsmi) dataset for developing white balance algorithm under mixed illumination. In: Proceedings of the IEEE/CVF International Conference on Computer Vision. pp. 2410–2419 (2021) 27. Kim, D., Kim, J., Yu, J., Kim, S.J.: Attentive illumination decomposition model for multi-illuminant white balancing. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. pp. 25512–25521 (2024) 28. Kim, W., Kim, G., Lee, J., Lee, S., Baek, S.H., Cho, S.: Paramisp: Learned forward and inverse isps using camera parameters. arXiv preprint arXiv:2312.13313 (2023) 29. Kingma, D.P., Ba, J.: Adam: A method for stochastic optimization. In: Interna-tional Conference on Learning Representations (ICLR) (2015) 30. Land, E.H.: The retinex theory of color vision. Scientific American 237 (6), 108–129 (1977) 31. Lee, Y.K., Chen, K.L., Chang, C.C., Liu, Y.L.: Rl-awb: Deep reinforcement learn-ing for auto white balance correction in low-light night-time scenes. arXiv preprint arXiv:2601.05249 (2026) 32. Lee, Y.K., Ding, J.J.: Efficient color image denoising using dwt-based noise estima-tion and adaptive wiener filter. In: 2024 8th International Conference on Imaging, Signal Processing and Communications (ICISPC). pp. 47–51. IEEE (2024) 33. Li, C., Kang, X., Zhang, Z., Ming, A.: Swbnet: a stable white balance network for srgb images. In: Proceedings of the AAAI Conference on Artificial Intelligence. vol. 37, pp. 1278–1286 (2023) 34. Li, S., Tan, R.T.: Nightcc: Nighttime color constancy via adaptive channel masking. In: IEEE/CVF Conf. Computer Vision and Pattern Recognition. pp. 25522–25531 (2024) 35. Liang, D., Li, L., Wei, M., Yang, S., Zhang, L., Yang, W., Du, Y., Zhou, H.: Semantically contrastive learning for low-light image enhancement. In: Proceedings of the AAAI conference on artificial intelligence. vol. 36, pp. 1555–1563 (2022) 36. Liu, Y., Wei, M.: Color constancy from a pure color view: An edge-aware algorithm for a wider application. Color Research & Application 51 (1), e70036 (2026) SAFE with LCS 17 37. Lo, Y.C., Chang, C.C., Chiu, H.C., Huang, Y.H., Chen, C.P., Chang, Y.L., Jou, K.: Clcc: Contrastive learning for color constancy. In: IEEE/CVF Conf. Computer Vision and Pattern Recognition. pp. 8053–8063 (2021) 38. Loshchilov, I., Hutter, F.: Decoupled Weight Decay Regularization. In: Interna-tional Conference on Learning Representations (ICLR) (2019) 39. Luo, H., Li, R., Liang, J.: Enhancing multi-illuminant color constancy through multi-scale estimation and high-frequency preservation. The Visual Computer 
+
+42 (3), 163 (2026) 40. Mohammadi, M., Honari, S., Tsogkas, S., Aumentado-Armstrong, T., Brown, M.S., Mohomed, I., Derpanis, K.G., Levinshtein, A., Gilitschenski, I.: Why low-light cameras go color blind: Removing color bias in raw denoising. arXiv preprint arXiv:2607.11090 (2026) 41. Perez, E., Strub, F., de Vries, H., Dumoulin, V., Courville, A.: Film: Visual rea-soning with a general conditioning layer. In: AAAI Conf. Artificial Intelligence. pp. 3942–3951 (2018) 42. Qian, Y., Kamarainen, J.K., Nikkanen, J., Matas, J.: On finding gray pixels. In: IEEE/CVF Conf. Computer Vision and Pattern Recognition. pp. 8062–8070 (2019) 43. Rim, J., Kim, G., Kim, J., Lee, J., Lee, S., Cho, S.: Realistic blur synthesis for learning image deblurring. In: European conference on computer vision. pp. 487– 503. Springer (2022) 44. Serrano-Lozano, D., Arora, A., Herranz, L., Derpanis, K.G., Brown, M.S., Vazquez-Corral, J.: Revisiting image fusion for multi-illuminant white-balance correction. In: Proceedings of the IEEE/CVF International Conference on Computer Vision. pp. 8275–8284 (2025) 45. Shafer, S.A.: Using color to separate reflection components. Color Research & Application 10 (4), 210–218 (1985) 46. Shi, L., Funt, B.: Re-processing of gehler’s raw dataset. In: Simon Fraser University Color Research Group (2010) 47. Song, A., Faugeras, O., Veltz, R.: A neural field model for color perception unifying assimilation and contrast. PLoS computational biology 15 (6), e1007050 (2019) 48. Sun, L., Dong, J., Tang, J., Pan, J.: Spatially-adaptive feature modulation for efficient image super-resolution. In: IEEE/CVF Int. Conf. Computer Vision. pp. 13190–13199 (2023) 49. Tan, R.T., Nishino, K., Ikeuchi, K.: Color constancy through inverse-intensity chro-maticity space. Journal of the Optical Society of America A 21 (3), 321–334 (2004) 50. Tan, T., Nishino, K., Ikeuchi, K.: Illumination chromaticity estimation using inverse-intensity chromaticity space. In: 2003 IEEE Computer Society Conference on Computer Vision and Pattern Recognition, 2003. Proceedings. vol. 1, pp. I–I. IEEE (2003) 51. Tang, Y., Kang, X., Li, C., Lin, Z., Ming, A.: Transfer learning for color constancy via statistic perspective. In: AAAI Conf. Artificial Intelligence. vol. 36, pp. 2361– 2369 (2022) 52. Tian, C., Zheng, M., Zuo, W., Zhang, B., Zhang, Y., Zhang, D.: Multi-stage image denoising with the wavelet transform. Pattern Recognition 134 , 109050 (2023) 53. Ulucan, O., Ulucan, D., Ebner, M.: Block-based color constancy: The deviation of salient pixels. In: ICASSP 2023-2023 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). pp. 1–5. IEEE (2023) 54. Ulucan, O., Ulucan, D., Ebner, M.: A computational model for color assimilation illusions and color constancy. In: Proceedings of the Asian Conference on Computer Vision. pp. 630–647 (2024) 18 Y.-K. Lee et al. 55. Van De Weijer, J., Gevers, T., Gijsenij, A.: Edge-based color constancy. IEEE Trans. Image Processing 16 (9), 2207–2214 (2007) 56. Wang, X., Yu, K., Dong, C., Loy, C.C.: Recovering realistic texture in image super-resolution by deep spatial feature transform. In: IEEE/CVF Conf. Computer Vi-sion and Pattern Recognition. pp. 636–645 (2018) 57. Wei, W., Qian, Y., Chen, H., Dai, J., Jin, Y.: Integral fast fourier color constancy. In: Proceedings of the Computer Vision and Pattern Recognition Conference. pp. 26420–26429 (2025) 58. Woo, S.M., Lee, S.H., Yoo, J.S., Kim, J.O.: Improving color constancy in an am-bient light environment using the phong reflection model. IEEE Transactions on Image Processing 27 (4), 1862–1877 (2017) 59. Yang, K.F., Gao, S.B., Li, Y.J.: Efficient illuminant estimation for color constancy using grey pixels. In: IEEE/CVF Conf. Computer Vision and Pattern Recognition. pp. 2254–2263 (2015) 60. Yu, H., Chen, K., Wang, K., Qian, Y., Zhang, Z., Jia, K.: Cascading convolutional color constancy. In: AAAI Conference on Artificial Intelligence. vol. 34, pp. 12725– 12732 (2020) 61. Yue, S., Wei, M.: Color constancy from a pure color view. J. Opt. Soc. Am. A 
+
+40 (3), 602–610 (2023) 62. Zhang, D., Zhou, F., Jiang, Y., Fu, Z.: Mm-bsn: Self-supervised image denoising for real-world with multi-mask based on blind-spot network. In: 2023 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW). pp. 4189–4198. IEEE (2023) 63. Zhang, L., Zhou, H., Yan, L., Zheng, R., Yu, F.: An automatic white balance method based on gray world and coincidence of chromaticity histogram. In: 8th International Symposium on Advanced Optical Manufacturing and Testing Tech-nologies: Optoelectronic Materials and Devices. vol. 9686, pp. 266–273. SPIE (2016) 64. Zhang, Y., Li, D., Law, K.L., Wang, X., Qin, H., Li, H.: Idr: Self-supervised im-age denoising via iterative data refinement. In: 2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). pp. 2088–2097. IEEE (2022) 65. Zhao, Z., Hu, H.M., Zhang, H., Chen, F., Guo, Q.: Improving color constancy using chromaticity-line prior. IEEE Transactions on Multimedia 25 , 3642–3656 (2022)

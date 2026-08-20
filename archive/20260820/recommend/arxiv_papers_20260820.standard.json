@@ -1,0 +1,130 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-20T20:54:45.921642+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2608.13967v1",
+      "source": "arxiv",
+      "title": "SAFE: Scene-Aware Feature Modulation for Color Constancy with Learned Color Space in Pure-Color Scenes",
+      "abstract": "Color constancy on pure-color scenes is challenging: when most pixels share a narrow band of hues, every chromaticity-based cue collapses to a single point and standard estimators become ambiguous. We propose a compact framework that couples two innovations: (i) SAFE, a Scene-Aware FeaturE modulation network that organizes illumination cues into a structured four-token representation, which is then selectively reweighted based on scene complexity features; (ii) the Learned Color Space (LCS), a scene-dependent chromaticity normalization that directly addresses the chromaticity collapse problem for pure-color scenes. Experiment results show that SAFE consistently improves performance in pure-color scenes. Compared to the best-performing baseline in each metric, it reduces the mean angular error by 10%, the best-25% error by 20%, and the worst-25% error by 5.8%.",
+      "authors": [
+        "Yuan-Kang Lee",
+        "Kuan-Lin Chen",
+        "Chih-Heng Chang",
+        "Jian-Jiun Ding"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-14T05:31:13+00:00",
+      "link": "https://arxiv.org/pdf/2608.13967v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Scene-aware feature modulation network for color constancy",
+      "llm_evidence_cn": "用于颜色恒常性的场景感知特征调制网络",
+      "llm_evidence": "用于颜色恒常性的场景感知特征调制网络",
+      "canonical_evidence": "用于颜色恒常性的场景感知特征调制网络",
+      "llm_tldr_en": "Proposes SAFE, a scene-aware feature modulation network, and a learned color space to address color constancy in pure-color scenes, improving robustness to illumination color.",
+      "llm_tldr_cn": "针对纯色场景中色度线索坍缩导致的颜色恒常性困难，提出SAFE场景感知特征调制网络与学习色彩空间LCS。SAFE将光照线索组织为结构化四令牌表示并根据场景复杂度选择性加权；LCS通过场景相关色度归一化缓解纯色场景的色度坍缩。实验表明该方法在纯色场景上持续提升颜色恒常性性能。该工作展示了特征级调制在颜色鲁棒性方面的潜力。",
+      "llm_tldr": "针对纯色场景中色度线索坍缩导致的颜色恒常性困难，提出SAFE场景感知特征调制网络与学习色彩空间LCS。SAFE将光照线索组织为结构化四令牌表示并根据场景复杂度选择性加权；LCS通过场景相关色度归一化缓解纯色场景的色度坍缩。实验表明该方法在纯色场景上持续提升颜色恒常性性能。该工作展示了特征级调制在颜色鲁棒性方面的潜力。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "papers on feature level intervention for color robustness in deep learning",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.18915v1",
+      "source": "arxiv",
+      "title": "Simple, Safe, and Overlooked: Reclaiming Sustainable Domain Generalization with Statistical Color Matching",
+      "abstract": "Hardware shifts, color variations, and changing patient characteristics between development and deployment routinely break trained medical image classifiers. Existing remedies fall short: standard color jittering provides insufficient diversity, while deep generative style transfer algorithms hallucinate features, destroy clinically relevant structures, and waste massive compute resources. To address this, we revisit classical statistical color matching and repurpose it as Colorist, a highly efficient data augmentation strategy that applies global mean-standard deviation matching directly in the RGB color space. We demonstrate that this training-free, fully interpretable approach safely generates structurally intact domain variations, outperforming deep generative models in structural fidelity and color alignment. Across out-of-distribution histopathology, peripheral blood, dermatology, and retinal datasets, it improves balanced accuracy by up to +9% over state-of-the-art domain generalization regularizers and by +13% over an unaugmented baseline. Moreover, by avoiding neural networks in the augmentation loop, Colorist preserves anatomical structure, minimizes carbon footprint, and integrates seamlessly into standard dataloaders. Together, these findings establish statistical matching as a safe, interpretable, yet overlooked alternative to deep architectures for clinical robustness. Source code is available at https://github.com/sdoerrich97/colorist.",
+      "authors": [
+        "Sebastian Doerrich",
+        "Francesco Di Salvo",
+        "Shyam Nandan Rai",
+        "Marco Lents",
+        "Christian Ledig"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG",
+        "eess.IV"
+      ],
+      "published": "2026-08-19T13:47:51+00:00",
+      "link": "https://arxiv.org/pdf/2608.18915v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Statistical color matching data augmentation preserves structural integrity under color shifts",
+      "llm_evidence_cn": "统计颜色匹配数据增强在颜色偏移下保持结构完整",
+      "llm_evidence": "统计颜色匹配数据增强在颜色偏移下保持结构完整",
+      "canonical_evidence": "统计颜色匹配数据增强在颜色偏移下保持结构完整",
+      "llm_tldr_en": "Proposes Colorist, a training-free statistical color matching augmentation that improves domain generalization under color variations while preserving clinically relevant structures.",
+      "llm_tldr_cn": "针对医学图像分类中硬件偏移、颜色变化导致模型失效的问题，提出Colorist，一种基于全局均值-标准差匹配的统计颜色匹配数据增强方法。该方法直接在RGB颜色空间进行训练无参的颜色变换，生成结构完整的训练样本，避免深度生成式风格迁移带来的幻觉。实验表明Colorist能安全地提升模型对颜色变化的鲁棒性。该工作为颜色扰动下保持语义一致性提供了简单有效的方案。",
+      "llm_tldr": "针对医学图像分类中硬件偏移、颜色变化导致模型失效的问题，提出Colorist，一种基于全局均值-标准差匹配的统计颜色匹配数据增强方法。该方法直接在RGB颜色空间进行训练无参的颜色变换，生成结构完整的训练样本，避免深度生成式风格迁移带来的幻觉。实验表明Colorist能安全地提升模型对颜色变化的鲁棒性。该工作为颜色扰动下保持语义一致性提供了简单有效的方案。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "Methods for preserving semantic consistency under color jittering",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.19032v1",
+      "source": "arxiv",
+      "title": "Counterfactual Contrastive Analysis",
+      "abstract": "Visual Counterfactual Explanations (VCEs) aim to explain image classifiers by generating minimally edited and realistic versions of an input image that change the classifier's prediction. Existing VCE methods are inherently classifier-dependent and therefore susceptible to classifier biases and failure modes, such as sensitivity to shortcut features and calibration errors. In this paper, we propose a classifier-free approach for visual counterfactual generation based on Contrastive Analysis (CA). Given two datasets corresponding to different classes (e.g., healthy and patients), we disentangle the generative factors that are common across the two datasets from those that are salient to each dataset, and generate counterfactual images by swapping only the salient factors. By operating directly on data distributions rather than decision boundaries, our method provides model-agnostic VCEs that are less sensitive to classifier biases. Our approach leverages the high-quality synthesis and well-structured latent space of StyleGAN2. We use the feature space F, instead than the usual W-space, to improve detail preservation. Unlike conventional CA approaches, which typically assume salient factors in only one dataset, we introduce an adapted framework and loss functions for VCE that allow multiple salient factors in each dataset. We evaluate our method on three medical imaging datasets and demonstrate superior counterfactual generation quality compared to existing approaches.",
+      "authors": [
+        "Yunlong He",
+        "Pietro Gori"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-19T15:25:21+00:00",
+      "link": "https://arxiv.org/pdf/2608.19032v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "disentangles generative factors and swaps salient factors in latent space for counterfactual generation",
+      "llm_evidence_cn": "在潜在空间解耦生成因素并交换显著因素生成反事实图像",
+      "llm_evidence": "在潜在空间解耦生成因素并交换显著因素生成反事实图像",
+      "canonical_evidence": "在潜在空间解耦生成因素并交换显著因素生成反事实图像",
+      "llm_tldr_en": "Proposes classifier-free contrastive analysis to disentangle common and salient generative factors, generating counterfactual images by swapping salient factors.",
+      "llm_tldr_cn": "针对现有视觉反事实解释依赖分类器、易受偏置影响的问题，提出基于对比分析的无分类器方法，解耦两数据集的共有与显著生成因素，仅交换显著因素生成反事实图像，避免分类器依赖，提升解释的稳健性。",
+      "llm_tldr": "针对现有视觉反事实解释依赖分类器、易受偏置影响的问题，提出基于对比分析的无分类器方法，解耦两数据集的共有与显著生成因素，仅交换显著因素生成反事实图像，避免分类器依赖，提升解释的稳健性。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}
