@@ -1,0 +1,383 @@
+Title: Environment-Invariant Subspace Learning for Generalizable Deepfake Detection
+
+URL Source: https://arxiv.org/pdf/2608.17700v1
+
+Published Time: Wed, 19 Aug 2026 00:55:18 GMT
+
+Number of Pages: 12
+
+Markdown Content:
+> PREPRINT 1
+
+# Environment-Invariant Subspace Learning for Generalizable Deepfake Detection 
+
+Shenghao Chen, Hao Jia, Chen Li, Chunjie Ma, Zan Gao, Senior Member, IEEE , and Shengyong Chen, Senior Member, IEEE 
+
+Abstract —Cross-distribution generalization remains a critical bottleneck in deepfake detection. While recent efforts leverage the semantic priors of large-scale visual foundation models (VFMs), a noteworthy yet underexplored challenge remains: the susceptibility of these semantic priors to environmental interference from factors such as lighting and style. Crucially, this interference establishes spurious correlations between forgery cues and environmental patterns, that severely limit generalization. To address this fundamental challenge, we propose an innovative Environment-Invariant Subspace Learning (EISL) framework. The core contribution of EISL is that it aims to disentangle features into orthogonal forgery-relevant invariant factors and environment-related residual factors via a learnable low-rank projection. To facilitate robust feature disentanglement, we also design an Environmental Intervention module that generates diverse and challenging intervention pairs, simulating out-of-distribution environmental shifts to guide the model toward discovering truly invariant forgery representations. Experiments across cross-dataset, cross-generator, whole-face synthesis, and corruption settings show consistent gains and competitive or leading performance against strong detectors, demonstrating improved robustness to unseen forgery types and environmental variations. This work provides a new perspective and a valuable exploration for understanding and tackling the generalization barriers of VFMs in deepfake detection. 
+
+Index Terms —Deepfake detection, face forgery detection, do-main generalization, invariant representation learning, vision foundation models. 
+
+I. Introduction Following the rapid development of generative artificial intelligence [1]–[5], synthetic images are now commonplace. The ease of use of these technologies allows people to create stunningly realistic images, especially facial forgeries [6], [7], that can deceive human observers. Nevertheless, this 
+
+This work was supported in part by the National Natural Science Foundation of China under Grant 62372325, Grant 62402255, Grant 62502344, and Grant U25A20444; in part by the Natural Science Foundation of Tianjin Municipality under Grant 23JCZDJC00280; in part by the Shandong Provincial Natural Science Foundation under Grant ZR2024QF020 and Grant ZR2026ZD51; in part by the Shandong Province National Talents Supporting Program under Grant 2023GJJLJRC070; in part by the Shandong Project towards the Integration of Education and Industry under Grant 801822020100000024 and Grant 2024ZDZX11; in part by the Young Talent of Lifting Engineering for Science and Technology in Shandong under Grant SDAST2024QTB001; and in part by the Open Project Program of the State Key Laboratory of Virtual Reality Technology and Systems, Beihang University, under Grant VRLAB2025C05. (Corresponding author: Zan Gao). Shenghao Chen, Hao Jia, Chen Li, Zan Gao, and Shengyong Chen are with the Key Laboratory of Computer Vision and System, Ministry of Education, Tianjin University of Technology, Tianjin 300384, China. Chunjie Ma and Zan Gao are with the Shandong Artificial Intelligence Institute, Qilu University of Technology (Shandong Academy of Sciences), Jinan 250014, China. FF++ Train and Test 
+
+> No Intervention Background Intervention Face Intervention Fake Real Classification
+> Variable Factor Invariant Factor
+> 0.817 0.734
+> Frame-Level AUC
+> 0.98
+
+Fig. 1. Motivation. A CLIP ViT-L/14 detector adapted with LoRA on FF++ and evaluated on the FF++ test split retains a frame-level AUC of 0.98 without intervention, but drops to 0.817 and 0.734 when only the facial region or only the background is intervened, although the forgery source and the real/fake label are unchanged. 
+
+trend has also raised significant concerns regarding social security. When used for malicious purposes, these technologies can severely undermine public confidence in digital media. Therefore, developing a reliable deepfake detection algorithm is imperative. One of the central challenges in deepfake detection is en-hancing the model’s generalization capability to unseen forgery types. Prior work has predominantly relied on paradigms based on specific forgery cues, such as unnatural physiological signals [8], [9], spatial domain blending artifacts [10]–[12], and frequency-domain inconsistencies [13]–[15]. However, detectors tend to overfit to the statistical fingerprints of specific generators present in the training set. Consequently, they struggle with unseen forgeries and exhibit limited generalization to out-of-distribution data. Subsequent studies have attempted to mitigate this by expanding the training distribution through diverse data augmentation [16], [17] and disentangled learning [18], [19]. Nevertheless, given the rapid iteration of forgery techniques in the wild, these methods remain vulnerable when confronted with images from entirely new generative paradigms. Recently, the rise of Vision Foundation Models (VFMs) [20]– [22] has unlocked promising potential for deepfake detection by leveraging the extensive semantic priors of models like CLIP. Conventional approaches typically freeze the CLIP backbone and adopt parameter-efficient fine-tuning (PEFT) methods, such as Adapters [23] or LoRA [24], aiming to exploit arXiv:2608.17700v1 [cs.CV] 18 Aug 2026 PREPRINT 2
+
+these semantic priors to broaden the discriminative boundary against forgeries, and enhancing generalization to unseen manipulation types. However, as noted in [25], [26], CLIP is sensitive to nuisance visual factors including illumination shifts, contrast changes, blur, and compression artifacts, which can substantially degrade its predictions even when high-level semantics remain unchanged. This naturally raises the question: when fine-tuned for deepfake detection, are CLIP’s semantic priors susceptible to such uncontrolled environmental variations, thereby undermining cross-domain generalization? To investigate this, we fine-tuned a CLIP encoder and perturbed the local regions of the FF++ [27] dataset (see Fig. 1). The resulting sharp drop in AUC confirms the signifi-cant negative impact of environmental interference. Drawing inspiration from CLIP-ICM [28], we adopt its structural causal perspective to explain the underlying process to partition an image’s latent factors into two orthogonal components: Invariant Factors, capturing intrinsic object content or forgery mechanism, and Variant Factors, capturing environmental and contextual variations. When the model’s prediction is driven by both factors, it can be easily captured by the variant factors, forcing it to learn spurious correlations. For instance, the model might erroneously associate a specific background or a particular image style with the forgery act itself. Conversely, a prediction mechanism that relies solely on the invariant factors should remain robust across diverse environments. Operations like altering background/foreground colors or image sharpness, for example, do not modify the image’s essential content or its ground-truth label (real vs. fake). To this end, our key insight is that within the learned repre-sentation space, we must explicitly disentangle the components susceptible to environmental factors from those genuinely relevant to the forgery detection task. We model the former as an Environmental Residual, while the latter is distilled into an environment-agnostic feature, which is then used for the final forgery discrimination. In this paper, we propose an Environment-Invariant Subspace Learning (EISL) framework to fine-tune CLIP by mitigating semantic interference. Our framework aims to better leverage CLIP’s semantic knowledge for robust deepfake generalization. To address environmental variations, we design an Environmental Intervention module that constructs augmented images. Specifically, it generates intervened images by randomly selecting and combining manipulations targeting the foreground, background, shape, and other style attributes. These are then paired with their original counterparts to form environment-intervention pairs. To extract the environment-invariant information, we introduce a learnable low-rank projection matrix that defines an invariant subspace. We then enforce a consistency constraint, ensuring that the projected representations of an intervention pair remain invariant when mapped into this subspace. This process isolates the invariant factors from the environmental residuals, thereby enhancing the model’s ability to generalize by focusing only on the fundamental attributes of the forgery. Our main contributions can be summarized as follows: 1) We reveal that semantic priors in Vision Foundation Models (VFMs) for deepfake detection are vulnerable to environmental factors such as background, style, and illumination, which easily distract detectors and lead to poor cross-domain generalization. 2) We propose an Environment-Invariant Subspace Learning (EISL) framework to address this problem. By employing a learnable low-rank projection to decouple forgery-relevant invariant components from environmental resid-uals, EISL effectively adapts VFMs for robust and environment-insensitive deepfake detection. 3) Extensive experiments across cross-dataset, cross-generator, whole-face synthesis, and corruption settings show consistent improvements and competitive or lead-ing performance, supported by mechanism analyses of projected and residual feature shifts. II. Related Work 
+
+A. Deepfake Detection based on Cues. 
+
+Deepfake Detection is a central problem in digital ma-nipulation forensics. With the rise of deep learning and the strong local modeling capacity of CNNs [27], [29], [30], many methods focus on explicit forgery cues for classification. Typical cues include physiological and temporal inconsistencies [8], [9], [31] (e.g., blinking patterns, rPPG, audio-visual or lip-sync mismatch), frequency-domain artifacts [13]–[15], [32] (e.g., compression traces, resampling, phase anomalies), geometric and boundary distortions [10]–[12], [33] (e.g., abnormal pose, landmark distribution, blending seams), as well as semantic and noise-level telltales [34]. Although these approaches often achieve excellent in-domain performance, they heavily rely on carefully curated training data and tend to overfit to seen forgery patterns, thus struggling to generalize to unknown forgeries [35]–[38]. Subsequent works attempt to alleviate this by synthesizing pseudo-forgeries to expand the decision boundary. For example, LSDA [16] constructs intra- and inter-forgery variations in the latent space to enlarge the forgery space; FIA-USA [39] randomly selects facial sub-regions and reconstructs them to simulate upsampling inconsistencies; FreqDebias [40] injects perturbations into gradient-sensitive frequency bands to enhance sensitivity to unseen artifacts. However, due to the limited diversity of training forgeries and the capacity of the adopted backbones, it remains difficult for these methods to learn truly universal forgery-discriminative features, and a clear performance gap persists under unknown manipulations. 
+
+B. Deepfake Detection based on Knowledge. 
+
+Recently, with the success of large vision-language mod-els, an emerging line of work exploits CLIP-like seman-tic knowledge to improve cross-domain generalization in deepfake detection. FFAA [41] constructs a dataset with textual reasoning to support multi-answer decision making; VLFFD [42] generates prompt-guided synthetic images for joint training; RepDFD [43] proposes a reprogramming strategy that injects universal perturbations into visual inputs while keeping VLM parameters frozen. CLIPping [44] further benchmarks CLIP with various adapter modules for universal detection. ForAda [45] fine-tunes CLIP via adapters with combined contrastive and boundary losses to enhance generalization, PREPRINT 3
+
+while Effort [46] applies SVD-based low-rank adaptation on CLIP weights to achieve strong performance with very few trainable parameters. However, existing methods do not consider that semantic knowledge can struggle under environmental interference, leading to suboptimal performance. Our approach seeks to identify causally invariant, forgery-discriminative cues in images, thereby enabling generalized detection when leveraging pre-trained knowledge. III. Method 
+
+A. Overview 
+
+Recent works [45], [46] leverage CLIP-based encoders for deepfake detection to benefit from strong semantic priors and cross-domain generalization. However, CLIP features are highly sensitive to environmental factors such as illumination, style, and compression [25], [26]. Fine-tuning on specific datasets amplifies this sensitivity, causing detectors to overfit dataset environments rather than intrinsic forgery cues, leading to severe degradation under cross-dataset evaluation. We address this with Environment-Invariant Subspace Learning (EISL), which constrains decisions to a compact, environment-robust subspace of CLIP features. The overall framework is illustrated in Fig.2. Specifically, we construct Environmental Interventions generating label-preserving pairs with realistic environment shifts, and learn a low-rank projection mapping CLIP features to an environment-invariant subspace. The projection is optimized with four objectives: semantic alignment (preserving forgery semantics), residual separation (preventing environmental leak-age), interventional consistency (enforcing robustness to shifts), and orthogonality regularization (stabilizing the basis). 
+
+B. Operational Definition of Environmental Factors 
+
+In this work, an environmental factor is a label-preserving, non-forgery variation caused by acquisition, post-processing, or visual context. Operationally, it may alter illumination, color, contrast, blur, sharpness, compression-like statistics, or foreground/background appearance, but it must preserve the depicted identity, the forgery source, and the binary real/fake label. Identity or content edits and changes to the manipulation mechanism are therefore outside this definition. This criterion makes the nuisance family testable: an original image and its intervention share the forensic target, while their feature difference exposes sensitivity that the detector should not use. 
+
+C. Environmental Interventions Module (EIM) 
+
+A natural choice for environmental interventions in deepfake detection is to rely on accurate facial masks. One may perturb the facial region while keeping the background fixed, or conversely modify the background while preserving the face. However, such deterministic localization inevitably encodes a strong spatial prior: perturbations and potential manipulations are consistently tied to a fixed facial region with well-defined boundaries. When used for training, this prior introduces trivial location cues (e.g., mask-shaped transitions) that models can exploit, rather than encouraging representations that remain reliable under diverse manipulation patterns and acquisition conditions. Our objective is therefore to construct interventions that expose the model to diverse and realistic environmental changes while avoiding shortcut cues induced by fixed masks or deterministic boundaries. Given an input image 𝐼 ∈ R3×𝐻 ×𝑊 
+
+(real or fake), our Environmental Interventions Module (EIM) produces an intervened image ˜𝐼 such that the identity and real/fake label remain unchanged, whereas environmental fac-tors are explicitly and controllably perturbed. EIM encompasses the following steps: 
+
+Random Center Mask Generation. Given an input image 
+
+𝐼 ∈ R3×𝐻 ×𝑊 , we first sample a shape 𝑠 ∈ { rect , ellipse }, then we independently sample horizontal and vertical scale factors 
+
+𝑘 ℎ, 𝑘 𝑤 ∼ 𝑈 (𝑘 min , 𝑘 max ), where in our experiments 𝑘 min = 0.2and 𝑘 max = 0.8. The sampled scales determine the spatial extent of the central mask, specifically, we set ℎ = ⌊𝐻𝑘 ℎ⌋, 𝑤 =
+
+⌊𝑊 𝑘 𝑤 ⌋, where ℎ and 𝑤 denote the mask height and width, respectively. Let (𝑐 𝑥 , 𝑐 𝑦 ) denote the image center. We construct a binary mask 𝑀 ∈ { 0, 1}𝐻 ×𝑊 by assigning, for each pixel location (𝑥, 𝑦 ) :
+
+𝑀 (𝑦, 𝑥 ) =
+
+
+
+1, 𝑠 = rect , |𝑦 − 𝑐 𝑦 | ≤ ℎ 
+
+> 2
+
+, |𝑥 − 𝑐 𝑥 | ≤ 𝑤  
+
+> 2
+
+,
+
+1, 𝑠 = ellipse ,   𝑥 −𝑐 𝑥 
+
+> 𝑤 /2
+
+2 +   𝑦 −𝑐 𝑦 
+
+> ℎ/2
+
+2 ≤ 1,
+
+0, otherwise ,
+
+(1) pixels with 𝑀 (𝑦, 𝑥 ) = 1 define the central region of interest, while pixels with 𝑀 (𝑦, 𝑥 ) = 0 form the complementary context region. Since ℎ, 𝑤 , and 𝑠 are sampled independently for each image, the intervened region only probabilistically overlaps the facial area and does not induce a deterministic manipulation boundary. This stochastic design is crucial for avoiding spatial shortcut cues in the subsequent environmental intervention. 
+
+Interventional Blending. To introduce environment-level variability without altering the underlying identity or forgery label, we combine strong appearance augmentation with stochastic region-wise blending guided by the central mask 
+
+𝑀 . We employ transformations that primarily affect low-level appearance statistics (e.g., color tone, contrast, blur) while preserving the spatial layout and forgery cues, so that the forgery patterns remain intact and the binary real/forged label is unchanged. In this way, pairs (𝐼, 𝐼 ′) constructed by EIM are label-consistent yet environmentally diverse, encouraging the detector to produce stable predictions under contextual changes and to treat such environmental variations as nuisance factors rather than discriminative shortcuts. Specifically, we first define a set of candidate Interventions Pool A = {ColorJitter, RandomGrayscale, GaussianBlur, Sharpness, Autocontrast }.For each image 𝐼 , we sample a non-empty random subset of A and compose them into a transformation 𝑇 , yielding an appearance-shifted variant: 
+
+𝐼 aug = 𝑇 (𝐼 ), (2) where 𝐼 aug is the augmented image, these transformations primarily modify illumination, color characteristics, and low-level textures, mimicking variations in capture devices and conditions while preserving high-level semantics. Given the binary mask 𝑀 from Eq. (1), we then construct the intervened image 𝐼 ′ by randomly perturbing either the central region or PREPRINT 4Environmental Interventions Module (EIM)   
+
+> Ellipse Rectangle Foreground Background
+> ColorJitter
+> ⋯
+> RandomGrayscale
+> GaussianBlur
+> Sharpness
+> Autocontrast
+> Interventions Pool Mask Agent
+> ⋯⋯⋯⋯
+> Ellipse Rectangle Foreground Background
+> Intervened Images
+
+Input 
+
+EIM CLIP 
+
+> Lora
+> (Shared Weights)
+
+CLIP 
+
+CLIP 
+
+Subspace Projection 
+
+𝐹 "
+
+𝐹 𝐹 !"#    
+
+> Low-Rank Subspace
+> 𝑟 𝑄 ∈ ℝ !×# 𝑄 $∈ ℝ #×! 𝑟 𝐷 𝐷
+
+Loss 
+
+> (𝐹 − ' 𝐹)
+> Orthogonality Regularization Invariant Consistency Loss
+> RefClip Loss
+> 𝑚𝑎𝑥 𝑚 in
+> Semantic Loss Environment Separation Loss
+> Classification Loss
+
+Inference Phase 
+
+> …
+
+CLIP 
+
+> Lora
+> Subspace Projection
+> “Real” or “Fake”
+> Classifier
+> ？
+> ℒ!"#
+> ℒ$%&
+> ℒ'()
+> ℒ*!+,
+
+$𝐹 "
+
+%𝐹 %𝐹 
+
+Fig. 2. EISL framework. During training, EIM generates a label-preserving environmental intervention 𝐼 𝑒 . Original and intervened images are encoded by a shared LoRA-adapted CLIP, and a frozen CLIP provides the semantic reference. The low-rank projector produces invariant features for classification and consistency learning; the complementary residual is separated from the reference semantics. At inference, only the adapted CLIP, projector, and classifier are used. 
+
+its complementary context. We draw 𝑏 ∼ Bernoulli (0.5) and define: 
+
+𝐼 ′ =
+
+(
+
+𝑀 ⊙ 𝐼 + ( 1 − 𝑀 ) ⊙ 𝐼 aug , if 𝑏 = 1,𝑀 ⊙ 𝐼 aug + ( 1 − 𝑀 ) ⊙ 𝐼, if 𝑏 = 0, (3) where ⊙ denotes element-wise multiplication. Thus, either the central region or the surrounding region is replaced by its strongly augmented counterpart, but never both simultaneously. This interventional blending exposes the model to diverse combinations of foreground and background appearance, while the stochastic mask design prevents a fixed association between specific spatial locations and environmental perturbations. As a result, EIM provides rich, label-preserving environment shifts without introducing deterministic spatial shortcuts. 
+
+D. Environment-Invariant Subspace Construction a) Motivation and Design Principles.: Given a face image 
+
+𝐼 and its environment-perturbed counterpart 𝐼 ′, we extract their features using a LoRA-tuned CLIP encoder Φ𝜃 (·) :
+
+𝐹 = Φ 𝜃 (𝐼 ), 𝐹 𝑒 = Φ 𝜃 (𝐼 ′) ∈ R𝐷 , (4) where these features inevitably entangle forgery cues with environmental factors. A naive approach would apply a fully-connected layer 𝑍 = 𝑊𝐹 for classification. However, such un-constrained linear transformation will freely mix all dimensions and amplify spurious, environment-specific signals, degrading cross-distribution generalization. To suppress environment-sensitive directions while preserv-ing transferable forgery cues, we propose a low-rank subspace projector that geometrically separates environment-invariant forgery representations from nuisance environmental variations. Specifically, our subspace projector design is guided by three key principles. Firstly, unlike arbitrary linear transformation, our projector is symmetric and approximately idempotent, acting as a geometric projector onto a subspace rather than an arbitrary feature mixer. This projection geometry mechanism naturally suppresses out-of-subspace environmental noise. Secondly, we impose a low-rank bottleneck that creates an information compression effect. By restricting the subspace dimension to be much smaller than the feature dimension, we force the model to prioritize robust, transferable forgery patterns while discarding environment-specific variations. Thirdly, we advocate a shared task-aligned subspace, in which the same projection is applied to both original and perturbed inputs, and jointly optimized for invariance and semantics objectives, explicitly encouraging the subspace to capture environment-agnostic encoding. 
+
+b) Subspace Projection Formulation.: We realize these principles through a learnable low-rank matrix 𝑄 ∈
+
+R𝐷 ×𝑟 , 𝑟 ≪ 𝐷 , regularized to be column-orthonormal (Sec. III-E). This defines our projection operator: 
+
+𝑃 = 𝑄𝑄 ⊤ ∈ R𝐷 ×𝐷 . (5) The orthonormality of 𝑄 ensures 𝑃 satisfies the projection properties: 𝑃 = 𝑃 ⊤ (symmetry) and 𝑃 2 ≈ 𝑃 (idempotence), while the low-rank constraint rank (𝑃 ) ≤ 𝑟 enforces the information bottleneck. This projector transforms features into an environment-invariant subspace: 
+
+e𝐹 = 𝑃𝐹, e𝐹 𝑒 = 𝑃𝐹 𝑒 , (6) PREPRINT 5
+
+where applying the same projection to both 𝐼 and 𝐼 ′ enforces that downstream decisions lie in a shared, compact subspace, attenuating nuisance variation and retaining stable, forgery-relevant structure. All classification operates on ˜𝐹 , steering the detector toward stable manipulation cues instead of raw, environment-entangled features. Compared to conventional fully-connected layers, our pro-jector enforces explicit geometric properties, restricts capacity through low-rank factorization, and uses a shared projection jointly optimized for invariance; collectively, these constraints enable robust environment-agnostic feature learning. 
+
+c) Geometric and Invariance Guarantees.: Proposition 1 (orthogonal projection). If 𝑄 ⊤𝑄 = 𝐼 𝑟 , then 𝑃 = 𝑄𝑄 ⊤ is the orthogonal projector onto S = span (𝑄 ), and every feature has the canonical decomposition 
+
+𝐹 = 𝑃𝐹 + ( 𝐼 𝐷 − 𝑃 )𝐹, 𝑃 (𝐼 𝐷 − 𝑃 ) = 0. (7) Indeed, 𝑃 ⊤ = 𝑃 and 𝑃 2 = 𝑄 (𝑄 ⊤𝑄 )𝑄 ⊤ = 𝑃 . Hence 𝑃 preserves vectors in S and annihilates vectors in S⊥; the projected feature and residual are therefore geometrically complementary rather than an arbitrary arithmetic split. During training, Lorth makes this property approximate to the extent that 𝑄 ⊤𝑄 approaches 
+
+𝐼 𝑟 .
+
+Proposition 2 (rank bottleneck). The projected feature lies in a subspace of dimension at most 𝑟 , because rank (𝑃 ) = rank (𝑄𝑄 ⊤) ≤ rank (𝑄 ) ≤ 𝑟. (8) This constraint limits the capacity available for environment-dependent shortcuts. Although EISL shares LoRA’s parameter-efficiency motivation [24], their operators have different roles: a LoRA update 𝐵𝐴 changes a network weight and is generally asymmetric and non-idempotent, whereas 𝑄𝑄 ⊤ is a symmetric feature-space filter whose input and output subspaces coincide. 
+
+Proposition 3 (invariance from paired interventions). For analysis, write a label-preserving pair locally as 𝐹 = 𝑠 + 𝑒 
+
+and 𝐹 𝑒 = 𝑠 + 𝑒 𝑒 , where 𝑠 is shared and 𝑒, 𝑒 𝑒 are environment-dependent components. Then 
+
+Linv = ∥𝑃 (𝐹 − 𝐹 𝑒 )∥ 22 = ∥𝑃 (𝑒 − 𝑒 𝑒 )∥ 22. (9) Thus, zero consistency loss for an observed difference 𝑒 − 𝑒 𝑒 
+
+implies 𝑒 − 𝑒 𝑒 ∈ ker (𝑃 ) = S⊥. Over multiple pairs, minimizing the empirical objective suppresses the span of observed intervention differences inside S and routes it toward the complementary residual. This is a conditional mechanism rather than a claim that every open-world nuisance is removed: its coverage depends on the interventions, finite data, approximate orthogonality, and the competing requirements of classification and semantic preservation. 
+
+E. Objective Function 
+
+Our overall objective is to train a detector capable of disen-tangling forgery-relevant invariant semantics from environment-specific factors, while simultaneously preserving the discrimi-native cues essential for deepfake detection. To achieve this, we formulate an overall optimization objective Ltotal , which is composed of a primary binary classification loss and a weighted sum of three complementary constraint losses. 
+
+Binary Classification Loss. To finally achieve the deepfake detection task, we add a binary classifier to the encoder (based on its invariant feature ˜𝐹 ) to distinguish between real and fake samples. This classification loss, the standard Binary Cross-Entropy (BCE) Loss, is formulated for a single sample as: 
+
+Lcls = −[ 𝑦 log ( 𝑝 ) + ( 1 − 𝑦 ) log (1 − 𝑝 )] , (10) where 𝑦 ∈ { 0, 1} is the ground-truth label (with 1 denoting fake), and 𝑝 = MLP ( ˜𝐹 ) is the model’s predicted probability that the sample is fake. 
+
+RefCLIP Constraint Loss. During the projection from the CLIP feature space to the environment-invariant subspace, we additionally use a frozen CLIP encoder to extract a reference feature 𝐹 𝑟 𝑒 𝑓 , this loss acts as a reference-model constraint: it explicitly keeps the invariant feature ˜𝐹 close to the facial semantic space defined by the reference CLIP feature 𝐹 ref , while enforcing the environmental residual 𝐹 − ˜𝐹 to be orthogonal to this semantic information. To achieve this, we first define the Semantic Alignment Loss 
+
+Lalign , which uses cosine similarity to pull ˜𝐹 and 𝐹 ref closer: 
+
+Lalign = 1 − sim ( ˜𝐹, 𝐹 ref ), (11) second, we define the Environment Separation Loss Lsep to penalize correlation between the environment residual 𝐹 − ˜𝐹 
+
+and 𝐹 ref :
+
+Lsep = |sim (𝐹 − ˜𝐹, 𝐹 ref )| , (12) where sim (· , ·) denotes cosine similarity. Finally, the RefCLIP constraint is defined as the combination of these two terms: 
+
+Lref = Lalign + L sep , (13) 
+
+Invariant Consistency Loss. This loss is key to improving the model’s generalization ability. We generate a label-preserving environmental view of each image and require its invariant feature e𝐹 𝑒 to remain consistent with the original invariant feature e𝐹 . This alignment is quantified using squared L2 distance: 
+
+Linv = e𝐹 − e𝐹 𝑒  
+
+> 22
+
+, (14) This loss forces the model to learn representations that are stable under various environmental perturbations. 
+
+Low-Rank Orthogonality Regularization. To ensure that the low-rank basis 𝑄 ∈ R𝐷 ×𝑟 used for projection forms a well-structured, non-degenerate subspace, we impose a regularization term. This term penalizes the deviation of 𝑄 ’s column vectors from an orthonormal basis: 
+
+Lorth = 𝑄 ⊤𝑄 − 𝐼 𝑟 2 
+
+> 𝐹
+
+, (15) where 𝐼 𝑟 is the 𝑟 -dimensional identity matrix and ∥ · ∥ 𝐹 is the Frobenius norm. This helps to stabilize the disentanglement process. 
+
+Overall Loss. The final loss function is obtained by the weighted sum of all the above loss terms: 
+
+Ltotal = Lcls + 𝜆 ref Lref + 𝜆 inv Linv + 𝜆 orth Lorth . (16) where 𝜆 ref , 𝜆 inv , and 𝜆 orth are hyper-parameters balancing the contribution of each term. In our experiments, we empirically set 𝜆 ref = 0.1, 𝜆 inv = 0.2, and 𝜆 orth = 0.01. PREPRINT 6
+
+a) Role and Interaction of the Objective Terms.: The four terms prevent different failure modes and should not be inter-preted as interchangeable. Lcls preserves label-discriminative directions and prevents a trivial collapsed representation; Linv 
+
+identifies the pairwise-unstable directions that should leave the projected subspace; and Lorth supplies the projector geometry required by Propositions 1 and 3. RefCLIP is only a semantic anchor: its cosine constraints preserve the direction of useful facial semantics and discourage their leakage into the residual, but they do not themselves remove environmental variation. The robustness mechanism is therefore the coupling of paired consistency with the low-rank projector, while RefCLIP limits semantic loss. The component study in Table V empirically separates these roles. IV. Experiments 
+
+A. Experimental Setup 
+
+Datasets and protocol: We evaluate our approach on eight widely used deepfake datasets: FaceForensics++ (FF++) [27], the Deepfake Detection Challenge (DFDC) [47], the DFDC preview set (DFDCP) [48], two versions of CelebDF (CDF-v1, CDF-v2) [49], DeepFakeDetection dataset (DFD) [50], DF40 [51] and Diffusion Facial Forgery (DiFF) [52]. 
+
+Implementation: Our method is based on PyTorch 2.1.2 and runs on an NVIDIA Tesla A100 GPU. We adopt the CLIP-Large-Patch14 vision encoder, initialize it with pre-trained weights, and keep it frozen while learning forgery-discriminative representations through LoRA-based adaptation (𝑟 lora = 16). Input face images are resized to 224 × 224, and the model is trained for 10 epochs using the Adam optimizer with a learning rate of 1 × 10 −5 and a batch size of 16. The rank for the low-rank subspace is set to 𝑟 = 64. Following the configuration of DeepfakeBench [7], we train on the c23-compressed version of FF++. For each video, 8 frames are sampled for training and 32 frames for testing. 
+
+B. Cross-Dataset and Cross-Generator Generalization 
+
+For a fair comparison, we evaluate our method and all competing end-to-end approaches at both frame-level and video-level. We adopt the unified generalization evaluation protocol of DeepfakeBench [7] to ensure consistent data preprocessing, experimental settings, and metrics across datasets. For recent state-of-the-art methods that are already evaluated under the DeepfakeBench configuration, we directly use their reported results for comparison. 
+
+Frame-level Comparison. We treat each extracted face frame as an individual sample and aggregate predictions over all frames in the test videos to compute image-level detection metrics. Table I reports the cross-dataset performance in terms of frame-level AUC, which reflects the ability of different methods to distinguish real from fake content using static visual evidence. Our method achieves the best performance on CDF-V1, CDF-V2, DFDCP, and DFD, and ranks second only to ForAda on DFDC, demonstrating strong generalization when trained with subspace learning. To further evaluate the generalization of forgery types, following [39], we select uniface, e4s, FaceDancer, FSGAN, InSwap, and SimSwap as representative cross-domain manipulation methods on the DF40 dataset, as shown in Table III, our approach is consistently ranked first or second across all these manipulation types and achieves an average improvement of 1.3% over all data, further confirming the robustness and transferability of the proposed framework to diverse and unseen manipulation patterns. 
+
+Video-level Comparison. We obtain predictions by averaging detection scores over all sampled frames of each video. As reported in Table II, our method achieves the best video-level AUC on CDF-v2 (0.969) and DFDCP (0.940), outperforming both previous video-based architectures and recent frame-based detectors. On DFDC, our approach also remains highly competitive with an AUC of 0.856, surpassing most existing methods and only slightly below ForAda, the results strongly demonstrate the effective generalization of our method. 
+
+DiFF Comparison . Following [39], Table IV further evaluates the generalization ability from video-based manipulations in FF++ to whole-face synthesis and editing scenarios in DiFF [52]. Despite the substantial distribution gap between the training and testing forgery types, EISL achieves the best AUC on T2I (89.86), I2I (86.21), and facial editing (72.94), while remaining competitive on face swapping (86.48). In particular, the consistent improvements on both text-to-image and image-to-image synthesis indicate that the learned representation is not restricted to artifacts associated with the manipulation pipelines observed during training. These results further demonstrate the transferability of EISL to unseen generative paradigms and support its ability to capture more generalizable forgery-relevant representations. 
+
+C. Component Ablation 
+
+Effect of Components. We investigate the contributions of RefCLIP ( Lref ), EIM ( Linv ), and Subspace Layer ( Lorth ) on CDF-v1, CDF-v2, and DFDCP, summarized in Table V. The baseline model without these components achieves an average AUC of 0.872, AP of 0.914, and EER of 0.209. Adding RefCLIP alone slightly but consistently improves performance to an average AUC of 0.877, AP of 0.930, and EER of 0.207, which shows that alignment with the reference CLIP space provides more discriminative supervision for deepfake detection. Using only EIM reduces the performance to an average AUC of 0.689, AP of 0.784, and EER of 0.366, which indicates that enforcing environment invariance in isolation is not sufficient, as environment perturbations alone are difficult to directly align with invariant information in the LoRA branch. Introducing only the Subspace Layer increases the average AUC to 0.891, raises AP to 0.940, and lowers EER to 0.194, which confirms that an explicitly constrained subspace effectively disentangles low-rank cues from the overall representation and enhances cross-dataset generalization. When EIM is combined with the Subspace Layer, the average AUC and AP further rise to 0.903 and 0.943, and EER decreases to 0.180, which demonstrates that environment-invariant learning becomes beneficial once nuisance factors are restricted within a well-structured representation space. The combination of RefCLIP and the Subspace Layer also surpasses the baseline and remains PREPRINT 7                                                                                                                                                                                                       
+
+> TABLE I Cross-dataset frame-level AUC. All methods are trained on FF++ and evaluated on unseen datasets. Best and second-best values are bold and underlined, respectively. Method Venue CDF-v1 CDF-v2 DFDC DFDCP DFD Avg. Xception [27] ICCV’19 0.779 0.737 0.708 0.737 0.816 0.755 EfficientB4 [29] ICML’19 0.791 0.749 0.696 0.728 0.815 0.756 F3Net [15] AAAI’20 0.777 0.735 0.702 0.735 0.798 0.749 X-ray [30] CVPR’20 0.709 0.679 0.633 0.694 0.766 0.696 FFD [53] CVPR’20 0.784 0.744 0.703 0.743 0.802 0.755 SPSL [13] CVPR’21 0.815 0.765 0.704 0.741 0.812 0.767 SRM [54] CVPR’21 0.793 0.755 0.700 0.741 0.812 0.760 Recce [55] CVPR’22 0.768 0.732 0.713 0.734 0.812 0.752 SBI [10] CVPR’22 –0.813 –0.799 0.774 –UCF [18] ICCV’23 0.779 0.753 0.719 0.759 0.807 0.763 ED [56] AAAI’24 0.818 0.864 0.721 0.851 ––LSDA [16] CVPR’24 0.867 0.830 0.736 0.815 0.880 0.826 CFM [57] TIFS’24 –0.828 –0.758 0.915 –ForAda [45] CVPR’25 0.914 0.900 0.843 0.890 0.933 0.896 FIA-USA [39] NeurIPS’25 0.901 0.867 –0.818 0.821 0.852 EISL (ours) –0.920 0.911 0.833 0.894 0.943 0.900
+> TABLE II Cross-dataset video-level AUC. The upper block contains video-based methods and the lower block frame-based methods. Method Venue CDF-v2 DFDC DFDCP RealForensics [58] CVPR’22 0.869 0.759 –TALL [59] ICCV’23 0.908 0.768 –AltFreezing [60] CVPR’23 0.895 ––SeeABLE [61] ICCV’23 0.873 0.759 0.863 IID [62] CVPR’23 0.838 –0.812 TALL++ [63] IJCV’24 0.920 0.785 –SAM [21] CVPR’24 0.890 ––VB [64] CVPR’25 0.947 0.843 0.909 SBI [10] CVPR’22 0.932 0.724 0.862 AUNet [65] CVPR’23 0.928 0.738 0.862 CADDM [66] CVPR’23 0.939 0.739 –SFDG [67] CVPR’23 0.758 0.736 –LAA-NET [68] CVPR’24 0.954 –0.869 LSDA [16] CVPR’24 0.911 0.770 –CFM [57] TIFS’24 0.897 –0.802 ForAda [45] CVPR’25 0.957 0.872 0.929 Effort [46] ICML’25 0.956 0.843 0.909 FIA-USA [39] NeurIPS’25 0.941 0.732 0.866 EISL (ours) –0.969 0.856 0.940
+
+competitive, while the setting without the Subspace Layer shows inferior results compared with those that include it, highlighting the central role of the subspace constraint. Using all three components achieves the best performance, showing the three losses are complementary and jointly contribute to robust forgery detection. 
+
+Projection Structure. Table VI compares different feature mappings while keeping the backbone, training protocol, and all optimization objectives unchanged. The “No projection” variant directly applies the invariance objective in the original feature space, while the full-rank linear layer and two-layer mapping test whether the improvement can be attributed simply to introducing additional trainable transformations or greater mapping capacity. As shown in Table VI, neither alternative consistently matches the proposed low-rank 𝑄𝑄 ⊤ projector, which achieves the best AUC on all three datasets. This indicates that the gain of EISL does not arise merely from adding trainable parameters or enforcing Linv on the original representation, but from the constrained projection geometry that restricts features to a compact subspace and suppresses environment-sensitive directions. 
+
+Projector Rank and Backbone. Table VII investigates the effects of the projector rank and the CLIP visual backbone. With ViT-L/14 fixed, the performance exhibits a non-monotonic trend as the rank increases. Specifically, 𝑟 = 64 achieves the best overall results, with average AUC, AP, and EER values of 0.908, 0.949, and 0.176, respectively. Compared with 𝑟 = 32, it improves the average AUC and AP by 1.1 percentage points and reduces the EER by 0.9 percentage points. The gains mainly come from CDF-v2 and DFDCP: on CDF-v2, 𝑟 = 64 improves AUC/AP by 2.7/1.9 points and reduces EER by 2.5 points, while on DFDCP it improves AUC/AP by 0.8/1.1 points and reduces EER by 1.0 point. Although 𝑟 = 32 is marginally better on CDF-v1 in terms of AUC and EER, 𝑟 = 64 provides more stable performance across the three test domains. Increasing the rank further to 128 degrades the average AUC from 0.908 to 0.892 and increases the EER from 0.176 to 0.189. The degradation is especially evident on DFDCP, where the AUC drops from 0.894 to 0.872 and the EER rises from 0.193 to 0.219. These results indicate that increasing the projector capacity does not necessarily improve cross-dataset detection. A small rank may overly constrain feature adaptation, whereas a large rank may retain more dataset-specific variations. Therefore, 𝑟 = 64 offers a better balance between compactness and transferability and is adopted as the default setting. With 𝑟 = 64 fixed, ViT-L/14 consistently outperforms both ViT-B backbones on all datasets and metrics. Compared with ViT-B/16, it improves the average AUC and AP by 6.3 and 3.9 percentage points and reduces the EER by 6.4 points. Compared with ViT-B/32, the corresponding improvements are 11.1, 7.5, and 10.1 points. The gains are particularly pronounced on CDF-v2 and DFDCP; for example, ViT-L/14 improves the CDF-v2 AUC over ViT-B/16 from 0.815 to 0.911 and the DFDCP AUC over ViT-B/32 from 0.769 to 0.894. This suggests that the stronger encoder provides more transferable representations for detecting manipulation traces under distribution shifts. Nevertheless, the proposed projector remains applicable to both ViT-B variants without architectural modification, showing that EISL is not tied to a specific CLIP encoder. Finally, the backbone has a substantially larger impact than the projector rank: replacing ViT-B/32 with ViT-L/14 improves the average AUC by 11.1 points, whereas changing PREPRINT 8                                                                                                      
+
+> TABLE III Frame-level AUC (%) on six representative DF40 face-swapping methods. All models are trained on FF++. Method UniFace E4S FaceDancer FSGAN InSwap SimSwap Avg. RECCE [55] 84.2 65.2 78.3 88.4 79.5 73.0 78.1 SBI [10] 64.4 69.0 44.7 87.9 63.3 56.8 64.4 IID [62] 79.5 71.0 79.0 86.4 74.4 64.0 75.7 UCF [18] 78.7 69.2 80.0 88.1 76.8 64.9 77.5 LSDA [16] 85.4 68.4 75.9 83.2 81.0 72.7 77.8 CDFA [69] 76.5 67.4 75.4 84.8 72.0 76.1 75.9 FIA-USA [39] 91.8 87.5 83.0 86.3 87.4 91.0 87.8 ForAda [45] 91.2 92.9 90.4 94.7 90.0 85.6 90.8 EISL (ours) 91.7 96.3 92.7 95.3 87.8 88.5 92.1
+> TABLE IV Frame-level AUC (%) on DiFF. All models are trained on FF++ and transferred without adaptation. Method T2I I2I FS FE Xception [27] 62.43 56.83 85.97 58.64 F3-Net [15] 66.87 67.64 81.01 60.60 EfficientNet [29] 74.12 57.27 82.11 57.20 DIRE [70] 44.22 64.64 84.98 57.72 SBI [10] 80.20 80.40 85.08 68.79 FIA-USA [39] 86.05 84.95 89.42 72.73 EISL (ours) 89.86 86.21 86.48 72.94
+
+the rank from 32 to 64 yields a 1.1-point gain. Thus, the backbone primarily determines representation quality, while the projector rank adjusts the trade-off between information preservation and cross-dataset generalization. 
+
+Intervention Mask Design. Table VIII evaluates two design choices of the intervention mask in Eq. (1), namely the intervention target and the mask geometry. Applying a fixed mask only to the background yields the lowest average AUC of 0.897. Extending the intervention to alternate between the sampled region and its complement improves the AUC on CDF-v1, CDF-v2, and DFDCP by 0.5, 0.8, and 0.9 percentage points, respectively, indicating that interventions covering both facial and contextual regions provide more informative variation than background-only perturbations. Further randomizing the mask shape and spatial extent increases the average AUC from 0.904 to 0.908 and achieves the best results on CDF-v1 and CDF-v2. On DFDCP, the fixed and variable designs perform comparably, with the fixed mask being marginally better by 0.1 percentage points. Overall, these results suggest that varying the intervention geometry improves cross-dataset robustness, potentially by reducing the model’s dependence on fixed mask boundaries and spatial locations. We therefore adopt the variable foreground/background mask as the default design. 
+
+Loss-Weight Sensitivity. Table IX studies the sensitivity of EISL to the three objective coefficients by varying one coeffi-cient at a time while keeping the other two fixed at their default values. Across the three independent sweeps, the best average AUC is observed at 𝜆 ref = 0.1, 𝜆 inv = 0.2, and 𝜆 orth = 0.01. For 𝜆 ref , the performance peaks at 0.1 and decreases when a larger weight is used, suggesting that excessive regularization toward the reference CLIP representation may limit task-specific adaptation. Similarly, 𝜆 inv = 0.2 achieves the most favorable performance, indicating that a moderate invariance constraint can suppress environment-specific variations while preserving forgery-relevant information. For the orthogonality term, 𝜆 orth = 0.01 provides the best result. At this setting, Lorth 
+
+decreases to approximately 10 −4, indicating that the desired orthogonality has already been effectively enforced. Assigning a larger weight brings no further improvement and instead degrades cross-dataset performance, possibly because an overly strong constraint interferes with the early-stage optimization of the discriminative representation. Based on these results, we adopt 𝜆 ref = 0.1, 𝜆 inv = 0.2, and 𝜆 orth = 0.01 in all other experiments. 
+
+D. Environmental Sensitivity and Mechanism Analysis 
+
+The preceding results establish the generalization gains of EISL. This subsection connects these gains to the mechanism in Sec. III-D through four complementary analyses: environmental sensitivity under label-preserving perturbations, the routing of intervention-induced variation across the projected and residual components, semantic retention in the invariant subspace, and controlled attribution against the CLIP-LoRA baseline. 
+
+Environmental Sensitivity of the Adapted Detector Table X isolates environmental sensitivity on the CLIP-LoRA baseline, which is trained without interventions. With the forgery source, identity, and label fixed, Gaussian blur, grayscale conversion, and autocontrast reduce the average AUC from 0.872 to 0.836, 0.834, and 0.769, corresponding to drops of 3.6, 3.8, and 10.3 points, respectively. The largest degradation is nearly three times the 3.6-point clean-data gain of the complete method over the same baseline in Table V. These results demonstrate that environmental variation alone produces substantial forensic errors and constitutes an independent source of cross-domain degradation beyond generator shift. Because its effect can be directly measured under label-preserving transformations, environmental variation can be explicitly modeled and suppressed through controlled interventions. Together with generator-specific artifacts and identity bias discussed in Sec. V, environmental variation forms a major source of cross-domain failure addressed by EISL. 
+
+Intervention Response of the Projected and Residual Subspaces Proposition 3 states that intervention-induced variation should be pushed out of S and carried by the residual component. Table XI verifies this mechanism on CDF-v2 under a regional environmental intervention. Shift denotes the mean intervention-induced feature displacement normalized by the distance between the original real and fake feature means, thereby measuring the magnitude of environmental variation relative to the original inter-class structure. A value above 1 ×PREPRINT 9
+
+TABLE V Component ablation. Metrics are frame-level AUC/AP/EER on CDF-v1, CDF-v2, and DFDCP. Ref., Inv., and Orth. denote Lref , EIM with Linv , and the low-rank projector with Lorth , respectively. Ref. Inv. Orth. CDF-v1 CDF-v2 DFDCP Average AUC AP EER AUC AP EER AUC AP EER AUC AP EER 
+
+× × × 0.898 0.940 0.177 0.881 0.935 0.201 0.836 0.868 0.249 0.872 0.914 0.209 
+
+✓ × × 0.903 0.943 0.183 0.883 0.935 0.200 0.846 0.912 0.240 0.877 0.930 0.207 
+
+× ✓ × 0.723 0.788 0.342 0.717 0.809 0.340 0.629 0.755 0.418 0.689 0.784 0.366 
+
+× × ✓ 0.910 0.948 0.172 0.903 0.947 0.179 0.861 0.927 0.230 0.891 0.940 0.194 
+
+× ✓ ✓ 0.933 0.961 0.145 0.906 0.948 0.178 0.870 0.930 0.217 0.903 0.943 0.180 
+
+✓ × ✓ 0.934 0.962 0.145 0.888 0.940 0.197 0.870 0.931 0.216 0.897 0.944 0.186 
+
+✓ ✓ × 0.907 0.945 0.178 0.891 0.940 0.189 0.866 0.927 0.224 0.888 0.937 0.197 
+
+✓ ✓ ✓ 0.920 0.953 0.162 0.911 0.952 0.172 0.894 0.942 0.193 0.908 0.949 0.176 
+
+Fig. 3. t-SNE visualization on CDF-v2 after environmental intervention. The CLIP-LoRA baseline is strongly entangled. EISL features before projection still contain intervention-sensitive variation, whereas the projected subspace provides clearer real/fake separation. 0 1 2 3 4 5                                  
+
+> Severity
+> 50 60 70 80 90 100
+> AUC (%)
+> Color Saturation
+> 012345
+> Severity
+> Color Contrast
+> 012345
+> Severity
+> Block Wise
+> 012345
+> Severity
+> Gaussian Blur
+> 012345
+> Severity
+> JPEG Compression
+> 012345
+> Severity
+> Gaussian Noise
+> 012345
+> Severity
+> Average CLIP iid LSDA ForAda Ours
+
+Fig. 4. Video-level AUC under five severity levels of six perturbations. EISL is compared with CLIP, IID [62], LSDA [16], and ForAda [45]. TABLE VI Projection structure. Frame-level AUC obtained by keeping all objectives fixed and replacing only the mapping applied to 𝐹 .Mapping CDF-v1 CDF-v2 DFDCP No projection ( 𝑃 = 𝐼 𝐷 ) 0.907 0.891 0.866 Full-rank linear ( 𝐷 × 𝐷 ) 0.899 0.891 0.885 Two linear layers 0.891 0.894 0.868 EISL projector ( 𝑄𝑄 ⊤, 𝑟 = 64) 0.920 0.911 0.894 
+
+indicates that the intervention moves a sample farther than the separation between the two class centers and therefore substantially disrupts the original real/fake discriminative structure. For CLIP-LoRA, the intervention reduces AUC from 0.881 to 0.772, a drop of 10.9 points, while the shift reaches 1.99 ×. Thus, environmental variation alone induces a feature displacement nearly twice the original class-center separation, substantially weakening the separability between real and fake samples. In the EISL projected subspace, AUC decreases from 0.911 to 0.866, corresponding to a drop of only 4.5 points, while the shift is reduced to 0 .66 ×, approximately 67% lower than that of CLIP-LoRA. The smaller feature displacement and AUC degradation jointly demonstrate that the projected representation is substantially more stable under environmental variation. Conversely, the residual shift increases to 2 .63 ×, exhibiting the opposite response to that of the projected subspace. These complementary responses reveal the underlying mechanism of EISL: intervention-induced variation is suppressed in the retained subspace and routed into the complementary residual component, rather than being indiscriminately erased during projection. The simultaneous reduction in projected shift and increase in residual shift directly accord with the orthogo-nal decomposition described in Proposition 3 and Eq. (7), demonstrating that EISL performs a structured separation of environment-sensitive variation from task-relevant information rather than generic feature compression. Moreover, the projected features are more stable than the CLIP representation to which they are semantically aligned. Figure 3 provides the corre-sponding qualitative evidence: EISL features before projection retain pronounced intervention-sensitive spread, whereas the projected features suppress this spread and yield a markedly clearer separation between real and fake samples, consistent with the quantitative results. PREPRINT 10                                                                                                                                                                                                            
+
+> TABLE VII Effect of the projector rank 𝑟 and of the CLIP backbone (frame-level AUC/AP/EER). Each block varies one factor while holding the other at its default value, so the default configuration ( 𝑟 =64, ViT-L/14) is the same run in both blocks. Variant CDF-v1 CDF-v2 DFDCP Average AUC AP EER AUC AP EER AUC AP EER AUC AP EER
+> Projector rank 𝑟 (backbone fixed to ViT-L/14)
+> 𝑟 =32 0.921 0.951 0.155 0.884 0.933 0.197 0.886 0.931 0.203 0.897 0.938 0.185
+> 𝑟 =64 (default) 0.920 0.953 0.162 0.911 0.952 0.172 0.894 0.942 0.193 0.908 0.949 0.176
+> 𝑟 =128 0.908 0.945 0.167 0.898 0.941 0.182 0.872 0.929 0.219 0.892 0.938 0.189
+> CLIP backbone (rank fixed to 𝑟 =64 )
+> ViT-B/32 0.807 0.877 0.265 0.816 0.884 0.263 0.769 0.860 0.304 0.797 0.874 0.277 ViT-B/16 0.860 0.919 0.216 0.815 0.894 0.271 0.862 0.919 0.233 0.845 0.910 0.240 ViT-L/14 (default) 0.920 0.953 0.162 0.911 0.952 0.172 0.894 0.942 0.193 0.908 0.949 0.176
+> TABLE VIII Effect of mask target and shape (frame-level AUC). Mask CDF-v1 CDF-v2 DFDCP Background only, fixed 0.905 0.899 0.886 Foreground/background, fixed 0.910 0.907 0.895
+> Foreground/background, variable 0.920 0.911 0.894 TABLE IX Sensitivity to the loss weights in Eq. (16). One coefficient is varied at a time, and the other two remain at their default values. Weight Value CDF-v1 CDF-v2 DFDCP Avg.
+> 𝜆 ref 10.828 0.798 0.804 0.810 0.50.874 0.882 0.871 0.876 0.20.916 0.886 0.896 0.899 0.10.920 0.911 0.894 0.908
+> 𝜆 inv 10.919 0.907 0.893 0.906 0.50.910 0.896 0.886 0.897 0.20.920 0.911 0.894 0.908
+> 0.10.916 0.889 0.899 0.901
+> 𝜆 orth 10.914 0.897 0.891 0.901 0.10.913 0.894 0.890 0.899 0.01 0.920 0.911 0.894 0.908
+> TABLE X Environmental sensitivity of the CLIP-LoRA baseline. A single label-preserving perturbation is applied to the test images; the forgery source, identity, and label are unchanged. Frame-level AUC. Perturbation CDF-v1 CDF-v2 DFDCP Avg. None 0.898 0.881 0.836 0.872 Gaussian blur 0.857 0.848 0.803 0.836 Grayscale 0.879 0.853 0.771 0.834 Autocontrast 0.824 0.755 0.729 0.769 TABLE XI Intervention response on CDF-v2. Shift is the mean intervention-induced feature displacement, normalized by the distance between the original real and fake feature means. Feature Inter. AUC Drop Shift CLIP-LoRA 0.772 10.9 pt 1.99 ×
+> EISL, projected e𝐹 0.866 4.5 pt 0.66 ×
+> EISL, residual (𝐼 𝐷 −𝑃 )𝐹 ––2.63 ×
+
+E. Robustness to Real-World Corruptions 
+
+Because EIM is used during training, we test whether its benefit transfers to degradations outside the intervention pool. Following DeeperForensics [6], we evaluate color saturation, contrast, block-wise artifacts, Gaussian blur, JPEG compression, and Gaussian noise at five severity levels. Block-wise artifacts, JPEG compression, and Gaussian noise are structurally different from the photometric and smoothing operations in A. Fig. 4 shows that EISL performs best under block-wise artifacts, blur, compression, and noise, and remains competitive under saturation and contrast changes. Averaged over all distortion types and levels, it ranks first. The advantage on corruption families outside the intervention pool suggests that the learned subspace suppresses a broader class of appearance-driven directions rather than memorizing the operations used to construct the training pairs. V. Discussion and Limitations Our study focuses on environmental variations that preserve the underlying forensic target while altering the visual con-ditions under which it is observed. Following Sec. III-B, we define environmental factors as label-preserving, non-forgery variations arising from acquisition, post-processing, or visual context. EIM provides a controllable instantiation of this family through photometric, degradation, and context/style changes, following the intervention paradigm used for invariant analysis of vision–language models [28]. These variations reflect appearance changes commonly introduced when media are captured, processed, or redistributed, without modifying the depicted identity, forgery source, or real/fake label. The experimental results provide consistent evidence that such environmental variations constitute a meaningful source of cross-domain degradation. As shown in Sec. IV-D, label-preserving perturbations alone can reduce the AUC of the CLIP-based detector by up to 10.3 points even when the forgery source remains unchanged. Sec. IV-D further shows that, after subspace projection, intervention-induced variation is substantially reduced in the retained representation and con-centrated in the complementary residual component. Moreover, the robustness improvements on corruption families outside the intervention pool in Sec. IV-E suggest that EISL does not simply memorize the predefined intervention operations, but suppresses a broader set of appearance-sensitive feature directions. Together, these observations support the hypothesis that a non-trivial portion of CLIP detector sensitivity can be attributed to suppressible environment-dependent variations. Nevertheless, environmental variation represents only one source of distribution shift in open-world deepfake detection. The current intervention family does not explicitly model every possible acquisition condition or generator-specific artifact, since changing the underlying manipulation mechanism would violate the label-preserving intervention criterion. Other factors, PREPRINT 11 
+
+including identity bias, dataset curation effects, and benchmark-specific processing pipelines, may also contribute to the remain-ing generalization gap. Therefore, the analysis in Sec. IV-D should be interpreted as identifying and mitigating a measurable subset of nuisance variations, rather than providing a complete decomposition of all domain-dependent factors. The current subspace formulation also adopts a deliberately simple design, using a single fixed-rank linear projector shared across samples and environments. This formulation introduces few additional parameters and provides an explicit geometric interpretation through the projected and residual components, as analyzed in Sec. III-D. However, a global linear subspace may be insufficient to capture nonlinear interactions among identity, content, forgery evidence, and environmental condi-tions, while a fixed rank cannot account for sample-dependent variations in nuisance complexity. Richer semantic or generative interventions, adaptive intervention policies, nonlinear invariant subspaces, and sample-dependent or adaptive-rank projections therefore represent promising directions for future work. VI. Conclusion We presented EISL, which uses label-preserving environmen-tal interventions to identify unstable CLIP feature directions and a low-rank orthogonal projection to exclude them from the discriminative subspace. The geometric and rank properties of the projector are linked to paired consistency in the method analysis and tested through reduced projected shift, increased residual shift, retained identity semantics, and weaker alternatives based on identity, full-rank, or unconstrained mappings. Cross-dataset, cross-generator, whole-face synthesis, and corruption experiments show consistent gains, with the largest margins under stronger train–test shifts. As bounded in Sec. V, the current evidence covers the implemented intervention family and a single fixed-rank linear subspace; richer interventions and nonlinear or adaptive-rank projections are promising extensions. References 
+
+[1] J. Ho, A. Jain, and P. Abbeel, “Denoising diffusion probabilistic models,” 
+
+Advances in Neural Information Processing Systems (NeurIPS) , 2020. [2] T. Karras, S. Laine, and T. Aila, “A style-based generator architecture for generative adversarial networks,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2019, pp. 4401–4410. [3] R. Rombach, A. Blattmann, D. Lorenz, P. Esser, and B. Ommer, “High-resolution image synthesis with latent diffusion models,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2022, pp. 10 674–10 685. [4] I. Goodfellow, J. Pouget-Abadie, M. Mirza, B. Xu, D. Warde-Farley, S. Ozair, A. Courville, and Y. Bengio, “Generative adversarial networks,” 
+
+Communications of the ACM , pp. 139–144, 2020. [5] C.-L. Li, W.-C. Chang, Y. Cheng, Y. Yang, and B. P´ oczos, “Mmd gan: Towards deeper understanding of moment matching network,” Advances in Neural Information Processing Systems (NeurIPS) , 2017. [6] L. Jiang, R. Li, W. Wu, C. Qian, and C. C. Loy, “Deeperforensics-1.0: A large-scale dataset for real-world face forgery detection,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2020, pp. 2886–2895. [7] Z. Yan, Y. Zhang, X. Yuan, S. Lyu, and B. Wu, “Deepfakebench: A comprehensive benchmark of deepfake detection,” in Thirty-seventh Conference on Neural Information Processing Systems Datasets and Benchmarks Track (NeurIPS) , 2023. [8] U. A. Ciftci, I. Demir, and L. Yin, “Fakecatcher: Detection of synthetic portrait videos using biological signals,” IEEE Transactions on Pattern Analysis and Machine Intelligence , 2020. [9] X. Yang, Y. Li, and S. Lyu, “Exposing deep fakes using inconsistent head poses,” in ICASSP IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) . IEEE, 2019. [10] K. Shiohara and T. Yamasaki, “Detecting deepfakes with self-blended images,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2022, pp. 18 699–18 708. [11] Y. Nirkin, L. Wolf, Y. Keller, and T. Hassner, “Deepfake detection based on discrepancies between faces and their context,” IEEE Transactions on Pattern Analysis and Machine Intelligence , vol. 44, no. 10, pp. 6111–6121, 2022. [12] Y. Li and S. Lyu, “Exposing deepfake videos by detecting face warping artifacts,” arXiv preprint arXiv:1811.00656 , 2019. [13] H. Liu, X. Li, W. Zhou, Y. Chen, Y. He, H. Xue, W. Zhang, and N. Yu, “Spatial-phase shallow learning: Rethinking face forgery detection in frequency domain,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2021, pp. 772–781. [14] H. Li, J. Zhou, Y. Li, B. Wu, B. Li, and J. Dong, “Freqblender: Enhancing deepfake detection by blending frequency knowledge,” in Advances in Neural Information Processing Systems (NeurIPS) , 2024. [15] Y. Qian, G. Yin, L. Sheng, Z. Chen, and J. Shao, “Thinking in frequency: Face forgery detection by mining frequency-aware clues,” in European Conference on Computer Vision (ECCV) , vol. 12357, 2020, pp. 86–103. [16] Z. Yan, Y. Luo, S. Lyu, Q. Liu, and B. Wu, “Transcending forgery specificity with latent space augmentation for generalizable deepfake detection,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2024, pp. 8984–8994. [17] S. Das, S. Seferbekov, A. Datta, M. S. Islam, and M. R. Amin, “Towards solving the deepfake problem: An analysis on improving deepfake detection using dynamic face augmentation,” in Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) Workshops , 2021, pp. 3769–3778. [18] Z. Yan, Y. Zhang, Y. Fan, and B. Wu, “Ucf: Uncovering common features for generalizable deepfake detection,” in Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) , 2023, pp. 22 355– 22 366. [19] L. Lin, X. He, Y. Ju, X. Wang, F. Ding, and S. Hu, “Preserving fairness generalization in deepfake detection,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2024, pp. 16 815–16 825. [20] A. Radford, J. W. Kim, C. Hallacy, A. Ramesh, G. Goh, S. Agarwal, G. Sastry, A. Askell, P. Mishkin, J. Clark et al. , “Learning transferable visual models from natural language supervision,” in Proceedings of the 38th International Conference on Machine Learning (ICML) , 2021, pp. 8748–8763. [21] J. Choi, T. Kim, Y. Jeong, S. Baek, and J. Choi, “Exploiting style latent flows for generalizing deepfake video detection,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2024, pp. 1133–1143. [22] M. Caron, H. Touvron, I. Misra, H. J´ egou, J. Mairal, P. Bojanowski, and A. Joulin, “Emerging properties in self-supervised vision transformers,” in Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) , 2021, pp. 9630–9640. [23] N. Houlsby, A. Giurgiu, S. Jastrzebski, B. Morrone, Q. De Laroussilhe, A. Gesmundo, M. Attariyan, and S. Gelly, “Parameter-efficient transfer learning for NLP,” in Proceedings of the 36th International Conference on Machine Learning (ICML) . PMLR, 2019, pp. 2790–2799. [24] E. J. Hu, Y. Shen, P. Wallis, Z. Allen-Zhu, Y. Li, S. Wang, L. Wang, and W. Chen, “Lora: Low-rank adaptation of large language models,” in 
+
+International Conference on Learning Representations (ICLR) , 2022. [25] W. Tu, W. Deng, and T. Gedeon, “Toward a holistic evaluation of robustness in clip models,” IEEE Transactions on Pattern Analysis and Machine Intelligence , vol. 47, no. 9, pp. 8280–8296, 2025. [26] A. Fang, Y. Yang, C. Ma, B. Wu, and X. Wang, “Data determines distributional robustness in contrastive language-image pre-training,” in 
+
+Proceedings of the 39th International Conference on Machine Learning (ICML) , vol. 162, 2022, pp. 6216–6234. [27] A. Rossler, D. Cozzolino, L. Verdoliva, C. Riess, J. Thies, and M. Niessner, “Faceforensics++: Learning to detect manipulated facial images,” in Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) , 2019, pp. 1–11. [28] Z. Song, S. Zhao, X. Zhang, J. Li, C. Zheng, and W. Qiang, “Learning invariant causal mechanism from vision-language models,” arXiv preprint arXiv:2405.15289 , 2024. [29] M. Tan and Q. Le, “Efficientnet: Rethinking model scaling for con-volutional neural networks,” in International Conference on Machine Learning (ICML) , vol. 97, 2019, pp. 6105–6114. [30] L. Li, J. Bao, T. Zhang, H. Yang, D. Chen, F. Wen, and B. Guo, “Face x-ray for more general face forgery detection,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2020, pp. 5000–5009. [31] C. Zhao, C. Wang, G. Hu, H. Chen, C. Liu, and J. Tang, “ISTVT: Interpretable spatial-temporal video transformer for Deepfake detection,” 
+
+IEEE Transactions on Information Forensics and Security , vol. 18, pp. PREPRINT 12 
+
+1335–1348, 2023. [32] Z. Guo, Z. Jia, L. Wang, D. Wang, G. Yang, and N. K. Kasabov, “Constructing new backbone networks via space-frequency interactive convolution for Deepfake detection,” IEEE Transactions on Information Forensics and Security , vol. 19, pp. 401–413, 2024. [33] F. Matern, C. Riess, and M. Stamminger, “Exploiting visual artifacts to expose deepfakes and face manipulations,” in IEEE Winter Applications of Computer Vision Workshops (WACVW) , 2019, pp. 83–92. [34] C. Kong, B. Chen, H. Li, S. Wang, A. Rocha, and S. Kwong, “Detect and locate: Exposing face manipulation by semantic- and noise-level telltales,” 
+
+IEEE Transactions on Information Forensics and Security , vol. 17, pp. 1741–1756, 2022. [35] J. Wang, Y. Sun, and J. Tang, “LiSiam: Localization invariance siamese network for deepfake detection,” IEEE Transactions on Information Forensics and Security , vol. 17, pp. 2425–2436, 2022. [36] Z. Yang, J. Liang, Y. Xu, X.-Y. Zhang, and R. He, “Masked relation learning for DeepFake detection,” IEEE Transactions on Information Forensics and Security , vol. 18, pp. 1696–1708, 2023. [37] D. Liu, Z. Dang, C. Peng, Y. Zheng, S. Li, N. Wang, and X. Gao, “FedForgery: Generalized face forgery detection with residual federated learning,” IEEE Transactions on Information Forensics and Security ,vol. 18, pp. 4272–4284, 2023. [38] W. Guan, W. Wang, J. Dong, and B. Peng, “Improving generalization of deepfake detectors by imposing gradient regularization,” IEEE Transactions on Information Forensics and Security , vol. 19, pp. 5345– 5356, 2024. [39] L. Ma, Z. Yan, J. Xu, Y. Chen, Q. Guo, Z. Bi, Y. Liao, and H. Lin, “From specificity to generality: Revisiting generalizable artifacts in detecting face deepfakes,” in Advances in Neural Information Processing Systems (NeurIPS) , 2025. [40] H. Kashiani, N. Alipour Talemi, and F. Afghah, “Freqdebias: Towards generalizable deepfake detection via consistency-driven frequency debi-asing,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2025, pp. 8775–8785. [41] Z. Huang, B. Xia, Z. Lin, Z. Mou, and W. Yang, “Ffaa: Multimodal large language model based explainable open-world face forgery analysis assistant,” arXiv preprint arXiv:2408.10072 , 2024. [42] K. Sun, S. Chen, T. Yao, H. Yang, X. Sun, S. Ding, and R. Ji, “Towards general visual-linguistic face forgery detection,” arXiv preprint arXiv:2307.16545 , 2023. [43] K. Lin, Y. Lin, W. Li, T. Yao, and B. Li, “Standing on the shoulders of giants: Reprogramming visual-language model for general deepfake detection,” arXiv preprint arXiv:2409.02664 , 2024. [44] S. A. Khan and D.-T. Dang-Nguyen, “Clipping the deception: Adapting vision-language models for universal deepfake detection,” in Proceedings of the 2024 International Conference on Multimedia Retrieval , 2024, pp. 1006–1015. [45] X. Cui, Y. Li, A. Luo, J. Zhou, and J. Dong, “Forensics adapter: Adapting clip for generalizable face forgery detection,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2025, pp. 19 207–19 217. [46] Z. Yan, J. Wang, P. Jin, K.-Y. Zhang, C. Liu, S. Chen, T. Yao, S. Ding, B. Wu, and L. Yuan, “Orthogonal subspace decomposition for generalizable ai-generated image detection,” in Proceedings of the 42nd International Conference on Machine Learning (ICML) , 2025. [47] B. Dolhansky, J. Bitton, B. Pflaum, J. Lu, R. Howes, M. Wang, and C. C. Ferrer, “The deepfake detection challenge (dfdc) dataset,” arXiv preprint arXiv:2006.07397 , 2020. [48] B. Dolhansky, R. Howes, B. Pflaum, N. Baram, and C. Ferrer, “The deepfake detection challenge (dfdc) preview dataset.” arXiv preprint arXiv:1910.08854 , 2019. [49] Y. Li, X. Yang, P. Sun, H. Qi, and S. Lyu, “Celeb-df: A large-scale challenging dataset for deepfake forensics,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2020, pp. 3204–3213. [50] Google and Jigsaw, “Deepfake detection dataset,” Dataset released for deepfake detection research, 2019, google/Jigsaw DeepFake Detection (DFD) dataset. [51] Z. Yan, T. Yao, S. Chen, Y. Zhao, X. Fu, J. Zhu, D. Luo, C. Wang, S. Ding, Y. Wu, and L. Yuan, “Df40: Toward next-generation deepfake detection,” in Advances in Neural Information Processing Systems 37 (NeurIPS 2024), Datasets and Benchmarks Track , 2024. [52] H. Cheng, Y. Guo, T. Wang, L. Nie, and M. Kankanhalli, “Diffusion facial forgery detection,” in Proceedings of the 32nd ACM International Conference on Multimedia (MM ’24) , 2024, pp. 5939–5948. [53] H. Dang, F. Liu, J. Stehouwer, X. Liu, and A. K. Jain, “On the detection of digital face manipulation,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2020, pp. 5780– 5789. [54] Y. Luo, Y. Zhang, J. Yan, and W. Liu, “Generalizing face forgery detection with high-frequency features,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2021, pp. 16 317–16 326. [55] J. Cao, C. Ma, T. Yao, S. Chen, S. Ding, and X. Yang, “End-to-end reconstruction-classification learning for face forgery detection,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2022, pp. 4103–4112. [56] Z. Ba, Q. Liu, Z. Liu, S. Wu, F. Lin, L. Lu, and K. Ren, “Exposing the deception: Uncovering more forgery clues for deepfake detection,” in 
+
+Proceedings of the AAAI Conference on Artificial Intelligence , 2024, pp. 719–728. [57] A. Luo, C. Kong, J. Huang, Y. Hu, X. Kang, and A. C. Kot, “Beyond the prior forgery knowledge: Mining critical clues for general face forgery detection,” IEEE Transactions on Information Forensics and Security ,vol. 19, pp. 1168–1182, 2023. [58] A. Haliassos, R. Mira, S. Petridis, and M. Pantic, “Leveraging real talking faces via self-supervision for robust forgery detection,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2022, pp. 14 930–14 942. [59] Y. Xu, J. Liang, G. Jia, Z. Yang, Y. Zhang, and R. He, “Tall: Thumbnail layout for deepfake video detection,” in Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) , 2023, pp. 22 601– 22 611. [60] Z. Wang, J. Bao, W. Zhou, W. Wang, and H. Li, “Altfreezing for more general video face forgery detection,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2023, pp. 4129–4138. [61] N. Larue, N.-S. Vu, V. Struc, P. Peer, and V. Christophides, “Seeable: Soft discrepancies and bounded contrastive learning for exposing deepfakes,” in Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) , 2023, pp. 20 954–20 964. [62] B. Huang, Z. Wang, J. Yang, J. Ai, Q. Zou, Q. Wang, and D. Ye, “Implicit identity driven deepfake face swapping detection,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2023, pp. 4490–4499. [63] Y. Xu, J. Liang, L. Sheng, and X.-Y. Zhang, “Learning spatiotemporal inconsistency via thumbnail layout for face deepfake detection,” Inter-national Journal of Computer Vision , vol. 132, no. 12, pp. 5663–5680, 2024. [64] Z. Yan, Y. Zhao, S. Chen, M. Guo, X. Fu, T. Yao, S. Ding, Y. Wu, and L. Yuan, “Generalizing deepfake video detection with plug-and-play: Video-level blending and spatiotemporal adapter tuning,” in IEEE/CVF Conference on Computer Vision and Pattern Recognition, CVPR 2025, Nashville, TN, USA, June 11-15, 2025 , 2025, pp. 12 615–12 625. [65] W. Bai, Y. Liu, Z. Zhang, B. Li, and W. Hu, “Aunet: Learning relations between action units for face forgery detection,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2023, pp. 24 709–24 719. [66] S. Dong, J. Wang, R. Ji, J. Liang, H. Fan, and Z. Ge, “Implicit identity leakage: The stumbling block to improving deepfake detection generalization,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2023, pp. 3994–4004. [67] Y. Wang, K. Yu, C. Chen, X. Hu, and S. Peng, “Dynamic graph learning with content-guided spatial-frequency relation reasoning for deepfake detection,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2023, pp. 7278–7287. [68] D. Nguyen, N. Mejri, I. P. Singh, P. Kuleshova, M. Astrid, A. Kacem, E. Ghorbel, and D. Aouada, “Laa-net: Localized artifact attention network for quality-agnostic and generalizable deepfake detection,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2024, pp. 17 395–17 405. [69] Y. Lin, W. Song, B. Li, Y. Li, J. Ni, H. Chen, and Q. Li, “Fake it till you make it: Curricular dynamic forgery augmentations towards general Deepfake detection,” in European Conference on Computer Vision (ECCV) , 2024, pp. 104–122. [70] Z. Wang, J. Bao, W. Zhou, W. Wang, H. Hu, H. Chen, and H. Li, “DIRE for diffusion-generated image detection,” in Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) , 2023, pp. 22 445–22 455.

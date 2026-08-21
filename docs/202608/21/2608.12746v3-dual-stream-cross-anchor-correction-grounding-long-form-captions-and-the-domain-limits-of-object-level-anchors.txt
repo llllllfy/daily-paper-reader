@@ -1,0 +1,436 @@
+Title: Dual-Stream Cross-Anchor Correction Grounding Long-Form Captions and the Domain Limits of Object-Level Anchors
+
+URL Source: https://arxiv.org/pdf/2608.12746v3
+
+Published Time: Thu, 20 Aug 2026 00:31:30 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+> 1
+
+# Dual-Stream Cross-Anchor Correction: Grounding Long-Form Captions and the Domain Limits of Object-Level Anchors 
+
+Lingkai Bu, Qian Gao, Jun Fan, Guohui Ding, Zhenyu Yang, Yuteng Xiao, and Jinyi Liang 
+
+Abstract —Object hallucination in multimodal large language models arises when language priors and corpus co-occurrence bias outweigh the visual evidence, with nothing tying an object mention to the image. Most remedies intervene at decoding time, yet under a unified protocol their benefit is confined to short captions; supervised fine-tuning (SFT) on a detail-rich corpus lengthens captions, but over forty percent still name absent objects. This paper proposes Dual-Stream Cross-Anchor Correction (DSCC). Unlike work that post-processes decoding, DSCC injects object-level visual anchors into the language model itself during fine-tuning: a perception stream aligns object-level hidden states at an intermediate layer to frozen text anchors by a bidirectional contrastive objective; a cognition stream lets deeper layers query those anchors by cross-attention at every generation step; and a two-stage curriculum gate couples them, making evidence retrieval a structural constraint on generation. Under one backbone and one scoring protocol, experiments span long-caption hallucination, object-existence discrimination and cross-domain generalisation, with vanilla SFT on the same corpus and schedule as a length- and density-matched control separating the data effect from the architectural gain. DSCC alone reaches the long-caption, low-hallucination region: captions roughly 1.9 times the baseline length at 88.19% precision per object mention, the highest under a density-independent criterion. Ablations expose a synergy: the perception stream alone degrades precision yet reverses sign when stacked on the cognition stream. No universal superiority is claimed: three out-of-domain benchmarks yield a predictable, falsifiable domain-conditionality, the synergy being bound to the anchors’ semantic domain and breaking on charts and illusions. 
+
+Index Terms —Multimodal large language models, object hallu-cination, visual grounding, contrastive learning, cross-attention, 
+
+This work was funded by the projects ZR2022MF333 and ZR2024QF053 supported by Shandong Provincial Natural Science Foundation, in part by the Pilot Project for Integrated Innovation of Science, Education, and In-dustry of Qilu University of Technology (Shandong Academy of Sciences) 2026ZDCX01, and in part by the projects of the Key Laboratory of Computing Power Network and Information Security, Ministry of Education under Grant No. 2023ZD028 and Grant No. 2024PY025. (Corresponding author: Qian Gao, e-mail: gq@qlu.edu.cn.) 
+
+L. Bu, Q. Gao, Z. Yang, and Y. Xiao are with the Key Laboratory of Computing Power Network and Information Security, Ministry of Education, Shandong Computer Science Center (National Supercomputer Center in Jinan), Qilu University of Technology (Shandong Academy of Sciences), Jinan 250014, Shandong, China; the Shandong Engineering Research Center of Big Data Applied Technology, Faculty of Computer Science and Technology, Qilu University of Technology (Shandong Academy of Sciences), Jinan 250353, Shandong, China; and the Shandong Provincial Key Laboratory of Industrial Network and Information System Security, Shandong Fundamental Research Center for Computer Science, Jinan 250014, Shandong, China. J. Fan is with China Telecom Digital Intelligence Technology Co., Ltd., No. 1999 Shunhua Road, Jinan 250101, Shandong, China. G. Ding is with Shenyang Aerospace University, Shenyang, China. J. Liang is with the University of Jinan, Jinan 250002, Shandong, China. The source code is available at https://github.com/lingkaibu/DSCC. 
+
+long-form captioning. 
+
+I. I NTRODUCTION 
+
+Multimodal large language models (MLLMs) have shown remarkable understanding and generation ability across gen-eral vision-language tasks [1]–[3], yet suffer from object hallucination, that is, they confidently describe objects that the image does not contain [4], [5], a flaw that directly obstructs the deployment of MLLMs wherever reliability matters. Given a kitchen photograph containing only a sink and an oven, LLaVA-1.5 writes a refrigerator, bottles, cups, knives and a bowl into its description, five objects that are simply not present. Three properties make hallucination a problem to be solved rather than a stylistic blemish to be tolerated. The first is concealment: what gets invented is usually the object that co-occurs most strongly with the scene and therefore reads as reasonable, a refrigerator in a kitchen or cutlery on a dining table, so from the text alone a reader can hardly tell which clause is grounded. The second is propagation: in a deployed system downstream modules consume the generated text rather than the original image, so once a fabricated object enters the caption it travels onward as established fact, and no later stage typically returns to the pixels to check. The third is that severity is set by the application rather than by the number of errors: in a high-stakes setting a single fabricated object suffices to do real damage. In accessible image description for blind and low-vision users no second channel exists against which the caption can be verified, so a spoken phantom object turns into misleading guidance and, in the worst case, physical risk [5]. Captions produced by MLLMs are also widely reused as visual instruction data, ShareGPT4V [6] being a prominent case, so unverified hallucinations are recycled into the training corpus of the next generation and the error is amplified across iterations. These concerns converge on one requirement: every object a model asserts should rest on verifiable visual evidence, the more pressing the longer and more detailed the caption, since fabrications are then harder to spot. Efforts to mitigate hallucination have largely been trapped by an implicit length-quality trade-off: they never leave the short-caption regime, and within that regime the improve-ment quickly saturates. Under a unified protocol (the same LLaVA-1.5-7B backbone, the same 500 COCO [7] images, the same scorer), the intervention-free baselines and training-free decoding-time methods such as VCD [8] and OPERA [9] arXiv:2608.12746v3 [cs.CV] 19 Aug 2026 2
+
+all produce captions within a narrow band of roughly 90–105 words, and the strongest of them lowers the sentence-level hallucination rate without lengthening the caption but goes no further. Standard supervised fine-tuning on a detail-rich corpus such as ShareGPT4V [6] has the opposite character: it elicits long captions, yet lacking any visual grounding constraint it leaves the absolute hallucination rate high; under the same protocol (setup in Section IV-A), Section IV-B2 shows that 41.60% of the captions still contain a hallucinated object. Research has therefore left one question largely unanswered: how can a model say more while getting less wrong? This paper answers that question with Dual-Stream Cross-Anchor Correction (DSCC). Rather than intervening at de-coding time, DSCC moves the grounding constraint into fine-tuning, inside the language model: fine-grained anchors are built at an intermediate layer for the objects present in the image, and the deeper layers query them at every forward step of generation, so that searching for visual evidence becomes a structural constraint rather than a probability correction after the fact. The main contributions of this paper are as follows. (1) A new perspective. Comparisons among hallucination mitigation methods have long been confined to the short-caption regime of roughly 90–105 words. The link between caption length and hallucination is not itself a new topic: sta-tistical analyses have observed that hallucinations concentrate in the later part of the generated text, which motivated a post-hoc revision model [10], and a recent study of why longer responses hallucinate more attributes the risk to a growing reliance on context rather than to length as such [11]. What differs here is that caption length and object density are promoted from confounders explained away after the fact to coordinates that must be reported alongside the hallucination rate, and a control matched in both length and object density is set up accordingly, instead of comparing a single hallucination number. (2) A mechanism finding. At the component level the dual-stream design is a controlled combination of existing building blocks: the cognition stream is gated cross-attention in the manner of Flamingo, with its key/value source replaced by perception anchors internal to the language model; the perception stream is region-level alignment in the manner of RegionCLIP pushed into the language model; the curriculum gate is a standard warmup schedule. The contribution lies not in the blocks but in the mechanism their combination reveals: the division of labour between the two streams, the interaction whereby the perception stream is harmful alone yet turns synergistic once combined, and the predictable domain-conditionality that this synergy inherits from the CLIP-COCO anchor binding. (3) Empirical insights. Standard supervised fine-tuning on the same corpus with the same schedule serves as a controlled reference, separating the effect of the data paradigm, namely that captions become longer, from the net gain of the dual-stream architecture itself. This paper further proposes the domain-conditionality of a hallucination mitigation mecha-nism: the range over which a mechanism is effective can be delimited in advance by the semantic domain of the anchors it relies on, making that range verifiable and falsifiable. II. R ELATED WORK 
+
+Several largely independent lines of work address object-level hallucination in MLLMs. The first is training-free inter-vention at the decoding stage: VCD [8], OPERA [9], DoLa [12], HALC [13], M3ID [14], ICD [15], SID [16], CCA [17] and AGLA [18]. These methods are plug-and-play and need no retraining, but act on surface symptoms in the output probabilities or the attention distribution, and have so far been verified mainly in the short-caption regime (Section IV-C). The second line is post-hoc refinement: Woodpecker [19], LURE [10], Volcano [20], HalluciDoctor [21] and LogicCheckGPT [22] repair the initial output from outside the forward pass, usually with an extra detector, an external LLM, or multi-round inference; they are treated as a direction orthogonal to DSCC, since a post-hoc strategy can be stacked on the long outputs of DSCC and is left as future work (Section V). Post-hoc refinement is therefore excluded from the main comparison, a deliberate and openly stated scoping decision rather than an attempt to avoid a strong baseline. The third line is preference optimisation and alignment: building on RLHF [23] and DPO [24], RLHF-V [25], LLaVA-RLHF [26], mDPO [27] and CSR [28] numerically suppress the generation probability of hallucinatory words. The common limitation is that this remains an implicit reshaping of probabilities in text space: no structural hard constraint is established between image features and linguistic symbols. The fourth line is contrastive grounding: contrastive representation learning runs from MoCo [29] through CLIP [30], ALIGN [31], BLIP [32] and SigLIP [33], while GLIP [34], RegionCLIP [35] and Grounding DINO [36] push the alignment signal towards region-phrase granularity and BLIP-2 [37] bridges a frozen visual encoder and an LLM through a Q-Former; in current MLLM architectures, however, such alignment mostly stops at the visual encoder’s output and does not reach inside the language model. On backbones, Flamingo [38], LLaVA [39], LLaVA-1.5 [1], MiniGPT-4 [2], InstructBLIP [3] and mPLUG-Owl2 [40] have established the dominant paradigm of a visual encoder, typically ViT-style [41], a projector and an LLM; LLaVA-1.5-7B [1] is the backbone here. On evaluation, object-level hallucination is measured chiefly by POPE [4] and CHAIR [5]; MME [42] lies within the COCO object semantic domain and serves as an out-of-distribution but same-domain test, whereas HallusionBench [43] and MMHal-Bench [26], covering charts and optical illusions and abstract scenes, serve as a genuinely out-of-domain boundary test (Section IV-E). In sum, existing methods either operate on output probabilities and text or keep the grounding constraint on the vision-encoder side, whereas DSCC injects it during training, inside the language model, at every generation step, while remaining compatible with, and stackable on, the decoding-time methods above. III. M ETHOD 
+
+A. Overview 
+
+Dual-Stream Cross-Anchor Correction (DSCC), proposed in this study, is a fine-tuning framework. On top of standard 3
+
+supervised fine-tuning (SFT) over detail-rich caption data, it introduces two auxiliary streams that suppress hallucination at the perceptual level, namely which objects are claimed to exist in the image, and at the cognitive level, namely how the content generated in the deep layers drifts away from the visual evidence. DSCC is designed for the following situation: the MLLM has already been fine-tuned to produce long, object-dense captions, so that the central challenge is not to shorten the output but to raise the precision of each mention without sacrificing coverage. Guided by the empirical finding that the shallow Trans-former layers of an MLLM mainly encode visual perception while the deep layers perform language-level reasoning, DSCC grafts three coupled components onto a pretrained MLLM backbone (LLaVA-1.5-7B is used here [1]), all of which act additively on top of the standard SFT loss: (1) Perception stream (Section III-B): a fine-grained, object-level contrastive objective that anchors shallow visual repre-sentations to CLIP-aligned text semantics, attacking perceptual hallucination head on. (2) Cognition stream (Section III-C): a cross-attention mod-ule that queries the perception anchors as evidence at every generation step of the deep layers, structurally severing the path along which deep reasoning drifts from the visual evi-dence. (3) Curriculum-gated fine-tuning, CGFT (Section III-D): a two-stage schedule that couples the two streams progressively, letting the perception stream establish stable anchors before the cognition stream queries them. Two design choices set DSCC apart from existing halluci-nation mitigation methods. First, what is modified is the model itself rather than the decoding rule, so the grounding path is ac-tive at every generation step instead of at decoding time alone. Second, the dual-stream modules act strictly as auxiliaries to the language modelling backbone: only LSFT determines the output distribution (length, object density, coverage), while the perception and cognition streams contribute refinement signals solely through Lperc (8) and gated residual injection (12). The vision tower stays frozen throughout; all remaining parameters are optimised jointly. Fig. 1 gives an overview of the resulting architecture. Every symbol used in (1)–(14) is defined in Table I, together with the default value of each hyperparameter; the training setup in which those values are used is given in Section IV-A1. 
+
+B. Perception Stream: Fine-Grained Object Contrast 1) Object-Level Visual Anchors: Sentence-level vision-language contrast such as CLIP is too coarse to ground an individual object, so per-object visual anchors are extracted instead, by projecting each ground-truth bounding box onto the patch grid. Consider an image of size (W, H ) that contains an object with bounding box bk = ( xk, y k, w k, h k), indexed by k. Its discrete grid coverage on the G × G patch grid is defined as: 
+
+Ω( bk) = 
+
+(
+
+(i, j ) ∈ [0 , G )2 imin ≤ i < i max ,jmin ≤ j < j max 
+
+)
+
+(1)                                                       
+
+> TABLE I NOTATION OF (1)–(14) AND DEFAULT HYPERPARAMETERS .Symbol Meaning Value
+> N,G,DImage tokens, grid side, width 576, 24, 4096
+> H(l),H(l)
+> VLayer-lstates; image only —
+> bk,ck,Ω( bk)Box, class name, patch cells COCO
+> vk,tk,ϕTVisual, text anchor; encoder —
+> fv,ft,PProjection MLPs; dimension 512
+> τ,KTemperature; objects/batch 0.07 init.
+> αWeight of Lperc 0.5
+> WQ,K,V ,WOCross-attention projections —
+> h,dhHeads; head width 32, 128
+> γt,TCurriculum gate; total steps 0.3T–0.7Tlp,LcPerception; cognition layers 16, {24 ,28 }
+
+where 
+
+imin = min  G − 1,  xk 
+
+> W
+
+G ,imax = max  imin + 1 , min  G,  xk +wk 
+
+> W
+
+G ,jmin = min  G − 1,  yk 
+
+> H
+
+G ,jmax = max 
+
+
+
+jmin + 1 , min 
+
+
+
+G, 
+
+l yk +hk 
+
+> H
+
+G
+
+m 
+
+.
+
+(2) Here (i, j ) indexes the columns and rows of the patch grid and ⌊·⌋ , ⌈·⌉ are the floor and ceiling functions, so (2) converts the pixel coordinates of bk into patch units. Clamping to [0 , G )
+
+keeps rounded box coordinates inside the grid, while the bound 
+
+imax ≥ imin + 1 (j likewise) enforces |Ω( bk)| ≥ 1, so that a box smaller than a single patch still contributes exactly one anchor patch instead of being silently dropped. The visual anchor of object k is the mean of the hidden states at the perception layer over the patches in Ω( bk):
+
+vk = 1
+
+|Ω( bk)|
+
+X 
+
+> (i,j )∈Ω( bk)
+
+H(lp) 
+
+> V
+
+[i · G + j] ∈ RD (3) where H(lp) 
+
+> V
+
+[i · G + j] is the hidden state of the image token at grid cell (i, j ), so that the sum divided by |Ω( bk)|
+
+mean-pools the tokens inside the box alone. Because H(lp) 
+
+> V
+
+is restricted to image-token positions, vk is purely visual, free of contamination by prompt or reply tokens, which removes the self-loop risk that arises when the entire sequence is pooled. 
+
+2) Object-Level Text Anchors: To match the vision-language semantic space, the frozen CLIP text encoder paired with ϕV during CLIP pretraining, that is ϕT , is used instead of a context-independent lookup in the LLM input embedding table: 
+
+tk = ϕT (“a photo of ” + ck) ∈ Rdt (4) The “a photo of” template follows the standard CLIP zero-shot recipe. 
+
+3) Bidirectional InfoNCE Objective: Both kinds of anchor are projected by lightweight MLPs into a shared space of dimension P (P = 512 ) and L2-normalised: 
+
+evk = fv (vk)
+
+∥fv (vk)∥2
+
+, etk = ft(tk)
+
+∥ft(tk)∥2
+
+(5) 4LLaVA-1.5-7B backbone 
+
+L = 32 layers, D = 4096          
+
+> bkck
+> SFT
+> perc
+> Curriculum gate γt(CGFT, Eq. 13)
+> 01
+> γt
+> 0.3 T0.7 TT
+> Stage 1 perception bootstrap Stage 2 bridging gates the cross-attn residual (Eq. 12); inference: γ≡ 1
+> Frozen vision tower ϕV
+> CLIP ViT-L/14-336
+
+Projector π                                                
+
+> Prompt X+ShareGPT4V caption Y
+> Generated caption̂ Y
+> COCO annotations I= {( bk,ck)} KI
+> k= 1
+> ROI mean-pool over Ω( bk)visual anchor vk
+> (4096-d, image tokens) Frozen CLIP text encoder
+> ϕT:“a photo of ck”
+> → text anchor tk
+> fv,ft: MLP → L2-norm ·shared P= 512 space
+> Training objective
+> =SFT +αperc (α= 0.5 )
+> Input embeddings 576 visual ⊕ text tokens
+> Transformer layers 1–15
+> Layer 16 · perception anchors H (16)
+> V
+> (576 ×4096)
+> Layers 17–23
+> Layer 24 · cross-attn H←H+γtLN(CA)
+> Layers 25–27
+> Layer 28 · cross-attn H←H+γtLN(CA)
+> Layers 29–32 LM head
+> frozen (dashed) trainable backbone perception stream cognition stream data / annotations Image I
+> COCO box bk
+> → patch cells Ω( bk)
+> K, V=H(16)
+> V · every step
+> Bidirectional InfoNCE perc
+> v→t+t→v(Eq. 6 –8) in-batch negatives pooled across images; learnable τ̃
+> tj̃
+> vk
+> diagonal = positives
+
+Fig. 1. Overview of the DSCC architecture. The perception stream aligns ROI features at layer 16 to frozen CLIP text anchors through an object-level InfoNCE loss; the cognition stream injects gated cross-attention at layers 24 and 28, taking the hidden states of all image tokens at layer 16 as keys and values at every generation step; a two-stage curriculum gate γ_t couples the two streams progressively. 
+
+where the division by the Euclidean norm places every anchor on the unit sphere of RP , so that the inner products below are cosine similarities. Over all K = P
+
+b KIb objects pooled from a training batch, where objects from different im-ages serve as in-batch negatives for one another, a symmetric InfoNCE loss is applied: 
+
+Lv→t
+
+perc = − 1
+
+K
+
+KX
+
+k=1 
+
+log exp( ev⊤
+
+k etk/τ )
+
+PKj=1 exp( ev⊤
+
+k etj /τ ) (6) 
+
+Lt→v
+
+perc = − 1
+
+K
+
+KX
+
+k=1 
+
+log exp( ev⊤
+
+k etk/τ )
+
+PKj=1 exp( ev⊤
+
+j etk/τ ) (7) 
+
+Lperc = 12
+
+ Lv→t
+
+perc + Lt→v
+
+perc 
+
+ (8) In (6) and (7) the numerator scores the matched vision-text pair of the same object, (evk, etk), while the denominator sums over all K candidates: (6) contrasts one visual anchor against every text anchor in the batch and (7) does the reverse, and (8) averages the two directions. The temperature τ is learnable, initialised at 0.07 following CLIP practice, and clamped at 
+
+log τ −1 ≤ log 100 to prevent numerical divergence. 
+
+C. Cognition Stream: Cross-Anchor Attention Injection 1) Anchor-Conditioned Generation: The cognition stream is required to attend to the perceptual evidence at every generation step. At each cognition layer l ∈ L c, a multi-head cross-attention module [44] is inserted that takes the cognitive hidden state as query and the hidden states of all image tokens at the perception layer, hereafter the perception anchors, as key and value: 
+
+CrossAttn (l)
+
+H(l), H(lp)
+
+V
+
+
+
+= Concat 
+
+h
+
+O(l)1 ; . . . ; O(l)
+
+h
+
+i
+
+WOl
+
+(9) Each head is computed by scaled dot-product attention: 
+
+O(l)
+
+i = softmax Q(l)
+
+i (K(l)
+
+i )⊤
+
+√dh
+
+!
+
+V(l)
+
+i (10) 
+
+Q(l)
+
+i = H(l)WQl,i , K(l)
+
+i = H(lp)
+
+V WKl,i ,
+
+V(l)
+
+i = H(lp)
+
+V WVl,i . (11) Here the cognitive hidden state supplies the queries while the perception anchors supply the keys and values (11), √dh
+
+scales the dot product before the softmax (10), and WOl
+
+recombines the h head outputs (9); these projections are the only parameters added to the backbone. The module uses 
+
+h = 32 heads with head dimension dh = D/h = 128 , exactly the configuration used by LLaMA internally, which keeps bf16 attention numerically stable and lets the cross-attention maps 5
+
+be read in the same per-head framework as the self-attention of the language model. 
+
+2) Residual Injection with Near-Identity Initialisation: The cognitive hidden state is updated by a gated residual: 
+
+H(l) ← H(l) + γt · LN 
+
+
+
+CrossAttn (l)
+
+H(l), H(lp)
+
+> V
+
+ 
+
+,l ∈ L c.
+
+(12) where γt ∈ [0 , 1] is the curriculum gate (Section III-D) and LN denotes LayerNorm, the residual form ensuring that the injected branch adds to the stream instead of replacing it. The output projection WOl is initialised from N (0, σ 2I)
+
+with σ = 10 −3, so the initial contribution of the branch, about 
+
+γt ·O (σ√D) ≈ γt ·0.082 , is small relative to the O(1) residual stream: the near-identity behaviour named in the heading. Exactly WOl = 0 is avoided, as it would leave the attention projections without gradient (supplementary material). Why cross-attention rather than post-hoc alignment? Anaive alternative is to minimise ∥H(L) − H(lp)∥2 directly. That would violate the principle of hierarchical abstraction: the deep layers are supposed to encode semantics different from the shallow ones, and forcing them to coincide col-lapses the hierarchy of representations. Cross-attention instead lets the cognition stream query the perception stream during generation, which introduces the grounding constraint while preserving the natural depth-wise specialisation. 
+
+D. Curriculum-Gated Fine-Tuning (CGFT) 
+
+A two-stage curriculum couples the two streams progres-sively. Let T denote the total number of training steps and 
+
+t ∈ [0 , T ] the current step. In both stages the model is trained under the single objective LSFT + αLperc , formalised as (14) in Section III-E; the curriculum modulates only the cognition-perception coupling gate γt inside the cross-attention residual (12). Stage 1: perception bootstrap ( 0 ≤ t < 0.3T )The cognition gate is closed, γt = 0 . Cross-anchor attention contributes nothing to the residual stream, so the deep layers behave exactly as in vanilla LLaVA and gradients flow only through LSFT and Lperc . This stage establishes object-level vision-text anchors at lp before the deep layers are perturbed, echoing the pretrain-then-finetune inductive bias. Stage 2: cognition-perception bridging ( 0.3T ≤ t ≤ T )The gate rises linearly and then saturates at 1: 
+
+γt = min 
+
+ t − 0.3T
+
+0.4T , 1
+
+
+
+∈ [0 , 1] (13) so that with t the current step and T the total number of steps the gate opens linearly between 0.3T and 0.7T and stays at 1 thereafter. Once γt > 0, the cognition layers begin to query the perception anchors through cross-attention (12), while the perception stream keeps refining those anchors under the same Lperc ; from this point the two streams adapt jointly. The slow ramp prevents an abrupt distribution shift in the cog-nition layers: under bf16 training, switching instantaneously from γ = 0 to γ = 1 destabilises the optimisation, as the ablation in Section IV shows. Why a two-stage curriculum rather than single-stage joint training? If cross-attention were enabled from t = 0 onwards, the cognition stream would attend to perception anchors not yet aligned with their CLIP text counterparts; the resulting noisy attention output would backpropagate into the perception stream through LSFT , compete with Lperc and slow anchor convergence. Stage 1, with the gate closed, lets the perception stream converge in isolation, after which Stage 2 introduces cognition-perception coupling on anchors that have already taken shape. 
+
+E. Overall Training Objective 
+
+The two streams are combined under the curriculum gate: 
+
+Ltotal (t) = LSFT + αLperc (14) where α = 0 .5 balances the supervised long-caption loss against the perception objective of (8), and the curriculum schedule enters implicitly, through the gate γt (12) inside the forward pass of LSFT . All hyperparameters of Table I are held identical across the configurations compared in this paper; the corpus, schedule and optimisation settings under which they are used are reported in Section IV-A1, and the remaining implementation details in the supplementary material. IV. E XPERIMENTS 
+
+The experiments are organised around a single claim: the gain of DSCC is not bought by saying less. 
+
+A. Experimental Setup 1) Model and the Four-Way Comparison: All experiments use LLaVA-1.5-7B as backbone and are trained on the same corpus (ShareGPT4V GPT-4V long captions intersected with COCO object annotations, about 95k samples) under the same two-epoch schedule (roughly 25k optimisation steps). The dual-stream hyperparameters are those of Table I and are identical in every configuration, in particular lp = 16 ,
+
+Lc = {24 , 28 } and α = 0 .5; optimiser, precision and batch settings are listed in Table S-1 of the supplementary material. To separate the contribution of the dual-stream architecture cleanly from that of the supervision data itself, four check-points are trained and compared that differ only in which dual-stream modules are enabled (Table S-2): D, both streams off, that is vanilla SFT; A, perception stream only; B, cognition stream only; and C, full dual stream. The four configurations share corpus and step count, so any difference between D and {A, B, C} is attributable to the dual-stream modules rather than to a data-induced shift of the output distribution (Section III-A). The inference-time gate is fixed at γ = 1, consistent with the late curriculum, so the grounding path stays active at every generation step. 6                                               
+
+> TABLE II POPE COMPARISON WITH REPRESENTATIVE DECODING -TIME METHODS
+> (MSCOCO, LL AVA-1.5-7B BACKBONE , F1 ↑). Method Type Random Popular Adv. Mean F1 LLaVA-1.5 (regular) †no interv. 81.33 80.06 77.57 79.65 VCD †decoding 87.16 85.06 81.33 84.52 Beam search †decoding ———84.90 DoLa †decoding ———83.20 OPERA †decoding ———85.40 D, both streams off training 88.41 87.28 83.83 86.51
+> DSCC (C, ours) training 87.23 86.10 83.80 85.71
+> †Quoted from the original papers and not re-run: VCD and its regular baseline from Leng et al. ; the three-subset mean F1 of beam search, DoLa and OPERA from Huang et al. , whose paper does not list the subsets separately (marked “—”). The backbone is likewise LLaVA-1.5-7B, but off the shelf, that is, without SFT on ShareGPT4V ×COCO.
+
+2) Baselines, Benchmarks and Metrics: Besides the four configurations, two representative training-free decoding-time methods are compared, VCD [8] and OPERA [9], with beam search and DoLa additionally listed on POPE for reference; post-hoc refinement methods (Woodpecker, LURE) rely on external detectors or LLMs, are orthogonal to DSCC and, following the scoping in Section II, are excluded from the main comparison and left as stackable future work. In-domain evaluation stays inside the COCO object semantic domain and uses two benchmarks. POPE [4] tests object existence discrim-ination over three subsets, Random, Popular and Adversarial, each with N = 3000 and a 50/50 balance of positive and nega-tive samples; the Adversarial subset is the hardest and the main object of analysis. CHAIR [5] measures the hallucination rate of open-ended captions under the standard protocol of OPERA and VCD (val2014 shuffled with seed 42, 500 images). Out of domain the benchmarks are MME-Hallucination [42], HallusionBench [43] and MMHal-Bench [26] (Section IV-E). The reported metrics are accuracy, precision, recall, F1 and YesRatio on POPE, and CHAIR_S ↓, CHAIR_I ↓, object recall, mean word count #Words and objects per caption Obj/Cap on CHAIR. The comparison regime is marked under each table: the CHAIR baselines were reproduced here under an identical protocol, whereas the POPE baselines are quoted from the original papers. 
+
+3) Statement of Protocol Deviation: The OOD evaluations use a scoring protocol that differs from the official leader-boards: HallusionBench and MME are scored by plain string yes/no matching rather than the official GPT-4 judge, and MMHal-Bench by gpt-5.4-mini rather than the official GPT-4-0314. Their absolute scores therefore cannot be compared with any leaderboard, no claim of state of the art is made on any OOD benchmark, and every OOD conclusion is restricted to the relative standing of the four configurations under one scorer. 
+
+B. Main Results 1) POPE Object Existence Discrimination: Table II first compares DSCC with representative decoding-time methods on POPE; Table S-3 and III then give the controlled results for the four configurations.                           
+
+> TABLE III FOUR -WAY COMPARISON ON THE POPE A DVERSARIAL SUBSET ,
+> ORDERED BY PRECISION .ckpt Acc Prec Recall F1 YesRatio A, perception only 0.8330 0.8315 0.8353 0.8334 0.5023 D, both off 0.8407 0.8510 0.8260 0.8383 0.4853 B, cognition only 0.8420 0.8638 0.8120 0.8371 0.4700
+> C, full dual stream 0.8460 0.8839 0.7967 0.8380 0.4507
+
+Two points of honest accounting must be stated: First, the gap to the literature baselines also contains the SFT data effect, since D and C were fine-tuned on ShareGPT4V × COCO whereas those baselines are off the shelf (Section IV-D1). Second, the POPE contribution of DSCC lies in precision rather than F1 (Table III), while most literature baselines report only accuracy and F1. On the comparable F1 criterion, the mean F1 of DSCC (85.7) matches the strongest decoding-time method, OPERA (85.4), and exceeds VCD, beam search and DoLa; on the hardest Adversarial subset it reaches F1 83.8 against VCD’s 81.3. For a training-time method that adds no decoding overhead and produces captions about 1.9 times longer, this is a competitive showing, though no claim of state of the art is made on that basis. Within the controlled four-way comparison (same corpus, same number of steps), the hardest Adversarial subset reveals a clear monotone trend (Table III): precision rises monotonically as the streams are added, A (0.8315) < D (0.8510) < B (0.8638) < C (0.8839), the main model C improving on the vanilla SFT baseline D by 3.3 percentage points. First, F1 is essentially flat across the four configurations at about 0.838, so the informative metric on POPE is precision rather than F1: the streams push the model towards being more conservative and more accurate, which shows up as a monotone rise in precision accompanied by a matching fall in recall and YesRatio. Second, the gain in precision is paid for in recall: the recall of C (0.7967) is below that of D (0.8260), and YesRatio drops from 0.4853 to 0.4507. This is a direct consequence of the design philosophy of DSCC, say nothing when nothing is clearly seen; the trade-off is acknowledged openly in Section IV-D and Section V rather than sidestepped. The YesRatio of C nevertheless stays above 0.45, far from the red line of about 0.30 below which a model games the benchmark by refusing to answer, so the gain in precision comes from genuine grounding rather than from a degenerate answer distribution. 
+
+2) CHAIR Hallucination in Open-Ended Captions: DSCC is first compared with decoding-time methods on CHAIR (Ta-ble IV), and the controlled four-way results follow (Table V). All CHAIR runs use the same scorer eval_chair_official.py, max_new_tokens = 512 and the same prompt “Please describe this image in detail.”; numbers from other papers are not quoted, since their CHAIR values differ in max_new_tokens, sampling scheme and image subset. Reading this table requires distinguishing three kinds of metric. The first kind depends directly on object density: CHAIR_S falls mechanically as the number of objects men-tioned per caption falls, so the lowest CHAIR_S in the table 7                                                                                   
+
+> TABLE IV CHAIR-500 COMPARED WITH DECODING -TIME METHODS (SAME BASE MODEL ,SAME 500 IMAGES ,SAME SCORER ,ALL REPRODUCED UNDER THE UNIFIED PROTOCOL OF THIS PAPER ). Method Type #Words Obj/Cap CHAIR_S ↓CHAIR_I ↓Hall. obj./cap. a↓Recall LLaVA-1.5 greedy no intervention 89.5 6.08 59.40 18.28 1.11 78.73 LLaVA-1.5 sampling no intervention 104.9 7.12 57.80 18.77 1.34 74.84 VCD decoding-time 104.0 7.61 58.60 17.06 1.30 79.31 OPERA decoding-time 93.1 7.41 45.20 13.27 0.98 79.57 DSCC (C, this paper) training 171.5 5.10 38.80 11.81 0.60 64.53
+> aHallucinated objects per caption, Obj/Cap ×CHAIR_I, is the mean number of hallucinated objects in a caption; being absolute it must be read together with the Obj/Cap column. TABLE V FOUR -WAY CHAIR-500 ABLATION (SAME 500 IMAGES ,SAME SCORER ). ckpt CHAIR_S ↓CHAIR_I ↓Recall #Words Obj/Cap D, both off 41.60 12.42 65.76 170.1 5.22 A, perception only 40.80 12.75 65.11 167.3 5.15 B, cognition only 39.00 11.34 65.56 169.5 5.22
+> C, full dual stream 38.80 11.81 64.53 171.5 5.10
+
+(38.80, DSCC) cannot by itself be taken as evidence of better grounding, since the Obj/Cap of DSCC (5.10) is indeed the lowest. The second kind is an absolute count: DSCC produces the fewest hallucinated objects per caption (0.60, against 0.98 for OPERA and 1.11 for greedy decoding). This quantity equals Obj/Cap × CHAIR_I, however, and therefore remains proportional to object density; it cannot on its own answer the objection that hallucination was lowered by mentioning fewer objects. A conservative counterfactual: raising the object density of DSCC to OPERA’s 7.41 while holding its CHAIR_I fixed would give 0.88, still below OPERA’s 0.98, but the margin would narrow from about 39% to about 11%. Only the third kind is genuinely independent of object density: precision per mention, 1 − CHAIR_I, normalises by the total number of mentions, and on this criterion DSCC is highest (88.19% against OPERA’s 86.73%). Precision per mention, together with the D → C comparison of Section IV-D1, is therefore taken as the primary evidence, while CHAIR_S and hallucinated objects per caption are treated as auxiliary information to be read alongside Obj/Cap. DSCC and OPERA occupy two different operating points on the precision-recall frontier. DSCC trades 15 percentage points of object recall (64.53 against 79.57) for 1.46 percentage points of precision per mention; OPERA mentions more correct objects (6.43 against 4.50 per caption) at the cost of more hallucinated ones (0.98 against 0.60). Which is preferable depends on the application. No claim is made that DSCC dominates OPERA across the frontier; the claim is narrower, namely that within the long-caption regime, DSCC attains the highest precision per mention (Section IV-C), and that its conservative stance is a design choice rather than an evaluation loophole (Section V). The main model C attains the lowest sentence-level hal-lucination rate, CHAIR_S = 38.80, which is 2.8 percentage points below the vanilla SFT baseline D (41.60). Crucially, this reduction happens without any compression of caption length: #Words stays at roughly 170 across all four configurations and Obj/Cap at roughly 5.1-5.2, which shows that the dual-stream modules do not lower hallucination by the cheap route of shortening the output or mentioning fewer objects. They act on a fixed, verbose output regime already established by SFT. That property is exactly what the length-aware analysis of the next section builds on. On the instance-level metric CHAIR_I the best configura-tion is B (11.34) rather than C (11.81), a difference of 0.47. Every number reported here is a point estimate from a single evaluation run, with no interval estimate or significance test, so a difference of this magnitude is treated with consistent restraint: the 0.47 by which B beats C is neither dismissed as evaluation noise nor taken as evidence that C is inferior to B at the instance level. The gap is consistent with the more conservative object-extraction stance of C, in that adding the perception stream does not push instance-level precision any further, and it is reported faithfully in Section V rather than dressed up as an advantage. A second source of caution is lexical: the official CHAIR vocabulary maps surface words to COCO categories, so the verb “bearing”, the idiom “a bird’s eye view” and the colour “orange” all count as objects. Such false positives are markedly more frequent in the more literary fine-tuned configurations than in the off-the-shelf baseline, a further reason to read differences of this size conservatively. 
+
+C. Length-Aware Analysis 
+
+This section carries the new perspective of the paper. Exist-ing methods have had their low hallucination verified mainly within the short-caption regime; whether their gains survive once a caption grows longer, so that object mentions and opportunities for error both rise, has so far lacked horizontal evidence gathered under one protocol with length and object density reported. Plotting the same-protocol data of Table IV on a single #Words × CHAIR_S plane (Fig. 2) makes the situation plain. The three intervention-free and VCD points cluster in a small group at the upper left (roughly 90–105 words, CHAIR_S 57–59%). OPERA is the strongest baseline among them and takes the short-but-accurate route: it leaves caption length unchanged (93.1 words, comparable to the 89.5 of greedy vanilla) yet cuts CHAIR_S to 45.20, and stops there. DSCC sits alone at the lower right (171.5 words, CHAIR_S 38.80), the only method that pushes hallucination to its lowest value while lengthening the caption substantially, to about 1.9 times greedy vanilla, and it therefore does not lie on the 880 100 120 140 160 180   
+
+> Caption length (#Words)
+> 35 40 45 50 55 60 65
+> CHAIR S (%)  ↓ lower is better
+> long-caption, low-hallucination region baselines: short & hallucination-prone
+> Vanilla LLaVA-1.5 (no intervention) Decoding-time intervention DSCC (ours, training-time) Vanilla (greedy) Vanilla (sampling) VCD OPERA
+> DSCC (ours)
+> Fig. 2. The length-quality trade-off. Mean caption length (#Words) against CHAIR_S for every method, on the same 500 COCO images under the same scorer. The intervention-free and decoding-time baselines cluster in the short-caption region; DSCC is the only method that lands in the long-caption, low-hallucination region at the lower right.
+
+established frontier along which longer captions bring more hallucination. The figure also blocks the two most immediate objections to this work. (1) “CHAIR is low only because the captions are short.” The #Words of DSCC (171.5) is roughly 1.6 to 1.9 times that of every baseline (greedy 89.5, sampling 104.9, VCD 104.0, OPERA 93.1), so the objection fails on the data. (2) “CHAIR is lowered by mentioning fewer objects.” This objection has to be met head on, because the Obj/Cap of DSCC (5.10) really is the lowest in the comparison. The answer is not denial but separation: precisely because object density cannot be controlled across methods, a control configuration D matched in both length and object density was trained (#Words ≈ 170, Obj/Cap ≈ 5.2; Table V). Under that same-length, same-density condition, C still lowers CHAIR_S by 2.8 percentage points relative to D, and that portion of the gain cannot be explained by saying less; once length and object density are controlled, the most reasonable attribution is the dual-stream architecture. Removing the two confounders is not the same as removing sampling variance, however: the 2.8 points are a point estimate from a single evaluation without a significance test, so the attribution is directional and its certainty is not overstated. 
+
+D. Ablation Study 
+
+This section decomposes the roles of the two streams and their synergy through a four-way ablation, and on that basis completes the two-level attribution on which the paper rests. 
+
+1) Two-Level Attribution: Data Effect versus Net Architec-tural Gain: The standing of DSCC relative to the literature baselines has to be split into two levels, each measured against a different reference. (1) First level, the contribution of the training paradigm (against the literature LLaVA-1.5): captions about 1.9 times longer with CHAIR_S about 20 percentage points lower (59.40 
+
+→ 38.80). It must also be said that this level comes with a wholesale shift in the shape of the output: object density falls from 6.08 to 5.22 and object recall from 78.73 to 65.76, so a substantial share of those 20 points should be attributed to mentioning fewer and more confident objects rather than to any improvement in grounding as such. The direct evidence is that D, vanilla SFT with both streams disabled, already produces 170 words with Obj/Cap 5.22 and CHAIR_S 41.60. This paper therefore explicitly does not claim that the dual-stream modules make captions both longer and more accurate: the length comes from the SFT paradigm, and those 20 points do not belong to the architecture. (2) Second level, the net gain of the dual-stream architecture (against vanilla SFT, D): on top of D, C adds CHAIR_S −2.8, CHAIR_I −0.61 and POPE Adversarial precision +3.3. That is the net architectural gain, real but modest. Its magnitude is reported honestly and is not inflated into a mechanistic break-through. Much of the literature on training-time hallucination mitigation reports only the total improvement over an off-the-shelf baseline without a vanilla-SFT control at the same corpus and step count, and therefore cannot tell how much of the reported gain actually came from the training data. 
+
+2) Division of Labour and Synergy Between the Streams: 
+
+Taking POPE Adversarial precision, CHAIR_S and CHAIR_I as three axes (values from Tables III and V), the configurations decompose as follows. The cognition stream supplies the corrective, conservative capability by querying visual evidence at every step, which raises precision, and it is the main driver across metrics. The perception stream on its own makes the model more aggres-sive: configuration A has the highest YesRatio (0.5023) and the lowest precision, and that negative result matters in its own right, since pushing CLIP-style [30] contrastive learning down into the LLM does not automatically buy precision. Once it is stacked on the cognition stream, however, the two interact synergistically: the aggressive tendency of the fine-grained object anchors is held in check, and adversarial precision reaches the highest value among the four configurations (C = 0.8839). This is deliberately described as an interaction, a synergy, rather than the simple addition of independent contributions: if the two streams merely added up, B → C would not exhibit the sign reversal whereby A alone is negative yet the combination is positive. On the main metrics (POPE Adversarial precision, Adversarial accuracy, CHAIR_S) the ordering C > B > D holds and C > A holds, so the dual-stream design is justified by the ablation. Where a single configuration beats C it concedes elsewhere: B has the lowest CHAIR_I (11.34) but a higher CHAIR_S and a lower Adversarial precision (0.8638 against 0.8839), and D the highest POPE mean F1 (86.51) at 3.3 points less precision. C alone regresses on neither axis, which is what the dual stream buys. No claim is made, however, that both streams are indispensable or that the dual stream is universally optimal; the OOD results in the next section give that claim its precise boundary. 
+
+E. Out-of-Domain Generalisation and Domain-Conditionality 
+
+The generalisation of the dual stream is examined on three OOD benchmarks. 9                      
+
+> TABLE VI SIGN OF THE B→CSYNERGY AND THE BEST CONFIGURATION ACROSS BENCHMARKS .benchmark Image domain synergy (B →C) Best configuration POPE (in-domain) COCO +CCHAIR (in-domain) COCO + (CHAIR_S) CMME (OOD) COCO object semantics +C
+> HallusionBench (OOD) Charts and optical illusions −BMMHal (OOD) Flickr and abstract scenes ~ (noise) C (tied)
+
+1) MME-Hallucination (Out of Distribution, Same Seman-tic Domain): The ranking is C > B > A > D (Table S-4). The main model C is best, improving on the vanilla SFT baseline D by 128.33 points, which is a clean out-of-domain win. 
+
+2) HallusionBench (Charts: Genuinely Out of Domain): 
+
+The ranking is B > C > D > A (Table S-5), and two conclusions follow. First, both C and B are clearly above D, so the generalisation brought by the dual stream, and especially by the cognition stream, still holds here. Second, and more tellingly, the main model C is not the best configuration on this benchmark: it is overtaken by B, cognition only. 
+
+3) MMHal-Bench (Flickr Domain: A Null Result): The four configurations are statistically indistinguishable (Table S-6): C and D differ by about three questions, or 0.01 in mean score, which is less than one standard error. This is not presented as a win but reported faithfully as boundary evidence for domain-conditionality, with two caveats noted: the sample of N = 96 is too small, and the images come from Flickr and abstract scenes rather than from COCO. 
+
+4) A Unified Insight: Predictable Domain-Conditionality: 
+
+Collecting the in-domain result together with the three out-of-domain ones (Table VI) yields a claim more useful than universal superiority. (1) The cognition stream is the domain-independent workhorse. It brings a positive gain on every benchmark, contributing the greater part of the +128 that D → C gains on MME, and it generalises stably. (2) The perception stream is domain-conditional. The closer a benchmark is to COCO object semantics, the more useful it is: helpful on MME, which shares the semantic domain, and neutral or even harmful on HallusionBench, whose charts lie outside it. The reason is that the perception stream uses COCO class names explicitly as CLIP text anchors. (3) The synergy holds only inside the competence domain of the perception stream. Within the COCO object domain (POPE, CHAIR, MME) C is best everywhere; once the data are genuinely out of domain, as with the charts of Hallusion-Bench, the synergy breaks and B moves ahead. The effectiveness of DSCC is accordingly stated in restricted form, namely effective within the COCO ob-ject semantic domain together with a predictable domain-conditionality, rather than universally optimal. Such a claim is falsifiable and checkable: given a new benchmark, deciding whether it falls inside the COCO object semantic domain is enough to predict whether the dual-stream synergy will hold. 
+
+5) Qualitative Case Study: Qualitative comparisons on individual images are given in Figs. S-1 and S-2 of the supplementary material, two cases per baseline. The texts quoted below are verbatim excerpts from the CHAIR-500 generations, with omissions marked [. . . ]; baseline A is the off-the-shelf model and baseline B the length- and density-matched configuration D. (1) Against baseline A, #508218 closes with “a dog located towards the right side of the image” although the annotation lists only zebra, car and person, and #569674, annotated with zebra alone, fills an empty sky with “several birds scattered throughout the scene”; DSCC describes both scenes with no hallucinated object at all. (2) Against baseline B, #300855 seats the crowd on furniture that is not there, “others are sitting on benches nearby”, where DSCC describes the same gathering without them; and #258433, whose annotation contains a truck and no car, is miscategorised rather than invented, “a food truck . . . while a blue car is parked nearby”, where DSCC gives the annotated category, “a blue truck is parked by the sidewalk”. The second case is a category correction rather than an invented object, corroborating the mechanistic account of Section IV-D2, under which the perception anchors are re-sponsible for fine-grained category discrimination. 
+
+F. Methodological Implications of the Length-Aware Perspec-tive 
+
+The length-aware analysis (Section IV-C) also exposes a structural confounder in hallucination evaluation: because CHAIR-style metrics are coupled to generation length and object density, a method can lower CHAIR_S simply by mentioning fewer objects. This is not an accusation: under the unified protocol the object densities and recalls of VCD and OPERA are no lower than the intervention-free baseline’s, so neither gamed the metric by saying less. The confounder constrains this work first of all: the Obj/Cap of DSCC, 5.10, is the lowest in the comparison. Two methodological recommendations follow. First, com-parisons among hallucination mitigation methods should re-port, and where possible align, generation length and object density, at minimum as mandatory #Words and Obj/Cap columns; otherwise a lower CHAIR may be no more than a shorter output in disguise. Second, any such method fine-tuned on detail-rich data should report a data-only control in the same configuration; otherwise its architectural contribution cannot be audited. V. C ONCLUSION AND FUTURE WORK 
+
+This paper has studied object-level hallucination in MLLMs. With control configuration D matched in both length and object density, the increase in caption length is attributed chiefly to the SFT data paradigm rather than to the dual-stream architecture, whose net gain is real but limited. The value of this work lies not in state-of-the-art numbers, none of which are claimed, but in a new perspective, a complete empirical account and a predictable boundary of validity. The boundaries deliberately exposed indicate where sub-sequent research can act. The full model is conservative, saying nothing when nothing is clearly seen: its POPE recall of 0.797 is below the 0.826 of control configuration D, 10 
+
+and against OPERA it trades 15 percentage points of object recall for higher precision per mention. On the instance-level metric it is not strictly best either: B (11.34) beats C (11.81) by 0.47. The remaining limitations fall into three groups. In capability, the synergy is bound hard to COCO object semantics and breaks, or even becomes a burden, once a task is genuinely out of domain; logical hallucination, consistent with the visible objects yet violating spatial, counting or commonsense relations, receives no explicit signal. In method, the reading that the cognition stream severs the path along which deep reasoning drifts from the visual evidence rests on no rigorous causal analysis, and the perception and cognition layers follow design considerations rather than a layer-by-layer sweep, so the combination cannot be asserted optimal. In evaluation, every difference reported is a point estimate from a single run without significance testing, and the out-of-domain scoring protocol differs from the official leaderboards, so those absolute scores are not comparable, MMHal-Bench returning a null result that serves only as boundary evidence for domain-conditionality. The plans that follow are accordingly: a confi-dence threshold adjustable at inference; open-vocabulary text anchors in place of fixed class names; training and evaluation repeated over multiple random seeds with confidence intervals; and a DPO [24] stage stacked on the policy obtained by DSCC training, the two being complementary. REFERENCES [1] H. Liu, C. Li, Y. Li, and Y. J. Lee, “Improved baselines with visual instruction tuning,” in Proc. CVPR, 2024, pp. 26296–26306. [2] D. Zhu, J. Chen, X. Shen, X. Li, and M. Elhoseiny, “MiniGPT-4: Enhancing vision-language understanding with advanced large language models,” in Proc. ICLR, 2024. [3] W. Dai et al., “InstructBLIP: Towards general-purpose vision-language models with instruction tuning,” in Proc. NeurIPS, 2023. [4] Y. Li, Y. Du, K. Zhou, J. Wang, X. Zhao, and J.-R. Wen, “Evaluating object hallucination in large vision-language models,” in Proc. EMNLP, 2023, pp. 292–305. [5] A. Rohrbach, L. A. Hendricks, K. Burns, T. Darrell, and K. Saenko, “Object hallucination in image captioning,” in Proc. EMNLP, 2018, pp. 4035–4045. [6] L. Chen et al., “ShareGPT4V: Improving large multi-modal models with better captions,” in Proc. ECCV, 2024, pp. 370–387. [7] T. Y. Lin et al., “Microsoft COCO: Common objects in context,” in Proc. ECCV, 2014, pp. 740–755. [8] S. Leng et al., “Mitigating object hallucinations in large vision-language models through visual contrastive decoding,” in Proc. CVPR, 2024, pp. 13872–13882. [9] Q. Huang et al., “OPERA: Alleviating hallucination in multi-modal large language models via over-trust penalty and retrospection-allocation,” in Proc. CVPR, 2024, pp. 13418–13427. [10] Y. Zhou et al., “Analyzing and mitigating object hallucination in large vision-language models,” in Proc. ICLR, 2024. [11] G. Zheng, J. Qian, J. Tang, and S. Yang, “Why LVLMs are more prone to hallucinations in longer responses: The role of context,” in Proc. ICCV, 2025, pp. 4101–4113. [12] Y. S. Chuang, Y. Xie, H. Luo, Y. Kim, J. Glass, and P. He, “DoLa: Decoding by contrasting layers improves factuality in large language models,” in Proc. ICLR, 2024. [13] Z. Chen, Z. Zhao, H. Luo, H. Yao, B. Li, and J. Zhou, “HALC: Object hallucination reduction via adaptive focal-contrast decoding,” in Proc. ICML, 2024, pp. 7824–7846. [14] A. Favero et al., “Multi-modal hallucination control by visual informa-tion grounding,” in Proc. CVPR, 2024, pp. 14303–14312. [15] X. Wang, J. Pan, L. Ding, and C. Biemann, “Mitigating hallucinations in large vision-language models with instruction contrastive decoding,” in Findings Assoc. Comput. Linguist.: ACL, 2024, pp. 15840–15853. [16] F. Huo, W. Xu, Z. Zhang, H. Wang, Z. Chen, and P. Zhao, “Self-introspective decoding: Alleviating hallucinations for large vision-language models,” in Proc. ICLR, 2025. [17] Y. Xing, Y. Li, I. Laptev, and S. Lu, “Mitigating object hallucination via concentric causal attention,” in Proc. NeurIPS, 2024. [18] W. An et al., “AGLA: Mitigating object hallucinations in large vision-language models with assembly of global and local attention,” in Proc. CVPR, 2025, pp. 29915–29926. [19] S. Yin et al., “Woodpecker: Hallucination correction for multimodal large language models,” Sci. China Inf. Sci., vol. 67, no. 12, 2024, Art. no. 220105. [20] S. Lee, S. H. Park, Y. Jo, and M. Seo, “Volcano: Mitigating multimodal hallucination through self-feedback guided revision,” in Proc. NAACL, 2024, pp. 391–404. [21] Q. Yu et al., “HalluciDoctor: Mitigating hallucinatory toxicity in visual instruction data,” in Proc. CVPR, 2024, pp. 12944–12953. [22] J. Wu et al., “Logical closed loop: Uncovering object hallucinations in large vision-language models,” in Findings Assoc. Comput. Linguist.: ACL, 2024, pp. 6944–6962. [23] L. Ouyang et al., “Training language models to follow instructions with human feedback,” in Proc. NeurIPS, 2022. [24] R. Rafailov, A. Sharma, E. Mitchell, C. D. Manning, S. Ermon, and C. Finn, “Direct preference optimization: Your language model is secretly a reward model,” in Proc. NeurIPS, 2023. [25] T. Yu et al., “RLHF-V: Towards trustworthy MLLMs via behavior alignment from fine-grained correctional human feedback,” in Proc. CVPR, 2024, pp. 13807–13816. [26] Z. Sun et al., “Aligning large multimodal models with factually aug-mented RLHF,” in Findings Assoc. Comput. Linguist.: ACL, 2024, pp. 13088–13110. [27] F. Wang et al., “mDPO: Conditional preference optimization for multi-modal large language models,” in Proc. EMNLP, 2024, pp. 8078–8088. [28] Y. Zhou et al., “Calibrated self-rewarding vision language models,” in Proc. NeurIPS, 2024. [29] K. He, H. Fan, Y. Wu, S. Xie, and R. Girshick, “Momentum contrast for unsupervised visual representation learning,” in Proc. CVPR, 2020, pp. 9726–9735. [30] A. Radford et al., “Learning transferable visual models from natural language supervision,” in Proc. ICML, 2021, pp. 8748–8763. [31] C. Jia et al., “Scaling up visual and vision-language representation learning with noisy text supervision,” in Proc. ICML, 2021, pp. 4904– 4916. [32] J. Li, D. Li, C. Xiong, and S. Hoi, “BLIP: Bootstrapping language-image pre-training for unified vision-language understanding and generation,” in Proc. ICML, 2022, pp. 12888–12900. [33] X. Zhai, B. Mustafa, A. Kolesnikov, and L. Beyer, “Sigmoid loss for language image pre-training,” in Proc. ICCV, 2023, pp. 11941–11952. [34] L. H. Li et al., “Grounded language-image pre-training,” in Proc. CVPR, 2022, pp. 10955–10965. [35] Y. Zhong et al., “RegionCLIP: Region-based language-image pretrain-ing,” in Proc. CVPR, 2022, pp. 16772–16782. [36] S. Liu et al., “Grounding DINO: Marrying DINO with grounded pre-training for open-set object detection,” in Proc. ECCV, 2024, pp. 38–55. [37] J. Li, D. Li, S. Savarese, and S. Hoi, “BLIP-2: Bootstrapping language-image pre-training with frozen image encoders and large language models,” in Proc. ICML, 2023, pp. 19730–19742. [38] J. B. Alayrac et al., “Flamingo: A visual language model for few-shot learning,” in Proc. NeurIPS, 2022. [39] H. Liu, C. Li, Q. Wu, and Y. J. Lee, “Visual instruction tuning,” in Proc. NeurIPS, 2023. [40] Q. Ye et al., “mPLUG-Owl2: Revolutionizing multi-modal large lan-guage model with modality collaboration,” in Proc. CVPR, 2024, pp. 13040–13051. [41] A. Dosovitskiy et al., “An image is worth 16x16 words: Transformers for image recognition at scale,” in Proc. ICLR, 2021. [42] C. Fu et al., “MME: A comprehensive evaluation benchmark for multimodal large language models,” arXiv:2306.13394, 2023. [43] T. Guan et al., “HallusionBench: An advanced diagnostic suite for entangled language hallucination and visual illusion in large vision-language models,” in Proc. CVPR, 2024, pp. 14375–14385. [44] A. Vaswani et al., “Attention is all you need,” in Proc. NeurIPS, 2017, pp. 5998–6008.

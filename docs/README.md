@@ -6,32 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-20
-- 运行时间：2026-08-20 21:01:38 UTC
+- 最新运行日期：2026-08-21
+- 运行时间：2026-08-21 20:03:07 UTC
 - 运行状态：成功
 - 本次总论文数：3
-- 精读区：3
-- 速读区：0
+- 精读区：2
+- 速读区：1
 
 ### 今日简报（AI）
-今天精读两篇颜色恒常性相关论文，均获 8.0 分：场景感知特征调制与统计颜色匹配各成亮点。  
-最值得关注：SAFE 用学习颜色空间应对纯色场景白平衡，另一篇用简单统计颜色匹配实现更安全、可持续的域泛化。  
-建议普通读者先复现统计颜色匹配这类轻量基线，再对比 SAFE 在纯色/复杂场景下的鲁棒性提升。
-- 详情：[/202608/20/README](/202608/20/README)
+- 今日共生成 3 篇推荐（精读 2 篇，速读 1 篇）
+- 精读：《Dual-Stream Cross-Anchor Correction Grounding Long-Form Captions and the Domain Limits of Object-Level Anchors》（8.0/10）, 《Environment-Invariant Subspace Learning for Generalizable Deepfake Detection》（8.0/10）
+- 速读：《Scale-Separated Conditioning for Style-Encoder-Free Diffusion Stylization》（6.0/10）
+- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
+- 详情：[/202608/21/README](/202608/21/README)
 
 ### 精读区论文标签
-1. [SAFE: Scene-Aware Feature Modulation for Color Constancy with Learned Color Space in Pure-Color Scenes](/202608/20/2608.13967v1-safe-scene-aware-feature-modulation-for-color-constancy-with-learned-color-space-in-pure-color-scenes)  
+1. [Dual-Stream Cross-Anchor Correction Grounding Long-Form Captions and the Domain Limits of Object-Level Anchors](/202608/21/2608.12746v3-dual-stream-cross-anchor-correction-grounding-long-form-captions-and-the-domain-limits-of-object-level-anchors)  
    标签：评分：8.0/10、query:cp
-   evidence：用于颜色恒常性的场景感知特征调制网络
-2. [Simple, Safe, and Overlooked: Reclaiming Sustainable Domain Generalization with Statistical Color Matching](/202608/20/2608.18915v1-simple-safe-and-overlooked-reclaiming-sustainable-domain-generalization-with-statistical-color-matching)  
+   evidence：将对象级视觉锚点注入中间层隐藏状态
+2. [Environment-Invariant Subspace Learning for Generalizable Deepfake Detection](/202608/21/2608.17700v1-environment-invariant-subspace-learning-for-generalizable-deepfake-detection)  
    标签：评分：8.0/10、query:cp
-   evidence：统计颜色匹配数据增强在颜色偏移下保持结构完整
-3. [Counterfactual Contrastive Analysis](/202608/20/2608.19032v1-counterfactual-contrastive-analysis)  
-   标签：评分：8.0/10、query:cp
-   evidence：在潜在空间解耦生成因素并交换显著因素生成反事实图像
+   evidence：提出环境不变子空间学习方法，将特征解耦为不变因子与环境相关因子，以提升对光照/风格变化的鲁棒性
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [Scale-Separated Conditioning for Style-Encoder-Free Diffusion Stylization](/202608/21/2608.19719v1-scale-separated-conditioning-for-style-encoder-free-diffusion-stylization)  
+   标签：评分：6.0/10、query:cp
+   evidence：通过裁剪瓶颈分离目标几何与可迁移外观，保留颜色和纹理统计并减少布局线索
 
 
 <div class="dpr-home-promo-card">

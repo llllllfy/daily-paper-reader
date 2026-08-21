@@ -1,0 +1,137 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-21T19:56:05.689617+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2608.12746v3",
+      "source": "arxiv",
+      "title": "Dual-Stream Cross-Anchor Correction Grounding Long-Form Captions and the Domain Limits of Object-Level Anchors",
+      "abstract": "Object hallucination in multimodal large language models arises when language priors and corpus co-occurrence bias outweigh the visual evidence, with nothing tying an object mention to the image. Most remedies intervene at decoding time, yet under a unified protocol their benefit is confined to short captions; supervised fine-tuning (SFT) on a detail-rich corpus lengthens captions, but over forty percent still name absent objects. This paper proposes Dual-Stream Cross-Anchor Correction (DSCC). Unlike work that post-processes decoding, DSCC injects object-level visual anchors into the language model itself during fine-tuning: a perception stream aligns object-level hidden states at an intermediate layer to frozen text anchors by a bidirectional contrastive objective; a cognition stream lets deeper layers query those anchors by cross-attention at every generation step; and a two-stage curriculum gate couples them, making evidence retrieval a structural constraint on generation. Under one backbone and one scoring protocol, experiments span long-caption hallucination, object-existence discrimination and cross-domain generalisation, with vanilla SFT on the same corpus and schedule as a length- and density-matched control separating the data effect from the architectural gain. DSCC alone reaches the long-caption, low-hallucination region: captions roughly 1.9 times the baseline length at 88.19% precision per object mention, the highest under a density-independent criterion. Ablations expose a synergy: the perception stream alone degrades precision yet reverses sign when stacked on the cognition stream. No universal superiority is claimed: three out-of-domain benchmarks yield a predictable, falsifiable domain-conditionality, the synergy being bound to the anchors' semantic domain and breaking on charts and illusions.",
+      "authors": [
+        "Lingkai Bu",
+        "Qian Gao",
+        "Jun Fan",
+        "Guohui Ding",
+        "Zhenyu Yang",
+        "Yuteng Xiao",
+        "Jinyi Liang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.CL"
+      ],
+      "published": "2026-08-13T02:52:58+00:00",
+      "link": "https://arxiv.org/pdf/2608.12746v3",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "injects object-level visual anchors into intermediate hidden states",
+      "llm_evidence_cn": "将对象级视觉锚点注入中间层隐藏状态",
+      "llm_evidence": "将对象级视觉锚点注入中间层隐藏状态",
+      "canonical_evidence": "将对象级视觉锚点注入中间层隐藏状态",
+      "llm_tldr_en": "Proposes DSCC, which injects object-level visual anchors into a language model's intermediate hidden states during fine-tuning to reduce object hallucination in long-form captions.",
+      "llm_tldr_cn": "针对多模态大模型在长文本描述中对象幻觉问题，本文提出双流交叉锚点校正方法DSCC，在微调阶段将对象级视觉锚点注入语言模型中间层隐藏状态，而非仅在解码时后处理。实验表明该方法能有效减少长描述中的虚假对象提及。该工作提供了一种通过特征层干预提升视觉语言对齐的新思路，对潜在空间干预技术具有参考价值。",
+      "llm_tldr": "针对多模态大模型在长文本描述中对象幻觉问题，本文提出双流交叉锚点校正方法DSCC，在微调阶段将对象级视觉锚点注入语言模型中间层隐藏状态，而非仅在解码时后处理。实验表明该方法能有效减少长描述中的虚假对象提及。该工作提供了一种通过特征层干预提升视觉语言对齐的新思路，对潜在空间干预技术具有参考价值。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.17700v1",
+      "source": "arxiv",
+      "title": "Environment-Invariant Subspace Learning for Generalizable Deepfake Detection",
+      "abstract": "Cross-distribution generalization remains a critical bottleneck in deepfake detection. While recent efforts leverage the semantic priors of large-scale visual foundation models (VFMs), a noteworthy yet underexplored challenge remains: the susceptibility of these semantic priors to environmental interference from factors such as lighting and style. Crucially, this interference establishes spurious correlations between forgery cues and environmental patterns that severely limit generalization. To address this fundamental challenge, we propose an innovative Environment-Invariant Subspace Learning (EISL) framework. The core contribution of EISL is that it aims to disentangle features into orthogonal forgery-relevant invariant factors and environment-related residual factors via a learnable low-rank projection. To facilitate robust feature disentanglement, we also design an Environmental Intervention module that generates diverse and challenging intervention pairs, simulating out-of-distribution environmental shifts to guide the model toward discovering truly invariant forgery representations. Experiments across cross-dataset, cross-generator, whole-face synthesis, and corruption settings show consistent gains and competitive or leading performance against strong detectors, demonstrating improved robustness to unseen forgery types and environmental variations. This work provides a new perspective and a valuable exploration for understanding and tackling the generalization barriers of VFMs in deepfake detection.",
+      "authors": [
+        "Shenghao Chen",
+        "Hao Jia",
+        "Chen Li",
+        "Chunjie Ma",
+        "Zan Gao",
+        "Shengyong Chen"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-18T12:22:21+00:00",
+      "link": "https://arxiv.org/pdf/2608.17700v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Proposes Environment-Invariant Subspace Learning to disentangle features into invariant and environment-specific factors for robustness against lighting/style shifts",
+      "llm_evidence_cn": "提出环境不变子空间学习方法，将特征解耦为不变因子与环境相关因子，以提升对光照/风格变化的鲁棒性",
+      "llm_evidence": "提出环境不变子空间学习方法，将特征解耦为不变因子与环境相关因子，以提升对光照/风格变化的鲁棒性",
+      "canonical_evidence": "提出环境不变子空间学习方法，将特征解耦为不变因子与环境相关因子，以提升对光照/风格变化的鲁棒性",
+      "llm_tldr_en": "The paper addresses cross-distribution generalization in deepfake detection by identifying environmental interference (lighting, style) that creates spurious correlations. It proposes Environment-Invariant Subspace Learning (EISL) to disentangle features into orthogonal forgery-relevant invariant and environment-specific factors. Experiments show improved generalization, contributing a feature-level method for robustness to environmental changes including color shifts.",
+      "llm_tldr_cn": "该论文针对深度伪造检测模型易受光照和风格等环境因素干扰、产生虚假相关从而限制跨分布泛化的问题，提出环境不变子空间学习(EISL)框架，将特征解耦为正交的伪造相关不变因子和环境因子。实验表明该方法能有效提升跨分布泛化性能，为通过特征空间解耦实现环境鲁棒性（包括颜色变化）提供了新思路。",
+      "llm_tldr": "该论文针对深度伪造检测模型易受光照和风格等环境因素干扰、产生虚假相关从而限制跨分布泛化的问题，提出环境不变子空间学习(EISL)框架，将特征解耦为正交的伪造相关不变因子和环境因子。实验表明该方法能有效提升跨分布泛化性能，为通过特征空间解耦实现环境鲁棒性（包括颜色变化）提供了新思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "papers on feature level intervention for color robustness in deep learning",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.19719v1",
+      "source": "arxiv",
+      "title": "Scale-Separated Conditioning for Style-Encoder-Free Diffusion Stylization",
+      "abstract": "Reference-based diffusion stylization requires separating target geometry from transferable appearance. Existing tuning-based methods often rely on aligned content-style-target triplets or auxiliary visual encoders, which increases data cost and can transfer unintended scene structure from the style reference. We propose SEFS (Style-Encoder-Free Stylization), a style-encoder-free conditioning framework for diffusion transformers. SEFS forms style tokens from stochastic low-resolution crops of single training images. This crop bottleneck preserves local appearance statistics such as palette, stroke, texture, and material, while reducing access to global layout cues. Target content is encoded by edge and segmentation cues and fused with the noisy latent through parameter-efficient trainable projections. We add style-to-denoising re-normalization for token-statistic alignment and cross-block skip fusion for spatial detail. SEFS trains on unpaired single images; the frozen diffusion VAE is used only to place image conditions in the latent space. On artistic stylization benchmarks, SEFS improves content consistency and leakage diagnostics while retaining reference-style affinity, and ablations support the crop-resolution, re-normalization, and skip-fusion choices. The code of SEFS will be made publicly available.",
+      "authors": [
+        "Jingtao Zhang",
+        "Haorui Gao",
+        "Youqing Liang",
+        "Zeming Liu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-20T07:17:22+00:00",
+      "link": "https://arxiv.org/pdf/2608.19719v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "separates target geometry from transferable appearance via crop bottleneck, preserving color and texture statistics while reducing layout cues",
+      "llm_evidence_cn": "通过裁剪瓶颈分离目标几何与可迁移外观，保留颜色和纹理统计并减少布局线索",
+      "llm_evidence": "通过裁剪瓶颈分离目标几何与可迁移外观，保留颜色和纹理统计并减少布局线索",
+      "canonical_evidence": "通过裁剪瓶颈分离目标几何与可迁移外观，保留颜色和纹理统计并减少布局线索",
+      "llm_tldr_en": "Proposes SEFS, a style-encoder-free diffusion framework that uses low-resolution crop tokens to preserve appearance statistics such as palette and color while edge and segmentation cues encode geometry, achieving style transfer without structure leakage.",
+      "llm_tldr_cn": "现有参考式扩散风格化需对齐三元组或额外视觉编码器，易引入风格参考的全局结构。本文提出SEFS，一种无风格编码器的条件框架，利用随机低分辨率裁剪形成风格令牌，仅保留调色板、纹理等局部外观统计，同时用边缘和分割编码目标内容几何。该方法在保持外观迁移的同时减少全局布局泄漏，实现结构与风格的有效解耦。",
+      "llm_tldr": "现有参考式扩散风格化需对齐三元组或额外视觉编码器，易引入风格参考的全局结构。本文提出SEFS，一种无风格编码器的条件框架，利用随机低分辨率裁剪形成风格令牌，仅保留调色板、纹理等局部外观统计，同时用边缘和分割编码目标内容几何。该方法在保持外观迁移的同时减少全局布局泄漏，实现结构与风格的有效解耦。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
