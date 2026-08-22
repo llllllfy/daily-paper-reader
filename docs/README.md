@@ -6,32 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-21
-- 运行时间：2026-08-21 20:03:07 UTC
+- 最新运行日期：2026-08-22
+- 运行时间：2026-08-22 20:02:20 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：2
+- 本次总论文数：2
+- 精读区：1
 - 速读区：1
 
 ### 今日简报（AI）
-- 今日共生成 3 篇推荐（精读 2 篇，速读 1 篇）
-- 精读：《Dual-Stream Cross-Anchor Correction Grounding Long-Form Captions and the Domain Limits of Object-Level Anchors》（8.0/10）, 《Environment-Invariant Subspace Learning for Generalizable Deepfake Detection》（8.0/10）
-- 速读：《Scale-Separated Conditioning for Style-Encoder-Free Diffusion Stylization》（6.0/10）
+- 今日共生成 2 篇推荐（精读 1 篇，速读 1 篇）
+- 精读：《SemanticSlider3D: Training-Free Continuous Semantic Editing for 3D Objects》（8.0/10）
+- 速读：《TESTNAV: Pareto-Guided Search for Compositional Robustness Testing》（6.0/10）
 - 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202608/21/README](/202608/21/README)
+- 详情：[/202608/22/README](/202608/22/README)
 
 ### 精读区论文标签
-1. [Dual-Stream Cross-Anchor Correction Grounding Long-Form Captions and the Domain Limits of Object-Level Anchors](/202608/21/2608.12746v3-dual-stream-cross-anchor-correction-grounding-long-form-captions-and-the-domain-limits-of-object-level-anchors)  
+1. [SemanticSlider3D: Training-Free Continuous Semantic Editing for 3D Objects](/202608/22/2608.18560v1-semanticslider3d-training-free-continuous-semantic-editing-for-3d-objects)  
    标签：评分：8.0/10、query:cp
-   evidence：将对象级视觉锚点注入中间层隐藏状态
-2. [Environment-Invariant Subspace Learning for Generalizable Deepfake Detection](/202608/21/2608.17700v1-environment-invariant-subspace-learning-for-generalizable-deepfake-detection)  
-   标签：评分：8.0/10、query:cp
-   evidence：提出环境不变子空间学习方法，将特征解耦为不变因子与环境相关因子，以提升对光照/风格变化的鲁棒性
+   evidence：在潜空间中构造语义编辑方向以实现3D对象的连续属性编辑，构成一种潜空间干预技术。
 
 ### 速读区论文标签
-1. [Scale-Separated Conditioning for Style-Encoder-Free Diffusion Stylization](/202608/21/2608.19719v1-scale-separated-conditioning-for-style-encoder-free-diffusion-stylization)  
+1. [TESTNAV: Pareto-Guided Search for Compositional Robustness Testing](/202608/22/2608.19882v1-testnav-pareto-guided-search-for-compositional-robustness-testing)  
    标签：评分：6.0/10、query:cp
-   evidence：通过裁剪瓶颈分离目标几何与可迁移外观，保留颜色和纹理统计并减少布局线索
+   evidence：评估亮度偏移等组合扰动下的鲁棒性
 
 
 <div class="dpr-home-promo-card">

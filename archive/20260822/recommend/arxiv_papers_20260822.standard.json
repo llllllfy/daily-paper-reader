@@ -1,0 +1,94 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-22T19:59:52.836514+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2608.18560v1",
+      "source": "arxiv",
+      "title": "SemanticSlider3D: Training-Free Continuous Semantic Editing for 3D Objects",
+      "abstract": "Fine-grained control over continuous semantic attributes of 3D objects is essential for 3D content creation, but is not well supported by conventional 3D modeling workflows or prompt-based interaction with existing generative AI tools. While slider-based methods have proven effective for fine-grained semantic control in 2D image generation, no equivalent approach exists for 3D. Extending these 2D methods to 3D is non-trivial due to challenges unique to 3D, including geometric integrity and cross-view coherence. We present SemanticSlider3D, a technique for continuous semantic attribute editing of 3D objects that requires no per-attribute training. Given a user-specified attribute, our pipeline constructs a semantic editing direction in the latent space of a state-of-the-art 3D generation model, presenting a diverse and coherent spectrum of 3D variations. A technical validation on a dataset of 50 3D object-attribute pairs shows our method was preferred by all five human assessors across variation range, consistency, 3D object quality, and attribute disentanglement, over a baseline combining a 2D slider with an image-to-3D model. An exploratory study with six participants demonstrates that SemanticSlider3D supported decision-making in 3D prototyping and was perceived as a valuable addition to existing workflows.",
+      "authors": [
+        "Ru Wang",
+        "Rahul Jain",
+        "Koichiro Niinuma",
+        "Aakar Gupta"
+      ],
+      "primary_category": "cs.HC",
+      "categories": [
+        "cs.HC",
+        "cs.CV"
+      ],
+      "published": "2026-08-19T05:35:38+00:00",
+      "link": "https://arxiv.org/pdf/2608.18560v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Constructs a semantic editing direction in the latent space to achieve continuous attribute editing for 3D objects, constituting a latent space intervention technique.",
+      "llm_evidence_cn": "在潜空间中构造语义编辑方向以实现3D对象的连续属性编辑，构成一种潜空间干预技术。",
+      "llm_evidence": "在潜空间中构造语义编辑方向以实现3D对象的连续属性编辑，构成一种潜空间干预技术。",
+      "canonical_evidence": "在潜空间中构造语义编辑方向以实现3D对象的连续属性编辑，构成一种潜空间干预技术。",
+      "llm_tldr_en": "SemanticSlider3D enables training-free continuous semantic attribute editing for 3D objects by constructing editing directions in latent space, overcoming geometric integrity and cross-view coherence challenges.",
+      "llm_tldr_cn": "该论文解决3D内容创作中细粒度语义属性编辑缺乏连续控制的问题。SemanticSlider3D在潜空间中构造语义编辑方向，无需逐属性训练即可实现连续编辑。实验表明该方法在保持几何完整性和跨视角一致性的同时提供有效控制。该工作将2D图像中的滑块编辑方法扩展到3D，展示了潜空间干预在语义属性编辑中的潜力。",
+      "llm_tldr": "该论文解决3D内容创作中细粒度语义属性编辑缺乏连续控制的问题。SemanticSlider3D在潜空间中构造语义编辑方向，无需逐属性训练即可实现连续编辑。实验表明该方法在保持几何完整性和跨视角一致性的同时提供有效控制。该工作将2D图像中的滑块编辑方法扩展到3D，展示了潜空间干预在语义属性编辑中的潜力。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.19882v1",
+      "source": "arxiv",
+      "title": "TESTNAV: Pareto-Guided Search for Compositional Robustness Testing",
+      "abstract": "Deep learning models remain vulnerable to real-world input perturbations, especially when multiple corruptions co-occur in the same input (e.g., brightness shifts and motion blur). Compositional testing reveals these interaction effects but introduces two challenges: combinatorial growth of the perturbation space as dimensions and severity levels increase, and uneven diagnostic value-many combinations yield unrealistically degraded inputs with limited practical relevance.   We present TESTNAV, 1 a Pareto-guided robustness testing framework for efficiently exploring discrete, compositional perturbation spaces when only a limited number of perturbation configurations can be evaluated. TESTNAV prioritises severe yet realistic failures by formulating robustness testing as bi-objective optimisation: maximise performance degradation while preserving input fidelity measured by modality-specific metrics (e.g., SSIM and KID for vision; chrF and BERT-F1 for language and code). It uses NSGA-II to approximate the bi-objective Pareto front. Across four benchmarks spanning vision, natural language, and code generation, TESTNAV recovers Pareto fronts up to 2.15x faster than search-based baselines, using 35.8%-89.3% of the discrete perturbation space defined by four perturbation dimensions with six levels each.",
+      "authors": [
+        "Arooj Arif",
+        "Tobias Hartung",
+        "Elena Botoeva",
+        "Alexandros Koliousis"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-20T10:43:22+00:00",
+      "link": "https://arxiv.org/pdf/2608.19882v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Evaluates robustness under brightness shifts as a compositional perturbation",
+      "llm_evidence_cn": "评估亮度偏移等组合扰动下的鲁棒性",
+      "llm_evidence": "评估亮度偏移等组合扰动下的鲁棒性",
+      "canonical_evidence": "评估亮度偏移等组合扰动下的鲁棒性",
+      "llm_tldr_en": "TESTNAV proposes a Pareto-guided search method to efficiently explore compositional perturbation spaces, prioritizing realistic failures like brightness shifts, to test model robustness.",
+      "llm_tldr_cn": "针对组合扰动空间巨大且诊断价值不均的问题，提出TESTNAV框架，通过帕累托引导搜索高效探索离散组合扰动空间。该方法优先发现严重但真实的失效场景，实验表明能更有效地识别模型在亮度偏移等组合扰动下的脆弱性，为鲁棒性测试提供了实用工具。",
+      "llm_tldr": "针对组合扰动空间巨大且诊断价值不均的问题，提出TESTNAV框架，通过帕累托引导搜索高效探索离散组合扰动空间。该方法优先发现严重但真实的失效场景，实验表明能更有效地识别模型在亮度偏移等组合扰动下的脆弱性，为鲁棒性测试提供了实用工具。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "impact of color perturbation on semantic understanding",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

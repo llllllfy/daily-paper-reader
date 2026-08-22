@@ -1,0 +1,1171 @@
+Title: TESTNAV: Pareto-Guided Search for Compositional Robustness Testing
+
+URL Source: https://arxiv.org/pdf/2608.19882v1
+
+Published Time: Fri, 21 Aug 2026 00:51:12 GMT
+
+Number of Pages: 14
+
+Markdown Content:
+# TEST NAV : Pareto-Guided Search for Compositional Robustness Testing 
+
+## Arooj Arif 1 , Tobias Hartung 1 , Elena Botoeva 2 and Alexandros Koliousis 11Northeastern University London 
+
+> 2
+
+## University of Kent 
+
+## {arooj.arif, tobias.hartung }@nulondon.ac.uk, e.botoeva@kent.ac.uk, alexandros.koliousis@nulondon.ac.uk 
+
+## Abstract 
+
+Deep learning models remain vulnerable to real-world input perturbations, especially when multiple corruptions co-occur in the same input (e.g., bright-ness shifts and motion blur). Compositional test-ing reveals these interaction effects but introduces two challenges: combinatorial growth of the per-turbation space as dimensions and severity levels increase, and uneven diagnostic value—many com-binations yield unrealistically degraded inputs with limited practical relevance. We present T EST NAV ,1 a Pareto-guided robustness testing framework for efficiently exploring discrete, compositional perturbation spaces when only a lim-ited number of perturbation configurations can be evaluated. TEST NAV prioritises severe yet real-istic failures by formulating robustness testing as bi-objective optimisation: maximise performance degradation while preserving input fidelity mea-sured by modality-specific metrics (e.g., SSIM and KID for vision; chrF and BERT-F1 for language and code). It uses NSGA-II to approximate the bi-objective Pareto front. Across four benchmarks spanning vision, natural language, and code gener-ation, T EST NAV recovers Pareto fronts up to 2.15 ×
+
+faster than search-based baselines, using 35.8%– 89.3% of the discrete perturbation space defined by four perturbation dimensions with six levels each. 
+
+## 1 Introduction 
+
+Modern deep learning models achieve strong task perfor-mance yet remain vulnerable to semantics-preserving in-put perturbations that induce model failures [Szegedy et al. ,2014; Goodfellow et al. , 2015]. Robustness testing typi-cally evaluates perturbations in isolation [Hendrycks and Di-etterich, 2019; Mu and Gilmer, 2019]. In practice, however, real-world degradations often arise from interacting factors (e.g., brightness shifts, motion blur, and noise), which rarely occur alone in deployment settings such as autonomous driv-ing [Mus ¸at et al. , 2021; Hao et al. , 2024] and medical imag-ing [Chuah et al. , 2024]. 
+
+> 1Code and data are available in an anonymised OSF repository.
+
+Compositional robustness testing—that is, evaluating in-puts under combinations of multiple perturbations—reveals interaction effects that remain undetected under single-perturbation evaluation [Mintun et al. , 2021; Hendrycks et al. , 2020; Arif et al. , 2026]. However, systematically explor-ing multi-perturbation configuration spaces poses two key challenges: 
+
+(i) The perturbation space grows combinatorially: with n
+
+perturbation types and ℓ discrete levels per type, the number of configurations scales as ℓn. For example, four perturbation types with six levels each yield 64 = 1 ,296 perturbation con-figurations. Exhaustive testing is computationally expensive and scales poorly as the number of perturbation types or test inputs grows. 
+
+(ii) Configurations are not equally informative: some produce heavily degraded inputs with low input fidelity— meaning the perturbed input no longer resembles the original—whereas others preserve input fidelity yet induce model failures. Input fidelity does not degrade monotoni-cally with the number of perturbations, rendering fixed-order heuristics ineffective. 
+
+What makes a failure informative? The most informative failures are those where a perturbed input remains semanti-cally faithful to the original yet still causes the model to fail, exposing genuine robustness weaknesses rather than expected sensitivity to obvious input corruption. Finding such failures requires balancing two complementary objectives : model per-formance degradation, which measures how much model per-formance drops under a given perturbation configuration, and input fidelity, which measures how closely perturbed inputs resemble the originals under appropriate similarity metrics. For robustness testing, we are interested in the Pareto front 
+
+of perturbation configurations with respect to these two ob-jectives. The Pareto front P∗ consists of all Pareto-optimal 
+
+configurations—those where improving one objective neces-sarily worsens the other [Miettinen, 1999]. Pareto-optimal configurations are the natural candidates for robustness test-ing: they maximise model performance degradation while preserving input fidelity, and are therefore most likely to re-veal meaningful robustness failures. We introduce T EST NAV , a framework for compositional robustness testing that formalises this idea as a bi-objective optimization problem–balancing failure severity against in-put fidelity–and uses NSGA-II [Deb et al. , 2002], a multi-arXiv:2608.19882v1 [cs.AI] 20 Aug 2026 objective evolutionary algorithm, to efficiently approximate the Pareto front. Our contributions are: (1) We formalise compositional robustness testing as abudget-constrained bi-objective search problem over per-turbation configurations, with model-performance degra-dation and input fidelity as competing objectives. We instantiate this formulation in T EST NAV , an NSGA-II-based framework, which maintains a diverse set of non-dominated solutions along the degradation–fidelity trade-off. (2) We conduct an empirical study across four benchmarks— Tiny-ImageNet, QQP, HumanEval, and MBPP— spanning vision, language, and code. We exhaustively evaluate all 64 configurations per dataset to construct ground-truth Pareto fronts, measuring fidelity via SSIM and KID (images) and chrF and BERTScore (language/code). Under identical budgets, T EST NAV re-covers these fronts up to 2.15 × faster than search-based baselines. Tiny-ImageNet experiments further show that neural-coverage metrics do not reliably identify the Pareto-optimal failure region. 
+
+## 2 Related Work 
+
+Deep learning robustness testing evaluates model behaviour under controlled input perturbations intended to preserve task semantics while shifting the input distribution. Test-ing methods differ in what they choose to vary: (i) input-level methods generate, rank, or assess individual test inputs using activation coverage, uncertainty, or distributional nov-elty; they provide baseline search signals in our study (§2.1); 
+
+(ii) perturbation-level benchmarks evaluate predefined cor-ruption or transformation families, typically one family at a time; they provide the perturbations used in our evalua-tion (§2.2); (iii) configuration-level methods evaluate com-binations of perturbations, inducing a discrete space of per-turbation configurations; they motivate the multi-perturbation space searched by T EST NAV (§2.3). TEST NAV builds on the configuration-level view and uses multi-objective optimisation as the algorithmic basis for Pareto-guided search (§2.4). 
+
+2.1 Input-level testing 
+
+Coverage-guided methods use activation behaviour as aproxy for test adequacy. DeepXplore [Pei et al. , 2017] for-mulates DNN testing as an optimisation problem, generat-ing inputs that maximise neuron activation coverage (NAC) across multiple models. It was among the first to formu-late test generation as guided search, but its coverage crite-rion is structural and does not measure whether generated in-puts remain close to the originals. DeepGauge [Ma et al. ,2018] extends this idea to multi-granularity activation cri-teria, including strong neuron activation coverage (SNAC), 
+
+k-multisection neuron coverage (KMNC), and top-k neuron coverage (TKNC). This family of methods guides testing in input space rather than perturbation-configuration space. Input-prioritisation methods instead rank candidate inputs by fault-revealing signals. DeepGini [Feng et al. , 2020a] pri-oritises inputs on which the model has low confidence, using prediction uncertainty as a proxy for fault-revealing poten-tial. Surprise Adequacy [Kim et al. , 2019] ranks inputs by how distributionally unusual they are relative to training data, using likelihood-based surprise adequacy (LSA) or distance-based surprise adequacy (DSA). These methods help select individual test inputs, but do not explicitly balance perfor-mance degradation against input fidelity at the perturbation-configuration level. 
+
+2.2 Perturbation-level robustness benchmarks 
+
+For vision, ImageNet-C [Hendrycks and Dietterich, 2019] benchmarks robustness under 19 fixed corruption types ap-plied independently at five severity levels. It provides a rigorous single-perturbation baseline but cannot capture in-teractions between co-occurring corruptions. For natural language, TextAttack [Morris et al. , 2020] provides a uni-fied framework for word-level adversarial transformations on NLP models, covering substitution, insertion, and dele-tion. CheckList [Ribeiro et al. , 2020] defines capability tests across linguistic categories such as negation, vocabulary, and robustness to typos, with each capability tested largely in isolation. For code, ReCode [Wang et al. , 2023] evaluates code generation models under individual perturbation fam-ilies such as butterfingers, character case, whitespace, and newline perturbations, measuring pass@ k per family inde-pendently. These benchmarks provide the perturbation fami-lies used in our evaluation, but they evaluate families indepen-dently rather than searching over compositional perturbation configurations under a budget. 
+
+2.3 Configuration-level compositional testing 
+
+Chandrasekaran et al. [Chandrasekaran et al. , 2021] showed that combinations of perturbations can expose failures that are not observable under isolated testing. CIT4DNN [Dola 
+
+et al. , 2024] addresses the resulting combinatorial space through combinatorial interaction testing in a compressed latent space. TestifAI [Arif et al. , 2026] constructs multi-perturbation spaces and estimates higher-order robustness be-haviour from lower-order perturbation evaluations, motivat-ing the configuration space we study. With n perturbation types and ℓ discrete levels, however, the space contains ℓn
+
+configurations. For large models, evaluating each configura-tion requires inference over the full evaluation set, making exhaustive evaluation costly. What remains open is how to explore this space under a limited evaluation budget while prioritising failures that are both severe and high-fidelity. 
+
+2.4 Multi-objective optimisation 
+
+Multi-objective optimisation is common in search-based soft-ware engineering, where testing is formulated as a trade-off between objectives such as coverage, diversity, and fault de-tection [Miettinen, 1999; Fraser and Arcuri, 2013; Panichella 
+
+et al. , 2015]. In AI testing, DeepXplore [Pei et al. , 2017] and DLFuzz [Guo et al. , 2018] combine multiple objectives, in-cluding neuron coverage and behavioural divergence, to gen-erate failure-inducing inputs. Most existing AI testing meth-ods apply multi-objective optimisation to individual test in-puts, rather than perturbation configurations. Algorithm 1: TEST NAV : NSGA-II search over compositional perturbation configurations                                                                                              
+
+> 1E← ∅ ▷unique evaluated configurations
+> 2b←0
+> 3P←μuniform samples from Θ
+> 4foreach θ∈Pdo
+> 5δ(θ),ρ(θ)←EVALUATE (θ)
+> 6E←E∪ { θ}
+> 7b←b+ 1 ▷budget counter
+> 8while b < B do
+> 9m←min( μ, B −b)▷remaining budget
+> 10 Q←VARIATION (P, Θ, m )
+> 11 foreach θ∈Qdo
+> 12 if b=Bthen
+> 13 break
+> 14 if θ/∈Ethen
+> 15 δ(θ),ρ(θ)←EVALUATE (θ)
+> 16 E←E∪ { θ}
+> 17 b←b+ 1
+> 18 F ← rank P∪Qby Pareto dominance
+> 19 P←select μconfigs from Fby rank and distance
+> 20 R←sort Eby rank, then distance
+> 21 return R
+
+A common alternative is to scalarise multiple objectives into a single fitness score and apply single-objective search. However, scalarisation fixes the degradation–fidelity trade-off, biasing search toward one region of the surface. NSGA-II [Deb et al. , 2002] avoids this by ranking configurations through non-dominated sorting and preserving diversity with crowding-distance selection. TEST NAV uses NSGA-II to search the multi-perturbation configuration space, optimising performance degradation and input fidelity. 
+
+## 3 TEST NAV Framework 
+
+TEST NAV identifies perturbation configurations that expose severe model failures while preserving input fidelity. Given a model, a clean test set, discrete perturbation space, task-performance metric, fidelity metric, and evaluation bud-get, T EST NAV searches for high-quality degradation–fidelity trade-offs using NSGA-II, a multi-objective evolutionary al-gorithm. The result is a prioritised set of configurations for practitioner inspection. We define the perturbation config-uration space (§3.1), the degradation and fidelity objectives (§3.2), and the NSGA-II search procedure (§3.3). 
+
+3.1 Perturbation Configuration Space 
+
+We view perturbations as controlled transformations intended to preserve task semantics while shifting the input distribu-tion. Let D be the clean test set and let {T1, . . . , T n} be n
+
+perturbation types, such as blur, noise, or whitespace cor-ruption. Each perturbation type Ti is applied at a discrete level θi ∈ { 0, . . . , ℓ −1}, where θi=0 denotes no perturba-tion. A perturbation configuration θ = ( θ1, . . . , θ n) specifies one level per perturbation type. The resulting configuration space is the discrete lattice 
+
+Θ = {0, . . . , ℓ −1}n.
+
+Applying configuration θ to an input x composes the selected perturbations: 
+
+πθ (x) = T θn 
+
+> n
+
+◦ · · · ◦ T θ1 
+
+> 1
+
+(x),
+
+where T θi 
+
+> i
+
+denotes perturbation type Ti applied at level θi.The perturbed test set Tθ for a configuration θ is 
+
+Tθ = {πθ (x) : x ∈ D} .
+
+In our experiments, n=4 and ℓ=6 , yielding |Θ| = 1 ,296 per-turbation configurations. 
+
+3.2 Objectives 
+
+Each configuration θ is evaluated using two objectives. The first is performance degradation: how much task perfor-mance drops when the test set is perturbed. Let ψ be a task-performance metric, such as accuracy or Robust Pass, e.g., RP 5@1 [Wang et al. , 2023]. We define the performance degradation objective δ on θ as 
+
+δ(θ) = max  ψ(D)−ψ(Tθ ), 0. (1) A higher δ means greater performance degradation. The second objective is input fidelity: how closely the per-turbed inputs resemble the originals. Let ϕ be a modality-specific fidelity score derived from a similarity or distance metric. We define input fidelity objective ρ on θ as 
+
+ρ(θ) = ϕ(Tθ , D). (2) A higher ρ means higher input fidelity. In our experiments, we instantiate ϕ using SSIM and KID for images, and chrF and BERT-F1 for text and code. Because KID is a distance metric, we invert it before normalisation so that higher ρ consistently indicates higher fidelity. Both δ
+
+and ρ are normalised to [0 , 1] in the experiments. 
+
+3.3 NSGA-II Search 
+
+Algorithm 1 summarises the procedure. TEST NAV begins by sampling an initial population P of μ configurations uni-formly without replacement from Θ and evaluating each on δ
+
+and ρ (lines 3–6). E VALUATE (θ) (line 5) constructs the per-turbed test set Tθ , computes the performance drop δ(θ) using Eq. 1, and computes the fidelity score ρ(θ) using Eq. 2. TEST NAV then repeats four steps until the proposal budget 
+
+B is exhausted. It generates new candidates Q (line 10), eval-uates any previously unseen candidates in Q (lines 14–16), ranks configurations P ∪ Q by Pareto dominance (line 18), and selects the next population P by Pareto rank and crowd-ing distance (line 19). VARIATION (P, Θ, m ) takes the current population P ,uses Θ to enforce valid severity levels, and produces up to 
+
+m new candidates Q (line 10). It applies simulated binary crossover (SBX) and polynomial mutation to parents sampled from P . Because severity levels are integers, fractional val-ues produced by these operators are rounded to the nearest valid level in Θ using a rounding repair step [Blank and Deb, 2020]. TEST NAV ranks P ∪ Q using Pareto dominance (line 18). A configuration θ dominates θ′ if it is at least as good on both δ and ρ, and strictly better on at least one. Over the full configuration space, the ground-truth Pareto front P∗ con-tains all configurations in Θ that are dominated by no other configuration in Θ. TEST NAV does not observe P∗ during search; it approximates it by applying non-dominated sorting to the current candidate set P ∪ Q, partitioning candidates into successive fronts. Crowding distance estimates how iso-lated a configuration is in the (δ, ρ) objective space; larger values indicate less crowded regions of the trade-off surface. The next population is filled from the best-ranked fronts first. When a front does not fit, crowding-distance selection retains candidates with larger crowding distance, preserving diver-sity across the degradation–fidelity trade-off (line 19). The loop continues until the proposal budget B is ex-hausted. At the end, T EST NAV returns R, the evaluated per-turbation configurations ranked by Pareto rank and crowding distance. This gives practitioners a prioritised list of severe, high-fidelity configurations for robustness inspection. 
+
+Hyperparameter selection. NSGA-II requires three search parameters, which we tune by grid search: (i) the crossover index ηc controls how far offspring spread from their par-ents under SBX crossover: lower values promote broader exploration, while higher values favour local refinement. We search over ηc ∈ { 1, 5, 10 , 15 }; (ii) the mutation in-dex ηm controls the step size of polynomial mutation, with lower values producing larger steps. We search over 
+
+ηm ∈ { 1, 5, 10 , 15 }; (iii) the population size μ determines how many configurations are maintained per generation; larger populations preserve more Pareto-front diversity but consume more budget per generation. We search over 
+
+μ ∈ { 20 , 50 , 80 , 110 }.This grid contains 64 settings, each evaluated on all four benchmarks under two fidelity metrics per benchmark: SSIM and KID for images, and chrF and BERT-F1 for text and code. With 10 random seeds, this yields 5,120 runs. We select the setting that maximises the number of benchmark–metric settings reaching Recall@ P∗≥0.999 , breaking ties by worst-case recall. This selects ηc=1 , ηm=5 , and μ=110 .
+
+## 4 Evaluation 
+
+We address three research questions: (i) whether T EST -NAV recovers P∗ more efficiently than non-Pareto baselines (§4.2); (ii) whether single-objective search can recover P∗
+
+(§4.3); and (iii) whether input-level test metrics can proxy the degradation–fidelity trade-off (§4.4). 
+
+4.1 Experimental Setup 
+
+Benchmarks. Table 1 summarises the four benchmarks, each defining four perturbation dimensions with six severity levels ( 0–5), where level 0 denotes no perturbation: 
+
+(i) Image classification (). We evaluate CaiT-S36 [Tou-vron et al. , 2021] on 10,000 Tiny-ImageNet validation im-ages [Deng et al. , 2024] using four ImageNet-C corruptions: speckle noise, glass blur, brightness, and pixelate [Hendrycks and Dietterich, 2019; Rusak and Mitzkus, 2019]. Levels 1–5 follow the standard ImageNet-C severity scale. 
+
+(ii) Paraphrase detection (6). We evaluate RoBERTa base 
+
+on 1,000 Quora Question Pairs (QQP), where each pair is labelled for semantic equivalence [Wang et al. , 2019]. We use TextAttack [Morris et al. , 2020] to apply synonym re-placement, typos, contractions, and punctuation perturba-tions. Levels 1–5 correspond to applying one to five edits. 
+
+(iii) Code generation . We evaluate CodeGen-2B-mono on HumanEval ( Ð) and MBPP ( ) [Chen et al. , 2021; Austin et al. , 2021; Nijkamp et al. , 2022]. Following ReCode [Wang et al. , 2023], we use butterfingers, character-case, whitespace, and newline perturbations, but apply them compositionally. The same six severity levels are used for both datasets. 2
+
+Task performance and fidelity metrics. For each config-uration θ, we compute task performance ψ(Tθ ) and input fi-delity ϕ(Tθ , D) at the configuration level. Task performance is accuracy for  and 6, and Robust Pass RP 5@1 for Ð and  
+
+> 
+
+[Wang et al. , 2023]. For input fidelity, we use SSIM and KID for , and chrF and BERT-F1 for 6, Ð, and . SSIM is computed per per-turbed image against its clean original, then averaged over the test set. KID is computed once per configuration between the clean and perturbed image distributions with subset size 1,000; we negate it before normalisation so that higher values indicate greater fidelity. chrF is computed over the full set of perturbed and clean inputs. BERT-F1 is computed using  
+
+> RoBERTa base
+
+for 6 and CodeBERT base [Feng et al. , 2020b] for Ð and . All fidelity scores are normalised to [0 , 1] , with higher values indicating greater input fidelity. 3
+
+Ground-truth Pareto front. P∗ was computed exhaus-tively by evaluating all |Θ|=1 ,296 configurations and retain-ing those not dominated under (δ, ρ) [Deb et al. , 2002]. It serves as the fixed ground truth against which all methods are evaluated. Figure 1 shows the resulting fronts for each bench-mark and fidelity metric. The fronts contain configurations with one to four active perturbations, showing that Pareto-optimal failures are not limited to single perturbations. 
+
+Search metrics. We set the evaluation budget to 
+
+B = 5 ×| Θ|=6 ,480 configuration proposals. A proposal evaluates a configuration on the full perturbed test set unless the configuration has already been seen, in which case cached δ and ρ values are reused. We set B larger than |Θ|
+
+only to observe full search traces, including convergence behaviour and repeated proposals; efficiency is measured by the number of unique configurations required to recover P∗
+
+and by the recall trajectory defined below. We also track u,the number of unique configurations evaluated so far; u ⩽ B
+
+because search may revisit configurations. We measure recovery of the ground-truth Pareto front using Recall@ P∗. Let Eu ⊆ Θ be the set of the first u unique configurations evaluated by a method. Then 
+
+Recall@ P∗(u) = |Eu ∩ P ∗||P ∗| .                             
+
+> 2For levels 1–5, butterfingers is applied with probability p∈{0.05 ,0.1,0.15 ,0.2,0.25 }, and character-case with p∈ { 0.1,0.2,
+> 0.35 ,0.5,0.7}; whitespace characters are added and deleted with
+> (padd , p del )∈{(0 .1,0.05) ,(0 .15 ,0.07) ,(0 .2,0.1) ,(0 .25 ,0.12) ,
+> (0 .3,0.15) }; and newline insertion adds n∈ { 1,2,3,4,5}lines.
+> 3We use the TorchMetrics library for SSIM, KID, and BERT-F1 [Detlefsen et al. , 2022], and S ACRE BLEU for chrF [Post, 2018].
+
+Dataset D Size Model Perturbations Fidelity ϕ Task ψ Clean ψ(D)
+
+ Tiny-ImageNet 10,000 CaiT-S36 speckle noise, glass blur, brightness, pixelate KID, SSIM Accuracy 86.7% 
+
+6 QQP 1,000 RoBERTa-base synonym, typo, contraction, punctuation BERT-F1, chrF Accuracy 91.2% 
+
+Ð HumanEval 164 CodeGen-2B-mono butterfingers, char case, whitespace, newline BERT-F1, chrF RP 5@1 23.2% 
+
+ MBPP 974 CodeGen-2B-mono butterfingers, char case, whitespace, newline BERT-F1, chrF RP 5@1 31.9% Table 1: Benchmarks, datasets and models, perturbations, fidelity metrics ϕ, task-performance metrics ψ, and clean-set performance ψ(D).0 0.5 1
+
+ρ (SSIM) 00.51
+
+δ 
+
+> |P ∗|= 27
+
+
+
+0 0.5 1
+
+ρ (KID) 00.51
+
+δ 
+
+> |P ∗|= 27
+
+0 0.5 1
+
+ρ (chrF) 00.51
+
+δ 
+
+> |P ∗|= 13
+
+6
+
+0 0.5 1
+
+ρ (BERT-F1) 00.51
+
+δ 
+
+> |P ∗|= 12
+
+0 0.5 1
+
+ρ (chrF) 00.51
+
+δ 
+
+> |P ∗|= 20
+
+Ð
+
+0 0.5 1
+
+ρ (BERT-F1) 00.51
+
+δ 
+
+> |P ∗|= 17
+
+0 0.5 1
+
+ρ (chrF) 00.51
+
+δ 
+
+> |P ∗|= 24
+
+
+
+0 0.5 1
+
+ρ (BERT-F1) 00.51
+
+δ 
+
+> |P ∗|= 30
+
+Figure 1: P∗ across benchmarks and fidelity metrics. Each panel shows the full configuration space (grey) and Pareto front (teal); |P ∗| gives the front size per benchmark–metric pair. Pareto fronts contain configurations with one to four active perturbation dimensions. Counts by order 1–4 are:  SSIM 27 (9,12,4,2); KID 27 (4,7,14,2); 6 chrF 13 (2,7,2,2); BERT-F1 12 (2,7,1,2); Ð chrF 20 (2,3,12,3); BERT-F1 17 
+
+(3,9,5,0);  chrF 24 (1,5,13,5); BERT-F1 30 (7,12,5,6). See Appendix for details.                                     
+
+> 6Ð
+> Method SSIM KID chrF BERT-F1 chrF BERT-F1 chrF BERT-F1
+> TEST NAV 0.704 0.686 0.646 0.651 0.729 0.730 0.697 0.690 Greedy Search 0.557 0.464 0.638 0.782 0.742 0.783 0.681 0.751
+> Genetic Algorithm 0.540 0.552 0.693 0.707 0.753 0.767 0.640 0.631 Random Search 0.510 0.503 0.526 0.514 0.502 0.522 0.514 0.490
+
+Table 2: AUC-Recall@ P∗ for T EST NAV and search baselines across all benchmarks and fidelity metrics. Bold indicates the best score and underline indicates the second-best score per column. 
+
+A value of 1 means that all Pareto-optimal configurations have been found. Steeper recall curves indicate earlier dis-covery of P∗.AUC-Recall summarises the full recall trajectory over u =1, . . . , |Θ| unique configurations. Let ri = Recall@ P∗(i).Then 
+
+AUC -Recall@ P∗ = 1
+
+|Θ|
+
+> |Θ|− 1
+
+X
+
+> i=1
+
+ri + ri+1 
+
+2 .
+
+Higher AUC-Recall indicates earlier discovery of P∗ under the same evaluation budget. 
+
+Execution protocol. All methods are evaluated under the same proposal budget B and run with 10 independent seeds on a GPU cluster at the Massachusetts Green High Perfor-mance Computing Center (MGHPCC). 
+
+4.2 Does T EST NAV recover P∗ more efficiently than non-Pareto baselines? 
+
+TEST NAV uses Pareto-guided bi-objective selection over per-formance degradation and input fidelity. We compare it against three baselines: objective-free random search, local scalar search, and scalar genetic search. For the scalar base-lines, we use s(θ)= min( δ(θ), ρ(θ)) , so a configuration re-ceives a high score only when both degradation and fidelity are high. The baselines are: (i) Random Search evaluates configurations in Θ in a uniformly random order, visiting each configuration exactly once; (ii) Greedy Search starts from a random configuration and repeatedly moves to the highest-scoring neighbour under s, where neighbours differ by ±1 in one severity dimension, restarting when no neigh-bour improves; (iii) Genetic Algorithm uses the same pop-ulation size, crossover, mutation, and duplicate-elimination settings as T EST NAV , but optimises the scalar score s rather than selecting by Pareto rank and crowding distance. Figure 2 reports Recall@ P∗ over 10 seeds. The top-row x-axis shows unique configurations visited and the bottom-row 
+
+x-axis shows the corresponding consumed evaluation budget; shaded regions show ±1 standard deviation. Table 2 sum-marises the corresponding AUC-Recall values. 
+
+Pareto search helps on broad fronts. Using SSIM for vision and chrF for language/code, T EST NAV achieves the highest AUC-Recall on  and , while Genetic Algorithm is highest on 6 and Ð (Table 2). TEST NAV fully recov-ers P∗ up to 2.15 × earlier than baselines that also achieve Recall@ P∗=1 , evaluating 35.8%–89.3% of Θ. TEST NAV 0 432 864 1,296                                                      
+
+> Unique combinations
+> 00.51Recall@ P∗
+> (SSIM)
+> TestNav
+> Greedy GA Random
+> 0432 864 1,296
+> Unique combinations
+> (KID) 02,160 4,320 6,480
+> Budget
+> 00.51Recall@ P∗
+> 02,160 4,320 6,480
+> Budget 0432 864 1,296
+> Unique combinations
+> 00.51Recall@ P∗
+> 6(chrF)
+> TestNav
+> Greedy GA Random
+> 0432 864 1,296
+> Unique combinations
+> 6(BERT-F1) 02,160 4,320 6,480
+> Budget
+> 00.51Recall@ P∗
+> 02,160 4,320 6,480
+> Budget 0432 864 1,296
+> Unique combinations
+> 00.51Recall@ P∗
+> Ð(chrF)
+> TestNav
+> Greedy GA Random
+> 0432 864 1,296
+> Unique combinations
+> Ð(BERT-F1) 02,160 4,320 6,480
+> Budget
+> 00.51Recall@ P∗
+> 02,160 4,320 6,480
+> Budget 0432 864 1,296
+> Unique combinations
+> 00.51Recall@ P∗
+> (chrF)
+> TestNav
+> Greedy GA Random
+> 0432 864 1,296
+> Unique combinations
+> (BERT-F1) 02,160 4,320 6,480
+> Budget
+> 00.51Recall@ P∗
+> 02,160 4,320 6,480
+> Budget
+
+Figure 2: Recall@ P∗ across benchmarks and fidelity metrics. For each benchmark, the top row uses unique configurations as the x-axis, and the bottom row uses evaluation budget. Shaded bands show ±1 standard deviation over 10 seeds. The vertical line indicates the number of unique perturbation combinations (top) and total budget (bottom) required by T EST NAV to discover all Pareto-optimal configurations P∗;endpoint markers ( ■) show the highest Recall@ P∗ achieved by each method.. 
+
+achieves AUC 0.704 on , which is 38% above Random Search (0.510) and 26% above Greedy Search (0.557). These gains suggest that, when the Pareto front is broad, diversity-preserving selection helps recover degradation–fidelity trade-offs that scalar search misses. 
+
+Greedy search is competitive on compact fronts. With KID-derived fidelity for vision and BERT-F1 for lan-guage/code, Greedy Search achieves higher AUC than T EST -NAV on 6, Ð, and  (Table 2). Figure 1 suggests why: un-der these metrics, P∗ is small and concentrated in the (δ, ρ)
+
+space, so the scalar score s(θ) can recover much of P∗ with-out exploring broadly. When P∗ is larger or more spread out, as under SSIM and chrF, scalar search is less effective, as it tends to concentrate on one region of the trade-off surface. TEST NAV mitigates this collapse through crowding-distance selection, which encourages the population to spread across the degradation–fidelity surface. 
+
+4.3 Can single-objective search recover P∗?
+
+Figure 3 compares T EST NAV against two single-objective ab-lations using identical evolutionary operators: δ only max-imises degradation without an input fidelity objective; ρ only 
+
+maximises input fidelity without a degradation objective. 
+
+Single-objective search recovers less of the front. Both single-objective ablations recover substantially less of P∗.The δ-only condition favours high-degradation configura-tions, often at the cost of input fidelity; its AUC ranges from 0.185 to 0.384, up to 0.545 below T EST NAV . The ρ-only con-dition favours high-fidelity configurations, but lacks a signal for model failure; its AUC ranges from 0.612 to 0.771, within 0.085 of T EST NAV . Both show wider variance bands than TEST NAV , suggesting lower stability across seeds. TEST -NAV maintains spread across the degradation–fidelity surface through crowding-distance selection. Together, these results show that both objectives are necessary for Pareto-front re-covery and stability. 
+
+4.4 Can input-level metrics proxy the trade-off? 
+
+Figure 4 evaluates seven input-level baselines introduced in §2.1 on : NAC, SNAC, KMNC, TKNC, DeepGini, LSA, and DSA. Each metric is used as the sole search objective; the ground truth is the corresponding bi-objective Pareto front. 
+
+Input-level signals are insufficient. No input-level met-ric matches T EST NAV in final Recall@ P∗. Under SSIM, TEST NAV reaches 0.993, with KMNC next best, at 0.900 (9% lower); TKNC (0.496) and LSA (0.581) are weakest. Under KID-derived fidelity, T EST NAV again reaches 0.993, 0 432 864 1,296 
+
+> Unique combinations
+
+00.51Recall@ P∗
+
+ (SSIM)   
+
+> δonly
+> ρonly
+> TestNav
+
+0 432 864 1,296 
+
+> Unique combinations
+
+ (KID) 0 2,160 4,320 6,480 
+
+> Budget
+
+00.51Recall@ P∗
+
+0 2,160 4,320 6,480 
+
+> Budget
+
+0 432 864 1,296 
+
+> Unique combinations
+
+00.51Recall@ P∗
+
+6 (chrF)   
+
+> δonly
+> ρonly
+> TestNav
+
+0 432 864 1,296 
+
+> Unique combinations
+
+6 (BERT-F1) 0 2,160 4,320 6,480 
+
+> Budget
+
+00.51Recall@ P∗
+
+0 2,160 4,320 6,480 
+
+> Budget
+
+0 432 864 1,296 
+
+> Unique combinations
+
+00.51Recall@ P∗
+
+Ð (chrF)   
+
+> δonly
+> ρonly
+> TestNav
+
+0 432 864 1,296 
+
+> Unique combinations
+
+Ð (BERT-F1) 0 2,160 4,320 6,480 
+
+> Budget
+
+00.51Recall@ P∗
+
+0 2,160 4,320 6,480 
+
+> Budget
+
+0 432 864 1,296 
+
+> Unique combinations
+
+00.51Recall@ P∗
+
+ (chrF)   
+
+> δonly
+> ρonly
+> TestNav
+
+0 432 864 1,296 
+
+> Unique combinations
+
+ (BERT-F1) 0 2,160 4,320 6,480 
+
+> Budget
+
+00.51Recall@ P∗
+
+0 2,160 4,320 6,480 
+
+> Budget
+
+Figure 3: Multi-objective versus single-objective search across benchmarks and fidelity metrics. Curves show Recall@ P∗ over unique configurations in the top row and evaluation budget in the bottom row; bands show ±1 standard deviation over 10 seeds. 0 432 864 1,296            
+
+> Unique combinations
+> 00.51Recall@ P∗
+> (SSIM)
+> TestNav
+> NAC SNAC KMNC TKNC DeepGini LSA DSA
+> 0432 864 1,296
+> Unique combinations
+> (KID) 02,160 4,320 6,480
+> Budget
+> 00.51Recall@ P∗
+> 02,160 4,320 6,480
+> Budget
+
+Figure 4: Input-level metrics versus T EST NAV on . Curves show Recall@ P∗ over unique configurations (top) and evaluation budget (bottom), using SSIM (left) and KID-derived fidelity (right). 
+
+matched by KMNC (0.993). Input-level metrics measure acti-vation coverage, prediction uncertainty, or distributional nov-elty on individual inputs, but not where a perturbation config-uration lies on the (δ, ρ) surface. Thus, maximising them can prioritise novel or activation-diverse configurations without identifying severe, high-fidelity failures. 
+
+## 5 Conclusion 
+
+TEST NAV is a Pareto-guided search framework for com-positional robustness testing, formulated as a bi-objective problem over performance degradation δ and input fidelity 
+
+ρ. Rather than maximising failures alone, T EST NAV targets configurations where models fail on inputs that still resemble the originals, highlighting candidate robustness weaknesses. The benefit of Pareto-guided search depends on the geom-etry of the Pareto front. Across vision, natural language, and code-generation benchmarks, T EST NAV recovers P∗ more efficiently than non-Pareto baselines when the front is broad. Removing either objective reduces Pareto-front recovery, and input-level coverage and prioritisation signals cannot substi-tute for bi-objective configuration search. The geometry of P∗ depends on the choice of performance and fidelity metrics, which are modality- and task-dependent. Because T EST NAV treats these metrics as interchangeable components, the framework generalises to any setting where performance degradation and input fidelity can be defined. 
+
+Limitations and future work. TEST NAV operates over discrete, predefined perturbation families and severity lev-els. We plan to extend T EST NAV to continuous perturbation spaces. Whether extreme Pareto points are useful depends on the testing goal; future work should help practitioners target regions of P∗ and choose suitable search algorithms. References 
+
+[Arif et al. , 2026] Arooj Arif, Tobias Hartung, Elena Boto-eva, and Alexandros Koliousis. TestifAI: Tomography-based testing for deep learning systems. In ICSE , 2026. [Austin et al. , 2021] Jacob Austin, Augustus Odena, Maxwell Nye, et al. Program synthesis with large language models. arXiv:2108.07732 , 2021. [Blank and Deb, 2020] Julian Blank and Kalyanmoy Deb. pymoo: Multi-objective optimization in Python. IEEE Ac-cess , 8:89497–89509, 2020. [Chandrasekaran et al. , 2021] Ramakrishna Chan-drasekaran, Bhavesh Khatri, Varun Garg, Rahul Sharma, Hisham Ahmed, and Karthik Murali. Combinatorial perturbation testing for assessing the robustness of autonomous driving systems. In ICST Workshops , 2021. [Chen et al. , 2021] Mark Chen, Jerry Tworek, Heewoo Jun, et al. Evaluating large language models trained on code. 
+
+arXiv:2107.03374 , 2021. [Chuah et al. , 2024] Joshua Chuah, Pingkun Yan, Ge Wang, and Juergen Hahn. Towards the generation of medi-cal imaging classifiers robust to common perturbations. 
+
+BioMedInformatics , 4(2):889–910, 2024. [Deb et al. , 2002] Kalyanmoy Deb, Amrit Pratap, Sameer Agarwal, and T. Meyarivan. A fast and elitist multiob-jective genetic algorithm: NSGA-II. IEEE Transactions on Evolutionary Computation , 6(2):182–197, 2002. [Deng et al. , 2024] Jia Deng, Wei Dong, Richard Socher, et al. Tiny ImageNet (Stanford CS231N), 2024. https: //cstr.cn/32010.11.sjtu.scidata.000000 19 .[Detlefsen et al. , 2022] Nicki Skafte Detlefsen, Jiri Borovec, Justus Schock, Ananya Harsh Jha, Teddy Koker, Luca Di Liello, Daniel Stancl, Changsheng Quan, Maxim Grechkin, and William Falcon. TorchMetrics: Measur-ing reproducibility in PyTorch. Journal of Open Source Software , 7(70):4101, 2022. [Dola et al. , 2024] Swaroopa Dola, Rory McDaniel, Matthew B. Dwyer, and Mary Lou Soffa. CIT4DNN: Generating diverse and rare inputs for neural networks using latent space combinatorial testing. In ICSE , 2024. [Feng et al. , 2020a] Yang Feng, Qingkai Shi, Xinyu Gao, Jun Wan, Chunrong Fang, and Zhenyu Chen. DeepGini: Prioritizing massive tests to enhance the robustness of deep neural networks. In ISSTA , 2020. [Feng et al. , 2020b] Zhangyin Feng, Daya Guo, Duyu Tang, Nan Duan, Xiaocheng Feng, Ming Gong, Linjun Shen, Bing Qin, Ting Liu, Daxin Jiang, and Ming Zhou. Code-BERT: A pre-trained model for programming and natural languages. In EMNLP Findings , 2020. [Fraser and Arcuri, 2013] Gordon Fraser and Andrea Arcuri. Whole test suite generation. IEEE Transactions on Soft-ware Engineering , 39(2):276–291, 2013. [Goodfellow et al. , 2015] Ian J. Goodfellow, Jonathon Shlens, and Christian Szegedy. Explaining and harnessing adversarial examples. In ICLR , 2015. [Guo et al. , 2018] Jianmin Guo, Yu Jiang, Yue Zhao, Quan Chen, and Jiaguang Sun. DLFuzz: Differential fuzzing testing of deep learning systems. In ESEC/FSE , pages 739–743, 2018. [Hao et al. , 2024] Xiaoshuai Hao, Mengchuan Wei, Yifan Yang, et al. Is your HD map constructor reliable under sensor corruptions? Advances in Neural Information Pro-cessing Systems , 37:22441–22482, 2024. [Hendrycks and Dietterich, 2019] Dan Hendrycks and Thomas Dietterich. Benchmarking neural network robust-ness to common corruptions and perturbations. In ICLR ,2019. [Hendrycks et al. , 2020] Dan Hendrycks, Norman Mu, Ekin D. Cubuk, Barret Zoph, Justin Gilmer, and Balaji Lakshminarayanan. AugMix: A simple data processing method to improve robustness and uncertainty. In ICLR ,2020. [Kim et al. , 2019] Jinhan Kim, Robert Feldt, and Shin Yoo. Guiding deep learning system testing using surprise ade-quacy. In ICSE , pages 1039–1049, 2019. [Ma et al. , 2018] Lei Ma, Felix Juefei-Xu, Fuyuan Zhang, Jiyuan Sun, Minhui Xue, Bo Li, et al. DeepGauge: Multi-granularity testing criteria for deep learning systems. In 
+
+ASE , pages 120–131, 2018. [Miettinen, 1999] Kaisa Miettinen. Nonlinear Multiobjec-tive Optimization . Kluwer Academic Publishers, 1999. [Mintun et al. , 2021] Eric Mintun, Alexander Kirillov, and Saining Xie. On interaction between augmentations and corruptions in natural corruption robustness. In NeurIPS ,2021. [Morris et al. , 2020] John Morris, Eli Lifland, Jin Yong Yoo, Jake Grigsby, Di Jin, and Yanjun Qi. TextAttack: A frame-work for adversarial attacks, data augmentation, and ad-versarial training in NLP. In EMNLP , 2020. [Mu and Gilmer, 2019] Norman Mu and Justin Gilmer. MNIST-C: A robustness benchmark for computer vision. In ICML UDL Workshop , 2019. [Mus ¸at et al. , 2021] Valentina Mus ¸at, Ivan Fursa, Paul New-man, Fabio Cuzzolin, and Andrew Bradley. Multi-weather city: Adverse weather stacking for autonomous driving. In 
+
+ICCV Workshops , pages 2906–2915, 2021. [Nijkamp et al. , 2022] Erik Nijkamp, Bo Pang, Hiroaki Hayashi, Lifu Tu, Huan Wang, Yingbo Zhou, Silvio Savarese, and Caiming Xiong. CodeGen: An open large language model for code with multi-turn program synthe-sis. arXiv:2203.13474 , 2022. [Panichella et al. , 2015] Annibale Panichella, Fit-sum Meshesha Kifetew, and Paolo Tonella. Reformulating branch coverage as a many-objective optimization problem. In ICST , pages 1–10, 2015. [Pei et al. , 2017] Kexin Pei, Yinzhi Cao, Junfeng Yang, and Suman Jana. DeepXplore: Automated whitebox testing of deep learning systems. In SOSP , 2017. [Post, 2018] Matt Post. A call for clarity in reporting BLEU scores. In WMT , 2018. [Ribeiro et al. , 2020] Marco Tulio Ribeiro, Tongshuang Wu, Carlos Guestrin, and Sameer Singh. Beyond accuracy: Be-havioral testing of NLP models with CheckList. In ACL ,pages 4902–4912, 2020. [Rusak and Mitzkus, 2019] Evgenia Rusak and Benjamin Mitzkus. imagecorruptions: Python package to corrupt images for robustness benchmarking, 2019. https:// github.com/bethgelab/imagecorruptions .[Szegedy et al. , 2014] Christian Szegedy, Wojciech Zaremba, Ilya Sutskever, Joan Bruna, Dumitru Erhan, Ian Goodfellow, and Rob Fergus. Intriguing properties of neural networks. In ICLR , 2014. [Touvron et al. , 2021] Hugo Touvron, Matthieu Cord, Alexandre Sablayrolles, Gabriel Synnaeve, and Herv´ eJ´ egou. Going deeper with image transformers. In ICCV ,pages 32–42, 2021. [Wang et al. , 2019] Alex Wang, Amanpreet Singh, Julian Michael, Felix Hill, Omer Levy, and Samuel R. Bowman. GLUE: A multi-task benchmark and analysis platform for natural language understanding. In ICLR , 2019. [Wang et al. , 2023] Shiqi Wang, Zheng Li, Haifeng Qian, Chenghao Yang, et al. ReCode: Robustness evaluation of code generation models. In ACL , 2023. Appendix 
+
+The main paper reports recall curves and AUC scores but cannot show, due to space constraints, the detailed structure of the ground-truth Pareto fronts P∗ across benchmarks and metric choices. This appendix provides that evidence. Recall that each perturbation configuration is a vector θ = ( θ1, θ 2, θ 3, θ 4), where θi ∈ { 0, . . . , 5} gives the severity of perturbation type Ti and θi=0 means that Ti is inactive. The perturbation order of a configuration is the number of active perturbations, |{ i : θi > 0}| . We use Θk to denote the subset of the multi-perturbation space containing configurations with exactly k active perturbations. For example, θ=(0 , 5, 0, 0) is a Θ1 configuration: it applies T2 at severity 5, with T1, T3, and T4
+
+inactive. In contrast, θ=(1 , 5, 1, 1) is a Θ4 configuration, applying all four perturbation types at severities 1, 5, 1, and 1. Thus, higher-order configurations correspond to compositions of more perturbation types. Two questions motivate the appendix: (i) Do configurations in P∗ include high-fidelity failures rather than only trivially corrupted inputs? (ii) Does the choice of fidelity metric ρ matter in practice? Figures 5 and 6 visualise one fixed Tiny-ImageNet example from our image-classification benchmark ( ) under the Pareto-optimal configurations found using (δ, ρSSIM ) and (δ, ρKID ), respectively. For this benchmark, T1 is speckle noise, T2 is glass blur, T3 is brightness, and T4 is pixelate. Each image is labelled with the configuration θ and its corresponding configuration-level scores δ(θ) and ρ(θ). The examples allow visual inspection of the perturbations, while δ(θ) reports the performance degradation induced by that configuration over the test set. Table 3 summarises the Pareto-front composition for  under the two fidelity metrics. SSIM and KID yield fronts of the same size ( |P ∗| = 27 ) but different order distributions: SSIM places more configurations in Θ1 and Θ2, whereas KID places more in Θ3. Thus, the fidelity metric affects which degradation–fidelity trade-offs are Pareto-optimal. Figures 7, and 8 address the second question using 4D voxel plots. Each plot shows where P∗ lies in the full 64=1 ,296 -configuration space, with voxels coloured by perturbation order. For non-vision benchmarks, the perturbation types T1, . . . , T 4
+
+follow Table 1; the same four-dimensional configuration notation is used. Together, the plots show that Pareto-optimal config-urations include both low-order and higher-order perturbation combinations across modalities and fidelity metrics.                   
+
+> Metric pair P∗Θ1Θ2Θ3Θ4
+> (δ,ρSSIM )27 912 42
+> (δ,ρKID )27 4714 2Table 3: Pareto-front composition per metric pair for .
+
+(a) 9 Θ1 configurations 
+
+(b) 12 Θ2 configurations 
+
+(c) 4 Θ3 configurations 
+
+(d) 2 Θ4 configurations 
+
+Figure 5: (δ, ρSSIM ) Pareto-optimal configurations for one Tiny-ImageNet example, grouped by active perturbation count. Each image is labelled with its perturbation configuration θ and the corresponding configuration-level scores δ(θ) and ρ(θ).(a) 4 Θ1 configurations 
+
+(b) 7 Θ2 configurations 
+
+(c) 14 Θ3 configurations 
+
+(d) 2 Θ4 configurations 
+
+Figure 6: (δ, ρKID ) Pareto-optimal configurations for one Tiny-ImageNet example, grouped by active perturbation count. Each image is labelled with its perturbation configuration θ and the corresponding configuration-level scores δ(θ) and ρ(θ).01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 0 
+
+|P ∗
+
+> θ4
+
+| = 7 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 1 
+
+|P ∗
+
+> θ4
+
+| = 0 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 2 
+
+|P ∗
+
+> θ4
+
+| = 1 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 3 
+
+|P ∗
+
+> θ4
+
+| = 2 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 4 
+
+|P ∗
+
+> θ4
+
+| = 1 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 5 
+
+|P ∗
+
+> θ4
+
+| = 2 
+
+6 (chrF) |P ∗| = 13 
+
+Pareto: Θ 1 (1 active) Pareto: Θ 2 (2 active) Pareto: Θ 3 (3 active) Pareto: Θ 4 (all active) (a) Paraphrase detection ( 6)01 2 3 4 5θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 0 
+
+|P ∗
+
+> θ4
+
+| = 0 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 1 
+
+|P ∗
+
+> θ4
+
+| = 2 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 2 
+
+|P ∗
+
+> θ4
+
+| = 1 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 3 
+
+|P ∗
+
+> θ4
+
+| = 5 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 4 
+
+|P ∗
+
+> θ4
+
+| = 8 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 5 
+
+|P ∗
+
+> θ4
+
+| = 4 
+
+Ð (chrF) |P ∗| = 20 
+
+Pareto: Θ 1 (1 active) Pareto: Θ 2 (2 active) Pareto: Θ 3 (3 active) Pareto: Θ 4 (all active) 
+
+(b) Code generation (HumanEval) ( Ð)01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 0 
+
+|P ∗
+
+> θ4
+
+| = 0 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 1 
+
+|P ∗
+
+> θ4
+
+| = 0 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 2 
+
+|P ∗
+
+> θ4
+
+| = 2 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 3 
+
+|P ∗
+
+> θ4
+
+| = 0 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 4 
+
+|P ∗
+
+> θ4
+
+| = 6 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 5 
+
+|P ∗
+
+> θ4
+
+| = 16 
+
+3 (chrF) |P ∗| = 24 
+
+Pareto: Θ 1 (1 active) Pareto: Θ 2 (2 active) Pareto: Θ 3 (3 active) Pareto: Θ 4 (all active) 
+
+(c) Code generation (MBPP) ( )
+
+Figure 7: 4D voxel visualisations of P∗ for non-vision benchmarks using chrF as the fidelity metric. 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 0 
+
+|P ∗
+
+> θ4
+
+| = 7 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 1 
+
+|P ∗
+
+> θ4
+
+| = 0 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 2 
+
+|P ∗
+
+> θ4
+
+| = 2 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 3 
+
+|P ∗
+
+> θ4
+
+| = 2 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 4 
+
+|P ∗
+
+> θ4
+
+| = 0 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 5 
+
+|P ∗
+
+> θ4
+
+| = 1 
+
+6 (BERT-F1) |P ∗| = 12 
+
+Pareto: Θ 1 (1 active) Pareto: Θ 2 (2 active) Pareto: Θ 3 (3 active) Pareto: Θ 4 (all active) (a) Paraphrase detection ( 6)01 2 3 4 5θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 0 
+
+|P ∗
+
+> θ4
+
+| = 13 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 1 
+
+|P ∗
+
+> θ4
+
+| = 0 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 2 
+
+|P ∗
+
+> θ4
+
+| = 1 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 3 
+
+|P ∗
+
+> θ4
+
+| = 3 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 4 
+
+|P ∗
+
+> θ4
+
+| = 0 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 5 
+
+|P ∗
+
+> θ4
+
+| = 0 
+
+Ð (BERT-F1) |P ∗| = 17 
+
+Pareto: Θ 1 (1 active) Pareto: Θ 2 (2 active) Pareto: Θ 3 (3 active) Pareto: Θ 4 (all active) 
+
+(b) Code generation (HumanEval) ( Ð)01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 0 
+
+|P ∗
+
+> θ4
+
+| = 14 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 1 
+
+|P ∗
+
+> θ4
+
+| = 3 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 2 
+
+|P ∗
+
+> θ4
+
+| = 3 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 3 
+
+|P ∗
+
+> θ4
+
+| = 1 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 4 
+
+|P ∗
+
+> θ4
+
+| = 3 01 2 3 4 5
+
+θ1 012345
+
+θ2
+
+012345
+
+θ3
+
+θ4 = 5 
+
+|P ∗
+
+> θ4
+
+| = 6 
+
+3 (BERT-F1) |P ∗| = 30 
+
+Pareto: Θ 1 (1 active) Pareto: Θ 2 (2 active) Pareto: Θ 3 (3 active) Pareto: Θ 4 (all active) 
+
+(c) Code generation (MBPP) ( )
+
+Figure 8: 4D voxel visualisations of P∗ for non-vision benchmarks using BERT-F1 as the fidelity metric.

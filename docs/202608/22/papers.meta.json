@@ -1,0 +1,39 @@
+{
+  "label": "2026-08-22",
+  "date": "2026-08-22",
+  "generated_at": "2026-08-22T20:02:47",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202608/22/2608.18560v1-semanticslider3d-training-free-continuous-semantic-editing-for-3d-objects",
+      "section": "deep",
+      "title_en": "SemanticSlider3D: Training-Free Continuous Semantic Editing for 3D Objects",
+      "authors": "Ru Wang, Rahul Jain, Koichiro Niinuma, Aakar Gupta",
+      "date": "2026-08-19",
+      "pdf": "https://arxiv.org/pdf/2608.18560v1",
+      "score": "8.0",
+      "evidence": "在潜空间中构造语义编辑方向以实现3D对象的连续属性编辑，构成一种潜空间干预技术。",
+      "tldr": "现有3D内容创建缺乏细粒度连续语义控制手段，将2D滑块方法扩展到3D面临几何完整性与跨视角一致性挑战。本文提出SemanticSlider3D，在三维生成模型潜在空间中构建语义编辑方向，无需逐属性训练即可呈现连续且多样的三维变化谱。对50个物体-属性对的技术验证表明，该方法在变化范围、一致性、对象质量和属性解耦上均优于2D滑块加图像到3D基线。探索性用户研究进一步证明其支持3D原型决策，是现有工作流程的有价值补充。",
+      "tags": "query:cp",
+      "abstract_en": "Fine-grained control over continuous semantic attributes of 3D objects is essential for 3D content creation, but is not well supported by conventional 3D modeling workflows or prompt-based interaction with existing generative AI tools. While slider-based methods have proven effective for fine-grained semantic control in 2D image generation, no equivalent approach exists for 3D. Extending these 2D methods to 3D is non-trivial due to challenges unique to 3D, including geometric integrity and cross-view coherence. We present SemanticSlider3D, a technique for continuous semantic attribute editing of 3D objects that requires no per-attribute training. Given a user-specified attribute, our pipeline constructs a semantic editing direction in the latent space of a state-of-the-art 3D generation model, presenting a diverse and coherent spectrum of 3D variations. A technical validation on a dataset of 50 3D object-attribute pairs shows our method was preferred by all five human assessors across variation range, consistency, 3D object quality, and attribute disentanglement, over a baseline combining a 2D slider with an image-to-3D model. An exploratory study with six participants demonstrates that SemanticSlider3D supported decision-making in 3D prototyping and was perceived as a valuable addition to existing workflows.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/22/2608.19882v1-testnav-pareto-guided-search-for-compositional-robustness-testing",
+      "section": "quick",
+      "title_en": "TESTNAV: Pareto-Guided Search for Compositional Robustness Testing",
+      "authors": "Arooj Arif, Tobias Hartung, Elena Botoeva, Alexandros Koliousis",
+      "date": "2026-08-20",
+      "pdf": "https://arxiv.org/pdf/2608.19882v1",
+      "score": "6.0",
+      "evidence": "评估亮度偏移等组合扰动下的鲁棒性",
+      "tldr": "深度学习模型在多种扰动叠加时鲁棒性风险突出，组合测试空间随维度与严重度指数增长，且许多组合生成不切实际的退化输入。TESTNAV 将鲁棒性测试形式化为双目标优化：最大化性能下降，同时保持输入保真度（采用视觉和语言特定指标），使用 NSGA-II 逼近帕累托前沿。在视觉、自然语言和代码生成四个基准上，恢复前沿速度比搜索基线快 2.15 倍，仅需探索 35.8% 至 89.3% 的离散扰动空间（四维六水平）。为高效且优先考虑严重现实失效的组合鲁棒性测试提供了新方法。",
+      "tags": "query:cp",
+      "abstract_en": "Deep learning models remain vulnerable to real-world input perturbations, especially when multiple corruptions co-occur in the same input (e.g., brightness shifts and motion blur). Compositional testing reveals these interaction effects but introduces two challenges: combinatorial growth of the perturbation space as dimensions and severity levels increase, and uneven diagnostic value-many combinations yield unrealistically degraded inputs with limited practical relevance.   We present TESTNAV, 1 a Pareto-guided robustness testing framework for efficiently exploring discrete, compositional perturbation spaces when only a limited number of perturbation configurations can be evaluated. TESTNAV prioritises severe yet realistic failures by formulating robustness testing as bi-objective optimisation: maximise performance degradation while preserving input fidelity measured by modality-specific metrics (e.g., SSIM and KID for vision; chrF and BERT-F1 for language and code). It uses NSGA-II to approximate the bi-objective Pareto front. Across four benchmarks spanning vision, natural language, and code generation, TESTNAV recovers Pareto fronts up to 2.15x faster than search-based baselines, using 35.8%-89.3% of the discrete perturbation space defined by four perturbation dimensions with six levels each.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
