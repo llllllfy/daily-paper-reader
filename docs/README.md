@@ -6,22 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-23
-- 运行时间：2026-08-23 20:22:28 UTC
+- 最新运行日期：2026-08-24
+- 运行时间：2026-08-24 20:07:45 UTC
 - 运行状态：成功
-- 本次总论文数：0
+- 本次总论文数：2
 - 精读区：0
-- 速读区：0
+- 速读区：2
 
 ### 今日简报（AI）
-> 今日无新推荐，系统未产出可展示论文。
-- 详情：[/202608/23/README](/202608/23/README)
+- 今日共生成 2 篇推荐（精读 0 篇，速读 2 篇）
+- 速读：《Learning What Not to Learn: Adversarial Disentangled Prompt Tuning for Robust Vision-Language Models》（6.0/10）, 《Geometric Regularization for Long-Tailed Semi-Supervised Learning via Gaussian Feature Bridges》（6.0/10）
+- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
+- 详情：[/202608/24/README](/202608/24/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [Learning What Not to Learn: Adversarial Disentangled Prompt Tuning for Robust Vision-Language Models](/202608/24/2608.17306v1-learning-what-not-to-learn-adversarial-disentangled-prompt-tuning-for-robust-vision-language-models)  
+   标签：评分：6.0/10、query:cp
+   evidence：对抗解缠提示调优用于鲁棒表示学习
+2. [Geometric Regularization for Long-Tailed Semi-Supervised Learning via Gaussian Feature Bridges](/202608/24/2608.20710v1-geometric-regularization-for-long-tailed-semi-supervised-learning-via-gaussian-feature-bridges)  
+   标签：评分：6.0/10、query:cp
+   evidence：在潜在空间中构建高斯特征桥进行一致性正则化，属于潜在空间干预技术。
 
 
 <div class="dpr-home-promo-card">

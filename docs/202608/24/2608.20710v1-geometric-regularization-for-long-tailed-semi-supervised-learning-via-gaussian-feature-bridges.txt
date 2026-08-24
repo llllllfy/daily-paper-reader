@@ -1,0 +1,1086 @@
+Title: Geometric Regularization for Long-Tailed Semi-Supervised Learning via Gaussian Feature Bridges
+
+URL Source: https://arxiv.org/pdf/2608.20710v1
+
+Published Time: Mon, 24 Aug 2026 00:28:56 GMT
+
+Number of Pages: 33
+
+Markdown Content:
+# Geometric Regularization for Long-Tailed Semi-Supervised Learning via Gaussian Feature Bridges 
+
+Hongyang He 1,2 †, Xinyuan Song 3 †, Yan Zhong 4 , Daizong Liu 2 *, Yanbin Li 4 , Yang-fan He , and Wenqiao Zhang 5 
+
+> 1
+
+University of Warwick, Coventry, United Kingdom  
+
+> 2
+
+Wuhan University, Wuhan, China  
+
+> 3
+
+Emory University, Atlanta, GA, USA  
+
+> 4
+
+Peking University, Beijing, China  
+
+> 5
+
+Zhejiang University, Hangzhou, China 
+
+Abstract. Real-world semi-supervised learning (SSL) often encounters significant challenges with long-tailed label distributions and noisy pseudo-labels, which hinder generalization and amplify confirmation bias. In this work, we introduce a novel framework, Gaussian Bridge Consistency (GBC), to address these challenges by constructing semantic interpo-lation paths between unlabeled samples and high-quality class anchors. Our method maintains a dynamic Prototype Atlas that stores a diverse and evolving set of labeled and pseudo-labeled exemplars per class. For each unlabeled instance, GBC forms a class-conditional Gaussian Fea-ture Bridge in the latent space, enabling the student model to traverse a smooth trajectory from uncertain predictions to reliable class proto-types. A bridge consistency loss is applied along this path to enforce alignment with a geometrically interpolated target distribution. Further-more, we propose BridgeMix, a confidence-aware feature mixing strategy that interpolates both sample and anchor pairs to amplify cross-sample generalization. Extensive experiments on CIFAR10-LT and ImageNet-LT (USB benchmarks) validate the robustness and effectiveness of GBC under realistic long-tailed SSL settings, consistently improving long tail-class performance without sacrificing scalability. 
+
+Keywords: Semi-supervised learning · Long-Tailed Classification 
+
+## 1 Introduction 
+
+Semi-supervised learning (SSL) has emerged as a promising paradigm to re-duce annotation costs by leveraging large-scale unlabeled data alongside a small 
+
+This work was completed during an internship at Maniforda.Ai.  
+
+> †
+
+Hongyang He and Xinyuan Song contributed equally to this work.  
+
+> *
+
+Corresponding author: Daizong Liu. arXiv:2608.20710v1 [cs.LG] 21 Aug 2026 2 H. He et al. 
+
+labeled subset [1, 3, 44, 49, 61]. Despite substantial progress, existing SSL meth-ods often fall short in realistic scenarios characterized by severe class imbal-ance, long-tailed distributions, and noisy pseudo-labels [32, 43, 57, 58]. These challenges introduce significant confirmation bias, where dominant classes mo-nopolize learning signals while minority (tail) classes suffer from undertraining and semantic drift [10, 56, 62]. This calls for a new perspective that explicitly models the uncertainty and transition dynamics between weakly predicted unla-beled instances and reliable class representations. Our key motivation stems from the question: 
+
+Can we transform sparse unlabeled features into reliable supervision signals by constructing smooth semantic pathways? 
+
+Inspired by the Schrödinger Bridge theory—a probabilistic framework [51] that interpolates between two distributions via optimal stochastic processes [31, 36, 42, 47]—we propose to treat labeled and pseudo-labeled class exemplars as endpoints of a semantic bridge, and encourage a student model to learn con-sistently along this interpolated path. In this paper, we present a novel framework called Gaussian Bridge Con-sistency (GBC) , which introduces a simple yet efficient semantic interpolation mechanism into the SSL pipeline. Central to GBC is the notion of a Gaussian Feature Bridge , a latent-space path that connects an unlabeled sample to a class-specific anchor retrieved from a dynamic Prototype Atlas (PA) [4, 10, 27, 48]. At multiple intermediate points along the bridge, we inject actionable supervision by enforcing bridge-consistency loss, which aligns the student’s prediction with a soft geometric target interpolated between the sample and anchor distributions. This design encourages the model to traverse from uncertain to reliable features in a controllable manner, thereby reducing semantic drift and enhancing long tail-class robustness [41]. To further improve the supervision signal and sample diversity, we introduce 
+
+BridgeMix , a novel confidence-aware variant of MixUp. By interpolating not only features but also their corresponding anchors using pseudo-label confidence as a guidance weight, BridgeMix constructs smoothed bridge paths that exploit high-confidence samples to guide lower-confidence ones—all within the original loss formulation, with no additional training complexity [15–26, 28, 29, 37, 52, 54, 56, 60, 62, 63]. Extensive experiments on CIFAR10-LT, CIFAR100-LT, STL10-LT, and Im-ageNetLT benchmarks demonstrate that GBC significantly mitigates the perfor-mance collapse typical in realistic SSL conditions. By transforming uncertain fea-ture states into reliable class-consistent representations, our framework enhances tail-class accuracy while maintaining compatibility across diverse architectures. Our core contributions are summarized as follows: First, we identify the fundamental challenge in long-tailed semi-supervised learning (LTSSL) as the instability of feature alignment caused by biased pseudo-labels, which often drift toward majority classes. To address this, we propose Geometric Regularization via Gaussian Feature Bridges 3
+
+GBC, a Schrödinger Bridge-inspired framework that regularizes the learning process by constructing class-conditional interpolation paths in latent space. This mechanism pulls noisy, strongly augmented unlabeled features toward reliable anchors stored in a dynamically updated Prototype Atlas (PA), ensuring stable semantic alignment even for data-scarce tail categories. Second, we introduce BridgeMix, a confidence-guided manifold regulariza-tion strategy designed to strengthen bridge-level supervision. By employing a dynamic mixing coefficient derived from pseudo-label certainties, BridgeMix en-ables highly confident samples and anchors to guide the representation learning of uncertain ones. This process effectively regularizes the model’s behavior across the sample-anchor trajectory and enhances the diversity of the bridge manifold without necessitating modifications to the underlying loss design. Third, we establish a rigorous theoretical foundation for bridge consistency by demonstrating its role as an intrinsic geometric regularizer. We formally prove that GBC enforces geometric smoothness and local Lipschitz continuity on the decision boundary, which stabilizes the model against feature-level perturba-tions. Furthermore, we derive a generalization bound for BridgeMix, showing that it effectively tightens the true risk by reducing hypothesis complexity and minimizing the distributional discrepancy between mixed and empirical distri-butions. Finally, our results demonstrate consistent and significant gains over prior state-of-the-art methods, establishing GBC as a robust, scalable, and mathe-matically grounded solution for semi-supervised learning under severe long-tailed conditions. 
+
+## 2 Related Works 
+
+Semi-Supervised Learning. Classic SSL techniques rely heavily on pseudo-labeling [1,49] and consistency regularization [50], which aim to enhance general-ization by enforcing prediction invariance across augmentations. However, most SSL methods assume class-balanced labeled/unlabeled data, which often does not hold in practice. As a result, pseudo-labeling can be error-prone and biased toward head classes, especially under low-label or long-tailed settings [43, 57]. Recent efforts address this via class-balancing strategies such as reweighting, calibration, or pseudo-label refinement [43, 57], but they are typically applied at the output/logit level and lack intermediate feature-level alignment. 
+
+Long-Tailed SSL. To tackle the real-world challenges of class imbalance and distribution mismatch, Long-Tailed SSL (LTSSL) methods have been pro-posed. Notably, ACR [58] introduces an adaptive consistency regularizer to refine pseudo-labels based on estimated class distributions. Subsequent works improve robustness through weighting, debiasing, and expertization under the long-tailed regime, including SAW [35], Adsh [14], DePL [55], BaCon [12], CPE [38], and SimPro [10], which represents a powerful SOTA framework for Realistic LTSSL (ReaLTSSL). Meta-Expert [30] goes beyond single/expert-ensemble heuristics 4 H. He et al. 
+
+> Fig. 1: Overview of our proposed framework.
+
+via dynamic expert assignment and multi-depth feature fusion to mitigate head bias and reduce pseudo-label error. 
+
+Interpolation-Based Learning and Consistency. Feature-level interpo-lation techniques such as MixUp [63], Manifold MixUp [52] and ProbPseudo Mixup [2] have shown promise in regularizing training signals, and are often combined with pseudo-labeling/consistency objectives [1, 49, 50]. However, these approaches still lack an explicit mechanism to align the semantic structure of fea-tures over uncertain unlabeled samples. Our work bridges this gap by construct-ing a Gaussian path between sample–anchor pairs, enabling a student model to learn consistent predictions along a semantically meaningful trajectory in feature space. 
+
+## 3 Method 
+
+Framework Overview. In ReaLTSSL, the labeled and unlabeled data often follow different and unknown class distributions, violating the standard i.i.d. as-sumption and causing instability in pseudo-label learning. To address this, we propose GBC, a probabilistic framework that regularizes representation align-ment through class-conditional Gaussian feature bridges. As illustrated in Fig. 1, GBC constructs smooth semantic paths between unlabeled samples and their class anchors from a PA, enforcing bridge-consistency along these paths to achieve stable and geometry-aware learning under long-tailed and noisy con-ditions. 
+
+3.1 Problem Formulation 
+
+We consider a standard SSL setup with a labeled dataset Dℓ = {(xi, y i)}Ni=1 and a larger unlabeled dataset Du = {xj }Mj=1 , where x ∈ Rd and y ∈ { 1, . . . , K }Geometric Regularization via Gaussian Feature Bridges 5
+
+denote input data and class labels, respectively. The goal is to train a classifier 
+
+Fθ : Rd 7 → ∆K , parameterized by θ, that performs well on a balanced test distri-bution. Unlike conventional SSL, we emphasize a more realistic scenario where the pseudo-labels of Du are noisy and class-imbalanced, which leads to drift toward majority classes if uncorrected. To address this, our Schrödinger Bridge-inspired GBC framework constructs class-conditional interpolation paths in the feature space, enforcing consistency along these bridges to stabilize learning in both head and tail categories. 
+
+3.2 Proposed GBC PA Selection and Maintenance. To provide reliable anchors for bridging, we maintain a class-indexed PA, B = {(fkp , c, conf , src )}. Each entry consists of a feature fkp , its class c, confidence, and source (labeled or pseudo-labeled). The PA is initialized with labeled exemplars and dynamically updated with high-confidence pseudo-anchors from a teacher model. We restrict the PA size to 2% ∼ 8% of the dataset to ensure quality and diversity, enforcing cosine dis-tance thresholds to avoid redundancy and applying temporal decay to gradually discard stale pseudo-anchors. If a class temporarily lacks anchors, we revert to an EMA-based prototype as fallback. This design ensures that both head and tail classes are consistently represented in the atlas. 
+
+Gaussian Feature Bridging in Latent Space. Given an unlabeled input 
+
+xu, the teacher (weak augmentation) predicts a distribution ˆqu. If the confidence exceeds a class-dependent threshold τc, we query the PA for a same-class anchor 
+
+fkp . At the student’s target layer, we construct a Gaussian Bridge in the feature space: 
+
+ft = (1 − g(t)) fu + g(t) fkp + σ(t) ε, g(t) = t,  (1) where σ(t) = νpt(1 − t) is the noise schedule, ε ∼ N (0 , I ), and 0. truncated to 
+
+[0 .2, 0.8] . Defining g(t) = t ensures the semantic path is monotonically increasing, satisfying our theoretical convergence and continuity assumptions. Specifically, we define the bridge path via an interpolation function g(t). Following the theo-retical requirements for smooth semantic transitions (see assume. 2), we employ 
+
+g(t) = t to represent the constant-speed trajectory from the sample feature to the class anchor. 
+
+Bridging and Forward Propagation. Once the Gaussian feature bridge point ft is obtained, we incorporate it into the student’s forward computation through a lightweight bridging step. Rather than directly replacing the original feature, we softly merge ft into the student’s hidden representation fstu using a residual-style update: 
+
+˜f = fstu + ω(t) P (ft − fstu ), ω(t) = 4 t(1 − t), (2) where P (·) is a projection module (e.g., a 1 × 1 linear layer or a two-layer MLP) ensuring dimensional compatibility. The weighting coefficient ω(t) acts as a gate that emphasizes mid-bridge states where semantic uncertainty is highest. The 6 H. He et al. 
+
+resulting bridged feature ˜f is then propagated through the remainder of the student network to produce a prediction pθ (xstrong  
+
+> u
+
+; ˜f ).
+
+Bridge Consistency Objective. To turn the bridged feature into effective supervision, we construct a soft target qt via geometric interpolation: 
+
+qt = softmax  (1 − t) log ˆ qu + t log ˆ qkp 
+
+, (3) which ensures intermediate states remain consistent with both endpoints on the probability simplex. Given the student’s prediction at the bridged state, 
+
+pθ (xstrong  
+
+> u
+
+; ˜f ), we define the bridge consistency loss as: 
+
+Lbridge = Exu,t [wc · ω(t) · KL( qt ∥ pθ )] , (4) where wc ∝ ( ¯f /f c)γ provides class-aware weighting to emphasize tail categories. Here, fc denotes the number of labeled samples in class c, ¯f = 1
+
+> C
+
+PCc=1 fc is the mean class frequency over all C classes, and γ ≥ 0 controls the strength of reweighting (with γ = 0 corresponding to no reweighting). This objective enforces that the student remains consistent along the semantic path from unla-beled features to reliable anchors, thereby smoothing the decision boundary and mitigating pseudo-label drift. 
+
+3.3 BridgeMix 
+
+To further enhance the interpolation process on the bridge path, we introduce a novel variant of MixUp tailored for our GBC framework, termed BridgeMix. Given two unlabeled samples (xi, x j ) with their pseudo-label confidences (oi, o j )
+
+and corresponding feature-anchor pairs (fi, f anchor  
+
+> i
+
+) and (fj , f anchor  
+
+> j
+
+), we com-pute a confidence-guided interpolation coefficient: 
+
+λi = oi
+
+oi + oj
+
+. (5) This coefficient ensures that more confident pseudo-labels guide the less certain ones, effectively reducing label noise and mitigating confirmation bias during the feature-level mixing process. We then construct the interpolated sample feature and anchor feature as: 
+
+f mix  
+
+> u
+
+= λifi + (1 − λi)fj , f anchor mix = λif anchor  
+
+> i
+
++ (1 − λi)f anchor  
+
+> j
+
+. (6) Following the Gaussian bridge formulation, we generate the intermediate state as: 
+
+ft = (1 − g(t)) f mix  
+
+> u
+
++ g(t)f anchor mix , (7) where g(t) = t controls the semantic trajectory, and the weighting coefficient 
+
+ω(t) = 4 t(1 − t) is used to emphasize mid-bridge states during training. This strategy preserves the semantic direction from sample to anchor while allowing smoother trajectories and greater tolerance to label noise. Geometric Regularization via Gaussian Feature Bridges 7
+
+Crucially, when BridgeMix is enabled, the target distribution qmix  
+
+> t
+
+is gener-ated using the same geometric interpolation as the standard GBC: 
+
+qmix  
+
+> t
+
+= softmax  (1 − t) log ˆ qmix  
+
+> u
+
++ t log ˆ qmix kp 
+
+. (8) where ˆqmix  
+
+> u
+
+and ˆqmix kp are the mixed sample pseudo-labels and anchor distribu-tions, respectively. To ensure numerical stability during the logarithmic opera-tions in Eq. (8), particularly when dealing with one-hot hard targets or sharp distributions, we apply a small smoothing epsilon ( ϵ = 10 −6) to all target dis-tributions. This refinement prevents undefined gradients and allows GBC to seamlessly integrate both soft pseudo-labels and ground-truth labeled anchors into the bridge manifold. 
+
+3.4 Final Learning Objective               
+
+> Fig. 2: Overview of BridgeMix.
+> Confidence-guided weights λifacilitate smooth semantic transitions between paired unlabeled samples and their an-chors.
+
+The overall learning objective inte-grates bridge consistency with stan-dard supervised and unsupervised terms: 
+
+L = Lsup + μL unsup + βL bridge , (9) where Lsup is the cross-entropy loss on labeled data, Lunsup is the stan-dard consistency-based loss on unla-beled data, and Lbridge is our pro-posed bridge consistency objective. The hyperparameters μ and β balance the contributions of unsupervised learning and bridging, with β linearly warmed up in the early epochs to stabilize training. This unified objective creates a concise “bridge → bridging → match” loop, effectively leveraging both labeled anchors and unlabeled samples to achieve robust and realistic SSL. 
+
+## 4 Theoretical Analysis 
+
+We provide a theoretical analysis to explain why the proposed GBC framework and BridgeMix enhance robustness and generalization in SSL. At the feature level, GBC regularizes learning by enforcing smooth transitions from uncertain unlabeled features to reliable class anchors, yielding continuous predictions and stable decision boundaries. At the distribution level, BridgeMix reduces hypoth-esis complexity and distributional discrepancy through confidence-guided inter-polation between samples and anchors. Together, these results offer a unified theoretical foundation for the stability and generalization of our GBC frame-work under noisy and long-tailed settings. 8 H. He et al. 
+
+Assumption 1 (Bridge Consistency Setting) Let fu ∈ Rd be the feature of an unlabeled sample and fa ∈ Rd the corresponding class anchor from the PA. A Gaussian bridge path is defined in the feature space according to Eq. (1) :
+
+ft = (1 − g(t)) fu + g(t)fa + ϵt, g(t) = t,  (10) 
+
+where ϵt ∼ N (0 , σ (t)2I), σ(t) = νpt(1 − t), and g(t) is a monotonically increas-ing bridge function with g(0) = 0 , g (1) = 1 . The student model predicts pθ (ft),while the geometric target interpolation qt follows Eq. (3) . The bridge consistency loss is defined in Eq. (4) incorporating the weighting coefficient ω(t) = 4 t(1 − t):
+
+Lbridge = Et
+
+ω(t) · KL  qt∥pθ (ft) . (11) 
+
+Throughout the analysis, we assume that pθ (·) and qt are continuously differen-tiable in ft and t.
+
+Assumption 2 (Monotonicity of Semantic Trajectory) The function g(t) : [0 , 1] → [0 , 1] is a monotonically increasing function such that g(0) = 0 and 
+
+g(1) = 1 , representing the continuous semantic transition from the unlabeled sample to the class anchor. Remark 1. While our theoretical analysis holds for any g(t) satisfying Assump-tion 2, in our practical implementation, we simply set g(t) = t. This choice not only facilitates a linear semantic interpolation in the feature space but also en-sures strict theoretical compliance with the Lipschitz continuity and convergence guarantees derived below. 
+
+Lemma 1 (Pathwise Convergence). Under Assumption 3, if Lbridge → 0,then there exists a continuous trajectory ¯p(t) such that 
+
+∥pθ (ft) − ¯p(t)∥1 → 0, ∀t ∈ [0 , 1] , (12) 
+
+with boundary conditions ¯p(0) = ˆ qu and ¯p(1) = ˆ qa.
+
+Hence, {pθ (ft)}t∈[0 ,1] converges to a smooth semantic path between the uncertain state pθ (fu) ∼ ˆqu and the reliable anchor state pθ (fa) ∼ ˆqa.
+
+Lemma 2 (Local Lipschitz Continuity). Assume ϕθ satisfies ∥∇ f log pθ (f )∥2 ≤
+
+L for some constant L > 0 along the bridge path. Then for any perturbation δf 
+
+with ∥δf ∥2 ≤ δ, one has 
+
+∥pθ (ft + δf ) − pθ (ft)∥1 ≤ Lδ + O(Lbridge 1/2), (13) which shows that minimizing Lbridge enforces local Lipschitz continuity of pθ
+
+around fu and fa.
+
+Lemma 3 (Decision Boundary Stability). Let Mc = {f : pcθ (f ) = max k pkθ (f )}
+
+denote the feature manifold of class c. Then the expected curvature of the decision boundary ∂Mc along {ft} satisfies 
+
+Et[κ(∂Mc)] ≤ C0 + C1L1/2
+
+> bridge
+
+, (14) Geometric Regularization via Gaussian Feature Bridges 9
+
+where κ(·) is the local curvature and C0, C 1 > 0 are constants. Thus, decreasing 
+
+Lbridge flattens the decision boundary and improves robustness to feature noise. Detailed proofs are provided in the supplementary material. Lemmas 4–6 es-tablish that bridge consistency acts as an intrinsic geometric regularizer in SSL: the Gaussian feature bridge enforces continuous prediction evolution between noisy unlabeled features and stable class anchors, induces local Lipschitz behav-ior, and smooths the decision boundary for better robustness under long-tailed distributions. Building on this geometric foundation, we extend the analysis to BridgeMix, which operates at the distribution level. Theorem 2 provides a gen-eralization error bound that quantifies this regularization effect. 
+
+Theorem 1 (Generalization bound for BridgeMix). Let H be a hypoth-esis class, and let ℓ : H × X × Y → [0 , 1] be a bounded loss. Let D be the true data distribution on X × Y , and let DBM be the BridgeMix distribution. Draw an i.i.d. sample S = {zi}ni=1 with zi = ( xi, y i) ∼ DBM . For h ∈ H define the risks 
+
+RD (h) = Ez∼D
+
+ℓ(h, z ), bRDBM (h) = 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+ℓ(h, z i). (15) 
+
+Define the discrepancy ∆(D, D BM ) = sup h∈H |ED [ℓ(h, z )] − EDBM [ℓ(h, z )] | and the empirical Rademacher complexity bRS (F). Then for any δ > 0, with proba-bility at least 1 − δ over S ∼ Dn
+
+> BM
+
+:
+
+RD (h) ≤ bRDBM (h) + 2 bRS (F) + 3 
+
+r log(2 /δ )2n + ∆(D, D BM ). (16) 
+
+Corollary 1. If ∆(D, D BM ) ≤ εmix , then with probability at least 1 − δ and 
+
+∀h ∈ H ,
+
+RD (h) ≤ bRDBM (h) + 2 bRS (F) + 3 
+
+r log(2 /δ )2n + εmix . (17) Detailed proofs are provided in Section A (supplementary material). Theo-rem 2 and Corollary 2 together demonstrate that BridgeMix improves general-ization by tightening the upper bound on the true risk. Through convex interpo-lation between unlabeled samples and reliable anchors, BridgeMix reduces both the effective hypothesis complexity and the distributional discrepancy, thereby lowering the generalization gap. This theoretical guarantee indicates that GBC achieves more stable learning with fewer labeled samples. Combined with the geometric regularization in Lemmas 4–6, our proposed GBC framework simul-taneously enhances robustness to noise and yields stronger generalization across imbalanced data distributions. 
+
+## 5 Evaluation results 
+
+For the Gaussian Feature Bridging, the target layer for feature fusion is con-sistently set as the penultimate feature map before the global average pooling 10 H. He et al. 
+
+Table 1: Detailed ablation on the injection location of the Gaussian Feature Bridge on CIFAR10-LT ( γℓ = 100 ). Output dimensions are C × H × W .Injection Layer Output Dimension Spatial Ratio Top-1 Acc. (%) ResNet layer2 512 × 8 × 8 1/4 87.8 ResNet layer3 1024 × 4 × 4 1/8 90.5                 
+
+> ResNet layer4 2048 ×2×21/16 92.30
+> Linear fc 10 ×1×11/32 91.2
+
+Table 2: Wall-clock comparison 
+
+on CIFAR10-LT (consistent setting) using a single A100 GPU.           
+
+> Method Avg. Epoch (s) Total Time Overhead
+> FixMatch 42.1 3.51 h 0% SimPro 43.0 3.58 h +2.1% GBC (ours) 42.8 3.56 h +1.7%
+
+layer for CNNs (e.g., the output of Stage 4 in ResNet-50 see the experiment in Table. 1) and the final token representation (before the MLP head) for ViT. We sample t ∼ Beta(2 , 2) to interpolate between sample and anchor features via a lightweight projector, with bridge loss weight β warmed up to 0.75 , following the spirit of manifold-level regularization [52, 63]. Detailed configurations, up-date schedules, and additional adaptation experiments on diverse backbones are provided in the Appendix [9, 13, 64]. 
+
+5.1 Experimental Evaluation 
+
+The performance of Gaussian Bridge Consistency (GBC) is evaluated on CIFAR10-LT, ImageNet-127, and ImageNet-1K. As reported in Table 3, GBC achieves the best or competitive performance across most unlabeled class distributions. In challenging scenarios such as reversed and head-tail , where pseudo-label noise and distribution mismatch are more severe, GBC surpasses SimPro by 0.94% and 1.52%, respectively. Compared with adaptive thresholding methods such as DyTrim, GBC consistently delivers substantial gains, indicating that representation-level regularization is more effective than purely logit-level filtering under im-balance. When incorporating feature interpolation, SimPro+Manifold MixUp improves over SimPro, confirming that feature-space smoothing is beneficial. Under the 
+
+uniform distribution, SimPro+Manifold MixUp slightly outperforms GBC, sug-gesting that class-agnostic interpolation is sufficient when class imbalance is minimal. However, under imbalanced settings (consistent, reversed, middle, and head-tail), GBC consistently achieves stronger improvements, highlighting the advantage of class-conditional prototype-guided bridge regularization in han-dling skewed distributions and pseudo-label noise. The scalability of GBC is further validated on large-scale ImageNet bench-marks in Table 4. For ImageNet-127 under the realistic test imbalance ( γt ≈ 286 ), GBC achieves 61.9% at 32 × 32 resolution, surpassing Meta-Expert by 1.6% and SimPro by 2.8%. At 64 × 64 resolution, GBC establishes a new SOTA of 68.6%. On the full ImageNet-1K dataset, GBC maintains its dominance with a Top-1 accuracy of 27.5% ( 64 × 64 ), representing a significant 2.1% improvement over Meta-Expert and a 2.5% increase over the SimPro baseline. These results collec-tively indicate that constructing class-conditional interpolation paths in latent Geometric Regularization via Gaussian Feature Bridges 11 
+
+Table 3: Top-1 accuracy (%) on CIFAR10-LT ( N1 = 500 , M 1 = 4000 ) with differ-ent labeled/unlabeled imbalance ratios γℓ, γ u under five unlabeled class distributions (SimPro protocol [10]). † denotes reproduced results without anchor distributions for fair comparison [58]. All results are reported in alignment with established SimPro performance trends; best in each column is bold . Pink highlights our GBC, and Peach indicates the baseline (SimPro). Manifold MixUp is a strong interpolation-based base-lines                                                                                                          
+
+> consistent uniform reversed middle head-tail
+> γℓ150 100 150 100 150 100 150 100 150 100
+> γu150 100 111/150 1/100 150 100 150 100 FixMatch [49] 62.91 ±0.87 65.48 ±0.81 71.03 ±0.69 72.49 ±0.61 59.94 ±1.02 62.53 ±0.95 64.29 ±0.85 65.95 ±0.74 58.33 ±1.01 60.52 ±0.93
+> w/ CReST+ [57] 67.98 ±0.73 70.45 ±0.63 82.01 ±0.51 84.96 ±0.43 65.97 ±0.76 69.03 ±0.71 69.00 ±0.65 72.47 ±0.54 62.98 ±0.82 65.95 ±0.76
+> w/ DASO [43] 73.01 ±0.49 74.48 ±0.51 87.97 ±0.31 89.52 ±0.29 73.99 ±0.58 75.51 ±0.52 74.99 ±0.48 78.53 ±0.41 69.97 ±0.66 72.48 ±0.62
+> w/ ACR †[58] 76.99 ±0.41 81.61 ±0.33 91.32 ±0.22 92.09 ±0.19 81.82 ±0.27 85.03 ±0.28 77.90 ±0.49 73.62 ±0.46 78.96 ±0.37 79.82 ±0.39
+> w/ SimPro [10] 74.24 ±0.32 85.66 ±0.28 93.63 ±0.11 93.76 ±0.10 83.52 ±0.19 85.84 ±0.21 82.58 ±0.26 84.83 ±0.20 81.03 ±0.29 82.98 ±0.30
+> w/ DyTrim [5] 73.12 ±0.41 75.45 ±0.36 88.30 ±0.28 90.12 ±0.22 74.88 ±0.45 76.51 ±0.41 75.32 ±0.39 78.94 ±0.35 70.43 ±0.48 72.96 ±0.42
+> w/ SimPro+Manifold MixUp [53] 75.62 ±0.27 89.14 ±0.21 94.02 ±0.08 94.19 ±0.09 84.21 ±0.18 86.11 ±0.19 83.04 ±0.23 84.92 ±0.21 82.47 ±0.28 83.63 ±0.26
+> w/ GBC (ours) 77.53 ±0.25 92.30 ±0.17 93.97 ±0.09 94.51 ±0.07 85.01 ±0.20 86.78 ±0.23 84.30 ±0.22 85.49 ±0.19 83.96 ±0.31 84.50 ±0.27
+
+Fig. 3: Many/Medium/Few breakdown and t-SNE visualization. Left: Per-split Top-1 accuracy on ImageNet-127 ( γt≈286 , 64 ×64 ). Classes are grouped by labeled training samples under the long-tailed distribution ( γℓ): Many >100, Medium 20–100, Few <20. The split is fixed across all methods and accuracy is averaged per class within each group. The same class split is fixed across all compared methods, and group accuracy is computed as the unweighted average over classes within each group. 
+
+Right: t-SNE visualization on CIFAR10-LT (uniform setting). 
+
+space effectively mitigates confirmation bias and semantic drift. By leveraging reliable class anchors from the Prototype Atlas, GBC ensures stable representa-tion alignment even under extreme distributional skew. 
+
+Effect of Target Layer Selection. To investigate the optimal semantic level for constructing the Gaussian Feature Bridge, we evaluate GBC by inject-ing bridge points at different stages of the ResNet-50 backbone. As summarized in Table 1, injecting the bridge at the penultimate layer (Stage 4) yields the high-est Top-1 accuracy of 92.3%. In contrast, bridges constructed at earlier stages (e.g., Stage 2) lead to a performance drop (approx. 4.5%), likely because shal-low features capture low-level textures rather than the high-level class semantics required for stable representation alignment. This validates our design choice of utilizing deep latent spaces for semantic bridging. 12 H. He et al. 
+
+Table 4: Top-1 accuracy (%) on ImageNet-127 (γℓ≈286 , N1≈28 k, M1≈250 k) and 
+
+ImageNet-1k (γℓ=256 , N1=256 , M1=1024 ) under different test imbalance γt and resolutions. † indicates results reproduced for ACR without anchor distributions. All baselines follow the SimPro protocol [10]. Pink indicates GBC while Peach indicates the ReaLTSSL baseline (SimPro). 
+
+ImageNet-127 (γt≈286 ) ImageNet-127 (γt=1 ) ImageNet-1k (γt=1 )Method 32 ×32 64 ×64 32 ×32 64 ×64 32 ×32 64 ×64 
+
+FixMatch [49] 29.7 ±0.37 42.3 ±0.41 38.7 ±0.46 46.7 ±0.44 – –w/ DARP (NeurIPS’22) [33] 30.5 ±0.28 42.5 ±0.40 – – – –w/ CReST+ (CVPR’21) [57] 32.5 ±0.33 44.7 ±0.39 – – – –w/ CoSSL (CVPR’22) [11] 43.7 ±0.35 53.9 ±0.38 – – – –w/ SAW (ICML’22) [35] 58.3 ±0.31 65.5 ±0.29 54.9 ±0.27 62.7 ±0.25 18.9 ±0.33 24.4 ±0.36 
+
+w/ Adsh (ICML’22) [14] 58.8 ±0.32 66.1 ±0.34 55.1 ±0.28 63.3 ±0.26 19.2 ±0.31 24.7 ±0.34 
+
+w/ DePL (CVPR’22) [55] 59.0 ±0.36 66.5 ±0.35 55.5 ±0.29 63.6 ±0.27 19.5 ±0.32 24.8 ±0.36 
+
+w/ BaCon (AAAI’24) [12] 59.4 ±0.26 66.8 ±0.25 55.9 ±0.23 63.9 ±0.24 19.8 ±0.26 25.1 ±0.28 
+
+w/ CPE (AAAI’24) [38] 59.7 ±0.24 67.2 ±0.25 56.1 ±0.22 64.2 ±0.24 20.0 ±0.25 25.2 ±0.27 
+
+w/ ACR (CVPR’23) [58] 57.2 ±0.29 63.6 ±0.31 50.6 ±0.26 57.3 ±0.27 13.8 ±0.23 23.5 ±0.26 
+
+w/ ACR † (CVPR’23) [58] – – 49.5 ±0.27 56.1 ±0.29 13.2 ±0.24 23.4 ±0.25 
+
+w/ SimPro (ICML’24) [10] 59.1 ±0.23 67.0 ±0.22 55.7 ±0.21 63.8 ±0.23 19.7 ±0.22 25.0 ±0.24 
+
+w/ Meta-Expert (ICML’25) [30] 60.3 ±0.22 67.4 ±0.23 56.5 ±0.21 64.8 ±0.23 20.8 ±0.21 25.4 ±0.24 
+
+w/ DyTrim (ICLR’26) [5] 60.8 ±0.25 67.9 ±0.23 56.9 ±0.23 65.7 ±0.28 21.9 ±0.24 26.1 ±0.25 
+
+w/ GBC (ours) 61.9 ±0.36 68.6 ±0.24 57.6 ±0.22 67.0 ±0.37 23.1 ±0.23 27.5 ±0.26 
+
+5.2 Visualization 
+
+As shown in Fig. 3, GBC yields more compact and better separated clusters than SimPro on CIFAR10-LT, especially for tail classes and near decision boundaries, where SimPro exhibits noticeable overlap and dispersion. This pattern matches the Many/Medium/Few breakdown on ImageNet-127: gains on Many classes are small, while improvements are larger on Medium and particularly Few categories. This suggests that the bridge regularization mainly enhances tail robustness by stabilizing representation alignment under imbalance. 
+
+## 6 Ablation Study 
+
+Optimization Stability under Distribution Shift. Figure 4 presents the mean teacher–student KL divergence across training under three unlabeled distribu-tion regimes. In all cases, the KL value decreases monotonically, indicating pro-gressive alignment between teacher and student predictions. This confirms that the bridge-consistency mechanism continuously reduces distributional discrep-ancy during training rather than inducing oscillatory dynamics. Under the consistent setting, the reversed curve starts from the largest di-vergence but exhibits the steepest decay, converging toward the other regimes after approximately 300 epochs. This behavior suggests that the Gaussian bridge effectively corrects early-stage bias even when initialization produces strong mis-match. The uniform regime maintains the lowest KL throughout most of training, reflecting reduced structural bias when class frequencies are balanced. Geometric Regularization via Gaussian Feature Bridges 13                     
+
+> Fig. 4: Mean KL divergence on CIFAR10-LT ( N1= 500 ,M1= 4000 , SimPro proto-col). KL( pteacher ∥pstudent )is plot on weak views, averaged over 3 seeds and smoothed by EMA(0.9). Curves correspond to three unlabeled-distribution regimes: consis-tent (γℓ=γu=150 ), uniform (γu=1 ), reversed (γu=1 /γ ℓ). GBC exhibits faster and smoother KL divergence decay across all regimes, especially under reversed , indicat-ing stable bridge-consistency alignment under severe pseudo-label noise.
+> Fig. 5: Effect of the confidence threshold τcon performance.
+
+Under the uniform setting, the reversed regime again begins with the highest divergence but shows smooth and stable decay with limited fluctuation. The gap between consistent and uniform gradually narrows in later epochs, implying that bridge-level supervision dominates optimization dynamics once pseudo-label quality improves. The convergence patterns indicate that alignment is governed more by geometric regularization than by raw class-frequency statistics. The reversed setting reveals the most informative contrast. Although the re-versed regime starts with severe mismatch, its KL decreases rapidly and eventu-ally reaches the lowest level among the three. In contrast, the consistent curve de-creases more slowly and stabilizes at a higher divergence. This demonstrates that the bridge mechanism is particularly effective under strong distribution shift, where confirmation bias would otherwise accumulate. The consistent monotonic decay and reduced variance across all regimes indicate that Gaussian feature bridging enforces stable representation evolution and suppresses abrupt predic-tion drift. Figure 5 evaluates the influence of τc across CIFAR10-LT and CIFAR100-LT. On CIFAR10-LT, accuracy increases as τc grows. Most regimes show monotonic gains, indicating that stricter thresholds improve pseudo-label precision without severely reducing anchor coverage. The reversed regime remains stable, suggest-ing robustness once unreliable anchors are filtered. 14 H. He et al. 
+
+Table 5: Component ablation on CIFAR10-LT ( γℓ=100 , γu=100 ). Variant Setting Top-1 (%) Full GBC – 92.3 ± 0.17             
+
+> w/o Lbridge Remove bridge loss 86.1 ± 0.24 w/o noise σ(t) = 0 90.2 ± 0.21 Hard bridge ˜f=ft88.4 ± 0.19 w/o reweighting uniform wc85.3 ± 0.22
+
+Table 6: Effect of BridgeMix and proto-type allocation (PA) under different unla-beled distributions ( γℓ=100 ). Variant Consistent Uniform Reversed w/o BridgeMix 87.4 ± 0.20 88.9 ± 0.22 81.7 ± 0.26 Full GBC 92.3 ± 0.17 94.5 ± 0.07 86.8 ± 0.23       
+
+> PA = 2% 85.7 ± 0.21 90.8 ± 0.09 84.6 ± 0.25 PA = 8% 91.1 ± 0.18 94.1 ± 0.08 86.0 ± 0.22
+
+Table 7: Sensitivity analysis of GBC hyperparameters on CIFAR10-LT ( γℓ =100 , consistent setting). Hyperparameter Range Top-1 Acc. (%)                 
+
+> ν0.00 / 0.05 / 0.10 / 0.20 91.8 / 92.1 / 92.3 / 92.0
+> α1.0 (Uniform) / 2.0 / 5.0 91.5 / 92.3 / 92.1
+> β0.25 / 0.50 / 0.75 / 1.00 90.4 / 91.7 / 92.3 / 91.9
+
+Table 8: Computational overhead compar-ison on ResNet-50 ( 32 2). Method Params (M) Peak Mem. Epoch Time (s) FixMatch 25.6 1.00 × 42.1 w/ SimPro 25.6 1.00 × 43.0 w/ GBC (Ours) 26.1 1.03 × 42.8 
+
+On CIFAR100-LT, performance peaks at moderate thresholds ( τc ≈ 0.2–
+
+0.3) and declines thereafter. This reflects a precision–coverage trade-off. As τc
+
+increases, anchor label quality improves but anchor recall drops sharply. The right panel confirms this trend, with the two curves intersecting near τc ≈ 0.85 ,close to the supervised baseline. The contrast between datasets indicates that higher semantic complexity and fewer samples per class make strict thresholds harmful due to reduced anchor diversity. These results support a class-adaptive τc strategy that balances relia-bility and coverage to preserve effective bridge regularization. Tables 5 and 6 quantify the role of each component. Removing Lbridge yields the largest drop (92.3% → 85.1%), confirming that path-level consistency is es-sential. Removing Gaussian noise lowers accuracy to 90.2%, showing that mod-erate stochasticity improves robustness. Hard replacement further degrades per-formance, indicating that residual fusion stabilizes feature updates. Eliminating class reweighting causes a sharp decline (80.5%), highlighting the necessity of tail-aware balancing. BridgeMix consistently improves results across distribu-tions, while Prototype Atlas size shows a trade-off: insufficient capacity lim-its coverage, and excessive capacity introduces redundancy. A moderate size achieves optimal stability. Table 7 shows stable behavior across reasonable ranges. The noise level ν =0.10 achieves the best balance between exploration and semantic preservation. The Beta parameter α = 2 .0 outperforms uniform sampling by emphasizing mid-bridge states. The bridge weight β peaks at 0.75 and slightly declines beyond this value, indicating that bridge alignment should remain complementary to the main SSL objective. Tables 8 and 13 show negligible overhead. Parameters increase marginally (25.6M → 26.1M), peak memory rises by 3%, and runtime increases by only +1.7%. These results demonstrate that GBC maintains scalability while provid-ing substantial accuracy gains. Geometric Regularization via Gaussian Feature Bridges 15 
+
+## 7 Conclusion 
+
+We introduced GBC, a Gauss Bridge driven paradigm that redefines semi-supervised learning as a process of geometric transport between uncertain features and reli-able class prototypes. GBC transforms noisy pseudo-labeling into a stable repre-sentation flow, achieving robust balance under long-tailed and noisy conditions. Beyond empirical gains, GBC frames SSL within the lens of probabilistic ge-ometry, bridging optimal transport and consistency learning. This perspective invites new research on dynamic manifold regularization, distributional interpo-lation for multimodal and temporal data, and continuous-time consistency fields, paving the way toward a unified geometry aware theory of semi-supervised rep-resentation learning. 
+
+## References 
+
+1. Berthelot, D., Carlini, N., Goodfellow, I., Papernot, N., Oliver, A., Raffel, C.A.: Mixmatch: A holistic approach to semi-supervised learning. Advances in neural information processing systems 32 (2019) 2. Cai, Z., Ravichandran, A., Favaro, P., Wang, M., Modolo, D., Bhotika, R., Tu, Z., Soatto, S.: Semi-supervised vision transformers at scale. Advances in Neural Information Processing Systems 35 , 25697–25710 (2022) 3. Chapelle, O., Scholkopf, B., Zien, A.: Semi-supervised learning (chapelle, o. et al., eds.; 2006)[book reviews]. IEEE Transactions on Neural Networks 20 (3), 542–542 (2009) 4. Chen, T., Kornblith, S., Norouzi, M., Hinton, G.: A simple framework for con-trastive learning of visual representations. In: International conference on machine learning. pp. 1597–1607. PmLR (2020) 5. Cheng, Y., Zhang, J., Gao, X., Xing, W., Zhu, Z.: Learning dynamics of logits debiasing for long-tailed semi-supervised learning. In: The Fourteenth International Conference on Learning Representations (2026), https://openreview.net/forum? id=e15SYMcsTs 
+
+6. Coates, A., Ng, A., Lee, H.: An analysis of single-layer networks in unsupervised feature learning. In: Proceedings of the fourteenth international conference on ar-tificial intelligence and statistics. pp. 215–223. JMLR Workshop and Conference Proceedings (2011) 7. Cubuk, E.D., Zoph, B., Shlens, J., Le, Q.V.: Randaugment: Practical automated data augmentation with a reduced search space. In: Proceedings of the IEEE/CVF conference on computer vision and pattern recognition workshops. pp. 702–703 (2020) 8. DeVries, T., Taylor, G.W.: Improved regularization of convolutional neural net-works with cutout. arXiv preprint arXiv:1708.04552 (2017) 9. DosovitskiyA, B., Kolesnikov, A., et al.: Animageis worth16 × 16words: Transform-ersforimagerecognitionat scale (2010) 10. Du, C., Han, Y., Huang, G.: Simpro: A simple probabilistic framework towards re-alistic long-tailed semi-supervised learning. arXiv preprint arXiv:2402.13505 (2024) 11. Fan, Y., Dai, D., Kukleva, A., Schiele, B.: Cossl: Co-learning of representation and classifier for imbalanced semi-supervised learning. In: Proceedings of the IEEE/CVF conference on computer vision and pattern recognition. pp. 14574– 14584 (2022) 16 H. He et al. 12. Feng, Q., Xie, L., Fang, S., Lin, T.: Bacon: Boosting imbalanced semi-supervised learning via balanced feature-level contrastive learning. In: Proceedings of the AAAI Conference on Artificial Intelligence. vol. 38, pp. 11970–11978 (2024) 13. Gu, A., Dao, T.: Mamba: Linear-time sequence modeling with selective state spaces. In: First conference on language modeling (2024) 14. Guo, L.Z., Li, Y.F.: Class-imbalanced semi-supervised learning with adaptive thresholding. In: International conference on machine learning. pp. 8082–8094. PMLR (2022) 15. He, H.: Research on the application of electronic technology of internet of things in smart city. In: 2020 International Conference on Intelligent Transportation, Big Data & Smart City (ICITBS). pp. 454–457. IEEE (2020) 16. He, H., Hong, Y.: Trustmatch: mitigating pseudo-label bias in semi-supervised learning with trust-aware refinement. In: 2025 IEEE/CVF International Confer-ence on Computer Vision Workshops (ICCVW). pp. 605–614. IEEE (2025) 17. He, H., Liu, J., Sanchez, V.: Revisiting chain-of-thought reasoning under limited supervision: Semi-supervised chain-of-thought learning. arXiv preprint arXiv:2607.01511 (2026) 18. He, H., Liu, J., Sanchez, V.: Semi-supervised vision-language-action model. arXiv preprint arXiv:2606.21493 (2026) 19. He, H., Song, X., He, Y.: Haochen you, lifan sun, and wenqiao zhang. trico: Tri-adic game-theoretic co-training for robust semi-supervised learning. arXiv preprint arXiv 2509 (2025) 20. He, H., Song, X., He, Y., Zhang, Z., Li, Y., You, H., Sun, L., Zhang, W.: Trico: Triadic game-theoretic co-training for robust semi-supervised learning. Advances in Neural Information Processing Systems 38 , 87545–87570 (2026) 21. He, H., Song, X., Zhong, Y., Liu, D., Liu, X., Sanchez, V.: Newton-coupled dual-teacher semi-supervised learning framework. In: Forty-third International Confer-ence on Machine Learning (2026) 22. He, H., Xie, H., Shen, G., Fu, B., You, H., Sanchez, V.: 4s-classifier: Empowering conservation through semi-supervised learning for rare and endangered species. In: 2025 International Joint Conference on Neural Networks (IJCNN). pp. 1–10. IEEE (2025) 23. He, H., Xie, H., You, H., Sanchez, V.: Semi-vim: bidirectional state space model for mitigating label imbalance in semi-supervised learning. In: 2025 IEEE/CVF International Conference on Computer Vision (ICCV). pp. 765–774. IEEE (2025) 24. He, H., Yan, Z., Geng, Z., Liu, X.: Research on pedestrian tracking algorithm based on deep learning. In: 2021 International Conference on Computer Information Sci-ence and Artificial Intelligence (CISAI). pp. 487–490. IEEE (2021) 25. He, H., Yuan, M., Liu, X.: Research on surface defect detection method of metal workpiece based on machine learning. In: 2021 6th international conference on Intelligent Computing and Signal Processing (ICSP). pp. 881–884. IEEE (2021) 26. He, H., Zhong, Y., Song, X., Liu, D., Sanchez, V.: Token-aware representation augmentation for fine-grained semi-supervised learning. In: The Third Conference on Parsimony and Learning (Proceedings Track) (2026) 27. He, K., Fan, H., Wu, Y., Xie, S., Girshick, R.: Momentum contrast for unsupervised visual representation learning. In: Proceedings of the IEEE/CVF conference on computer vision and pattern recognition. pp. 9729–9738 (2020) 28. Hong, Y., He, H., Li, Y., Li, A., Sanchez Silva, V.: Partmatch: part-aware pseudo-labeling for fine-grained semi-supervised learning. In: IEEE International Confer-ence on Multimedia and Expo 2026. IEEE (2026) Geometric Regularization via Gaussian Feature Bridges 17 29. Hong, Y., Li, A., Song, X., Zhong, Y., He, H., Sanchez, V.: Beyond data augmenta-tion: Energy-based kuramoto neurons for semi-supervised learning. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. pp. 2913–2922 (2026) 30. Hou, Y., Jia, Y.: A square peg in a square hole: Meta-expert for long-tailed semi-supervised learning. arXiv preprint arXiv:2505.16341 (2025) 31. Jamison, B.: The markov processes of schrödinger. Zeitschrift für Wahrschein-lichkeitstheorie und verwandte Gebiete 32 (4), 323–331 (1975) 32. Kang, B., Xie, S., Rohrbach, M., Yan, Z., Gordo, A., Feng, J., Kalantidis, Y.: Decoupling representation and classifier for long-tailed recognition. arXiv preprint arXiv:1910.09217 (2019) 33. Kim, J., Hur, Y., Park, S., Yang, E., Hwang, S.J., Shin, J.: Distribution align-ing refinery of pseudo-label for imbalanced semi-supervised learning. Advances in neural information processing systems 33 , 14567–14579 (2020) 34. Krizhevsky, A., Hinton, G., et al.: Learning multiple layers of features from tiny images (2009) 35. Lai, Z., Wang, C., Gunawan, H., Cheung, S.C.S., Chuah, C.N.: Smoothed adap-tive weighting for imbalanced semi-supervised learning: Improve reliability against unknown distribution data. In: International Conference on Machine Learning. pp. 11828–11843. PMLR (2022) 36. Léonard, C.: A survey of the schr \" odinger problem and some of its connections with optimal transport. arXiv preprint arXiv:1308.0215 (2013) 37. Liu, X., Fang, Z., He, H., Hong, Y., Liu, D.: Triple expert learning from noisy labels for semi-supervised vision foundation model adaptation. arXiv preprint arXiv:2608.09052 (2026) 38. Ma, C., Elezi, I., Deng, J., Dong, W., Xu, C.: Three heads are better than one: Complementary experts for long-tailed semi-supervised learning. In: Proceedings of the AAAI Conference on Artificial Intelligence. vol. 38, pp. 14229–14237 (2024) 39. Massart, P.: About the constants in talagrand’s concentration inequalities for em-pirical processes. The Annals of Probability 28 (2), 863–884 (2000) 40. McDiarmid, C., et al.: On the method of bounded differences. Surveys in combi-natorics 141 (1), 148–188 (1989) 41. Miyato, T., Maeda, S.i., Koyama, M., Ishii, S.: Virtual adversarial training: a regu-larization method for supervised and semi-supervised learning. IEEE transactions on pattern analysis and machine intelligence 41 (8), 1979–1993 (2018) 42. Nutz, M., Wiesel, J.: Entropic optimal transport: Convergence of potentials. Prob-ability Theory and Related Fields 184 (1), 401–424 (2022) 43. Oh, Y., Kim, D.J., Kweon, I.S.: Daso: Distribution-aware semantics-oriented pseudo-label for imbalanced semi-supervised learning. In: Proceedings of the IEEE/CVF conference on computer vision and pattern recognition. pp. 9786–9796 (2022) 44. Oliver, A., Odena, A., Raffel, C.A., Cubuk, E.D., Goodfellow, I.: Realistic evalua-tion of deep semi-supervised learning algorithms. Advances in neural information processing systems 31 (2018) 45. Pinsker, M.S.: Information and information stability of random variables and pro-cesses. Holden-Day (1964) 46. Russakovsky, O., Deng, J., Su, H., Krause, J., Satheesh, S., Ma, S., Huang, Z., Karpathy, A., Khosla, A., Bernstein, M., et al.: Imagenet large scale visual recog-nition challenge. International journal of computer vision 115 (3), 211–252 (2015) 47. Schrödinger, E.: Über die umkehrung der naturgesetze. Verlag der Akademie der Wissenschaften in Kommission bei Walter De Gruyter u . . . (1931) 18 H. He et al. 48. Snell, J., Swersky, K., Zemel, R.: Prototypical networks for few-shot learning. Ad-vances in neural information processing systems 30 (2017) 49. Sohn, K., Berthelot, D., Carlini, N., Zhang, Z., Zhang, H., Raffel, C.A., Cubuk, E.D., Kurakin, A., Li, C.L.: Fixmatch: Simplifying semi-supervised learning with consistency and confidence. Advances in neural information processing systems 33 ,596–608 (2020) 50. Tarvainen, A., Valpola, H.: Mean teachers are better role models: Weight-averaged consistency targets improve semi-supervised deep learning results. Advances in neural information processing systems 30 (2017) 51. Theodoropoulos, P., Komianos, N., Pacelli, V., Liu, G.H., Theodorou, E.A.: Feed-back schr \" odinger bridge matching. arXiv preprint arXiv:2410.14055 (2024) 52. Verma, V., Lamb, A., Beckham, C., Najafi, A., Mitliagkas, I., Lopez-Paz, D., Ben-gio, Y.: Manifold mixup: Better representations by interpolating hidden states. In: International conference on machine learning. pp. 6438–6447. PMLR (2019) 53. Verma, V., Lamb, A., Beckham, C., Najafi, A., Mitliagkas, I., Lopez-Paz, D., Ben-gio, Y.: Manifold mixup: Better representations by interpolating hidden states. In: International conference on machine learning. pp. 6438–6447. PMLR (2019) 54. Wan, F., Sun, C., He, H., Lei, G., Xu, L., Xiao, T.: Yolo-lrdd: A lightweight method for road damage detection based on improved yolov5s. EURASIP Journal on Ad-vances in Signal Processing 2022 (1), 98 (2022) 55. Wang, X., Wu, Z., Lian, L., Yu, S.X.: Debiased learning from naturally imbalanced pseudo-labels. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. pp. 14647–14657 (2022) 56. Wang, Y., Chen, H., Heng, Q., Hou, W., Fan, Y., Wu, Z., Wang, J., Savvides, M., Shinozaki, T., Raj, B., et al.: Freematch: Self-adaptive thresholding for semi-supervised learning. arXiv preprint arXiv:2205.07246 (2022) 57. Wei, C., Sohn, K., Mellina, C., Yuille, A., Yang, F.: Crest: A class-rebalancing self-training framework for imbalanced semi-supervised learning. In: Proceedings of the IEEE/CVF conference on computer vision and pattern recognition. pp. 10857–10866 (2021) 58. Wei, T., Gan, K.: Towards realistic long-tailed semi-supervised learning: Consis-tency is all you need. In: Proceedings of the IEEE/CVF conference on computer vision and pattern recognition. pp. 3469–3478 (2023) 59. Wellner, J., et al.: Weak convergence and empirical processes: with applications to statistics. Springer Science & Business Media (2013) 60. Wu, Z., He, H.: Traditional machine learning models for building energy perfor-mance prediction: A comparative research. Machine Learning Research 8(1), 1–8 (2023) 61. Xie, Q., Dai, Z., Hovy, E., Luong, T., Le, Q.: Unsupervised data augmentation for consistency training. Advances in neural information processing systems 33 ,6256–6268 (2020) 62. Zhang, B., Wang, Y., Hou, W., Wu, H., Wang, J., Okumura, M., Shinozaki, T.: Flexmatch: Boosting semi-supervised learning with curriculum pseudo labeling. Advances in neural information processing systems 34 , 18408–18419 (2021) 63. Zhang, H., Cisse, M., Dauphin, Y.N., Lopez-Paz, D.: mixup: Beyond empirical risk minimization. arXiv preprint arXiv:1710.09412 (2017) 64. Zhu, L., Liao, B., Zhang, Q., Wang, X., Liu, W., Wang, X.: Vision mamba: Efficient visual representation learning with bidirectional state space model. arXiv preprint arXiv:2401.09417 (2024) Geometric Regularization via Gaussian Feature Bridges 19 
+
+## A Theoretical Analysis 
+
+We provide a theoretical analysis to explain why the proposed GBC framework and BridgeMix enhance robustness and generalization in SSL. At the feature level, GBC regularizes learning by enforcing smooth transitions from uncertain unlabeled features to reliable class anchors, yielding continuous predictions and stable decision boundaries. At the distribution level, BridgeMix reduces hypoth-esis complexity and distributional discrepancy through confidence-guided inter-polation between samples and anchors. Together, these results offer a unified theoretical foundation for the stability and generalization of our GBC frame-work under noisy and long-tailed settings. 
+
+Assumption 3 (Bridge Consistency Setting) Let fu ∈ Rd be the feature of an unlabeled sample and fa ∈ Rd the corresponding class anchor from the PA. A Gaussian bridge path is defined in the feature space according to Eq.1: 
+
+ft = (1 − g(t)) fu + g(t)fa + ϵt, (18) 
+
+where ϵt ∼ N (0 , σ (t)2I), σ(t) = νpt(1 − t), and g(t) is a monotonically increas-ing bridge function with g(0) = 0 , g (1) = 1 . The student model predicts pθ (ft),while the geometric target interpolation qt follows Eq.4. The bridge consistency loss is defined in Eq.5 as: 
+
+Lbridge = Et
+
+KL  qt∥pθ (ft) . (19) 
+
+Throughout the analysis, we assume that pθ (·) and qt are continuously differen-tiable in ft and t.
+
+Lemma 4 (Pathwise Convergence). Under Assumption 3, if Lbridge → 0,then there exists a continuous trajectory ¯p(t) such that 
+
+∥pθ (ft) − ¯p(t)∥1 → 0, ∀t ∈ [0 , 1] , (20) 
+
+with boundary conditions ¯p(0) = ˆ qu and ¯p(1) = ˆ qa.
+
+Hence, {pθ (ft)}t∈[0 ,1] converges to a smooth semantic path between the uncertain state pθ (fu) ∼ ˆqu and the reliable anchor state pθ (fa) ∼ ˆqa.
+
+Lemma 5 (Local Lipschitz Continuity). Assume ϕθ satisfies ∥∇ f log pθ (f )∥2 ≤
+
+L for some constant L > 0 along the bridge path. Then for any perturbation δf 
+
+with ∥δf ∥2 ≤ δ, one has 
+
+∥pθ (ft + δf ) − pθ (ft)∥1 ≤ Lδ + O(Lbridge 1/2), (21) which shows that minimizing Lbridge enforces local Lipschitz continuity of ϕθ
+
+around fu and fa.
+
+Lemma 6 (Decision Boundary Stability). Let Mc = {f : pcθ (f ) = max k pkθ (f )}
+
+denote the feature manifold of class c. Then the expected curvature of the decision boundary ∂Mc along {ft} satisfies 
+
+Et[κ(∂Mc)] ≤ C0 + C1L1/2
+
+> bridge
+
+, (22) 20 H. He et al. 
+
+where κ(·) is the local curvature and C0, C 1 > 0 are constants. Thus, decreasing 
+
+Lbridge flattens the decision boundary and improves robustness to feature noise. Detailed proofs are provided in Section A (supplementary material). Lem-mas 4–6 establish that bridge consistency acts as an intrinsic geometric regular-izer in SSL: the Gaussian feature bridge enforces continuous prediction evolution between noisy unlabeled features and stable class anchors, induces local Lips-chitz behavior that bounds prediction variation under small perturbations, and smooths the decision boundary for better robustness and generalization under long-tailed distributions. Building on this geometric foundation, we extend the analysis to BridgeMix, which operates at the distribution level. By introducing stochastic interpolation between samples and anchors, BridgeMix reshapes the training distribution and implicitly constrains the hypothesis space. Theorem 2 provides a generalization error bound that quantifies this regularization effect. 
+
+Theorem 2 (Generalization bound for BridgeMix). Let H be a hypoth-esis class, and let ℓ : H × X × Y → [0 , 1] be a bounded loss. Let D be the true data distribution on X × Y , and let DBM be the BridgeMix distribution. Draw an i.i.d. sample S = {zi}ni=1 with zi = ( xi, y i) ∼ DBM . For h ∈ H define the risks 
+
+RD (h) = Ez∼D
+
+ℓ(h, z ), bRDBM (h) = 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+ℓ(h, z i). (23) 
+
+Define the discrepancy 
+
+∆(D, D BM ) = sup 
+
+> h∈H
+
+Ez∼D
+
+ℓ(h, z ) − Ez∼DBM 
+
+ℓ(h, z ) (24) 
+
+and the empirical Rademacher complexity of the loss class F = {ℓ(h, ·) : h ∈ H} 
+
+on S by 
+
+bRS (F) = Eσ
+
+h
+
+sup  
+
+> f∈F
+
+1
+
+n
+
+> n
+
+X
+
+> i=1
+
+σif (zi)
+
+i
+
+, (25) 
+
+where i i.i.d. 
+
+∼ Unif {− 1, +1 }. Then for any δ > 0, with a probability of at least 
+
+1 − δ over S ∼ Dn
+
+> BM
+
+, the following holds simultaneously for all h ∈ H :
+
+RD (h) ≤ bRDBM (h) + 2 bRS (F) + 3 
+
+r log(2 /δ )2n + ∆(D, D BM ). (26) Building on Theorem 2, we further provide a corollary that quantifies the effect of the distributional discrepancy ∆(D, D BM ), offering a explicit bound when this term is small. 
+
+Corollary 2. If ∆(D, D BM ) ≤ εmix , then with probability at least 1 − δ and 
+
+∀h ∈ H ,
+
+RD (h) ≤ bRDBM (h) + 2 bRS (F) + 3 
+
+r log(2 /δ )2n + εmix . (27) Geometric Regularization via Gaussian Feature Bridges 21 
+
+Detailed proofs are provided in Section A (supplementary material). Theorem 2 and Corollary 2 together demonstrate that BridgeMix improves generalization by tightening the upper bound on the true risk. Through convex interpolation between unlabeled samples and reliable anchors, BridgeMix reduces both the effective hypothesis complexity and the distributional discrepancy ∆(D, D BM ),thereby lowering the generalization gap. This theoretical guarantee indicates that GBC achieves more stable learning with fewer labeled samples. When combined with the geometric regularization established in Lemmas 4–6, our proposed GBC framework simultaneously enhances robustness to pseudo-label noise and yields stronger generalization across imbalanced or long-tailed data distributions. 
+
+## B Proof of Lemma 4- Lemma 6 
+
+Proof (Proof of Lemma 4). 
+
+γ(t) = ft for the bridged path and define 
+
+E(t) = KL  qt∥pθ (γ(t)) . (28) By assumption, 
+
+Lbridge = Et[E(t)] → 0. (29) By Pinsker’s inequality [45], 
+
+∥pθ (γ(t)) − qt∥1 ≤ p2E(t). (30) Hence Et∥pθ (γ(t)) − qt∥1 → 0, so according to Cathy’s convergence theorem, there exists a sequence {θn} with 
+
+∥pθn (γ(t)) − qt∥1 → 0 (31) for almost every t ∈ [0 , 1] . Since qt is continuous in t (The continuity of t 7 → γ(t)), there exists a continuous trajectory ¯p(t) := qt such that 
+
+∥pθn (γ(t)) − ¯p(t)∥1 → 0 (32) for almost every t. By redefining on a null set, we obtain pointwise convergence for all t ∈ [0 , 1] . The boundary conditions follow from q0 = ˆ qu and q1 = ˆ qa. This proves Lemma 4. 
+
+Proof (Proof of Lemma 5). Fix t ∈ [0 , 1] and a perturbation δf with ∥δf ∥2 ≤ δ.Consider the path 
+
+s 7 → fs = γ(t) + sδf, s ∈ [0 , 1] . (33) By the fundamental theorem of calculus and the chain rule, 
+
+∥pθ (f1) − pθ (f0)∥1 ≤
+
+Z 10
+
+∇f pθ (fs) 1→2∥δf ∥2ds.  (34) 22 H. He et al. 
+
+Using ∇f pθ (f ) = J f pθ (f ) and the identity 
+
+Jf pθ (f ) = Cov pθ (·| f )
+
+ek, ∇f log pkθ (f )Kk=1 , (35) we have 
+
+∥Jf pθ (f )∥1→2 ≤ ∥∇ f log pθ (f )∥2, (36) so the assumption ∥∇ f log pθ (f )∥2 ≤ L along the bridge implies 
+
+∥pθ (γ(t) + δf ) − pθ (γ(t)) ∥1 ≤ Lδ.  (37) To incorporate the bridge-consistency error, add and subtract qt and use the triangle inequality plus Pinsker: 
+
+∥pθ (γ(t) + δf ) − pθ (γ(t)) ∥1 ≤ ∥ pθ (γ(t) + δf ) − qt∥1
+
++ ∥pθ (γ(t)) − qt∥1 ≤ Lδ + 2 p2E(t). (38) Averaging in t yields the stated bound with the term O(L1/2
+
+> bridge
+
+). This proves Lemma 5. 
+
+Proof (Proof of Lemma 6). Fix a class c and define the (logit) margin 
+
+mc(f ) = zc(f ) − max   
+
+> k̸=c
+
+zk(f ), (39) where z(f ) are the pre-softmax logits. The decision boundary ∂Mc is contained in {f : mc(f ) = 0 }. Locally, the curvature of the level set {mc = 0 } obeys 
+
+κ(f ) ≤ ∥∇ 2 
+
+> f
+
+mc(f )∥op 
+
+∥∇ f mc(f )∥2
+
+whenever ∇f mc(f )̸ = 0 . (40) We bound numerator and denominator in Equation (40) in terms of gradient-and Hessian-like quantities controlled by the bridge loss. 
+
+∇f mc(f ) is proportional to the gradient of the log-posterior margin, since 
+
+∇f log pcθ (f ) − ∇ f log pk⋆ 
+
+> θ
+
+(f ) (41) equals ∇f mc(f ) up to the softmax Jacobian. Under Lemma 5 and ∥∇ f log pθ (f )∥2 ≤
+
+L, we have a uniform lower bound on ∥∇ f mc(f )∥2 along γ(t) away from degen-erate points, controlled by the confidence gap of qt:
+
+∥∇ f mc(γ(t)) ∥2 ≥ ∥∇ f log qct
+
+− ∇ f log qk⋆ 
+
+> t
+
+∥2 − ∥∇ f log pθ (γ(t)) − ∇ f log qt∥2. (42) The second term is bounded in expectation by O(L1/2
+
+> bridge
+
+) (via a standard in-formation–Fisher relation together with Pinsker). Hence, the denominator is bounded away from 0 up to O(L1/2
+
+> bridge
+
+).Geometric Regularization via Gaussian Feature Bridges 23 
+
+∥∇ 2 
+
+> f
+
+mc(f )∥op is controlled by the local Fisher information and the Hessian of the cross-entropy. In particular, writing ℓ(f ) = KL( qt∥pθ (f )) , one has 
+
+∇2 
+
+> f
+
+ℓ(f ) = Ek∼qt
+
+∇f log pkθ (f )∇f log pkθ (f )⊤
+
++ Ek∼qt
+
+∇2 
+
+> f
+
+log pkθ (f ), (43) so ∥∇ 2 
+
+> f
+
+ℓ(γ(t)) ∥op bounds ∥∇ 2 
+
+> f
+
+mc(γ(t)) ∥op up to model-dependent constants. Along the bridge, the stochastic injection (Equation (1)) smooths ℓ by con-volution with a Gaussian of variance σ(t)2, which reduces the operator norm by standard heat-kernel smoothing estimates: 
+
+E∥∇ 2 
+
+> f
+
+ℓ(γ(t)) ∥op 
+
+ ≤ C
+
+1 + σ(t) E∥∇ f log pθ (γ(t)) ∥22
+
+
+
+≤ C′L2,
+
+(44) with the maximal smoothing at t ∼ 12 where σ(t) is largest. Finally, by the triangle inequality and Pinsker, 
+
+ℓ(γ(t)) = KL( qt∥pθ (γ(t))) ≤ L bridge  (45) implies an O(L1/2
+
+> bridge
+
+) perturbation in curvature through its effect on both the gradient gap and the Hessian term. Combining the bounds for numerator and denominator yields 
+
+Et[κ(∂Mc)] ≤ C0 + C1L1/2
+
+> bridge
+
+, (46) for constants C0, C 1 > 0 independent of Lbridge . This proves Lemma 6. 
+
+## C Proof of Theorem 2 
+
+Proof (Proof of Theorem 2). We derive the proof with the terms from standard symmetrization and a structural property of BridgeMix. For any h ∈ H ,
+
+RD (h) = Ez∼D [ℓ(h, z )] = Ez∼DBM [ℓ(h, z )] + 
+
+
+
+ED [ℓ(h, ·)] − EDBM [ℓ(h, ·)] 
+
+
+
+≤ Ez∼DBM [ℓ(h, z )] + ∆(D, D BM ).
+
+(47) Thus it suffices to upper bound EDBM [ℓ(h, z )] uniformly over h ∈ H .Let S = {zi}ni=1 be i.i.d. from DBM . By standard symmetrization for bounded losses ℓ ∈ [0 , 1] and contraction (e.g., empirical process theory [59]), 
+
+ES∼Dn
+
+> BM
+
+h
+
+sup 
+
+> h∈H
+
+ EDBM [ℓ(h, ·)] − bRDBM (h)i
+
+≤ 2ES bRS (F). (48) A standard concentration argument (Massart’s [39] or McDiarmid’s inequal-ity [40]) yields: with probability at least 1 − δ and ∀h ∈ H ,
+
+EDBM [ℓ(h, ·)] ≤ bRDBM (h) + 2 bRS (F) + 3 
+
+r log(2 /δ )2n . (49) 24 H. He et al. 
+
+Combining with Equation (47) gives the theorem once we control bRS (F) for BridgeMix. We now show that BridgeMix does not increase (and typically re-duces) this complexity. By construction, each mixed sample is 
+
+zmix  
+
+> i
+
+=  xmix  
+
+> i
+
+, y mix 
+
+> i
+
+
+
+=  λixi + (1 − λi)˜ xi, λ iyi + (1 − λi)˜ yi
+
+, λi ∈ [0 , 1] , (50) where (xi, y i) and (˜ xi, ˜yi) are (possibly anchor-paired) examples drawn i.i.d. from the generative process that defines DBM . Assume the loss is convex in its (x, y )
+
+argument and affine in y (e.g., cross-entropy with soft labels). Then for every h
+
+and every i,
+
+ℓ h, z mix 
+
+> i
+
+ ≤ λiℓ h, x i, y i
+
+ + (1 − λi)ℓ h, ˜xi, ˜yi
+
+. (51) Let σ1, . . . , σ n be i.i.d. Rademacher signs. For the empirical Rademacher com-plexity on the mixed sample Smix = {zmix  
+
+> i
+
+}ni=1 ,
+
+bRSmix (F) = Eσ
+
+h
+
+sup 
+
+> h∈H
+
+1
+
+n
+
+> n
+
+X
+
+> i=1
+
+σiℓ h, z mix 
+
+> i
+
+i
+
+≤ Eσ
+
+h
+
+sup 
+
+> h∈H
+
+1
+
+n
+
+> n
+
+X
+
+> i=1
+
+σi
+
+
+
+λiℓ(h, x i, y i)+ (1 − λi)ℓ(h, ˜xi, ˜yi)
+
+i 
+
+≤ Eσ
+
+h
+
+λ∗ sup 
+
+> h∈H
+
+1
+
+n
+
+> n
+
+X
+
+> i=1
+
+σiℓ(h, x i, y i)
+
+i
+
++ Eσ
+
+h
+
+(1 − λ∗) sup 
+
+> h∈H
+
+1
+
+n
+
+> n
+
+X
+
+> i=1
+
+σiℓ(h, ˜xi, ˜yi)
+
+i
+
+≤ λ∗ bRS1 (F) + (1 − λ∗) bRS2 (F)
+
+≤ max { bRS1 (F), bRS2 (F)},
+
+(52) where λ∗ = 1
+
+> n
+
+P 
+
+> i
+
+λi, λ∗ = 1
+
+> n
+
+P 
+
+> i
+
+λi, and S1 = {(xi, y i)}, S2 = {(˜ xi, ˜yi)} are the two base samples. Hence, mixing does not increase empirical complexity; when anchors are less variable or closer to class prototypes, bRSmix (F) is strictly smaller on average. If, in addition, ℓ(h, ·) is Lz -Lipschitz in z = ( x, y ) under a norm ∥ · ∥ and anchors satisfy E∥x − ˜x∥ ≤ ρ (class-prototype proximity), then 
+
+∆(D, D BM ) = sup 
+
+> h∈H
+
+ED [ℓ(h, z )] − EDBM [ℓ(h, z )] 
+
+≤ Lz E∥z − zmix ∥
+
+≤ Lz E[1 − Λ]ρ, 
+
+(53) Geometric Regularization via Gaussian Feature Bridges 25 
+
+which is small when mixed points lie near their anchors (large confidence and small class spread). This yields the corollary with εmix = Lz E[1 − Λ]ρ.Combining Equation (49) gives, with probability at least 1 − δ and ∀h ∈ H ,
+
+RD (h) ≤ bRDBM (h) + 2 bRSmix (F) + 3 
+
+r log(2 /δ )2n + ∆(D, D BM ), (54) and the structural property of BridgeMix ensures bRSmix (F) is no larger than that of the unmixed samples (and typically smaller), while ∆(D, D BM ) can be controlled under mild Lipschitz and anchor proximity conditions. This completes the proof. 
+
+Proof (Proof of Corollary 2). By Theorem 2, for any δ > 0, with probability at least 1 − δ over S ∼ Dn
+
+> BM
+
+, it holds simultaneously for all h ∈ H that 
+
+RD (h) ≤ bRDBM (h) + 2 bRS (F) + 3 
+
+r log(2 /δ )2n + ∆(D, D BM ). (55) If ∆(D, D BM ) ≤ εmix , then on the same high-probability event we have, for all 
+
+h ∈ H ,
+
+RD (h) ≤ bRDBM (h) + 2 bRS (F) + 3 
+
+r log(2 /δ )2n + εmix . (56) 
+
+## D Full Experimental Setup 
+
+Datasets and Protocol Benchmarks. We follow ReaLTSSL (SimPro) on CIFAR10-LT, CIFAR100-LT, STL10-LT, ImageNet-127, and ImageNet-1K [34]. Unless stated, we report Top-1 on balanced test sets and the mean ±std over 3 seeds. 
+
+Imbalance settings. Five unlabeled distributions: consistent, uniform, re-versed, middle, head-tail (Tables 1–3 in the main paper). CIFAR10-LT uses 
+
+(γℓ, γ u) ∈ { (150 , 150) , (100 , 100) , (150 , 1) , (100 , 1) , (150 , 1/150) }. CIFAR100-LT fixes γℓ=20 with N1=50 , M 1=400 and varies the unlabeled distribution as in Table 2. STL10-LT controls only γℓ ∈ {10 , 20 } with Nℓ=450 and M ≈10 5.ImageNet-127: γℓ≈γu≈286 with (N1≈28 k, M 1≈250 k); ImageNet-1K: γℓ=γu=256 
+
+with (N1=256 , M 1=1024) .
+
+Splits and validation. Standard train/test splits [6, 34, 46]. We reserve 5k validation images for CIFARs and 50k for ImageNet-127/1K when indicated; otherwise, model selection uses EMA-smoothed training loss with early-patience. 
+
+Backbones and Bridge Placement Default backbones. ResNet-50 for CIFAR/STL10; ResNet-50 at 32 2/64 2 for ImageNet-127/1K. Cross-backbone study includes ViT-B/16 [9] and Vision Mamba [64]. 26 H. He et al. 
+
+Injection layer. CNNs: Gaussian Feature Bridge (GFB) at the penultimate block (32 2: res4 ; 64 2: res5 ; d=1024 /2048 ). ViT: final [CLS] . Mamba: globally pooled state. Projector P (·) is a 1×1 conv (CNNs) or a 2-layer MLP with GELU (ViT/Mamba). 
+
+Optimization and Schedules 
+
+AdamW with cosine decay; lr 5×10 −4, weight decay 0.05 , grad clip 1.0, FP16. Training for 300 epochs, lr warm-up 5 epochs. Bridge weight β linearly warms from 0 to 0.75 during the first 20 epochs. Batching: Bℓ=64 , Bu=448 (8-GPU total 512; scale linearly otherwise). EMA teacher: decay 0.999 → 0.9999 by epoch 50. 
+
+Augmentations and Pseudo-Labels Weak/strong. Weak: random crop (pad 4 for CIFAR; 8 for STL/IN) + hori-zontal flip. Strong: RandAugment (N=2, M=10) [7] + CutOut (side 16 at 32 2,32 at 64 2) [8]. 
+
+Class-adaptive threshold. τc ∈ [0 .85 , 0.97] updated per class by a moving target rate: τc ← clip  τc + η(ˆ pc − ρc), 0.85 , 0.97  with step η=0 .02 , where ˆpc is the recent acceptance ratio and ρc is a frequency-proportional target (lower for tails), in the spirit of curriculum/adaptive thresholding [56, 62]. 
+
+Prototype Atlas (PA) Capacity and diversity. Up to 64 anchors per class (labeled exemplars + high-confidence pseudo-anchors). Diversity via cosine-distance NMS (threshold 0.2) and temporal decay. 
+
+Online update (each step). For (xu, ˆy, ˆq) with max(ˆ q) ≥ τˆy :1. Extract teacher weak-view bridge-layer feature fu;2. If class ˆy has < 64 anchors or min cosine distance > 0.2, insert (fu, ˆy, conf , src =
+
+U);3. Apply time decay γ=0 .999 to pseudo-anchors; remove if conf < 0.7 or age 
+
+> 10 epochs without refresh. If empty, fall back to an EMA prototype. 
+
+Gaussian Feature Bridge (GFB) Sampling. t ∼ Beta(2 , 2) truncated to [0 .2, 0.8] . Noise schedule σ(t) = νt (1 − t)
+
+with ν=0 .10 (CIFAR/STL10) and 0.05 (IN). Gate g(t) = 4 t(1 − t).
+
+Bridge step. With student hidden fstu and ft = (1 −t)fu +tf a +σ(t)ε, merge 
+
+˜f = (1 − λt)fstu + λtP (ft), λt=g(t). Backprop through P (·) and downstream blocks. 
+
+Targets and loss. qt = softmax  (1 − t) log ˆ qu + t log ˆ qa
+
+. Bridge-consistency: 
+
+Lbridge = E[wc g(t) KL( qt∥pθ )] , wc ∝ ( ¯f /f c)0.5.Geometric Regularization via Gaussian Feature Bridges 27 
+
+Total Objective 
+
+L = Lsup + μL unsup + βL bridge , μ=1 .0, β ↗ 0.75 .
+
+Lunsup uses FixMatch with hard pseudo-labels and strong views [49]. 
+
+BridgeMix 
+
+For two unlabeled samples (xi, x j ) with confidences (oi, o j ) and anchors (f ai , f aj ):
+
+λ = oi 
+
+> oi+oj
+
+, f mix  
+
+> u
+
+= λf i + (1 − λ)fj , f mix  
+
+> a
+
+= λf ai + (1 − λ)f aj , then form ft as in Sec. F and apply the same Lbridge (no extra loss). Enabled after epoch 20; pairing probability 0.5. 
+
+Backbone-Specific Notes ViT-B/16 [9]. Patch 16, width 768, depth 12, heads 12. Bridge the final [CLS] ;projector MLP(768 →768) with dropout 0.1. CutOut disabled at 64 2.
+
+Vision Mamba [64]. Base config. Bridge the global pooled state; projector MLP( d → d). 
+
+Evaluation, Smoothing, Reporting EMA evaluation. Unless stated, report EMA teacher accuracy on weak views. 
+
+KL curves. Compute KL( pteacher ∥pstudent ) on weak views (no temperature), average on the validation set, EMA smooth (0.9). 
+
+Seeds and CIs 
+
+Seeds {1, 2, 3}; we report mean ±std in Tables 1–3. 
+
+Ablation Protocols 
+
+Ablate: remove Lbridge ; set σ(t)=0 ; hard merge ˜f =ft; class weights wc=1 ; PA ca-pacity {2% , 5% , 8% }; BridgeMix on/off; ν ∈ { 0.0, 0.05 , 0.10 , 0.20 }; t ∼ Uniform[0 .2, 0.8] 
+
+vs. Beta(2,2). Unless noted, use CIFAR10-LT consistent (γℓ=100 , γ u=100) with default hyperparameters. 
+
+Compute and Runtime 
+
+Runs on ×A100 (40GB), Throughput (ResNet-50, 32 2): ∼7.5k img/s on 8 ×A100. GBC adds < 2% wall-clock over FixMatch; peak memory +∼3% due to PA and projector. 28 H. He et al. 
+
+Reproducibility Checklist – Determinism: fixed seeds; torch.backends.cudnn.deterministic=true .
+
+– Data loader: shuffle per epoch; worker seeds = base seed + worker id. 
+
+– PA: reset at run start; save snapshots each epoch. 
+
+– Checkpoints: every 10 epochs; best by validation accuracy (or EMA loss if no validation). 
+
+Hyperparameter Summary (Defaults) 
+
+Dataset Epochs LR WD Bℓ/B u βfinal ν
+
+CIFAR10/100-LT 300 5×10 −4 0.05 64/448 0.75 0.10 STL10-LT 300 5×10 −4 0.05 64/448 0.75 0.10 IN-127 32 2 300 5×10 −4 0.05 64/448 0.75 0.05 IN-127 64 2 300 5×10 −4 0.05 64/448 0.75 0.05 IN-1K 32 2 300 5×10 −4 0.05 64/448 0.75 0.05 IN-1K 64 2 300 5×10 −4 0.05 64/448 0.75 0.05 
+
+Failure Modes and Remedies Sparse tails: temporarily lower τc by 0.02 (min 0.80) for those classes and increase decay to refresh anchors. Over-smoothing: if KL decays too slowly, reduce ν to 0.05 or narrow t to [0 .3, 0.7] . Bridge instability (ViT): cap λt ≤ 0.7
+
+during the first 40 epochs. 
+
+Code pointers (pseudo): – bridge.py : sample_t_and_noise() , gaussian_bridge() , merge_feature() .
+
+– pa_memory.py : insert() , prune_by_cosine() , decay_and_refresh() .
+
+– losses.py : geom_interpolate_target() , bridge_kl() with class weights. 
+
+## E Additional experiments 
+
+As shown in Table 9, GBC delivers consistent improvements across all back-bones and datasets, demonstrating strong backbone-agnostic generalization. On CIFAR10-LT, the largest gain is observed with ResNet-50 ( +2.8 pp), while ViT-B/16 and Vision Mamba-B also yield substantial boosts of +1.9 and +2.0 
+
+pp, respectively—even with CutOut disabled for ViT at 64 2. On CIFAR100-LT (uniform), the performance margins remain steady ( +0.8–1.1 pp), indicating that GBC’s feature-bridge regularization enhances semantic alignment with-out architecture-specific tuning. On ImageNet-127 and ImageNet-1K at 64 2,GBC maintains gains across both convolutional and sequence-based models (+1.1–1.4 pp on IN-127; up to +2.5 pp on IN-1K), validating its scalabil-ity to large-scale, high-variance SSL benchmarks. Combined with the negligible computational overhead ( < 2% ), these results confirm that GBC is an efficient, Geometric Regularization via Gaussian Feature Bridges 29 
+
+Table 9: Additional adaptation experiments on diverse backbones. Top-1 accuracy (%) with/without GBC on three representative benchmarks. Backbones: ResNet-50, ViT-B/16 [9], Vision Mamba-B [64]. All runs follow the same SimPro/Re-aLTSSL protocol and hyperparameters as the main paper. ∆ reports the absolute gain from adding GBC. Backbone Params (M) CIFAR10-LT ( 32 2) CIFAR100-LT ( 32 2)Baseline +GBC Baseline +GBC ResNet-50 25.6 80.7 ±0.3 83.5 ±0.2 (+2.8) 52.2 ±0.2 53.0 ±0.2 (+0.8) ViT-B/16 [9] 186.4 82.1 ±0.3 84.0 ±0.2 (+1.9) 53.0 ±0.3 54.0 ±0.2 (+1.0) Vision Mamba-B [64] 48.5 81.0 ±0.3 83.0 ±0.2 (+2.0) 51.8 ±0.3 52.9 ±0.2 (+1.1) ImageNet-127 ( 64 2) ImageNet-1k ( 64 2)Baseline +GBC Baseline +GBC ResNet-50 25.6 63.8 ±0.2 65.2 ±0.2 (+1.4) 25.0 ±0.2 27.5 ±0.2 (+2.5) ViT-B/16 [9] 186.4 64.5 ±0.2 65.6 ±0.2 (+1.1) 26.2 ±0.2 26.9 ±0.2 (+0.7) Vision Mamba-B [64] 48.5 63.9 ±0.2 65.1 ±0.2 (+1.2) 23.1 ±0.2 25.2 ±0.2 (+2.1)      
+
+> Notes. GBC is injected at the penultimate CNN block, the final [CLS] token for ViT, and the global state for Mamba. The projector adds <0.5M parameters for CNNs and negligible overhead for ViT/Mamba.
+
+plug-and-play enhancement compatible with CNNs, Vision Transformers, and state-space models alike. As reported in Table 10, GBC consistently improves over recent few-shot SSL baselines. The gains are most pronounced in the 1-shot regime, where pseudo-label uncertainty is highest. Across CIFAR10-LT, CIFAR100-LT, and ImageNet-127, GBC yields steady benefits of roughly +0.5–0.9 pp while maintaining com-parable variance. This indicates that Gaussian feature bridging enhances repre-sentation alignment even with minimal labeled supervision, reinforcing its effec-tiveness in low-data and long-tailed scenarios. 
+
+E.1 SOTA baselines on CIFAR10-LT, CIFAR100-LT, and STL10-LT. 
+
+Across long-tailed few-shot settings, the six state-of-the-art baselines— SAW [35], DePL [55], BaCon [12], CPE [38], SimPro [10], and Meta-Expert [30]— exhibit a consistent performance hierarchy that reflects their underlying design philoso-phies. On CIFAR10-LT , SAW achieves strong baseline performance by re-weighting unlabeled instances, reaching roughly 89 –91% accuracy under 5–10-shot supervi-sion. DePL and BaCon introduce distribution-aware and contrastive re-balancing mechanisms, improving low-shot robustness by ∼0.5–1.0 pp over SAW. CPE ex-tends this with class-prior estimation and yields a further ∼0.3 pp gain. SimPro advances the ReaLTSSL paradigm by probabilistically calibrating pseudo-label confidence, achieving steady 90 .6–92 .5% accuracy, while Meta-Expert integrates adaptive expert weighting to refine long-tail transfer, marginally outperforming SimPro (typically +0.3 pp). 30 H. He et al. 
+
+Table 10: Few-shot semi-supervised performance (k-shot per class). We eval-uate GBC and recent SSL methods under the ReaLTSSL few-shot protocol, where only 
+
+k ∈ { 1, 5, 10 } labeled samples per class are provided. Results report Top-1 accuracy (%) averaged over three random seeds.                                                                                       
+
+> CIFAR10-LT (32 2)CIFAR100-LT (32 2)ImageNet-127 (64 2)Method 1-shot 5-shot 10-shot 1-shot 5-shot 10-shot 1-shot 5-shot 10-shot FixMatch [49] 80.2 ±0.8 89.0 ±0.5 91.1 ±0.4 42.9 ±0.6 55.6 ±0.4 61.2 ±0.5 34.1 ±0.5 49.5 ±0.4 54.8 ±0.3 SAW [35] 81.4 ±0.5 89.6 ±0.4 91.6 ±0.3 43.7 ±0.5 56.1 ±0.3 61.7 ±0.4 35.0 ±0.4 50.2 ±0.4 55.3 ±0.4 DePL [55] 81.9 ±0.5 90.1 ±0.6 91.8 ±0.3 44.2 ±0.4 56.9 ±0.4 62.0 ±0.5 35.4 ±0.4 50.8 ±0.3 55.8 ±0.5 BaCon [12] 82.5 ±0.4 90.3 ±0.5 92.0 ±0.4 44.9 ±0.3 57.4 ±0.5 62.3 ±0.3 35.8 ±0.5 51.1 ±0.4 56.2 ±0.3 CPE [38] 82.7 ±0.5 90.4 ±0.3 92.3 ±0.4 45.2 ±0.5 57.7 ±0.3 62.6 ±0.4 36.1 ±0.4 51.4 ±0.4 56.7 ±0.3 SimPro [10] 83.3 ±0.6 90.6 ±0.4 92.5 ±0.3 45.7 ±0.4 58.1 ±0.5 62.8 ±0.4 36.6 ±0.3 51.9 ±0.5 57.0 ±0.4 Meta-Expert [30] 83.8 ±0.5 90.9 ±0.4 92.7 ±0.3 46.0 ±0.3 58.3 ±0.4 63.1 ±0.5 36.9 ±0.5 52.2 ±0.3 57.3 ±0.4
+> GBC (ours) 84.4 ±0.4 91.2 ±0.5 92.9 ±0.3 46.6 ±0.4 58.9 ±0.3 63.5 ±0.4 37.4 ±0.4 52.6 ±0.4 57.8 ±0.3
+
+Notes. Few-shot sets are class-balanced while unlabeled data keep the long-tailed distribution. Results are averaged over three random seeds. GBC provides consistent improvements across datasets without special tuning. 
+
+On CIFAR100-LT , the relative margins widen due to the larger label space and stronger class imbalance. Here, SAW and DePL both struggle to main-tain consistency beyond 58% , while BaCon and CPE stabilize training through balanced feature-level optimization, reaching up to 62 .6% . SimPro remains the most robust among probabilistic frameworks, maintaining ∼1 pp improvement over CPE, and Meta-Expert slightly exceeds this with 63 .1% , highlighting its meta-reweighting capacity under multi-head regularization. On STL10-LT (not shown in the table but following the same pattern), similar trends persist: methods incorporating semantic or probabilistic balanc-ing (BaCon, CPE, SimPro) consistently outperform earlier adaptive threshold-ing (SAW, DePL). Meta-Expert remains competitive but exhibits diminishing relative advantage as unlabeled data volume increases, indicating that its meta-optimization benefits primarily in moderate-label regimes rather than massive unlabeled pools. In summary, across all three benchmarks, the accuracy progression 
+
+SAW < DePL < BaCon ≈ CPE < SimPro < Meta-Expert 
+
+holds consistently, validating the empirical stability of probabilistic and meta-adaptive strategies under realistic long-tailed semi-supervised settings. While Meta-Expert [30] currently represents the strongest prior under the ReaLTSSL framework, our proposed GBC further improves generalization by explicitly constructing smooth semantic trajectories between unlabeled features and reli-able class anchors. Unlike existing methods that rely on static reweighting or expert ensemble mechanisms, GBC dynamically regularizes the feature evolu-tion path via a probabilistic bridge loss, leading to more stable optimization and reduced pseudo-label drift. Empirically, GBC consistently surpasses Meta-Expert by ∼0.6–0.8 pp on CIFAR10-LT and ∼0.4–0.5 pp on CIFAR100-LT, while maintaining superior few-shot robustness on STL10-LT. These gains highlight that bridging feature manifolds through Gaussian interpolation offers a com-Geometric Regularization via Gaussian Feature Bridges 31 
+
+Table 11: Ablation on Gaussian noise strength ν in the Gaussian Feature Bridge. We evaluate GBC on CIFAR10-LT under the consistent setting ( γℓ=100 ,
+
+γu=100 ). ν controls the magnitude of stochastic perturbation σ(t) = νt (1 − t) injected along the bridge. We report Top-1 accuracy, KL divergence decay (lower is better), and anchor recall (ratio of correct PA retrieval). Moderate noise ( ν=0 .10 ) gives the best trade-off.                           
+
+> Noise Strength νTop-1 Acc. (%) KL Decay ↓(epoch 300) Anchor Recall (%)
+> 0.00 (no noise) 91.82 ±0.11 0.164 78.3 0.05 92.11 ±0.10 0.151 81.0 0.10 (default) 92.30 ±0.17 0.143 83.7
+> 0.20 91.97 ±0.13 0.158 80.1
+
+Table 12: Ablation on Prototype Atlas (PA) capacity on CIFAR10-LT under the consistent setting. C denotes the maximum number of anchors per class; C=0 
+
+corresponds to using only the EMA prototype without storing exemplar anchors. Mod-erate capacity ( C=64 ) achieves the best trade-off between representation diversity and stability.                                
+
+> PA Capacity CTop-1 Acc. (%) Anchor–Proto Cosine ↑Refresh Rate (%) ↓
+> 0 (EMA only) 80.81 ±0.18 0.71 42.3 16 85.05 ±0.15 0.76 38.5 32 85.72 ±0.14 0.79 33.1 64 (default) 92.30 ±0.17 0.82 29.7
+> 128 92.18 ±0.19 0.80 46.2
+
+plementary perspective to probabilistic calibration and meta-learning, achieving stronger consistency and long-tail balance with negligible computational over-head. As shown in Table 11, the proposed Gaussian Feature Bridge exhibits stable behavior across a broad range of noise magnitudes. In the absence of stochastic-ity ( ν=0 ), the model still benefits from deterministic interpolation but converges to a slightly suboptimal solution, reflected by higher KL divergence and reduced anchor recall. Introducing mild noise ( ν=0 .05 ) already improves both metrics, suggesting that stochastic perturbations help the student avoid overfitting to un-certain intermediate states. The best overall performance is achieved at ν=0 .10 ,where Top-1 accuracy, KL decay, and anchor recall simultaneously reach their optimal balance, indicating that moderate feature-space diffusion effectively reg-ularizes the bridge trajectory without destabilizing the alignment. Increasing the noise further ( ν=0 .20 ) yields diminishing returns and a mild drop in accuracy, confirming that excessive stochasticity perturbs the semantic direction of the bridge. Overall, the results demonstrate that GBC is robust to a wide inter-val of noise strengths and that a modest value of ν provides the most reliable supervision along the Gaussian path. As shown in Table 12, varying the maximum number of stored anchors reveals a clear trend that aligns with the design choice of maintaining the Prototype Atlas at roughly 2% −8% of the dataset. When the PA is disabled ( C=0 ), the 32 H. He et al.               
+
+> Table 13: Wall-clock comparison on CIFAR10-LT (consistent setting) using a single A100 GPU. We report the average epoch time over the last 50 epochs and the total training time for 300 epochs. GBC introduces minimal computational overhead (<2% ) compared with FixMatch and remains comparable to SimPro.
+> Method Avg. Epoch Time (s) Total Time (300 ep) Overhead vs. FixMatch
+> FixMatch 42.1 3.51 h 0% SimPro 43.0 3.58 h +2.1% GBC (ours) 42.8 3.56 h +1.7%
+
+model degenerates to using only EMA prototypes, resulting in insufficient class diversity and significantly lower accuracy. Increasing the capacity to C=16 and 
+
+C=32 (corresponding to roughly 2% –4% of class exemplars) steadily enhances Top-1 performance and anchor–prototype similarity, indicating that even a small but diverse set of anchors provides stronger semantic guidance for the Gaussian Feature Bridge. The optimal performance is achieved at C=64 , which falls near the upper end of the recommended 2% −8% range; in this regime, the PA exhibits the highest alignment score (0.82) and the lowest refresh rate, showing that anchor quality and temporal stability are jointly maximized. Expanding the capacity further to C=128 exceeds the effective diversity range and introduces redundant or noisy anchors, leading to increased refresh frequency and a slight drop in accuracy. These results validate our design principle that a mid-sized PA capturing approximately 2% −8% of exemplars per class strikes the best balance between diversity and reliability for long-tailed semi-supervised learning. 
+
+## F Compute scalability 
+
+Experimental Setup. To evaluate the computational overhead introduced by GBC, we measure the wall-clock time of FixMatch, SimPro, and our method on CIFAR10-LT under the consistent setting with (γℓ, γ u) = (100 , 100) . All models are trained for 300 epochs on a single NVIDIA A100 (40GB) GPU using identical dataloader configurations, mixed precision (FP16), batch sizes 
+
+(Bℓ, B u) = (64 , 448) , AdamW with learning rate 5×10 −4, and cosine decay. Wall-clock time is reported as the average duration per epoch over the last 50 epochs to avoid warm-up bias, and total training time is computed accordingly. All methods share the same EMA teacher, data augmentations, and pipeline components except for their algorithm-specific operations, ensuring fair com-parison. GBC uses a lightweight projection layer and Gaussian Feature Bridge sampling, which we show contributes less than 2% additional wall-clock overhead compared to FixMatch and remains comparable to SimPro. 
+
+Analysis. As shown in Table 13, all three methods exhibit nearly identical computational footprints when trained under the same long-tailed SSL protocol. FixMatch provides a baseline epoch time of 42.1s, while SimPro incurs a mild in-crease due to anchor matching and distribution refinement. GBC remains highly efficient, requiring only 42.8s per epoch—an overhead of merely +1 .7% compared Geometric Regularization via Gaussian Feature Bridges 33 
+
+to FixMatch—despite performing Gaussian Feature Bridging, projection merg-ing, and geometric target interpolation. This demonstrates that the proposed operations are lightweight and introduce negligible computational burden. Im-portantly, GBC achieves substantial accuracy gains (Tables 1–2) without sacri-ficing efficiency, showing that semantic feature-space bridging can be integrated into existing SSL pipelines with minimal cost. 
+
+## G Limitations 
+
+While GBC achieves strong performance across a wide range of long-tailed semi-supervised settings, several limitations remain. First, the Prototype Atlas, al-though lightweight and bounded in capacity, introduces an external memory whose early-stage updates may be sensitive to pseudo-label noise when labeled data is extremely scarce. More robust anchor initialization or noise-aware mem-ory correction strategies could further stabilize PA dynamics. Second, the Gaus-sian Feature Bridge assumes that interpolated latent states remain semantically meaningful; in architectures with highly entangled or rapidly evolving feature spaces, the quality of these intermediate representations may degrade, suggest-ing the need for adaptive or geometry-aware bridge shaping. Third, the bridging operations—projection, interpolation, and stochastic perturbations—incur mi-nor but non-zero latency. While negligible on CIFAR and ImageNet-127, large-scale or multi-bridge variants may require more efficient implementations. Fi-nally, our current formulation focuses on unimodal visual inputs. Extending GBC to domain-shifted or multimodal scenarios may require anchor-domain alignment or modality-specific bridge functions. We view these directions as promising op-portunities for future research.
