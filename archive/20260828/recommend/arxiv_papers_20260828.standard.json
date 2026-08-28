@@ -1,0 +1,170 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-28T03:59:11.612366+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2608.25862v1",
+      "source": "arxiv",
+      "title": "Learning Late, Guiding Early: Timestep-Decoupled Semantic Guidance for Fair Face Generation",
+      "abstract": "Demographic imbalance in synthetic face generation can propagate to downstream face recognition systems, making fairness an important consideration when diffusion models are used for data generation. Existing fairness-aware generation approaches often require model retraining, architectural modifications, or repeated guidance throughout the reverse diffusion process. In this work, we introduce Semantic Boundary Predictor (SBP), an inference-time framework that performs demographic guidance through a one-shot intervention during reverse denoising. Our approach is motivated by the observation that latent representations at different diffusion timesteps play distinct semantic roles: late-stage latents provide stronger demographic separability, whereas early-stage latents offer greater flexibility for semantic intervention. SBP leverages this timestep decoupling by learning linear semantic boundaries from late-stage latent representations while applying them only once at the initial noisy latent, allowing the remainder of the reverse denoising process to proceed unchanged. The method requires neither retraining nor fine-tuning of the underlying Latent Diffusion Model and operates without external balanced datasets. Experiments on CelebA-HQ demonstrate substantial improvements in demographic fairness, reducing fairness disparity by 98% for gender, 95% for binary race, and 15% for four-class race, while maintaining perceptual image quality across demographic groups. Owing to its one-shot inference strategy and model-agnostic design, SBP introduces only a small computational overhead and can be readily integrated with existing pre-trained latent diffusion models.",
+      "authors": [
+        "Subir Kumar Parida",
+        "Rajbabu Velmurugan",
+        "Ketan Kotwal",
+        "R. S. Sengar",
+        "Swati Hiremath"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-26T14:36:45+00:00",
+      "link": "https://arxiv.org/pdf/2608.25862v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "One-shot intervention in diffusion latents for semantic guidance",
+      "llm_evidence_cn": "扩散模型潜在空间中的一次性语义干预",
+      "llm_evidence": "扩散模型潜在空间中的一次性语义干预",
+      "canonical_evidence": "扩散模型潜在空间中的一次性语义干预",
+      "llm_tldr_en": "Addresses demographic imbalance in synthetic face generation by introducing Semantic Boundary Predictor, an inference-time framework that performs demographic guidance via a one-shot intervention on late-stage diffusion latents. This avoids retraining and repeated guidance, showing latent timesteps have distinct semantic roles.",
+      "llm_tldr_cn": "该论文针对合成人脸生成中的人口统计学不平衡问题，提出推理时框架语义边界预测器SBP，在反向去噪过程中对后期潜在表示进行一次干预实现人口统计学引导，避免重新训练和重复引导。研究表明不同扩散时间步的潜在表征承担不同语义角色，一次性干预即可有效提升生成公平性。",
+      "llm_tldr": "该论文针对合成人脸生成中的人口统计学不平衡问题，提出推理时框架语义边界预测器SBP，在反向去噪过程中对后期潜在表示进行一次干预实现人口统计学引导，避免重新训练和重复引导。研究表明不同扩散时间步的潜在表征承担不同语义角色，一次性干预即可有效提升生成公平性。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.25862v2",
+      "source": "arxiv",
+      "title": "Learning Late, Guiding Early: Timestep-Decoupled Semantic Guidance for Fair Face Generation",
+      "abstract": "Demographic imbalance in synthetic face generation can propagate to downstream face recognition systems, making fairness an important consideration when diffusion models are used for data generation. Existing fairness-aware generation approaches often require model retraining, architectural modifications, or repeated guidance throughout the reverse diffusion process. In this work, we introduce Semantic Boundary Predictor (SBP), an inference-time framework that performs demographic guidance through a one-shot intervention during reverse denoising. Our approach is motivated by the observation that latent representations at different diffusion timesteps play distinct semantic roles: late-stage latents provide stronger demographic separability, whereas early-stage latents offer greater flexibility for semantic intervention. SBP leverages this timestep decoupling by learning linear semantic boundaries from late-stage latent representations while applying them only once at the initial noisy latent, allowing the remainder of the reverse denoising process to proceed unchanged. The method requires neither retraining nor fine-tuning of the underlying Latent Diffusion Model and operates without external balanced datasets. Experiments on CelebA-HQ demonstrate substantial improvements in demographic fairness, reducing fairness disparity by 98% for gender, 95% for binary race, and 15% for four-class race, while maintaining perceptual image quality across demographic groups. Owing to its one-shot inference strategy and model-agnostic design, SBP introduces only a small computational overhead and can be readily integrated with existing pre-trained latent diffusion models.",
+      "authors": [
+        "Subir Kumar Parida",
+        "Rajbabu Velmurugan",
+        "Ketan Kotwal",
+        "R. S. Sengar",
+        "Swati Hiremath"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-26T14:36:45+00:00",
+      "link": "https://arxiv.org/pdf/2608.25862v2",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "one-shot intervention in latent diffusion space for semantic guidance",
+      "llm_evidence_cn": "在扩散潜在空间中进行一次性干预以实现语义引导",
+      "llm_evidence": "在扩散潜在空间中进行一次性干预以实现语义引导",
+      "canonical_evidence": "在扩散潜在空间中进行一次性干预以实现语义引导",
+      "llm_tldr_en": "This paper introduces Semantic Boundary Predictor (SBP), an inference-time framework that performs a one-shot latent intervention to guide demographic attributes in face generation, exploiting distinct semantic roles of diffusion timesteps.",
+      "llm_tldr_cn": "本文针对扩散模型生成人脸时人口统计学不平衡问题，提出推理时框架SBP，在反向去噪过程中通过一次性潜在干预实现人口统计指导。该方法观察到不同扩散时间步的潜在表示具有不同语义角色，后期潜变量提供更强的人口统计分离，从而在单次干预下完成引导。实验表明SBP无需重训练或反复引导即可有效缓解生成偏差，其潜在干预技术可迁移至颜色等属性控制。",
+      "llm_tldr": "本文针对扩散模型生成人脸时人口统计学不平衡问题，提出推理时框架SBP，在反向去噪过程中通过一次性潜在干预实现人口统计指导。该方法观察到不同扩散时间步的潜在表示具有不同语义角色，后期潜变量提供更强的人口统计分离，从而在单次干预下完成引导。实验表明SBP无需重训练或反复引导即可有效缓解生成偏差，其潜在干预技术可迁移至颜色等属性控制。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.21847v1",
+      "source": "arxiv",
+      "title": "BC-IHV: Conditioning the Color Space for Stable Rectified-Flow Low-Light Enhancement",
+      "abstract": "Low-light image enhancement (LLIE) must correct ambiguous exposure without overwriting structure already supported by the input. Generative transport can model exposure ambiguity; however, its flexibility may also alter observable geometry and chromatic content. Moreover, fixed invertible color coordinates are usually treated only as representations, although their inverse mappings reshape the RGB-domain gradients received by the enhancement network. To address these issues, we propose Structure-Anchored Rectified Flow (SA-RF), which maintains correspondence through separate chromaticity/intensity stems, a scale-matched condition pyramid, and HybridAda. HybridAda assigns location-specific retrieval to spatial cross-attention and global exposure modulation to pooled AdaLN. We further introduce BC-IHV, a learnable Box--Cox polar color space whose analytically invertible intensity mapping controls the inverse-gradient dynamic range through a single exponent. This allows the representation to balance dark-range expansion and gradient conditioning instead of adopting a fixed linear or logarithmic law. Experiments on three LOL benchmarks, blind image-quality evaluation, and cross-dataset tests demonstrate consistent reconstruction and perceptual advantages over the sota. Controlled studies further support the effectiveness of both the proposed framework and color representation.",
+      "authors": [
+        "Yi Ai",
+        "Zheng Chen",
+        "Yuanhao Cai",
+        "Yulun Zhang",
+        "Xiaokang Yang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-22T08:43:00+00:00",
+      "link": "https://arxiv.org/pdf/2608.21847v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "preserving structure under color changes; separate chromaticity/intensity stems",
+      "llm_evidence_cn": "在颜色变化下保持结构；分离色度/强度分支",
+      "llm_evidence": "在颜色变化下保持结构；分离色度/强度分支",
+      "canonical_evidence": "在颜色变化下保持结构；分离色度/强度分支",
+      "llm_tldr_en": "The paper proposes Structure-Anchored Rectified Flow (SA-RF) for low-light enhancement, using separate chromaticity/intensity stems and scale-matched condition pyramid to preserve structural and chromatic content while correcting exposure.",
+      "llm_tldr_cn": "低光图像增强需要在校正曝光的同时避免破坏输入中已有的结构信息，但生成式方法常会改变几何和色彩内容。针对这一问题，本文提出结构锚定整流流（SA-RF），通过分离色度/强度分支、尺度匹配条件金字塔和 HybridAda 模块，在保持结构对应关系的前提下实现稳定的低光增强。实验结果证明该方法能有效保持图像结构和色彩内容，同时纠正曝光不确定性，为低光增强中的色彩空间调节提供了新思路。",
+      "llm_tldr": "低光图像增强需要在校正曝光的同时避免破坏输入中已有的结构信息，但生成式方法常会改变几何和色彩内容。针对这一问题，本文提出结构锚定整流流（SA-RF），通过分离色度/强度分支、尺度匹配条件金字塔和 HybridAda 模块，在保持结构对应关系的前提下实现稳定的低光增强。实验结果证明该方法能有效保持图像结构和色彩内容，同时纠正曝光不确定性，为低光增强中的色彩空间调节提供了新思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.21464v1",
+      "source": "arxiv",
+      "title": "Complexity Induction: Compositional Generalization via Structured Label Distortion",
+      "abstract": "We demonstrate that structured distortion of training data - which we term complexity induction - can induce compositional generalization in a standard CNN classifier without architectural modification. Using synthetic images of colored geometric shapes, we encode classes as flat string labels (e.g., \"red-circle\") with no explicit attribute decomposition, and exclude certain color-shape combinations from training entirely. We apply two distortion methods derived from Jaccard string similarity between class names: mixed labels (soft target distributions encoding inter-class overlap) and expanded dataset (false training samples with structurally motivated incorrect labels). Both methods induce the ability to predict unseen class combinations, and act at different levels: mixed labels activate the classifier for unseen combinations by exploiting the CNN's natural embedding structure, while expanded training improves the embedding factorization itself. A control with random (unstructured) false labels confirms that the effect depends on the structure of the distortion, not on noise per se. These results suggest that structured complication of training signals can influence both the internal organization of learned representations and their compositional interpretation - a principle that may underlie the role of natural language in cognitive development.",
+      "authors": [
+        "Aleksandr Abramov"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-08-21T00:45:02+00:00",
+      "link": "https://arxiv.org/pdf/2608.21464v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Structured label distortion on colored shapes induces compositional generalization across unseen color-shape combos",
+      "llm_evidence_cn": "对彩色形状的结构化标签扰动诱导颜色-形状组合泛化",
+      "llm_evidence": "对彩色形状的结构化标签扰动诱导颜色-形状组合泛化",
+      "canonical_evidence": "对彩色形状的结构化标签扰动诱导颜色-形状组合泛化",
+      "llm_tldr_en": "Uses synthetic images of colored geometric shapes and excludes some color-shape combinations from training; applies mixed labels and expanded dataset to induce a CNN to predict unseen combinations, showing structured label distortion can enable compositional generalization without architectural changes.",
+      "llm_tldr_cn": "该论文使用彩色几何形状合成图像，从训练集中排除部分颜色-形状组合，并采用基于类别名称相似度的混合标签和扩展数据集两种结构化标签扰动方法，使标准CNN能够预测未见过的颜色-形状组合。结果表明结构化标签失真可诱导构图泛化，隐式促使模型分离颜色与形状概念。",
+      "llm_tldr": "该论文使用彩色几何形状合成图像，从训练集中排除部分颜色-形状组合，并采用基于类别名称相似度的混合标签和扩展数据集两种结构化标签扰动方法，使标准CNN能够预测未见过的颜色-形状组合。结果表明结构化标签失真可诱导构图泛化，隐式促使模型分离颜色与形状概念。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

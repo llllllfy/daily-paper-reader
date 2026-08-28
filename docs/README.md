@@ -6,29 +6,35 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-26
-- 运行时间：2026-08-26 22:13:16 UTC
+- 最新运行日期：2026-08-28
+- 运行时间：2026-08-28 04:06:06 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：1
-- 速读区：1
+- 本次总论文数：4
+- 精读区：2
+- 速读区：2
 
 ### 今日简报（AI）
-- 今日共生成 2 篇推荐（精读 1 篇，速读 1 篇）
-- 精读：《Knowing Isn't Always Saying: When Do Spatial Encodings Reach Answers in Vision-Language Models?》（8.0/10）
-- 速读：《Beyond Uniform Local Isometry and Topology: FactoMap for Disentangled Representations》（7.0/10）
+- 今日共生成 4 篇推荐（精读 2 篇，速读 2 篇）
+- 精读：《Learning Late, Guiding Early: Timestep-Decoupled Semantic Guidance for Fair Face Generation》（8.0/10）, 《Learning Late, Guiding Early: Timestep-Decoupled Semantic Guidance for Fair Face Generation》（8.0/10）
+- 速读：《BC-IHV: Conditioning the Color Space for Stable Rectified-Flow Low-Light Enhancement》（7.0/10）, 《Complexity Induction: Compositional Generalization via Structured Label Distortion》（6.0/10）
 - 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202608/26/README](/202608/26/README)
+- 详情：[/202608/28/README](/202608/28/README)
 
 ### 精读区论文标签
-1. [Knowing Isn't Always Saying: When Do Spatial Encodings Reach Answers in Vision-Language Models?](/202608/26/2608.22916v1-knowing-isnt-always-saying-when-do-spatial-encodings-reach-answers-in-vision-language-models)  
+1. [Learning Late, Guiding Early: Timestep-Decoupled Semantic Guidance for Fair Face Generation](/202608/28/2608.25862v1-learning-late-guiding-early-timestep-decoupled-semantic-guidance-for-fair-face-generation)  
    标签：评分：8.0/10、query:cp
-   evidence：方向修补作为跨层的类条件因果干预
+   evidence：扩散模型潜在空间中的一次性语义干预
+2. [Learning Late, Guiding Early: Timestep-Decoupled Semantic Guidance for Fair Face Generation](/202608/28/2608.25862v2-learning-late-guiding-early-timestep-decoupled-semantic-guidance-for-fair-face-generation)  
+   标签：评分：8.0/10、query:cp
+   evidence：在扩散潜在空间中进行一次性干预以实现语义引导
 
 ### 速读区论文标签
-1. [Beyond Uniform Local Isometry and Topology: FactoMap for Disentangled Representations](/202608/26/2608.24762v1-beyond-uniform-local-isometry-and-topology-factomap-for-disentangled-representations)  
+1. [BC-IHV: Conditioning the Color Space for Stable Rectified-Flow Low-Light Enhancement](/202608/28/2608.21847v1-bc-ihv-conditioning-the-color-space-for-stable-rectified-flow-low-light-enhancement)  
    标签：评分：7.0/10、query:cp
-   evidence：在解纠缠因子空间中讨论色调和尺度，提出因子空间拓扑图用于因子分离
+   evidence：在颜色变化下保持结构；分离色度/强度分支
+2. [Complexity Induction: Compositional Generalization via Structured Label Distortion](/202608/28/2608.21464v1-complexity-induction-compositional-generalization-via-structured-label-distortion)  
+   标签：评分：6.0/10、query:cp
+   evidence：对彩色形状的结构化标签扰动诱导颜色-形状组合泛化
 
 
 <div class="dpr-home-promo-card">
