@@ -1,0 +1,93 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-29T02:54:48.464668+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.21464v2",
+      "source": "arxiv",
+      "title": "Complexity Induction: Compositional Generalization via Structured Training Distortion",
+      "abstract": "We demonstrate that structured distortion of training data - which we term complexity induction - can induce compositional generalization in a standard CNN classifier without architectural modification. Using synthetic images of colored geometric shapes, we encode classes as flat string labels (e.g., \"red-circle\") with no explicit attribute decomposition, and exclude certain color-shape combinations from training entirely. We apply two distortion methods derived from Jaccard string similarity between class names: mixed labels (soft target distributions encoding inter-class overlap) and expanded dataset (false training samples with structurally motivated incorrect labels). Both methods induce the ability to predict unseen class combinations, and act at different levels: mixed labels activate the classifier for unseen combinations by exploiting the CNN's natural embedding structure, while expanded training improves the embedding factorization itself. A control with random (unstructured) false labels confirms that the effect depends on the structure of the distortion, not on noise per se. These results suggest that structured complication of training signals can influence both the internal organization of learned representations and their compositional interpretation - a principle that may underlie the role of natural language in cognitive development.",
+      "authors": [
+        "Aleksandr V. Abramov"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-08-21T00:45:02+00:00",
+      "link": "https://arxiv.org/pdf/2608.21464v2",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "using synthetic images of colored geometric shapes, exclude color-shape combinations, induce compositional generalization",
+      "llm_evidence_cn": "使用彩色几何形状合成图像，排除颜色-形状组合，诱导组合泛化",
+      "llm_evidence": "使用彩色几何形状合成图像，排除颜色-形状组合，诱导组合泛化",
+      "canonical_evidence": "使用彩色几何形状合成图像，排除颜色-形状组合，诱导组合泛化",
+      "llm_tldr_en": "Shows structured training distortion on colored shape data induces compositional generalization, enabling prediction of unseen color-shape combinations without explicit feature disentanglement.",
+      "llm_tldr_cn": "针对CNN在未见颜色-形状组合上泛化能力不足的问题，提出复杂度诱导方法，通过结构化扭曲训练标签（混合标签和扩展数据集）诱导组合泛化。在彩色几何形状合成数据上，模型能预测训练中未出现的颜色-形状组合。结果表明无需架构修改即可隐式实现颜色与形状属性的分离。",
+      "llm_tldr": "针对CNN在未见颜色-形状组合上泛化能力不足的问题，提出复杂度诱导方法，通过结构化扭曲训练标签（混合标签和扩展数据集）诱导组合泛化。在彩色几何形状合成数据上，模型能预测训练中未出现的颜色-形状组合。结果表明无需架构修改即可隐式实现颜色与形状属性的分离。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.21784v1",
+      "source": "arxiv",
+      "title": "DefaultShift: Auditing Semantic Default Shift in Accelerated Text-to-Image Models",
+      "abstract": "Few-step text-to-image models increasingly replace slower generators, yet acceleration can silently change distributions over unspecified attributes even when individual outputs remain plausible and aligned. We call these distributions semantic defaults and their change under replacement semantic default shift. Existing quality, preference, and diversity evaluations do not test whether a replacement preserves its reference model's semantic defaults. We introduce DefaultShift, a paired audit that labels repeated samples with closed semantic vocabularies, measures probability-mass movement, and separates interpretable ranking from confirmatory cross-fit inference. Across 14 reference and replacement pairs, adjusted color discrepancies range from 0.054 to 0.303 with recipe-specific directions. A 1,000-image human audit reproduces the ordering. We further introduce DefaultShift-Select, an offline calibration method that reduces human-measured shift by 10.3 percent to 35.1 percent across Turbo, DMD2, and FLUX without material quality loss. Under balanced evaluation, selected data recover 4.3 accuracy points and 7.5 worst-group points over uncalibrated replacement data. DefaultShift makes semantic preservation under acceleration measurable and actionable.",
+      "authors": [
+        "Xuanhua Yin",
+        "Chuanzhi Xu",
+        "Shunqi Mao",
+        "Wei Guo",
+        "Weidong Cai"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-22T05:35:09+00:00",
+      "link": "https://arxiv.org/pdf/2608.21784v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "audits semantic default shift including color discrepancies after model acceleration",
+      "llm_evidence_cn": "审计加速后包括颜色差异在内的语义默认偏移",
+      "llm_evidence": "审计加速后包括颜色差异在内的语义默认偏移",
+      "canonical_evidence": "审计加速后包括颜色差异在内的语义默认偏移",
+      "llm_tldr_en": "Proposes DefaultShift audit to measure probability-mass movement of semantic defaults, including color, when switching to faster text-to-image models.",
+      "llm_tldr_cn": "针对少步文本到图像模型加速可能无声改变未指定属性分布的问题，提出DefaultShift配对审计方法，用封闭语义词汇标注重复样本，测量概率质量移动，分离可解释排序与确认性交叉验证推断。在14对参考与替代模型上的实验发现调整后的颜色差异范围广，表明加速导致语义默认偏移。该工作为评估模型替换时的语义保真度提供了重要工具。",
+      "llm_tldr": "针对少步文本到图像模型加速可能无声改变未指定属性分布的问题，提出DefaultShift配对审计方法，用封闭语义词汇标注重复样本，测量概率质量移动，分离可解释排序与确认性交叉验证推断。在14对参考与替代模型上的实验发现调整后的颜色差异范围广，表明加速导致语义默认偏移。该工作为评估模型替换时的语义保真度提供了重要工具。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "impact of color perturbation on semantic understanding",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

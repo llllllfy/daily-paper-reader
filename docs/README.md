@@ -6,35 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-28
-- 运行时间：2026-08-28 04:06:06 UTC
+- 最新运行日期：2026-08-29
+- 运行时间：2026-08-29 02:56:36 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：2
+- 本次总论文数：2
+- 精读区：0
 - 速读区：2
 
 ### 今日简报（AI）
-- 今日共生成 4 篇推荐（精读 2 篇，速读 2 篇）
-- 精读：《Learning Late, Guiding Early: Timestep-Decoupled Semantic Guidance for Fair Face Generation》（8.0/10）, 《Learning Late, Guiding Early: Timestep-Decoupled Semantic Guidance for Fair Face Generation》（8.0/10）
-- 速读：《BC-IHV: Conditioning the Color Space for Stable Rectified-Flow Low-Light Enhancement》（7.0/10）, 《Complexity Induction: Compositional Generalization via Structured Label Distortion》（6.0/10）
+- 今日共生成 2 篇推荐（精读 0 篇，速读 2 篇）
+- 速读：《Complexity Induction: Compositional Generalization via Structured Training Distortion》（6.0/10）, 《DefaultShift: Auditing Semantic Default Shift in Accelerated Text-to-Image Models》（6.0/10）
 - 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202608/28/README](/202608/28/README)
+- 详情：[/202608/29/README](/202608/29/README)
 
 ### 精读区论文标签
-1. [Learning Late, Guiding Early: Timestep-Decoupled Semantic Guidance for Fair Face Generation](/202608/28/2608.25862v1-learning-late-guiding-early-timestep-decoupled-semantic-guidance-for-fair-face-generation)  
-   标签：评分：8.0/10、query:cp
-   evidence：扩散模型潜在空间中的一次性语义干预
-2. [Learning Late, Guiding Early: Timestep-Decoupled Semantic Guidance for Fair Face Generation](/202608/28/2608.25862v2-learning-late-guiding-early-timestep-decoupled-semantic-guidance-for-fair-face-generation)  
-   标签：评分：8.0/10、query:cp
-   evidence：在扩散潜在空间中进行一次性干预以实现语义引导
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [BC-IHV: Conditioning the Color Space for Stable Rectified-Flow Low-Light Enhancement](/202608/28/2608.21847v1-bc-ihv-conditioning-the-color-space-for-stable-rectified-flow-low-light-enhancement)  
-   标签：评分：7.0/10、query:cp
-   evidence：在颜色变化下保持结构；分离色度/强度分支
-2. [Complexity Induction: Compositional Generalization via Structured Label Distortion](/202608/28/2608.21464v1-complexity-induction-compositional-generalization-via-structured-label-distortion)  
+1. [Complexity Induction: Compositional Generalization via Structured Training Distortion](/202608/29/2608.21464v2-complexity-induction-compositional-generalization-via-structured-training-distortion)  
    标签：评分：6.0/10、query:cp
-   evidence：对彩色形状的结构化标签扰动诱导颜色-形状组合泛化
+   evidence：使用彩色几何形状合成图像，排除颜色-形状组合，诱导组合泛化
+2. [DefaultShift: Auditing Semantic Default Shift in Accelerated Text-to-Image Models](/202608/29/2608.21784v1-defaultshift-auditing-semantic-default-shift-in-accelerated-text-to-image-models)  
+   标签：评分：6.0/10、query:cp
+   evidence：审计加速后包括颜色差异在内的语义默认偏移
 
 
 <div class="dpr-home-promo-card">
