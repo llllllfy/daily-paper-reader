@@ -7,16 +7,16 @@
 
 ## 每次日报
 - 最新运行日期：2026-08-29
-- 运行时间：2026-08-29 02:56:36 UTC
+- 运行时间：2026-08-29 22:16:55 UTC
 - 运行状态：成功
-- 本次总论文数：2
+- 本次总论文数：1
 - 精读区：0
-- 速读区：2
+- 速读区：1
 
 ### 今日简报（AI）
-- 今日共生成 2 篇推荐（精读 0 篇，速读 2 篇）
-- 速读：《Complexity Induction: Compositional Generalization via Structured Training Distortion》（6.0/10）, 《DefaultShift: Auditing Semantic Default Shift in Accelerated Text-to-Image Models》（6.0/10）
-- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
+今日速读一篇组合泛化新作《Complexity Induction: Compositional Generalization via Structured Training Distortion》，评分 7.0/10。  
+值得关注的是“复杂度归纳 + 结构化训练失真”这一方向，探索用有结构的训练失真来提升组合泛化能力。  
+建议对组合泛化或训练策略感兴趣的读者先读该文摘要与方法部分，再决定是否深入精读。
 - 详情：[/202608/29/README](/202608/29/README)
 
 ### 精读区论文标签
@@ -24,11 +24,8 @@
 
 ### 速读区论文标签
 1. [Complexity Induction: Compositional Generalization via Structured Training Distortion](/202608/29/2608.21464v2-complexity-induction-compositional-generalization-via-structured-training-distortion)  
-   标签：评分：6.0/10、query:cp
-   evidence：使用彩色几何形状合成图像，排除颜色-形状组合，诱导组合泛化
-2. [DefaultShift: Auditing Semantic Default Shift in Accelerated Text-to-Image Models](/202608/29/2608.21784v1-defaultshift-auditing-semantic-default-shift-in-accelerated-text-to-image-models)  
-   标签：评分：6.0/10、query:cp
-   evidence：审计加速后包括颜色差异在内的语义默认偏移
+   标签：评分：7.0/10、query:cp
+   evidence：彩色几何形状与未见的颜色-形状组合实现组合泛化
 
 
 <div class="dpr-home-promo-card">

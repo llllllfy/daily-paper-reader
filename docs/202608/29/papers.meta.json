@@ -1,8 +1,8 @@
 {
   "label": "2026-08-29",
   "date": "2026-08-29",
-  "generated_at": "2026-08-29T02:57:08",
-  "count": 2,
+  "generated_at": "2026-08-29T22:17:21",
+  "count": 1,
   "papers": [
     {
       "paper_id": "202608/29/2608.21464v2-complexity-induction-compositional-generalization-via-structured-training-distortion",
@@ -16,21 +16,6 @@
       "tldr": "组合泛化对标准CNN仍具挑战，通常需显式属性分解或架构修改。本文提出复杂度诱导，利用类名间Jaccard相似度对训练数据进行结构化扭曲，包括混合标签和扩展数据集，训练标准CNN。在彩色几何形状合成任务中，两种扭曲方法均使模型成功预测训练中完全排除的颜色-形状组合，而随机错误标签对照无效。结果表明结构化训练信号复杂化能同时影响表示内部组织与组合解释，提示类似机制可能解释自然语言在认知发展中的作用。",
       "tags": "query:cp",
       "abstract_en": "We demonstrate that structured distortion of training data - which we term complexity induction - can induce compositional generalization in a standard CNN classifier without architectural modification. Using synthetic images of colored geometric shapes, we encode classes as flat string labels (e.g., \"red-circle\") with no explicit attribute decomposition, and exclude certain color-shape combinations from training entirely. We apply two distortion methods derived from Jaccard string similarity between class names: mixed labels (soft target distributions encoding inter-class overlap) and expanded dataset (false training samples with structurally motivated incorrect labels). Both methods induce the ability to predict unseen class combinations, and act at different levels: mixed labels activate the classifier for unseen combinations by exploiting the CNN's natural embedding structure, while expanded training improves the embedding factorization itself. A control with random (unstructured) false labels confirms that the effect depends on the structure of the distortion, not on noise per se. These results suggest that structured complication of training signals can influence both the internal organization of learned representations and their compositional interpretation - a principle that may underlie the role of natural language in cognitive development.",
-      "source": "arxiv",
-      "selection_source": "fresh_fetch"
-    },
-    {
-      "paper_id": "202608/29/2608.21784v1-defaultshift-auditing-semantic-default-shift-in-accelerated-text-to-image-models",
-      "section": "quick",
-      "title_en": "DefaultShift: Auditing Semantic Default Shift in Accelerated Text-to-Image Models",
-      "authors": "Xuanhua Yin, Chuanzhi Xu, Shunqi Mao, Wei Guo, Weidong Cai",
-      "date": "2026-08-22",
-      "pdf": "https://arxiv.org/pdf/2608.21784v1",
-      "score": "6.0",
-      "evidence": "审计加速后包括颜色差异在内的语义默认偏移",
-      "tldr": "加速文本到图像模型逐步取代慢生成器，但会静默改变未指定属性的分布，即语义默认偏移。现有评估未检测替换是否保留参考模型语义默认。本文提出DefaultShift配对审计，用封闭语义词汇标记重复样本并测量概率质量移动，在14对模型上发现颜色差异0.054-0.303。进一步提出DefaultShift-Select离线校准，减少人类感知偏移10.3%-35.1%且无质量损失，使语义保持可测量可操作。",
-      "tags": "query:cp",
-      "abstract_en": "Few-step text-to-image models increasingly replace slower generators, yet acceleration can silently change distributions over unspecified attributes even when individual outputs remain plausible and aligned. We call these distributions semantic defaults and their change under replacement semantic default shift. Existing quality, preference, and diversity evaluations do not test whether a replacement preserves its reference model's semantic defaults. We introduce DefaultShift, a paired audit that labels repeated samples with closed semantic vocabularies, measures probability-mass movement, and separates interpretable ranking from confirmatory cross-fit inference. Across 14 reference and replacement pairs, adjusted color discrepancies range from 0.054 to 0.303 with recipe-specific directions. A 1,000-image human audit reproduces the ordering. We further introduce DefaultShift-Select, an offline calibration method that reduces human-measured shift by 10.3 percent to 35.1 percent across Turbo, DMD2, and FLUX without material quality loss. Under balanced evaluation, selected data recover 4.3 accuracy points and 7.5 worst-group points over uncalibrated replacement data. DefaultShift makes semantic preservation under acceleration measurable and actionable.",
       "source": "arxiv",
       "selection_source": "fresh_fetch"
     }

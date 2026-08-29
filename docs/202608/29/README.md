@@ -1,21 +1,20 @@
 # 日报 · 2026-08-29
 
-- 生成时间：2026-08-29 02:56:36 UTC
-- 当次推荐总数：2
+- 生成时间：2026-08-29 22:16:55 UTC
+- 当次推荐总数：1
 - 精读区：0
-- 速读区：2
+- 速读区：1
 
 ## 今日简报（AI）
-- 今日共生成 2 篇推荐（精读 0 篇，速读 2 篇）
-- 速读：《Complexity Induction: Compositional Generalization via Structured Training Distortion》（6.0/10）, 《DefaultShift: Auditing Semantic Default Shift in Accelerated Text-to-Image Models》（6.0/10）
-- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
+今天速读了一篇论文《Complexity Induction: Compositional Generalization via Structured Training Distortion》，核心是用结构化训练扭曲做复杂度归纳来提升组合泛化。  
+最值得关注的方向是把“复杂度”作为显式训练信号，而不是单纯靠扩大模型或数据。  
+下步建议：如果你在做组合泛化相关任务，可以先看它的训练扭曲设计和实验对比，判断是否值得复现。
 
 ## 精读区
 - 本次无精读推荐。
 
 ## 速读区
-1. [Complexity Induction: Compositional Generalization via Structured Training Distortion](/202608/29/2608.21464v2-complexity-induction-compositional-generalization-via-structured-training-distortion) （6.0/10）
-2. [DefaultShift: Auditing Semantic Default Shift in Accelerated Text-to-Image Models](/202608/29/2608.21784v1-defaultshift-auditing-semantic-default-shift-in-accelerated-text-to-image-models) （6.0/10）
+1. [Complexity Induction: Compositional Generalization via Structured Training Distortion](/202608/29/2608.21464v2-complexity-induction-compositional-generalization-via-structured-training-distortion) （7.0/10）
 
 ---
 使用键盘方向键可在日报/论文之间快速切换。
