@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-30",
+  "date": "2026-08-30",
+  "generated_at": "2026-08-30T22:06:52",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/30/2608.23790v1-primate-vision-reveals-a-missing-principle-for-robust-dynamic-ai",
+      "section": "quick",
+      "title_en": "Primate vision reveals a missing principle for robust dynamic AI",
+      "authors": "Matteo Dunnhofer, Christian Micheloni, Kohitij Kar",
+      "date": "2026-08-24",
+      "pdf": "https://arxiv.org/pdf/2608.23790v1",
+      "score": "7.0",
+      "evidence": "研究AI模型对包含颜色在内的外观变化的鲁棒性，并与灵长类视觉对比",
+      "tldr": "智能视觉系统如何将物体外观与运动信息结合，并在外观变化时保持鲁棒？这是智能视觉的核心挑战。研究通过比较人类、猕猴IT皮层与多种图像/视频网络表示，发现预测世界模型在跨外观泛化和神经保真度上最优，但所有模型都未复现皮层从早期外观主导响应到后期外观不变运动编码的转变。这表明渐进将运动整合进物体表征是鲁棒动态视觉的关键原则，预测学习为实现该计算提供了有前景的路线。",
+      "tags": "query:cp",
+      "abstract_en": "How does an intelligent visual system combine what objects look like with how they move while remaining robust as appearance changes? We addressed this question by comparing human perception and neural activity in macaque inferior temporal cortex with representations from image- and video-based neural networks spanning recognition, segmentation, optic-flow processing and predictive world modeling. Temporal integration improved object representations, but most video recognition models generalized poorly when appearance was disrupted while motion structure was preserved. Humans and macaque IT remained robust. Notably, predictive world models combined strong cross-appearance generalization with the closest correspondence to IT, outperforming other video-modeling approaches in neural fidelity. Yet no model reproduced the cortical transformation from early appearance-dominated responses toward later appearance-invariant motion coding. These results identify progressive integration of motion into object representations as a principle of robust dynamic vision and implicate predictive learning as a promising route toward realizing this computation in artificial systems.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

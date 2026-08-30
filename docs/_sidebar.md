@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-08-30 <!--dpr-date:20260830-->
+    * 速读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202608/30/2608.23790v1-primate-vision-reveals-a-missing-principle-for-robust-dynamic-ai" data-sidebar-item="{&quot;title&quot;: &quot;Primate vision reveals a missing principle for robust dynamic AI&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2608.23790v1-primate-vision-reveals-a-missing-principle-for-robust-dynamic-ai&quot;, &quot;score&quot;: &quot;7.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;研究AI模型对包含颜色在内的外观变化的鲁棒性，并与灵长类视觉对比&quot;}">Primate vision reveals a missing principle for robust dynamic AI</a>
   * 2026-08-29 <!--dpr-date:20260829-->
     * 速读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202608/29/2608.21464v2-complexity-induction-compositional-generalization-via-structured-training-distortion" data-sidebar-item="{&quot;title&quot;: &quot;Complexity Induction: Compositional Generalization via Structured Training Distortion&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2608.21464v2-complexity-induction-compositional-generalization-via-structured-training-distortion&quot;, &quot;score&quot;: &quot;7.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;彩色几何形状与未见的颜色-形状组合实现组合泛化&quot;}">Complexity Induction: Compositional Generalization via Structured Training Distortion</a>
