@@ -1,0 +1,54 @@
+{
+  "label": "2026-08-31",
+  "date": "2026-08-31",
+  "generated_at": "2026-09-01T00:15:00",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202608/31/2608.28058v1-dynamic-alignment-compensation-for-hallucination-mitigation-in-large-vision-language-models",
+      "section": "deep",
+      "title_en": "Dynamic Alignment Compensation for Hallucination Mitigation in Large Vision-Language Models",
+      "authors": "Kairong Yu, Zixin Zhu, Le Yu, Hongwei Wang",
+      "date": "2026-08-28",
+      "pdf": "https://arxiv.org/pdf/2608.28058v1",
+      "score": "8.0",
+      "evidence": "对表示分歧选择性地应用轻量残差补偿",
+      "tldr": "大型视觉语言模型仍易产生幻觉，现有方法多依赖外部监督或输出校准，忽视内部表示动态。本文发现推理时跨模态表示在解码器层间退化并随生成步骤漂移，增加幻觉风险。为此提出无需训练的动态对齐补偿方法DAC，通过层间语义补偿和顺序语义校正抑制表示发散。在九个多模态基准上，DAC一致降低幻觉并保持整体性能，为推理时缓解提供了新思路。",
+      "tags": "query:cp",
+      "abstract_en": "Large Vision-Language Models (LVLMs) remain prone to hallucinations, producing responses that are irrelevant or inconsistent with the multimodal input. Existing mitigation methods mainly rely on external supervision, output calibration, or attention regulation, leaving the internal representation dynamics of autoregressive generation underexplored. We identify an inference-time failure mode in which cross-modal representations degrade across decoder layers and drift across generation steps, destabilizing token prediction and increasing hallucination risk. We propose \\emph{Dynamic Alignment Compensation} (DAC), a training-free inference-time method that detects representation divergence and selectively applies lightweight residual compensation. DAC combines Layer-wise Semantic Compensation to mitigate inter-layer degradation with Sequential Semantic Correction to constrain temporal drift. Experiments on nine hallucination-focused and general-purpose multimodal benchmarks across multiple LVLM backbones show that DAC consistently reduces hallucinations while maintaining strong overall performance.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/31/2608.28082v1-attribute-token-arithmetic-disentangled-and-continuous-semantic-control-for-visual-autoregressive-models",
+      "section": "deep",
+      "title_en": "Attribute Token Arithmetic: Disentangled and Continuous Semantic Control for Visual Autoregressive Models",
+      "authors": "Xindi Yang, Yicheng Wu, Cheng Zhang, Jianfei Cai, Tien-Tsin Wong",
+      "date": "2026-08-28",
+      "pdf": "https://arxiv.org/pdf/2608.28082v1",
+      "score": "8.0",
+      "evidence": "在潜在空间识别视觉属性语义方向并进行算术操作",
+      "tldr": "自回归文本到图像生成虽已实现高保真合成，但细粒度语义控制仍因属性纠缠和文本与视觉表示错位而面临挑战。本文提出属性令牌算术（ATA），在预训练自回归潜在空间内从单张参考图像学习视觉属性对应的语义方向，无需模型重训练或大规模监督。生成时通过简单算术运算即可对属性进行连续调整和组合，实现身份保持、细粒度和多属性控制。实验表明该方法在可控性、通用性和计算效率上均超越现有自回归编辑基线。",
+      "tags": "query:cp",
+      "abstract_en": "Autoregressive text-to-image generation has recently achieved remarkable progress, offering high-fidelity synthesis via a unified generative framework. However, fine-grained semantic control remains challenging due to the attribute entanglement and the misalignment between textual and fine-grained visual representations. In this paper, we introduce Attribute Token Arithmetic (ATA), a method that enables disentangled and continuous attribute control in visual autoregressive modelling. Inspired by the vector arithmetic property observed in word embeddings, ATA identifies semantic directions corresponding to visual attributes (e.g., aging, fatness, emotion) directly within the pretrained autoregressive latent space. These directions are learned from a single reference image, without model retraining or large-scale supervision. During generation, attributes can be continuously adjusted and compositionally combined through simple arithmetic operations with other attribute tokens. Extensive experiments demonstrate that ATA achieves identity-preserving, fine-grained, and multi-attribute adjustment, outperforming existing autoregressive editing baselines in controllability, generality, and computational efficiency. Our code will be available at https://github.com/Madaoer/ATA.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/31/2608.28191v1-expose-explainable-and-domain-robust-embeddings-from-pathology-vision-foundation-models-using-sparse-autoencoders",
+      "section": "quick",
+      "title_en": "EXPOSE: Explainable and Domain-Robust Embeddings from Pathology Vision Foundation Models using Sparse Autoencoders",
+      "authors": "Anja Witte, Maximilian Lennartz, Jan Baumbach, Guido Sauter, Stefan Bonn, Patrick Fuhlert, Marina Zimmermann",
+      "date": "2026-08-28",
+      "pdf": "https://arxiv.org/pdf/2608.28191v1",
+      "score": "7.0",
+      "evidence": "抑制域特定潜在成分以提升对染色/颜色偏移的鲁棒性",
+      "tldr": "视觉基础模型在计算病理学中广泛应用，但对染色、组织制备和扫描仪等引起的域偏移敏感，其嵌入混有生物与域特定信息。本文提出EXPOSE框架，采用稀疏自编码器作为可解释瓶颈，识别并抑制域特定成分。在前列腺癌多采集域数据集上，掩蔽域特定特征后跨域复发预测性能提高，DoRI鲁棒性指标上升。该方法无需重新训练骨干模型，为病理基础模型提供了轻量且可解释的域泛化方案。",
+      "tags": "query:cp",
+      "abstract_en": "Vision Foundation Models (VFMs) are widely used in computational pathology but remain sensitive to domain shifts arising from variations in staining, tissue preparation, and scanner hardware. A key limitation is that VFM embeddings entangle biological with domain-specific information, hindering cross-domain generalization. We propose Explainable Probing of Cross-Domain Sparse Embeddings (EXPOSE), a framework that uses Sparse Autoencoders (SAEs) as an explainable bottleneck to identify and suppress domain-specific components in VFM embeddings. We train a sparse representation of VFM features, use a linear classifier to identify domain-specific latent dimensions, and mask these features prior to downstream relapse prediction without retraining the backbone model. Experiments on a large prostate cancer dataset with multiple acquisition domains show that SAE features capture both domain- and task-specific information, which are partially disentangled in the latent space. Removing domain-specific features improves cross-domain performance and increases embedding robustness as measured by the Domain Robustness Index (DoRI). Code is available at https://github.com/imsb-uke/expose .",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,136 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-01T00:10:02.470973+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2608.28058v1",
+      "source": "arxiv",
+      "title": "Dynamic Alignment Compensation for Hallucination Mitigation in Large Vision-Language Models",
+      "abstract": "Large Vision-Language Models (LVLMs) remain prone to hallucinations, producing responses that are irrelevant or inconsistent with the multimodal input. Existing mitigation methods mainly rely on external supervision, output calibration, or attention regulation, leaving the internal representation dynamics of autoregressive generation underexplored. We identify an inference-time failure mode in which cross-modal representations degrade across decoder layers and drift across generation steps, destabilizing token prediction and increasing hallucination risk. We propose \\emph{Dynamic Alignment Compensation} (DAC), a training-free inference-time method that detects representation divergence and selectively applies lightweight residual compensation. DAC combines Layer-wise Semantic Compensation to mitigate inter-layer degradation with Sequential Semantic Correction to constrain temporal drift. Experiments on nine hallucination-focused and general-purpose multimodal benchmarks across multiple LVLM backbones show that DAC consistently reduces hallucinations while maintaining strong overall performance.",
+      "authors": [
+        "Kairong Yu",
+        "Zixin Zhu",
+        "Le Yu",
+        "Hongwei Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-28T08:21:31+00:00",
+      "link": "https://arxiv.org/pdf/2608.28058v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "selectively applies lightweight residual compensation to representation divergence",
+      "llm_evidence_cn": "对表示分歧选择性地应用轻量残差补偿",
+      "llm_evidence": "对表示分歧选择性地应用轻量残差补偿",
+      "canonical_evidence": "对表示分歧选择性地应用轻量残差补偿",
+      "llm_tldr_en": "Identifies inference-time representation degradation in LVLMs and proposes Dynamic Alignment Compensation (DAC), a training-free method that detects divergence and applies residual compensation to stabilize token prediction and reduce hallucinations.",
+      "llm_tldr_cn": "大型视觉语言模型在自回归生成中会出现跨模态表示退化，导致幻觉。本文提出动态对齐补偿（DAC），一种免训练的推理时方法，通过检测表示分歧并施加轻量残差补偿来稳定预测。实验表明该方法能有效减少幻觉，且无需外部监督。该工作揭示了内部表示动态对生成质量的影响，并提供了一种灵活的潜在空间干预手段。",
+      "llm_tldr": "大型视觉语言模型在自回归生成中会出现跨模态表示退化，导致幻觉。本文提出动态对齐补偿（DAC），一种免训练的推理时方法，通过检测表示分歧并施加轻量残差补偿来稳定预测。实验表明该方法能有效减少幻觉，且无需外部监督。该工作揭示了内部表示动态对生成质量的影响，并提供了一种灵活的潜在空间干预手段。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.28082v1",
+      "source": "arxiv",
+      "title": "Attribute Token Arithmetic: Disentangled and Continuous Semantic Control for Visual Autoregressive Models",
+      "abstract": "Autoregressive text-to-image generation has recently achieved remarkable progress, offering high-fidelity synthesis via a unified generative framework. However, fine-grained semantic control remains challenging due to the attribute entanglement and the misalignment between textual and fine-grained visual representations. In this paper, we introduce Attribute Token Arithmetic (ATA), a method that enables disentangled and continuous attribute control in visual autoregressive modelling. Inspired by the vector arithmetic property observed in word embeddings, ATA identifies semantic directions corresponding to visual attributes (e.g., aging, fatness, emotion) directly within the pretrained autoregressive latent space. These directions are learned from a single reference image, without model retraining or large-scale supervision. During generation, attributes can be continuously adjusted and compositionally combined through simple arithmetic operations with other attribute tokens. Extensive experiments demonstrate that ATA achieves identity-preserving, fine-grained, and multi-attribute adjustment, outperforming existing autoregressive editing baselines in controllability, generality, and computational efficiency. Our code will be available at https://github.com/Madaoer/ATA.",
+      "authors": [
+        "Xindi Yang",
+        "Yicheng Wu",
+        "Cheng Zhang",
+        "Jianfei Cai",
+        "Tien-Tsin Wong"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-28T08:51:57+00:00",
+      "link": "https://arxiv.org/pdf/2608.28082v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "identifies semantic directions for visual attributes in latent space and performs arithmetic",
+      "llm_evidence_cn": "在潜在空间识别视觉属性语义方向并进行算术操作",
+      "llm_evidence": "在潜在空间识别视觉属性语义方向并进行算术操作",
+      "canonical_evidence": "在潜在空间识别视觉属性语义方向并进行算术操作",
+      "llm_tldr_en": "Introduces Attribute Token Arithmetic (ATA), which identifies semantic directions for visual attributes in a pretrained autoregressive latent space and applies vector arithmetic to achieve disentangled and continuous attribute control.",
+      "llm_tldr_cn": "自回归文本到图像生成虽效果出色，但细粒度属性控制仍受限于属性纠缠。本文提出属性令牌算术（ATA），受词嵌入向量算术启发，在预训练自回归模型潜在空间中识别视觉属性（如年龄、胖瘦、情绪）对应的语义方向。通过在这些方向上进行算术操作，实现解耦且连续的属性控制。实验表明该方法能精确编辑生成图像的属性而不影响其他方面，为视觉生成中的潜在空间干预提供了新途径。",
+      "llm_tldr": "自回归文本到图像生成虽效果出色，但细粒度属性控制仍受限于属性纠缠。本文提出属性令牌算术（ATA），受词嵌入向量算术启发，在预训练自回归模型潜在空间中识别视觉属性（如年龄、胖瘦、情绪）对应的语义方向。通过在这些方向上进行算术操作，实现解耦且连续的属性控制。实验表明该方法能精确编辑生成图像的属性而不影响其他方面，为视觉生成中的潜在空间干预提供了新途径。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.28191v1",
+      "source": "arxiv",
+      "title": "EXPOSE: Explainable and Domain-Robust Embeddings from Pathology Vision Foundation Models using Sparse Autoencoders",
+      "abstract": "Vision Foundation Models (VFMs) are widely used in computational pathology but remain sensitive to domain shifts arising from variations in staining, tissue preparation, and scanner hardware. A key limitation is that VFM embeddings entangle biological with domain-specific information, hindering cross-domain generalization. We propose Explainable Probing of Cross-Domain Sparse Embeddings (EXPOSE), a framework that uses Sparse Autoencoders (SAEs) as an explainable bottleneck to identify and suppress domain-specific components in VFM embeddings. We train a sparse representation of VFM features, use a linear classifier to identify domain-specific latent dimensions, and mask these features prior to downstream relapse prediction without retraining the backbone model. Experiments on a large prostate cancer dataset with multiple acquisition domains show that SAE features capture both domain- and task-specific information, which are partially disentangled in the latent space. Removing domain-specific features improves cross-domain performance and increases embedding robustness as measured by the Domain Robustness Index (DoRI). Code is available at https://github.com/imsb-uke/expose .",
+      "authors": [
+        "Anja Witte",
+        "Maximilian Lennartz",
+        "Jan Baumbach",
+        "Guido Sauter",
+        "Stefan Bonn",
+        "Patrick Fuhlert",
+        "Marina Zimmermann"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-08-28T11:04:28+00:00",
+      "link": "https://arxiv.org/pdf/2608.28191v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Suppresses domain-specific latent components to improve robustness to staining/color shifts",
+      "llm_evidence_cn": "抑制域特定潜在成分以提升对染色/颜色偏移的鲁棒性",
+      "llm_evidence": "抑制域特定潜在成分以提升对染色/颜色偏移的鲁棒性",
+      "canonical_evidence": "抑制域特定潜在成分以提升对染色/颜色偏移的鲁棒性",
+      "llm_tldr_en": "EXPOSE uses sparse autoencoders to identify and mask domain-specific features in pathology VFM embeddings, improving domain robustness including color/staining variations.",
+      "llm_tldr_cn": "针对病理视觉基础模型对染色、组织制备等域偏移敏感的问题，EXPOSE提出使用稀疏自编码器作为可解释瓶颈，识别并抑制嵌入中的域特定成分。通过在稀疏表示上训练线性分类器定位域相关潜在维度并掩码这些特征，提升跨域泛化能力。该方法展示了在特征层面干预以消除颜色相关域信息的有效性，为颜色鲁棒性提供了新思路。",
+      "llm_tldr": "针对病理视觉基础模型对染色、组织制备等域偏移敏感的问题，EXPOSE提出使用稀疏自编码器作为可解释瓶颈，识别并抑制嵌入中的域特定成分。通过在稀疏表示上训练线性分类器定位域相关潜在维度并掩码这些特征，提升跨域泛化能力。该方法展示了在特征层面干预以消除颜色相关域信息的有效性，为颜色鲁棒性提供了新思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "papers on feature level intervention for color robustness in deep learning",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

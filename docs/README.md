@@ -6,26 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-30
-- 运行时间：2026-08-30 22:06:24 UTC
+- 最新运行日期：2026-08-31
+- 运行时间：2026-09-01 00:14:31 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：0
+- 本次总论文数：3
+- 精读区：2
 - 速读区：1
 
 ### 今日简报（AI）
-- 今日共生成 1 篇推荐（精读 0 篇，速读 1 篇）
-- 速读：《Primate vision reveals a missing principle for robust dynamic AI》（7.0/10）
+- 今日共生成 3 篇推荐（精读 2 篇，速读 1 篇）
+- 精读：《Dynamic Alignment Compensation for Hallucination Mitigation in Large Vision-Language Models》（8.0/10）, 《Attribute Token Arithmetic: Disentangled and Continuous Semantic Control for Visual Autoregressive Models》（8.0/10）
+- 速读：《EXPOSE: Explainable and Domain-Robust Embeddings from Pathology Vision Foundation Models using Sparse Autoencoders》（7.0/10）
 - 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202608/30/README](/202608/30/README)
+- 详情：[/202608/31/README](/202608/31/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Dynamic Alignment Compensation for Hallucination Mitigation in Large Vision-Language Models](/202608/31/2608.28058v1-dynamic-alignment-compensation-for-hallucination-mitigation-in-large-vision-language-models)  
+   标签：评分：8.0/10、query:cp
+   evidence：对表示分歧选择性地应用轻量残差补偿
+2. [Attribute Token Arithmetic: Disentangled and Continuous Semantic Control for Visual Autoregressive Models](/202608/31/2608.28082v1-attribute-token-arithmetic-disentangled-and-continuous-semantic-control-for-visual-autoregressive-models)  
+   标签：评分：8.0/10、query:cp
+   evidence：在潜在空间识别视觉属性语义方向并进行算术操作
 
 ### 速读区论文标签
-1. [Primate vision reveals a missing principle for robust dynamic AI](/202608/30/2608.23790v1-primate-vision-reveals-a-missing-principle-for-robust-dynamic-ai)  
+1. [EXPOSE: Explainable and Domain-Robust Embeddings from Pathology Vision Foundation Models using Sparse Autoencoders](/202608/31/2608.28191v1-expose-explainable-and-domain-robust-embeddings-from-pathology-vision-foundation-models-using-sparse-autoencoders)  
    标签：评分：7.0/10、query:cp
-   evidence：研究AI模型对包含颜色在内的外观变化的鲁棒性，并与灵长类视觉对比
+   evidence：抑制域特定潜在成分以提升对染色/颜色偏移的鲁棒性
 
 
 <div class="dpr-home-promo-card">
