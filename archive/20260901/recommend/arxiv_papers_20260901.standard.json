@@ -1,0 +1,175 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-01T22:03:45.700929+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [
+    {
+      "id": "2608.29220v1",
+      "source": "arxiv",
+      "title": "SGPDFuse: Semantically-Guided Physics-Disentanglement General Multi-Modal Image Fusion",
+      "abstract": "Multimodal image fusion (MMIF) aims to integrate complementary sensor data into a single representation that preserves intrinsic scene reality while eliminating environmental interferences. Most existing approaches rely on blind feature aggregation, which excels at signal accumulation but fails to distinguish essential content from physical degradations. We propose SGPDFuse, which bridges this gap by mapping inputs into a physics-disentangled structural representation via a Semantic-Physical Parametric Bridge (SPPB) built on pretrained vision foundation models, utilizing the Intrinsic-Variation principle to decouple invariant scene attributes from transient environmental factors. To guide this decomposition, we introduce a Semantic Alignment mechanism: we explicitly anchor the fused representation to salient semantic features in the same foundation model feature space via cosine similarity to preserve critical targets, while enforcing physical texture fidelity through Gram-matrix regularization to strictly eliminate unnatural artifacts. Extensive experiments demonstrate that SGPDFuse achieves state-of-the-art performance across infrared-visible, multi-focus, and multi-exposure benchmarks using a single architecture.",
+      "authors": [
+        "Haozhen Wei",
+        "Chengjun Jiang",
+        "Yutong Guo",
+        "Xinrui Ju",
+        "Xingyuan Li",
+        "Xiang Chen",
+        "Jinyuan Liu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-29T12:08:27+00:00",
+      "link": "https://arxiv.org/pdf/2608.29220v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Decouples invariant scene attributes from transient environmental factors to preserve intrinsic semantics",
+      "llm_evidence_cn": "解耦不变场景属性与瞬态环境因素以保持本质语义",
+      "llm_evidence": "解耦不变场景属性与瞬态环境因素以保持本质语义",
+      "canonical_evidence": "解耦不变场景属性与瞬态环境因素以保持本质语义",
+      "llm_tldr_en": "SGPDFuse maps multimodal inputs into physics-disentangled representations via a Semantic-Physical Parametric Bridge, using intrinsic-variation principle to separate scene content from environmental interference, improving fusion under degradations like color changes.",
+      "llm_tldr_cn": "针对多模态图像融合中盲特征聚合无法区分本质内容与环境退化的问题，提出SGPDFuse框架。该框架通过语义-物理参数桥将输入映射到物理解耦的结构表示，利用内在变化原理将不变场景属性与瞬态环境因素分离。实验表明该方法在消除环境干扰（如颜色变化）的同时保留场景真实语义，显著提升融合质量和下游任务鲁棒性。",
+      "llm_tldr": "针对多模态图像融合中盲特征聚合无法区分本质内容与环境退化的问题，提出SGPDFuse框架。该框架通过语义-物理参数桥将输入映射到物理解耦的结构表示，利用内在变化原理将不变场景属性与瞬态环境因素分离。实验表明该方法在消除环境干扰（如颜色变化）的同时保留场景真实语义，显著提升融合质量和下游任务鲁棒性。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.29167v1",
+      "source": "arxiv",
+      "title": "Feature-Spectral Fragility in Segmentation: Dataset Dependence, Architecture-Specific Localization, and Spectral Correlates",
+      "abstract": "Robustness of segmentation models is commonly assessed through input-domain perturbations, while dependence on frequency content within learned feature representations remains less understood. We probe this dependence using targeted post-training low-pass interventions on internal representations of three segmentation architectures, ResNet50-UNet (CNN), VM-UNet (SSM), and Swin-UNETR (Transformer), across CVC-ClinicDB and ISIC2018, with headline evaluations performed on untouched held-out test sets. At cutoff rho=0.25, feature-domain low-pass filtering causes severe degradation on CVC: Dice drops by 100%, 73.2%, and 30.9% for CNN, SSM, and Transformer, respectively, compared with 9.4%, 10.3%, and 0.6% on ISIC. The cross-dataset difference is statistically significant for every architecture. Single-stage interventions further show that sensitivity is localized at architecture-specific depths: the CNN peaks at a mid/late encoder block, whereas the SSM peaks in an early encoder stage on both datasets. Native feature-domain spectral measurements show an inverse association between high-frequency energy and fragility on CVC; the relationship is only partial on ISIC and is therefore treated as a candidate correlate rather than a proven mechanism. Finally, Fourier augmentation improves robustness to input-space low-pass filtering but leaves feature-domain degradation essentially unchanged. These results show that feature-spectral robustness is strongly dataset-dependent, architecture-specific, and distinct from input-domain spectral robustness.",
+      "authors": [
+        "Subhash Kashyap"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "eess.IV"
+      ],
+      "published": "2026-08-29T09:33:45+00:00",
+      "link": "https://arxiv.org/pdf/2608.29167v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "targeted post-training low-pass interventions on internal representations to probe robustness",
+      "llm_evidence_cn": "对内部表征进行训练后低通干预以探查鲁棒性",
+      "llm_evidence": "对内部表征进行训练后低通干预以探查鲁棒性",
+      "canonical_evidence": "对内部表征进行训练后低通干预以探查鲁棒性",
+      "llm_tldr_en": "This paper probes segmentation model robustness by applying post-training low-pass filtering to internal features of CNN, SSM, and Transformer architectures across two datasets. Severe degradation at low cutoffs reveals spectral fragility, with architecture-specific localization and spectral correlates. The study provides insight into feature-level interventions for robustness.",
+      "llm_tldr_cn": "针对分割模型鲁棒性主要从输入扰动评估而忽略特征谱依赖的问题，本文对三种分割架构的内部表征施加训练后低通干预。实验表明在截止频率ρ=0.25时特征域低通滤波导致严重性能下降，且架构间差异明显。该研究揭示了特征谱脆弱性的数据集依赖性和架构特定定位，为通过特征级干预提升鲁棒性提供了诊断依据。",
+      "llm_tldr": "针对分割模型鲁棒性主要从输入扰动评估而忽略特征谱依赖的问题，本文对三种分割架构的内部表征施加训练后低通干预。实验表明在截止频率ρ=0.25时特征域低通滤波导致严重性能下降，且架构间差异明显。该研究揭示了特征谱脆弱性的数据集依赖性和架构特定定位，为通过特征级干预提升鲁棒性提供了诊断依据。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.29924v1",
+      "source": "arxiv",
+      "title": "Hallucination Mitigation for Large Vision-Language Models via Implicit Feature Stabilization",
+      "abstract": "Large Vision-Language Models (LVLMs) are prone to hallucinations: they fluently describe objects, attributes, and scenes that are not in the image. We connect part of this failure to a measurable property of their representations, feature instability, where mild semantics-preserving perturbations of the input cause large changes in the learned embeddings; hallucination rates rise together with this variability. Existing stability-motivated remedies are explicit, in the sense that they intervene at inference time through latent steering or constrained decoding, and pay for it on every query. We propose implicit stabilization instead: perturbation-invariance is built into the model weights during fine-tuning, and nothing extra runs at deployment. Our framework, INFUSE, first stabilizes visual and textual representations around perturbation-averaged and ground-truth anchors, then aligns the stabilized representations across modalities with bidirectional contrastive objectives. We prove that the anchor's root-mean-square deviation from the perturbation-mean representation shrinks at rate $1/\\sqrt{K}$ in the number of views, and that under a Lipschitz decoder, this bounds how much any perturbation can change the model's hallucination behavior. On LLaVA-1.5, LLaVA-1.6, and Qwen3-VL-8B-Instruct, INFUSE reduces AMBER CHAIR by 46-63% relative to each base model, improves ObjHal, MMHal, HallusionBench, and POPE, and preserves VQA-v2 and TextVQA, all with no inference-time overhead.",
+      "authors": [
+        "Aditi Sarker",
+        "Rafi Ibn Sultan",
+        "Hui Zhu",
+        "Dongxiao Zhu",
+        "Prashant Khanduri"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-08-30T17:39:38+00:00",
+      "link": "https://arxiv.org/pdf/2608.29924v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Feature stabilization under semantics-preserving perturbations; connects instability to hallucinations",
+      "llm_evidence_cn": "在语义保持扰动下稳定特征，将不稳定性与幻觉关联",
+      "llm_evidence": "在语义保持扰动下稳定特征，将不稳定性与幻觉关联",
+      "canonical_evidence": "在语义保持扰动下稳定特征，将不稳定性与幻觉关联",
+      "llm_tldr_en": "Proposes implicit feature stabilization during fine-tuning to reduce LVLM hallucinations caused by representation instability under mild input perturbations, avoiding inference-time latent steering.",
+      "llm_tldr_cn": "针对大视觉语言模型因特征不稳定导致幻觉的问题，该论文提出在微调阶段构建隐式扰动不变性，而非推理时隐空间干预。通过将扰动不变性嵌入模型权重，降低语义保持扰动下嵌入的剧烈变化。实验表明隐式稳定可降低幻觉率并节省推理开销。该方法为提升模型对输入扰动的鲁棒性提供了新思路。",
+      "llm_tldr": "针对大视觉语言模型因特征不稳定导致幻觉的问题，该论文提出在微调阶段构建隐式扰动不变性，而非推理时隐空间干预。通过将扰动不变性嵌入模型权重，降低语义保持扰动下嵌入的剧烈变化。实验表明隐式稳定可降低幻觉率并节省推理开销。该方法为提升模型对输入扰动的鲁棒性提供了新思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.30388v1",
+      "source": "arxiv",
+      "title": "PRISM: Predictive Recomposition via Semantic Latent Decomposition for View-invariant Video Representation Learning",
+      "abstract": "Cross-view video representation learning aims to capture viewpoint-invariant action semantics despite substantial appearance changes across egocentric and exocentric videos. However, existing methods encode each video as a unified embedding, where view-invariant and view-variant semantics inevitably entangle under co-occurrences - a failure mode we show persists even in cross-view methods explicitly trained for view-invariance. Our key insight is that a view-invariant feature is truly disentangled when it can be sufficiently recomposed with an arbitrary view-variant feature while preserving their independent semantics. Building on this, we propose PRISM, that decomposes video into view-invariant and view-variant latents and recompose them under language supervision encouraging clean decomposition of the two streams. PRISM achieves state-of-the-art results on EgoExo4D, EgoExoLearn, AE2, even surpassing in-domain models under zero-shot setting. Code is available at https://github.com/litcoderr/prism.",
+      "authors": [
+        "Youngchae Chee",
+        "Hosu Lee",
+        "Sungjune Park",
+        "Junho Kim",
+        "Yong Man Ro"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-31T07:43:02+00:00",
+      "link": "https://arxiv.org/pdf/2608.30388v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "semantic latent decomposition into invariant and variant factors, analogous to color-shape disentanglement",
+      "llm_evidence_cn": "语义潜在分解为不变和变化因素，类比颜色-形状解耦",
+      "llm_evidence": "语义潜在分解为不变和变化因素，类比颜色-形状解耦",
+      "canonical_evidence": "语义潜在分解为不变和变化因素，类比颜色-形状解耦",
+      "llm_tldr_en": "Addressing entanglement of view-invariant and view-variant semantics in cross-view video, this paper proposes PRISM, which decomposes video into these factors and recomposes them to verify independence. Experiments show improved view-invariance, offering a principle for semantic disentanglement analogous to color-shape factorization.",
+      "llm_tldr_cn": "针对跨视角视频表示学习中视角不变与视角变化语义相互纠缠的问题，本文提出PRISM方法，将视频分解为视角不变和视角变化特征，并通过预测性重组验证其独立语义保持。实验表明PRISM能有效提升跨视角动作识别的视角不变性，实现更好的解耦。其贡献在于为语义潜在分解提供了新思路，并表明真正解耦的特征能够与任意变化特征重组而不丢失独立语义，为表示学习提供了一种可操作的解耦准则。",
+      "llm_tldr": "针对跨视角视频表示学习中视角不变与视角变化语义相互纠缠的问题，本文提出PRISM方法，将视频分解为视角不变和视角变化特征，并通过预测性重组验证其独立语义保持。实验表明PRISM能有效提升跨视角动作识别的视角不变性，实现更好的解耦。其贡献在于为语义潜在分解提供了新思路，并表明真正解耦的特征能够与任意变化特征重组而不丢失独立语义，为表示学习提供了一种可操作的解耦准则。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

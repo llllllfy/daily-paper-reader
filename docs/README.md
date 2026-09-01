@@ -6,32 +6,34 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-31
-- 运行时间：2026-09-01 00:14:31 UTC
+- 最新运行日期：2026-09-01
+- 运行时间：2026-09-01 22:11:04 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：2
-- 速读区：1
+- 本次总论文数：4
+- 精读区：1
+- 速读区：3
 
 ### 今日简报（AI）
-- 今日共生成 3 篇推荐（精读 2 篇，速读 1 篇）
-- 精读：《Dynamic Alignment Compensation for Hallucination Mitigation in Large Vision-Language Models》（8.0/10）, 《Attribute Token Arithmetic: Disentangled and Continuous Semantic Control for Visual Autoregressive Models》（8.0/10）
-- 速读：《EXPOSE: Explainable and Domain-Robust Embeddings from Pathology Vision Foundation Models using Sparse Autoencoders》（7.0/10）
-- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202608/31/README](/202608/31/README)
+今日精读一篇语义引导物理解耦的多模态图像融合，并速读分割脆弱性、视觉语言模型幻觉缓解与视频表示学习共4篇。  
+最值得关注：SGPDFuse用语义引导与物理解耦做通用多模态融合；分割模型存在数据集相关、架构定位明确的光谱脆弱性。  
+建议读者优先跟进多模态融合的“语义-物理解耦”思路，并关注分割脆弱性在不同架构中的定位差异。
+- 详情：[/202609/01/README](/202609/01/README)
 
 ### 精读区论文标签
-1. [Dynamic Alignment Compensation for Hallucination Mitigation in Large Vision-Language Models](/202608/31/2608.28058v1-dynamic-alignment-compensation-for-hallucination-mitigation-in-large-vision-language-models)  
+1. [SGPDFuse: Semantically-Guided Physics-Disentanglement General Multi-Modal Image Fusion](/202609/01/2608.29220v1-sgpdfuse-semantically-guided-physics-disentanglement-general-multi-modal-image-fusion)  
    标签：评分：8.0/10、query:cp
-   evidence：对表示分歧选择性地应用轻量残差补偿
-2. [Attribute Token Arithmetic: Disentangled and Continuous Semantic Control for Visual Autoregressive Models](/202608/31/2608.28082v1-attribute-token-arithmetic-disentangled-and-continuous-semantic-control-for-visual-autoregressive-models)  
-   标签：评分：8.0/10、query:cp
-   evidence：在潜在空间识别视觉属性语义方向并进行算术操作
+   evidence：解耦不变场景属性与瞬态环境因素以保持本质语义
 
 ### 速读区论文标签
-1. [EXPOSE: Explainable and Domain-Robust Embeddings from Pathology Vision Foundation Models using Sparse Autoencoders](/202608/31/2608.28191v1-expose-explainable-and-domain-robust-embeddings-from-pathology-vision-foundation-models-using-sparse-autoencoders)  
+1. [Feature-Spectral Fragility in Segmentation: Dataset Dependence, Architecture-Specific Localization, and Spectral Correlates](/202609/01/2608.29167v1-feature-spectral-fragility-in-segmentation-dataset-dependence-architecture-specific-localization-and-spectral-correlates)  
    标签：评分：7.0/10、query:cp
-   evidence：抑制域特定潜在成分以提升对染色/颜色偏移的鲁棒性
+   evidence：对内部表征进行训练后低通干预以探查鲁棒性
+2. [Hallucination Mitigation for Large Vision-Language Models via Implicit Feature Stabilization](/202609/01/2608.29924v1-hallucination-mitigation-for-large-vision-language-models-via-implicit-feature-stabilization)  
+   标签：评分：6.0/10、query:cp
+   evidence：在语义保持扰动下稳定特征，将不稳定性与幻觉关联
+3. [PRISM: Predictive Recomposition via Semantic Latent Decomposition for View-invariant Video Representation Learning](/202609/01/2608.30388v1-prism-predictive-recomposition-via-semantic-latent-decomposition-for-view-invariant-video-representation-learning)  
+   标签：评分：6.0/10、query:cp
+   evidence：语义潜在分解为不变和变化因素，类比颜色-形状解耦
 
 
 <div class="dpr-home-promo-card">
