@@ -1,0 +1,130 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-02T22:59:43.400188+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2608.28316v1",
+      "source": "arxiv",
+      "title": "Conditional Visual Evidence Utility: State-Dependent Rank Reversals in Frozen Vision-Language Encoders",
+      "abstract": "Static importance scores compress visual evidence into a single ranking, but the value of remaining evidence can change after one cue has been observed. We study this possibility in controlled compositional visual search, where color, shape, and texture evidence can be independently exposed and their conditional marginal utility measured across acquisition states. In a held-out confirmation on 800 scenes, frozen OpenCLIP and SigLIP exhibit robust state-dependent rank reversals that concentrate in candidate-overlap regimes designed to induce ordering changes. The structure persists across two evidence-accumulation constructions and ten equivalent query wordings, but disappears under query-scene derangement. We also ask whether these reversals matter for decisions. In a post-confirmation exploratory matched-first-action analysis, reranking only after the first acquisition yields positive step-2 utility when decisions are selected under one evidence mode, wording, or backbone and evaluated under another. Together, these results show that evidence importance is state-dependent in this controlled setup and that updating an evidence ordering can retain decision-relevant value across evaluator changes. They motivate evaluating vision-language evidence use conditionally rather than through a single static ranking, while providing a measurable target for future adaptive evidence-selection methods.",
+      "authors": [
+        "Yunxuan Fang",
+        "Xinhe Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-28T13:25:40+00:00",
+      "link": "https://arxiv.org/pdf/2608.28316v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Measures conditional utility of color, shape, texture evidence in frozen vision-language encoders.",
+      "llm_evidence_cn": "度量冻结视觉语言编码器中颜色、形状、纹理证据的条件效用。",
+      "llm_evidence": "度量冻结视觉语言编码器中颜色、形状、纹理证据的条件效用。",
+      "canonical_evidence": "度量冻结视觉语言编码器中颜色、形状、纹理证据的条件效用。",
+      "llm_tldr_en": "The paper studies how the value of color, shape, and texture evidence changes after observing other cues in compositional visual search. Experiments with frozen OpenCLIP and SigLIP show state-dependent rank reversals that concentrate in candidate-overlap regimes, revealing non-additive use of visual attributes.",
+      "llm_tldr_cn": "该工作研究在组合视觉搜索中，颜色、形状和纹理证据的条件边际效用如何随已观察线索而改变。通过在800个场景上的实验，发现冻结的OpenCLIP和SigLIP表现出稳健的状态依赖排序反转，且集中在候选重叠区域。该现象在多证据积累构造和等价查询表述下保持，表明视觉属性并非简单叠加，为理解视觉语言模型中的颜色/形状特征贡献提供了新见解。",
+      "llm_tldr": "该工作研究在组合视觉搜索中，颜色、形状和纹理证据的条件边际效用如何随已观察线索而改变。通过在800个场景上的实验，发现冻结的OpenCLIP和SigLIP表现出稳健的状态依赖排序反转，且集中在候选重叠区域。该现象在多证据积累构造和等价查询表述下保持，表明视觉属性并非简单叠加，为理解视觉语言模型中的颜色/形状特征贡献提供了新见解。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.29113v1",
+      "source": "arxiv",
+      "title": "GramLoop: Training-Free Gram-Gated Replay for Robust Dense Prediction",
+      "abstract": "We aim to improve frozen DINOv3 dense-prediction models under distribution shift by adding inference computation inside the visual backbone, without changing model weights, task adapters, or prediction heads. The challenge is that repeated transformer-block computation must refine dense features without disrupting the pairwise patch relations that DINOv3 uses to preserve spatial structure. We introduce GramLoop, a training-free framework that replays a short transformer window and controls each replay through final-layer cosine-Gram consistency. Each proposal is propagated through the frozen suffix, measured against the standard DINOv3 trajectory, and accepted through a patchwise gate at the replay-window endpoint. Across object detection and semantic segmentation under corruptions, perturbations, and natural shifts, GramLoop improves all five shifted benchmarks over the paired DINOv3 baseline. On COCO-O, it improves mAP by +0.252 and Effective Robustness by +0.250, while preserving clean ADE20K performance. Code will be released.",
+      "authors": [
+        "Yang Chen",
+        "Canyu Shen",
+        "Xinzhe Rao",
+        "Yuanyi Yan",
+        "Yunlu Chen",
+        "Meng Tang",
+        "Teng Long",
+        "Vincent Tao Hu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-29T07:52:43+00:00",
+      "link": "https://arxiv.org/pdf/2608.29113v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Training-free latent feature intervention via Gram-gated replay inside frozen backbone for robust dense prediction",
+      "llm_evidence_cn": "冻结骨干内通过Gram门控重放进行训练无关的隐空间特征干预以增强鲁棒稠密预测",
+      "llm_evidence": "冻结骨干内通过Gram门控重放进行训练无关的隐空间特征干预以增强鲁棒稠密预测",
+      "canonical_evidence": "冻结骨干内通过Gram门控重放进行训练无关的隐空间特征干预以增强鲁棒稠密预测",
+      "llm_tldr_en": "Proposes GramLoop, a training-free method that intervenes in frozen DINOv3 backbone features via Gram-gated replay to improve dense prediction robustness under distribution shift without changing weights.",
+      "llm_tldr_cn": "针对冻结DINOv3稠密预测模型在分布偏移下性能下降的问题，该文提出GramLoop，一种训练时无需更新的框架，在视觉骨干内部重放短Transformer窗口，并通过最终层余弦Gram一致性门控接受或拒绝提议。实验表明，该方法在目标检测和语义分割上提升了鲁棒性，且不改变模型权重。其贡献在于提供了一种隐空间特征干预策略，无需微调即可增强稠密预测对分布偏移的鲁棒性。",
+      "llm_tldr": "针对冻结DINOv3稠密预测模型在分布偏移下性能下降的问题，该文提出GramLoop，一种训练时无需更新的框架，在视觉骨干内部重放短Transformer窗口，并通过最终层余弦Gram一致性门控接受或拒绝提议。实验表明，该方法在目标检测和语义分割上提升了鲁棒性，且不改变模型权重。其贡献在于提供了一种隐空间特征干预策略，无需微调即可增强稠密预测对分布偏移的鲁棒性。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.28991v1",
+      "source": "arxiv",
+      "title": "Jigsaw-CRL: Recovering Global Latent Causal Order from Fragmented Multi-Client Interventions",
+      "abstract": "Causal representation learning (CRL) aims to recover latent causal variables and their structural relations from high-dimensional observations. Existing CRL methods typically assume that all environments are defined over the same latent variables, or at least share a common latent representation space. We study a fragmented multi-client setting, where multiple clients interact with the same global latent causal system but each client only accesses and intervenes on a subset of the latent variables. In this regime, marginalizing unused latent variables induces bidirected edges, so a single client no longer admits a node-wise latent causal graph, and the global latent causal order must be recovered by assembling client-specific structural fragments. We propose \\textbf{Jigsaw-CRL}, a framework for recovering global latent causal order from such fragmented interventions. Under soft interventions, differences between precision matrices across environments exhibit a low-rank structure governed by latent ancestor relations. This enables recovery, for each client, of a block partition, the corresponding block-level ancestral order, and latent subspaces, and then assembly of these fragments into the global node-level latent causal order. We establish identifiability guarantees, develop practical algorithms, and validate the framework on synthetic data. Our codes are available on https://anonymous.4open.science/r/code-for-Jigsaw-CRL-7B26",
+      "authors": [
+        "Haijie Xu",
+        "Chen Zhang"
+      ],
+      "primary_category": "stat.ML",
+      "categories": [
+        "stat.ML",
+        "cs.LG"
+      ],
+      "published": "2026-08-29T01:55:37+00:00",
+      "link": "https://arxiv.org/pdf/2608.28991v1",
+      "tags": [
+        "keyword:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Studies interventions on subsets of latent variables across clients in causal representation learning",
+      "llm_evidence_cn": "研究因果表示学习中跨客户端对潜在变量子集的干预问题",
+      "llm_evidence": "研究因果表示学习中跨客户端对潜在变量子集的干预问题",
+      "canonical_evidence": "研究因果表示学习中跨客户端对潜在变量子集的干预问题",
+      "llm_tldr_en": "Jigsaw-CRL addresses fragmented multi-client interventions, where each client only accesses a subset of latent variables, and recovers the global latent causal order by assembling client-specific structures.",
+      "llm_tldr_cn": "针对现有因果表示学习假设所有环境共享同一潜在表示空间的问题，该文研究碎片化多客户端设置，其中每个客户端仅干预部分潜在变量。提出Jigsaw-CRL方法，通过整合各客户端特异性结构恢复全局潜在因果序。实验表明该方法能够处理边际化未用变量引起的双向边问题，恢复完整因果序。贡献在于扩展了潜在空间干预建模的应用范围。",
+      "llm_tldr": "针对现有因果表示学习假设所有环境共享同一潜在表示空间的问题，该文研究碎片化多客户端设置，其中每个客户端仅干预部分潜在变量。提出Jigsaw-CRL方法，通过整合各客户端特异性结构恢复全局潜在因果序。实验表明该方法能够处理边际化未用变量引起的双向边问题，恢复完整因果序。贡献在于扩展了潜在空间干预建模的应用范围。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

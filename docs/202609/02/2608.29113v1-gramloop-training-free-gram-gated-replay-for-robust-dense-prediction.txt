@@ -1,0 +1,603 @@
+Title: GramLoop: Training-Free Gram-Gated Replay for Robust Dense Prediction
+
+URL Source: https://arxiv.org/pdf/2608.29113v1
+
+Published Time: Tue, 01 Sep 2026 00:33:42 GMT
+
+Number of Pages: 13
+
+Markdown Content:
+# GramLoop: Training-Free Gram-Gated Replay for Robust Dense Prediction 
+
+## Yang Chen 1, Canyu Shen 2, Xinzhe Rao 1, Yuanyi Yan 1
+
+## Yunlu Chen 3, Meng Tang 4, Teng Long 5, Vincent Tao Hu 1
+
+> 1
+
+Huazhong University of Science and Technology 
+
+> 2
+
+Tongji University 
+
+> 3
+
+King Abdullah University of Science and Technology 
+
+> 4
+
+University of California, Merced 
+
+> 5
+
+University of Amsterdam 
+
+Abstract 
+
+We aim to improve frozen DINOv3 dense-prediction mod-els under distribution shift by adding inference computa-tion inside the visual backbone, without changing model weights, task adapters, or prediction heads. The challenge is that repeated transformer-block computation must refine dense features without disrupting the pairwise patch relations that DINOv3 uses to preserve spatial structure. We introduce GramLoop, a training-free framework that replays a short transformer window and controls each replay through final-layer cosine-Gram consistency. Each proposal is propagated through the frozen suffix, measured against the standard DI-NOv3 trajectory, and accepted through a patchwise gate at the replay-window endpoint. Across object detection and seman-tic segmentation under corruptions, perturbations, and natural shifts, GramLoop improves all five shifted benchmarks over the paired DINOv3 baseline. On COCO-O, it improves mAP by +0 .252 and Effective Robustness by +0 .250 , while pre-serving clean ADE20K performance. Code will be released. 
+
+## Introduction 
+
+Built on the patch-token architecture introduced by ViT (Dosovitskiy et al. 2021), self-supervised vision trans-formers have become general-purpose feature extractors for both image-level recognition and dense prediction. DINO (Caron et al. 2021) showed that self-distillation can produce semantically organized patch representations with-out manual labels, while DINOv2 (Oquab et al. 2024) and DINOv3 (Siméoni et al. 2026) substantially scaled this paradigm in model capacity and pretraining data. In par-ticular, DINOv3 scales self-supervised pretraining to mod-els with up to 7B parameters and 1.7B unlabeled images, producing frozen features that support segmentation, object detection, and depth estimation (Siméoni et al. 2026). This combination of scalability and dense spatial structure makes DINOv3 an attractive backbone for downstream visual pre-diction. Nevertheless, strong performance on clean benchmarks does not guarantee robustness under challenging acquisi-tion conditions. Common corruptions degrade semantic-segmentation systems (Kamann and Rother 2021) and object detectors (Michaelis et al. 2019). Real-world-inspired per-turbations expose similar weaknesses in foundation-model segmentation (Schiappa et al. 2024), while natural distribu-tion shifts reduce detector performance (Mao et al. 2023). This limitation motivates a complementary question: can the representation trajectory of a frozen visual backbone be re-fined at inference time, without updating either the backbone or its task-specific head? Looped and recurrent-depth transformers provide a nat-ural mechanism for allocating additional computation by repeatedly applying shared transformer blocks. Universal Transformers introduced recurrent self-attention with adap-tive halting (Dehghani et al. 2019). Subsequent work studied looped transformers as programmable computers (Giannou et al. 2023), iterative in-context learners (Yang et al. 2024), and latent-reasoning models (Saunshi et al. 2025). More recently, training-free looped transformers retrofit damped block replay onto frozen language models and show that naive block reapplication can be harmful (Chen et al. 2026). However, it remains unclear how such replay should be con-trolled spatially when applied to frozen visual features for dense prediction under distribution shifts: replay proposes changes to every token, although only some may preserve the spatial structure of the frozen backbone. DINOv3 provides a useful structural signal through its Gram-anchoring objective, which preserves pairwise rela-tions among patch features during large-scale pretraining (Siméoni et al. 2026). We hypothesize that replay propos-als causing less downstream Gram drift are more reliable. Based on this hypothesis, we introduce GramLoop, which propagates each proposal through the frozen suffix, measures its patchwise final-layer cosine-Gram drift from the standard DINOv3 trajectory, and uses this drift to scale the update at the replay-window endpoint. High-drift updates are at-tenuated, while the task adapter and prediction head remain unchanged. A matched-strength diagnostic confirms lower replay-induced Gram discrepancy than uniform replay across all 17 COCO-P perturbations and all 85 severity-specific con-ditions. Our contributions are threefold: 
+
+• We introduce GramLoop, a training-free replay frame-work for frozen DINOv3 dense-prediction models. It uses patchwise final-layer cosine-Gram drift to selectively con-trol feature updates at an earlier replay-window endpoint, without updating the backbone, task adapter, or prediction head. 
+
+• We establish the effectiveness of GramLoop across semantic segmentation and object detection under arXiv:2608.29113v1 [cs.CV] 29 Aug 2026 controlled corruptions, real-world-inspired perturba-tions, and natural distribution shifts. GramLoop im-proves COCO-O, COCO-P, COCO-C, ADE20K-C, and ADE20K-P while preserving clean performance. 
+
+• We provide controlled diagnostics and ablations explain-ing these gains. At matched mean update strength, patch-wise Gram gating reduces final-layer relation error rela-tive to uniform replay across all 17 COCO-P perturba-tions and 85 severity-specific conditions. A placement ablation further identifies final-layer Gram measurement with loop-end updates as the strongest evaluated config-uration. 
+
+## Related Work 
+
+DINO Features 
+
+DINO learns semantically structured vision-transformer fea-tures through self-distillation without labels (Caron et al. 2021). DINOv2 scales this formulation to diverse curated data and billion-parameter models, producing transferable frozen representations for both image- and pixel-level tasks (Oquab et al. 2024). DINOv3 further scales pretraining and introduces Gram anchoring to prevent the degrada-tion of dense patch relations during long training schedules (Siméoni et al. 2026). Recent work has also used frozen DI-NOv3 features with support-derived prototypes and channel-wise Gram refinement for training-free few-shot segmenta-tion (Mohd Zakir and Ho 2026). In contrast, GramLoop requires no support set and does not construct class proto-types: it measures within-image patch-to-patch Gram drift to gate replayed backbone features before an unchanged dense-prediction head. Despite this broad transfer, foundation-model segmentation remains sensitive to real-world-inspired perturbations (Schiappa et al. 2024), while object detectors degrade under natural distribution shifts (Mao et al. 2023). Our work therefore studies whether DINOv3’s own relational structure can control inference-time feature refinement under these shifts. 
+
+Test-Time Adaptation 
+
+Test-time adaptation uses unlabeled test inputs to respond to distribution shift. Test-time training updates model param-eters on each test sample through a self-supervised objec-tive (Sun et al. 2020), while Tent minimizes prediction en-tropy by updating normalization statistics and affine param-eters (Wang et al. 2021). CoTTA addresses continual non-stationary test streams with prediction averaging and stochas-tic restoration (Wang et al. 2022), and EATA selects reliable samples while regularizing important parameters to reduce forgetting (Niu et al. 2022). More recent vision-language methods avoid online backpropagation: ZERO selects and aggregates confident predictions from augmented views in a single batched encoder pass (Farina et al. 2024), whereas SSG reweights visual features and updates a test-time cache using shape and style guidance (Zhou et al. 2025). In contrast, GramLoop neither optimizes parameters nor aggregates out-put predictions; it refines frozen dense features through con-trolled forward replay while leaving the downstream head unchanged. 
+
+Looping Transformers 
+
+Recurrence in depth allows a transformer to reuse param-eters while increasing its effective computation. Universal Transformers introduced recurrent self-attention with adap-tive halting (Dehghani et al. 2019). Deep Equilibrium Models provide a related weight-tied view by solving for the fixed point of an effectively infinite-depth transformation (Bai, Kolter, and Koltun 2019). Multiscale DEQs extend implicit recurrence to multiresolution vision features, including se-mantic segmentation (Bai, Koltun, and Kolter 2020). Later looped transformers were studied as programmable com-puters (Giannou et al. 2023), iterative in-context learners (Yang et al. 2024), and latent-reasoning models (Saunshi et al. 2025). These methods generally train the recurrent structure end to end. Recent work further learns token-level deciders that selectively allocate latent iterations in language models (Fu et al. 2026). In vision, A-ViT learns token-wise halting depths to allocate input-dependent computation (Yin et al. 2022). Training-free looped transformers instead re-play a contiguous block of a frozen language model using damped updates (Chen et al. 2026). GramLoop retrofits re-play onto a pretrained frozen vision foundation model. It measures proposal-specific global cosine-Gram drift at the final layer and uses this relational signal to control each patch-token update, refining the frozen backbone trajectory without modifying the model parameters or dense-prediction head. 
+
+Dense Prediction 
+
+Dense prediction assigns structured outputs to spatial im-age regions, including semantic labels for segmentation and categories and boxes for detection. DPT demonstrated that transformer backbones can support dense depth estimation and semantic segmentation (Ranftl, Bochkovskiy, and Koltun 2021). SETR recast semantic segmentation as sequence-to-sequence prediction with a pure transformer encoder (Zheng et al. 2021), and SegFormer paired a hierarchical transformer encoder with a lightweight decoder (Xie et al. 2021). DETR formulated object detection as end-to-end set prediction with a transformer encoder-decoder (Carion et al. 2020). Mod-ern systems combine general-purpose backbones with task-specific adapters and decoders, such as ViT-Adapter (Chen et al. 2023), Mask2Former (Cheng et al. 2022), and Plain-DETR (Lin et al. 2023). Self-supervised foundation models reduce the label dependence of backbone pretraining, but their downstream segmentation and detection heads are still trained with task annotations; the resulting pipeline should therefore not be described as fully unsupervised. DINOv3 follows this paradigm by keeping the pretrained backbone frozen while fitting dense-prediction adapters and heads (Siméoni et al. 2026). Robustness benchmarks further show that semantic-segmentation systems remain sensitive to com-mon corruptions (Kamann and Rother 2021) and real-world-inspired perturbations (Schiappa et al. 2024), while object detectors degrade under synthetic corruptions (Michaelis et al. 2019) and natural domain shifts (Mao et al. 2023). GramLoop leaves both the released adapter and task head unchanged and modifies only the frozen backbone trajectory at inference time, enabling the same mechanism to support semantic segmentation and object detection. 
+
+## Method 
+
+We introduce GramLoop, a training-free Gram-gated replay method for dense prediction with a frozen DINOv3 back-bone. We first review the Gram structure of DINOv3 patch features, then use that structure to score and gate feature proposals generated by replaying a short window of trans-former blocks. Figure 1 summarizes how replay proposals, suffix evaluation, Gram-gated endpoint updates, and the un-changed task head fit together. 
+
+Background: DINO and Gram-Structured Dense Features 
+
+Building on DINO’s self-distillation paradigm (Caron et al. 2021), DINOv3 (Siméoni et al. 2026) is a self-supervised vision backbone designed to produce general-purpose fea-tures for both image-level and dense prediction tasks. A key challenge in scaling such pretraining is that global repre-sentation quality can continue to improve while the spatial organization of patch features degrades. DINOv3 addresses this failure mode with Gram anchoring : during training, a student feature map is regularized toward the pairwise patch-similarity structure produced by an earlier model snapshot (Siméoni et al. 2026). Let qp ∈ RC be the channel-wise normalized feature vector of patch p, where C is the feature-channel dimension, and stack the N patch vectors as Q = [ q1, . . . , qN ]⊤ ∈
+
+RN ×C . Its cosine Gram matrix is 
+
+G(Q) = QQ ⊤ ∈ RN ×N , (1) where the scalar entry Gpq := [ G(Q)] pq = q⊤ 
+
+> p
+
+qq mea-sures the relation between patches p and q. Unlike a point-wise feature penalty, a Gram objective preserves the ge-ometry among all patches: individual features may change, provided that their relational structure remains consistent. Matching this matrix therefore directly constrains the spatial relations that dense prediction relies on without requiring feature coordinates to remain unchanged. Preserving Gram-structured patch relations is therefore important for repre-sentation stability and downstream dense-prediction perfor-mance (Siméoni et al. 2026). 
+
+GramLoop 
+
+Motivation Distribution shifts can degrade the dense rep-resentations produced by a frozen DINOv3 backbone. We therefore replay a short window of transformer blocks to refine these features with additional inference-time compu-tation. However, naively replaying the window updates patch tokens without considering whether the proposed changes preserve their relational structure and can consequently dis-rupt Gram consistency. To control this effect, we treat the standard DINOv3 forward pass as an image-specific rela-tional anchor and measure each replay proposal by its final-layer Gram deviation from this anchor. Proposals that remain consistent with the anchor receive larger updates, whereas those with large Gram deviations are downweighted. This produces Gram-gated replay without a teacher, labels, gradi-ent updates, or additional training. Figure 2 illustrates this motivation at impulse severity 10. High-drift regions receive smaller gates, while the post-gating drift remains small on the shared drift color scale. 
+
+Window Replay and Final-Layer Guidance Consider a frozen DINOv3 encoder composed of L transformer blocks 
+
+f0, . . . , f L−1 and a frozen task head h. We choose a short loop window [s, e ], where s and e are its start and endpoint block indices. For block indices 0 ≤ a ≤ b ≤ L − 1, define 
+
+Ba:b = fb ◦ · · · ◦ fa. We then decompose the encoder into a prefix, the looped window, and a suffix: 
+
+P = B0: s−1, F = Bs:e, S = Be+1: L−1. (2) Given an image x, the standard forward pass first produces the window input Zin = P(x) and the endpoint anchor 
+
+Z0 = F(Zin ). (3) This initial pass through the window is part of the ordinary backbone trajectory and is not counted as a replay. Propa-gating the anchor through the suffix gives the fixed future reference Y0 = S(Z0). Each endpoint state Zk ∈ RT ×C
+
+contains all T encoder tokens with C channels. Starting from Zk−1, replay step k ∈ { 1, . . . , K }, where 
+
+K is the prescribed number of additional replays, forms a proposal by applying the same frozen window again, 
+
+bZk = F(Zk−1), bYk = S(bZk). (4) The temporary suffix pass exposes the proposal’s down-stream consequence. We therefore measure structural drift at the final probe bYk, but apply the resulting correction at the earlier endpoint bZk. This separation lets final-layer evidence guide the earlier update: a local proposal is accepted only to the extent that its mature representation remains compatible with the standard DINOv3 trajectory. 
+
+Patchwise Gram-Consistency Gate In detail, we extract the valid patch tokens from Y0 and bYk after the en-coder’s final normalization, then normalize each token along the channel dimension. Denote the resulting matrices by 
+
+Q0, bQk ∈ RN ×C , where N is the number of image-grid patches used by the gate. The backbone input contains no batch-padding tokens, so every produced patch token is valid and N = P . The implementation additionally accepts an ex-plicit caller-provided valid-patch mask for padded or packed inputs, but this optional path is not active in the reported ex-periments. We compute exact global cosine Gram matrices 
+
+G0 = Q0Q⊤ 
+
+> 0
+
+, bGk = bQk bQ⊤ 
+
+> k
+
+. (5) For replay k, we define the patch-drift vector dk ∈ RN
+
+> ≥0
+
+. Its component for valid patch p is the mean squared change of the corresponding Gram row, 
+
+[dk]p = 1
+
+N
+
+> N
+
+X
+
+> q=1
+
+
+
+[ bGk]pq − [G0]pq 
+
+2
+
+. (6) This score measures how much the proposal changes patch 
+
+p’s relation to the entire image, rather than only its feature segmentation input  
+
+> detection input
+> input x Frozen Prefix
+> : 0:s–1 𝒫
+
+Z₀ 
+
+Ẑₖ    
+
+> Loop window
+> : s:e ℱ
+> Window Input Z ₙ ᵢ
+> Current Endpoint Zₖ₋₁
+> Gram(Ŷₖ) vs Gram(Y₀)
+> → gate gₖ
+> Gate update
+> Zₖ = Zₖ₋₁ + αgₖ (Ẑₖ–Zₖ₋₁) ⊙
+
+Zₖ 
+
+> Frozen Suffix
+> : e+1:L–1 ℬ
+> Frozen Task Head
+
+❄
+
+❄
+
+❄
+
+❄ Frozen 
+
+> Loop × K
+> k<K
+> k=K
+
+↻  
+
+> segmentation
+> DINOv3 GramLoop (Ours)
+> detection
+> DINOv3 GramLoop (Ours)
+
+Shifted input  GramLoop: Training-Free Gram-Gated Replay  Predictions      
+
+> ADE20K-P palette:
+> wall building sky road
+> sidewalk plant streetlight
+> void
+> donut 0.64
+> donut 0.73
+> carrot 0.41
+> carrot 0.43
+> donut 0.65
+> donut 0.75
+> donut 0.41 knife 0.41
+> carrot 0.43
+
+Figure 1: GramLoop measures the final-layer Gram drift of each replay proposal and attenuates structurally disruptive endpoint updates before the unchanged task head. 
+
+Object Detection 
+
+Plain-DETR (Lin et al. 2023) 
+
+Semantic Segmentation 
+
+Mask2Former (Cheng et al. 2022) 
+
+COCO-O COCO-P COCO-C ADE20K ADE20K-P ADE20K-C Method mAP ↑ ER ↑
+
+mPC (AP) ↑
+
+mPC (AP) ↑ mIoU ↑
+
+mPC (mIoU) ↑
+
+mPC (mIoU) ↑
+
+DINOv3 (Siméoni et al. 2026) 66.264 36.746 59.146 54.901 62.553 59.003 56.558 GramLoop (Ours) 66.516 36.996 59.205 54.986 62.717 59.040 56.611 
+
+∆ +0.252 +0.250 +0.060 +0.085 +0.165 +0.037 +0.053 
+
+Table 1: Training-free GramLoop improves all shifted benchmarks across object detection and semantic segmentation while preserving clean ADE20K performance. vector. To make the gate insensitive to the absolute drift scale of each image and replay, we normalize by the median valid-patch drift and map the result componentwise to the patch-gate vector gpatch  
+
+> k
+
+∈ (0 , 1] N :
+
+[gpatch  
+
+> k
+
+]p = exp 
+
+
+
+− [dk]p
+
+max(median( dk), ϵ )
+
+
+
+. (7) Here ϵ = 10 −6 prevents division by zero when the me-dian valid-patch drift is zero or numerically negligible. Intu-itively, consistent proposals receive larger updates, whereas proposals that strongly distort the anchor’s relational ge-ometry are suppressed smoothly. Each scalar component 
+
+[gpatch  
+
+> k
+
+]p ∈ (0 , 1] is deterministic and proposal-specific: it is recomputed for every valid patch and every replay, rather than learned or shared across images. 
+
+Gated Endpoint Update Each patch token p receives the scalar gate [gpatch  
+
+> k
+
+]p from Eq. (7). For the non-spatial tokens, we define one image-level gate 
+
+gsp  
+
+> k
+
+= 1
+
+N
+
+> N
+
+X
+
+> p=1
+
+[gpatch  
+
+> k
+
+]p, (8) and assign it to the class token and each of the R
+
+register tokens. The resulting full token gate is gk =[gsp  
+
+> k
+
+, . . . , g sp  
+
+> k
+
+, [gpatch  
+
+> k
+
+]1, . . . , [gpatch  
+
+> k
+
+]P ]⊤ ∈ (0 , 1] T , where the first R + 1 entries correspond to the class and register tokens. Its entries are broadcast over the C channels. We in-terpolate toward the proposal at the replay-window endpoint using the tokenwise gate: 
+
+Zk = Zk−1 + gk ⊙
+
+bZk − Zk−1
+
+
+
+, (9) where ⊙ denotes tokenwise multiplication with channel broadcasting. Equation (9) is a per-token interpolation: a gate near zero retains the current state, while a larger gate ac-cepts more of the proposal displacement. Together, Eqs. (7) Input (impulse severity 10) Proposal drift    
+
+> 01.76e-04
+> Gate
+> 01.00
+> Post-gating drift
+> 01.76e-04
+
+Figure 2: Replay proposes patch updates with spatially un-even Gram drift; GramLoop assigns low gates to high-drift patches, yielding accepted updates with lower residual rela-tion error. For a fixed COCO-P exemplar at impulse severity 10, the 2 × 2 panels show the corrupted input, proposal drift, gate, and post-gating drift in reading order. Proposal and post-gating drift share a color scale, while the gate uses 
+
+[0 , 1] .and (9) show that, within a replay, the accepted displacement of patch p decreases exponentially with its final-layer Gram drift [dk]p. High-drift proposals therefore produce smaller endpoint changes. This mechanism modulates replay up-dates rather than optimizing a Gram loss or forcing the re-played representation to equal the anchor. For token t, we denote the corresponding proposal and current-state vectors by bzk,t := [ bZk]t, : and zk−1,t := [ Zk−1]t, :, respectively. The class and register tokens share only the scalar gsp  
+
+> k
+
+: each token follows its own proposal displacement bzk,t − zk−1,t and is therefore updated to a distinct value. The accepted state Zk
+
+then becomes the input to replay k + 1 , so both the proposal and its gate are updated recurrently. After K additional replays, we recompute the frozen suf-fix from the accepted endpoint state and predict with the unchanged task head: 
+
+bo = h(S(ZK )) . (10) Here S = Be+1: L−1 is the frozen encoder suffix from Eq. (2), 
+
+h is the frozen task-specific dense prediction head, and bo de-notes its semantic-segmentation logits or object-detection outputs. Recomputing S ensures that the final prediction follows one coherent backbone trajectory rather than using the temporary probe features directly. In all dense-prediction instantiations, GramLoop changes only this backbone to-ken trajectory before the unchanged task-specific adapter and               
+
+> Benchmark ∆95% CI
+> ADE20K-C +0.053 [+0 .027 ,+0 .082]
+> ADE20K-P +0.037 [+0 .015 ,+0 .059]
+> COCO-C +0.085 [+0 .057 ,+0 .114]
+> COCO-P +0.060 [+0 .040 ,+0 .079]
+
+Table 2: All four shifted-benchmark gains of GramLoop have 95% confidence intervals that exclude zero under paired cluster bootstrapping. Intervals use 10,000 replicates (seed 20260724) and exclude clean conditions. head. 
+
+## Experiments 
+
+Datasets and Evaluation Benchmarks 
+
+Distribution-Shift Benchmarks. We evaluate GramLoop under three complementary forms of distribution shift: con-trolled corruptions, real-world-inspired perturbations, and natural domain shifts. The -C suites cover 15 common corruptions (Hendrycks and Dietterich 2019; Kamann and Rother 2021; Michaelis et al. 2019); the -P suites cover 17 real-world-inspired perturbations (Schiappa et al. 2024); and COCO-O spans six natural visual domains (Mao et al. 2023). We instantiate these shift regimes on two dense-prediction tasks: ADE20K (Zhou et al. 2017) for semantic segmenta-tion and COCO (Lin et al. 2014) for object detection. This design tests whether loop-based feature refinement remains effective across distinct sources of shift while the released DINOv3 backbone, task adapters, and prediction heads re-main fixed. Each shifted condition is paired with its clean task setting. 
+
+Semantic segmentation. ADE20K SceneParse150 pro-vides 2,000 validation images and 150 object and stuff classes (Zhou et al. 2017). ADE20K-C applies 15 label-preserving corruptions at five severity levels (Hendrycks and Dietterich 2019; Kamann and Rother 2021), and the released ADE20K-P benchmark applies 17 perturbations at five severity levels (Schiappa et al. 2024). 
+
+Object detection. COCO val2017 contains 5,000 images and 80 bounding-box categories (Lin et al. 2014). COCO-C applies 15 corruptions at five severity levels (Michaelis et al. 2019), COCO-P provides 17 perturbations at five severity levels with paired box annotations (Schiappa et al. 2024), and COCO-O contains 6,782 images from six natural-shift domains (Mao et al. 2023). 
+
+Experimental Metrics 
+
+For semantic segmentation, we report mean intersection over union (mIoU). For the -C and -P benchmarks, mean performance under corruption (mPC) is the unweighted mean of the corresponding task metric over all non-clean shift–severity conditions. For COCO-O, mAP is the un-weighted mean of the domain-level AP scores across its six domains. We additionally report Effective Robustness, Corruption severity                             
+
+> 12345
+> ADE20K-C
+> (mIoU) +0.025 +0.046 +0.036 +0.047 +0.112 ADE20K-P
+> (mIoU) -0.028 +0.036 +0.049 +0.060 +0.070 COCO-C
+> (AP) +0.041 +0.051 +0.079 +0.116 +0.138 COCO-P
+> (AP) +0.015 +0.046 +0.064 +0.087 +0.086
+> -0.14 -0.07 0+0.07 +0.14
+> Delta performance (GramLoop (Ours) - DINOv3)
+
+Figure 3: The gains from GramLoop generally grow with shift severity, and each benchmark’s largest gain occurs at severity 4 or 5. Columns correspond to severity levels 1–5 from left to right. 
+
+Method S1 S2 S3 S4
+
+Fixed subset Si
+
+DINOv3 60.070 60.828 60.026 59.913 GramLoop 60.424 60.684 60.105 59.965 
+
+∆ +0.354 -0.144 +0.079 +0.052 
+
+Complement V \ S i
+
+DINOv3 62.299 62.236 62.101 62.474 GramLoop 62.325 62.582 62.250 62.603 
+
+∆ +0.026 +0.346 +0.149 +0.129 
+
+Table 3: GramLoop with fixed cross-validation hyperparam-eters improves three of four ADE20K subsets and all four complements. 
+
+ER = AP COCO -O − 0.45 AP COCO , following the clean-performance correction of Mao et al. (2023). All metrics are reported in percentage points, and higher values are better. DINOv3 and GramLoop are evaluated on identical images and annotations. 
+
+Experimental Details 
+
+Unless otherwise stated, we use the 40-block DINOv3 ViT-7B/16 backbone (Siméoni et al. 2026). GramLoop replays blocks [21 , 23] for K = 2 additional replays and measures each proposal’s cosine-Gram drift at the final block. We retain the released task interfaces: ViT-Adapter with Mask2Former for ADE20K (Chen et al. 2023; Cheng et al. 2022) and Plain-DETR for COCO (Lin et al. 2023). Both heads consume spatial patch features from the same four taps. Evaluation is deterministic with seed 100. All back-bone, adapter, and task-head parameters remain fixed, so GramLoop is training-free. The supplementary material pro-vides additional details on token routing, preprocessing, valid-token handling, and shifted-benchmark annotations. Our code will be released. 
+
+Experimental Results 
+
+Main Results Training-free GramLoop improves shifted dense-prediction robustness. Across COCO-O, COCO-P, COCO-C, ADE20K-P, and ADE20K-C, Table 1 reports the main comparison. GramLoop improves over the paired DI-NOv3 baseline on every shifted benchmark. Although the gains on the -C and -P suites are modest, they are ob-tained without training or parameter updates on a frozen 7B-parameter DINOv3 backbone pretrained on 1.7 billion images (Siméoni et al. 2026). These consistent gains are therefore nontrivial. Improvements across both Plain-DETR detection and Mask2Former segmentation further indicate that the gains arise from refining the shared token trajectory rather than modifying task-specific heads. GramLoop also improves clean ADE20K by +0 .165 mIoU. Figure 4 com-plements these aggregate scores: on ADE20K-P, GramLoop corrects a large semantic region rather than only scattered pixels; on COCO-O handmake, it recovers a missed object at the same 0.40 score threshold. Because the task heads and inference hyperparameters remain fixed, these corrections reflect refined backbone evidence rather than retuning the downstream predictor. The gains are also broadly distributed across semantic categories: 94 of 150 ADE20K classes im-prove when class IoU is averaged over all 75 ADE20K-C conditions. This majority-class coverage shows that the ag-gregate improvement is not concentrated in a few labels; the supplementary material lists the 10 largest gains. 
+
+The improvements persist under resampling. To assess whether the aggregate gains are driven by only a few shift families, we perform paired cluster bootstrapping over cor-ruption or perturbation families. Each replicate retains all five severity levels of every sampled family and recomputes the paired mean difference. As shown in Table 2, all four 95% confidence intervals exclude zero, supporting the consistency of the improvements across shift families. 
+
+The gains generally increase with shift severity. After establishing the aggregate improvements and their bootstrap consistency, we examine how the gains vary with shift sever-ity. Figure 3 reports the paired performance change at each severity level, averaged over the corresponding shift fami-lies. Across the four suites, the gains generally concentrate at severities 4–5, indicating that selective replay is most bene-ficial under stronger distribution shifts. 
+
+Fixed cross-validation hyperparameters transfer across validation partitions. Let V denote the complete 2,000-image ADE20K validation set, and let Si denote its ith fixed 500-image subset. Table 3 reports mIoU on each Si and on its 1,500-image complement V \ S i. The fixed subsets improve in three of four cases, and all complements improve, indicating that the aggregate mIoU gain is not driven by a single validation partition. 
+
+Ablations and Diagnostics Final-layer Gram gating with loop-end updates is the best ablation. Table 4 shows that measuring Gram consistency at the final layer while applying the accepted update at the loop endpoint performs best. This result supports separating reliability estimation from trajectory modification. Shifted input Ground truth DINOv3 GramLoop (Ours)            
+
+> ADE20K-P · Gaussian noise · Severity 5
+> COCO-O · handmake
+> elephant elephant elephant 0.82 elephant 0.83 elephant 0.44
+> ADE20K-P palette: wall building sky tree grass earth mountain rock void
+
+Figure 4: GramLoop corrects a large semantic region and recovers a missed object across segmentation and natural detection shifts. Detection labels report confidence scores using a shared threshold of 0.40 . The ADE20K-P example uses severity 5, whereas COCO-O handmake is a natural-shift domain. 
+
+Gate at Update at mAP ↑ ER ↑
+
+– – 66.264 36.746 Loop end Loop end 66.369 36.862 Final layer Final layer 66.174 36.705 Final layer Loop end 66.516 36.996 
+
+Table 4: Final-layer Gram evidence performs best when the accepted update is applied at the loop endpoint. “Gate at” and “Update at” denote where the gate is computed and applied; “Loop end” and “Final layer” are zero-indexed blocks 23 and 39, respectively. 
+
+Patchwise gating preserves Gram consistency. At matched mean update strength, every patchwise-gated marker lies left of its uniform-gated counterpart across all 17 COCO-P perturbations and 85 severity conditions (Fig-ure 5). Thus, token selection matters beyond taking a smaller replay step. Table 5 reports 1.96 × GPU-equivalent inference time with unchanged peak memory, making runtime the main trade-off. 
+
+Path Blocks Analytic GPU time (s/image) ↓ Obs. Peak GB ↓
+
+Baseline 40 1.00 × 2.73 1.00 × 46.56 Endpoint replay 46 1.15 × 3.14 1.15 × 46.56 Final filter 78 1.95 × 4.63 1.70 × 46.56 GramLoop (Ours) 94 2.35 × 5.35 1.96 × 46.56 
+
+Table 5: Measured inference cost remains below the block-count estimate, while peak GPU memory is un-changed. “Endpoint replay,” “Final-state filtering,” and GramLoop use gate/update locations of loop-end/loop-end, final-layer/final-layer, and final-layer/loop-end, respectively. Uniform-gated Gram-gated (Ours) 0.06 0.09 0.12 0.06 0.09 0.12 Brightness Contrast Darkness Gaussian Impulse Shot Speckle Defocus Motion Zoom Fog Snow JPEG Pixelation Rotation Shear Translation 
+
+Figure 5: At matched mean update strength, patchwise Gram gating lowers final-layer cosine-Gram discrepancy for all 17 COCO-P perturbations. Discrepancies are normalized by Ungated ( = 1 ); lower is better. 
+
+## Conclusion 
+
+We introduced GramLoop, a training-free method for im-proving the robustness of frozen DINOv3 dense-prediction models. At inference time, it replays a short transformer win-dow and uses final-layer Gram consistency to gate patch-wise updates, while leaving all model parameters and task heads unchanged. Across COCO-O, COCO-P, COCO-C, ADE20K-P, and ADE20K-C, GramLoop improves over the paired DINOv3 baseline while preserving clean ADE20K performance. Ablations identify final-layer global Gram evi-dence applied at the replay-window endpoint as the strongest evaluated configuration. For the future work, we can reduce inference time by adaptively determining when and how many times to replay and by developing lower-cost relia-bility probes, while preserving the gains under distribution shifts. Acknowledgement 
+
+We thank Yuki Asano for the discussion in this work. 
+
+## References 
+
+Bai, S.; Kolter, J. Z.; and Koltun, V. 2019. Deep Equilibrium Models. In NeurIPS .Bai, S.; Koltun, V.; and Kolter, J. Z. 2020. Multiscale Deep Equilibrium Models. In NeurIPS .Carion, N.; Massa, F.; Synnaeve, G.; Usunier, N.; Kirillov, A.; and Zagoruyko, S. 2020. End-to-End Object Detection with Transformers. In ECCV .Caron, M.; Touvron, H.; Misra, I.; Jégou, H.; Mairal, J.; Bojanowski, P.; and Joulin, A. 2021. Emerging Properties in Self-Supervised Vision Transformers. In ICCV .Chen, L.; Li, J.; Liang, C.; Lao, N.; and Liu, Q. 2026. Training-free looped transformers. arXiv:2605.23872. Chen, Z.; Duan, Y.; Wang, W.; He, J.; Lu, T.; Dai, J.; and Qiao, Y. 2023. Vision Transformer Adapter for Dense Pre-dictions. In ICLR .Cheng, B.; Misra, I.; Schwing, A. G.; Kirillov, A.; and Gird-har, R. 2022. Masked-Attention Mask Transformer for Uni-versal Image Segmentation. In CVPR .Dehghani, M.; Gouws, S.; Vinyals, O.; Uszkoreit, J.; and Kaiser, L. 2019. Universal transformers. In ICLR .Dosovitskiy, A.; Beyer, L.; Kolesnikov, A.; Weissenborn, D.; Zhai, X.; Unterthiner, T.; Dehghani, M.; Minderer, M.; Heigold, G.; Gelly, S.; Uszkoreit, J.; and Houlsby, N. 2021. An Image Is Worth 16x16 Words: Transformers for Image Recognition at Scale. In ICLR .Farina, M.; Franchi, G.; Iacca, G.; Mancini, M.; and Ricci, E. 2024. Frustratingly Easy Test-Time Adaptation of Vision-Language Models. In NeurIPS .Fu, T.; You, Y.; Chen, Z.; Dai, G.; Yang, H.; and Wang, Y. 2026. Think-at-Hard: selective latent iterations to improve reasoning language models. In ICML .Giannou, A.; Rajput, S.; Sohn, J.-y.; Lee, K.; Lee, J. D.; and Papailiopoulos, D. 2023. Looped transformers as pro-grammable computers. In ICML .Hendrycks, D.; and Dietterich, T. 2019. Benchmarking Neu-ral Network Robustness to Common Corruptions and Pertur-bations. In ICLR .Kamann, C.; and Rother, C. 2021. Benchmarking the Ro-bustness of Semantic Segmentation Models with Respect to Common Corruptions. IJCV .Lin, T.-Y.; Maire, M.; Belongie, S.; Bourdev, L.; Girshick, R.; Hays, J.; Perona, P.; Ramanan, D.; Zitnick, C. L.; and Dollár, P. 2014. Microsoft COCO: Common Objects in Context. In 
+
+ECCV .Lin, Y.; Yuan, Y.; Zhang, Z.; Li, C.; Zheng, N.; and Hu, H. 2023. DETR Does Not Need Multi-Scale or Locality Design. In ICCV .Mao, X.; Chen, Y.; Zhu, Y.; Chen, D.; Su, H.; Zhang, R.; and Xue, H. 2023. COCO-O: A Benchmark for Object Detectors under Natural Distribution Shifts. In ICCV .Michaelis, C.; Mitzkus, B.; Geirhos, R.; Rusak, E.; Bring-mann, O.; Ecker, A. S.; Bethge, M.; and Brendel, W. 2019. Benchmarking Robustness in Object Detection: Autonomous Driving When Winter Is Coming. In NeurIPS ML4AD Work-shop .Mohd Zakir, H.; and Ho, E. T. W. 2026. Revealing the Semantic Selection Gap in DINOv3 through Training-Free Few-Shot Segmentation. arXiv:2602.07550. Niu, S.; Wu, J.; Zhang, Y.; Chen, Y.; Zheng, S.; Zhao, P.; and Tan, M. 2022. Efficient Test-Time Model Adaptation without Forgetting. In ICML .Oquab, M.; Darcet, T.; Moutakanni, T.; Vo, H. V.; Szafraniec, M.; Khalidov, V.; Fernandez, P.; Haziza, D.; Massa, F.; El-Nouby, A.; Assran, M.; Ballas, N.; Galuba, W.; Howes, R.; Huang, P.-Y.; Li, S.-W.; Misra, I.; Rabbat, M.; Sharma, V.; Synnaeve, G.; Xu, H.; Jégou, H.; Mairal, J.; Labatut, P.; Joulin, A.; and Bojanowski, P. 2024. DINOv2: learning robust visual features without supervision. TMLR .Ranftl, R.; Bochkovskiy, A.; and Koltun, V. 2021. Vision Transformers for Dense Prediction. In ICCV .Saunshi, N.; Dikkala, N.; Li, Z.; Kumar, S.; and Reddi, S. J. 2025. Reasoning with latent thoughts: on the power of looped transformers. In ICLR .Schiappa, M. C.; Azad, S.; Vs, S.; Ge, Y.; Miksik, O.; Rawat, Y. S.; and Vineet, V. 2024. Robustness Analysis on Founda-tional Segmentation Models. In CVPR Workshops .Siméoni, O.; Vo, H. V.; Seitzer, M.; Baldassarre, F.; Oquab, M.; Jose, C.; Khalidov, V.; Szafraniec, M.; Yi, S.; Rama-monjisoa, M.; Massa, F.; Haziza, D.; Wehrstedt, L.; Wang, J.; Darcet, T.; Moutakanni, T.; Sentana, L.; Roberts, C.; Vedaldi, A.; Tolan, J.; Brandt, J.; Couprie, C.; Mairal, J.; Jégou, H.; Labatut, P.; and Bojanowski, P. 2026. DINOv3. TMLR .Sun, Y.; Wang, X.; Liu, Z.; Miller, J.; Efros, A. A.; and Hardt, M. 2020. Test-Time Training with Self-Supervision for Generalization under Distribution Shifts. In ICML .Wang, D.; Shelhamer, E.; Liu, S.; Olshausen, B.; and Dar-rell, T. 2021. Tent: Fully Test-Time Adaptation by Entropy Minimization. In ICLR .Wang, Q.; Fink, O.; Van Gool, L.; and Dai, D. 2022. Con-tinual Test-Time Domain Adaptation. In CVPR .Xie, E.; Wang, W.; Yu, Z.; Anandkumar, A.; Alvarez, J. M.; and Luo, P. 2021. SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers. In NeurIPS .Yang, L.; Lee, K.; Nowak, R.; and Papailiopoulos, D. 2024. Looped transformers are better at learning learning algo-rithms. In ICLR .Yin, H.; Vahdat, A.; Alvarez, J. M.; Mallya, A.; Kautz, J.; and Molchanov, P. 2022. A-ViT: Adaptive Tokens for Efficient Vision Transformer. In CVPR .Zheng, S.; Lu, J.; Zhao, H.; Zhu, X.; Luo, Z.; Wang, Y.; Fu, Y.; Feng, J.; Xiang, T.; Torr, P. H. S.; and Zhang, L. 2021. Rethinking Semantic Segmentation from a Sequence-to-Sequence Perspective with Transformers. In CVPR .Zhou, B.; Zhao, H.; Puig, X.; Fidler, S.; Barriuso, A.; and Torralba, A. 2017. Scene Parsing Through ADE20K Dataset. In CVPR .Zhou, S.; Yin, M.; Sun, L.; Yang, S.; Xie, D.; and Zhu, J. 2025. Training-Free Test-Time Adaptation via Shape and Style Guidance for Vision-Language Models. In NeurIPS .Supplementary Material 
+
+Supplementary Method Details 
+
+Algorithm 1 Training-free Gram-gated replay. Patch se-lects valid patch tokens, RowNorm 2 normalizes each patch-token feature to unit ℓ2 norm, and RowMSE returns the mean squared discrepancy of each Gram row. The prefix and suffix retain the tapped features required by the dense-prediction head.                                                                                
+
+> Require: Image x; frozen tapped prefix Ptap , replay window F,tapped suffix Stap , and task head h; replay count K; numerical constant ϵ > 0
+> Ensure: Dense prediction bo
+> 1: (Zin ,Tpre )← P tap (x),Z0← F (Zin ),(Y0,_)← S tap (Z0)
+> 2: Q0←RowNorm 2(Patch(LN( Y0))) ,G0←Q0Q⊤
+> 0
+> 3: for k= 1 , . . . , K do
+> 4: bZk← F (Zk−1),(bYk,_)← S tap (bZk)
+> 5: bQk←RowNorm 2(Patch(LN( bYk))) ,bGk←bQkbQ⊤
+> k
+> 6: dk←RowMSE( bGk,G0)
+> 7: gpatch
+> k←exp( −dk/max(median( dk), ϵ ))
+> 8: Assign the mean patch gate to the class and register tokens, forming the full token gate gk
+> 9: Zk←Zk−1+gk⊙(bZk−Zk−1)
+> 10: end for
+> 11: (_,Tpost )← S tap (ZK)
+> 12: return bo←h(Tpre ∪ T post )
+
+Algorithm 1 summarizes the complete inference procedure. The initial forward pass provides a fixed image-specific Gram anchor. At each replay, the proposal is propagated through the frozen suffix, compared with this anchor at the final layer, and converted into a patchwise gate that updates the replay-window endpoint. After K gated replays, the suffix and the unchanged task head are evaluated once more using the re-tained multi-level features to produce the final prediction. 
+
+Additional Experimental Protocol 
+
+Evaluation configuration. All experiments use the frozen 40-block DINOv3 ViT-7B/16 backbone and released dense-prediction heads, with zero-indexed taps [9 , 19 , 29 , 39] . We replay blocks [21 , 23] for K = 2 additional passes, compute exact global cosine-Gram matrices at the final layer, apply the gate at block 23, and set ϵ = 10 −6. ADE20K uses ViT-Adapter and Mask2Former with 896 × 896 sliding-window crops; COCO uses Plain-DETR at short-side resolution 2048 with a 3 × 3 local-view grid and one resized global view. No test-time augmentation is used. 
+
+Hardware and runtime. All evaluations run with batch size one on NVIDIA H100 SXM5 GPUs with 64 GB of mem-ory. Parameters, backbone outputs, Gram statistics, and task heads use float32 ; backbone block computation, includ-ing replay and suffix passes, uses bfloat16 autocasting. No model parameter is updated. 
+
+Seed independence. The inference path contains no stochastic sampling: models are in evaluation mode, data order is fixed, and deterministic CUDA algorithms are en-forced. Thus, for fixed inputs, checkpoints, and configura-tion, predictions do not depend on the experiment seed; seed 100 is retained only for defensive random-number-generator initialization and provenance. COCO-C corruptions use de-terministic per-image hashes independent of this experiment seed. 
+
+Backbone token routing. The class token and four regis-ter tokens use the mean unit-range gate over the patch grid and are updated with their respective proposal displacements. Because taps 9 and 19 precede the replay window, they retain their standard-forward features; taps 29 and 39 are recom-puted from the accepted loop endpoint and therefore carry the refined trajectory. 
+
+Task interfaces. For semantic segmentation, each tapped representation supplies normalized patch tokens and its class token to the released DINOv3 feature adapter (Siméoni et al. 2026). Register tokens are not passed to the segmentation head, and the class token carried by the intermediate-feature interface does not enter the feature-pyramid computation. Patch tokens are reshaped to their image grid and fused with the ViT-Adapter convolutional spatial prior (Chen et al. 2023); Mask2Former then decodes the resulting four-level pyramid (Cheng et al. 2022). For object detection, the released interface retains only normalized patch tokens from the four taps, reshapes them into spatial maps, and concatenates the maps along the chan-nel dimension (Siméoni et al. 2026). Class and register tokens are not passed directly to the detector. Plain-DETR processes the concatenated representation with its original prediction and post-processing pipeline (Lin et al. 2023). Thus patch to-kens are the direct backbone inputs to both task heads; class and register tokens affect predictions only indirectly through self-attention in the replayed window and recomputed suffix. 
+
+Input and valid-token handling. ADE20K is evaluated one sliding-window crop at a time with a nominal 896 × 896 
+
+crop. COCO is evaluated one image at a time after both spatial dimensions are resized to multiples of the patch size (16). Neither evaluator adds batch padding at the backbone input or supplies an external valid-patch mask. Consequently, every produced patch token is valid and all reported runs use 
+
+N = P .
+
+Shifted-benchmark annotations. ADE20K-C transforms only the input image, so the original semantic la-bels are retained for every corruption–severity condition. COCO-C likewise retains the original val2017 bound-ing boxes. MS COCO-P was introduced for segmenta-tion robustness but releases condition-specific COCO-format 
+
+instances_val2017 annotations; we use these provided annotations to define the paired detection conditions (Schi-appa et al. 2024). 
+
+Extended result breakdowns. Tables 6 and 7 report five-severity means for every ADE20K-C corruption and COCO-P perturbation, respectively. Table 8 further lists the 10 ADE20K semantic classes with the largest mean gains under ADE20K-C. Corruption DINOv3 GramLoop (Ours) ∆
+
+Brightness 61.595 61.612 +0.016 Contrast 61.963 61.957 -0.006 Defocus blur 54.126 54.100 -0.026 Elastic transform 58.489 58.521 +0.032 Fog 61.364 61.374 +0.010 Frost 53.663 53.811 +0.148 Gaussian noise 55.234 55.257 +0.022 Glass blur 52.759 52.892 +0.133 Impulse noise 57.546 57.584 +0.038 JPEG compression 59.435 59.578 +0.144 Motion blur 55.691 55.767 +0.075 Pixelate 60.097 60.125 +0.028 Shot noise 55.526 55.620 +0.094 Snow 58.488 58.480 -0.008 Zoom blur 42.388 42.486 +0.098 
+
+Macro mean 56.558 56.611 +0.053 
+
+Table 6: Five-severity ADE20K-C mIoU means by corruption; deltas are computed before rounding. 
+
+Perturbation DINOv3 GramLoop (Ours) ∆
+
+Gaussian 56.228 56.342 +0.114 Shot 62.985 63.026 +0.040 Impulse 58.091 58.196 +0.105 Speckle 62.289 62.339 +0.050 Defocus 45.748 45.838 +0.089 Motion 47.760 47.849 +0.089 Zoom 44.732 44.863 +0.132 Contrast 64.178 64.197 +0.018 Brightness 64.186 64.201 +0.015 Darkness 65.483 65.500 +0.018 JPEG 58.916 58.988 +0.072 Pixelate 57.308 57.420 +0.112 Fog 64.463 64.466 +0.003 Snow 60.153 60.241 +0.088 Rotate 63.972 64.023 +0.050 Translate 64.160 64.170 +0.009 Shear 64.822 64.830 +0.008 
+
+Macro mean 59.146 59.205 +0.060 
+
+Table 7: Five-severity COCO-P mAP means by perturbation; deltas are computed before rounding. 
+
+Rank Class DINOv3 GramLoop (Ours) ∆
+
+1 monitor 23.479 26.358 +2.878 2 screen door 66.339 67.028 +0.689 3 airplane 81.514 82.173 +0.659 4 sculpture 67.221 67.784 +0.563 5 pot 61.488 62.036 +0.548 6 ottoman 53.116 53.610 +0.493 7 barrel 65.320 65.797 +0.477 8 swivel chair 46.620 47.045 +0.426 9 bag 18.455 18.845 +0.390 10 waterfall 56.774 57.160 +0.386 Table 8: ADE20K-C improvements extend across semantic cate-gories; shown are the 10 largest mean classwise IoU gains. 
+
+Expanded Qualitative and Diagnostic Results 
+
+The supplementary figures below extend Figure 4 and Fig-ure 2. Figure 6 provides full-width comparisons across ADE20K-P, COCO-P, and two COCO-O domains, while Fig-ure 7 expands the diagnostic across multiple impulse-noise severities. Their construction and visualization protocols are detailed below. 
+
+Qualitative-figure construction. Every panel is rendered from stored predictions produced by the same frozen task heads as the quantitative evaluation. For ADE20K-P, the DINOv3 and GramLoop panels are classwise-argmax Mask2Former masks. Ignored annotation pixels are removed, and the green contour is computed from valid pixels where GramLoop equals the annotation while DINOv3 does not. For detection, each row uses an identical crop for the input, annotation, and both methods. The display retains only the illustrated categories and predicted boxes with score at least 
+
+0.40 whose centers lie inside that crop. Predictions are sorted by score and greedily matched to unmatched annotations of the same category at IoU at least 0.50 . Dashed green boxes denote annotations; green GramLoop boxes are matched objects not recovered by DINOv3, red DINOv3 boxes are unmatched detections absent from GramLoop, and the re-maining predictions retain their method color. These cate-gory, crop, and score filters are used only for visualization and do not enter the reported metrics. 
+
+Impulse-noise diagnostic construction. Rows use COCO image 360325. Severities 3 and 5 are released COCO-P in-puts; severity 10 is a deterministic salt-and-pepper extrapola-tion used only as a stress test. Let G0 be the final-layer cosine-Gram matrix from the anchor pass and Gprop 2 the matrix obtained by propagating the second replay proposal through the frozen suffix. For every valid patch p, the proposal-drift map is 
+
+rprop 2,p = 1
+
+N
+
+> N
+
+X
+
+> q=1
+
+ Gprop 2,pq − G0,pq 
+
+2 ,
+
+and the gate map is 
+
+g2,p = exp 
+
+
+
+− rprop 2,p 
+
+max(median( rprop 2 ), 10 −6)
+
+
+
+.
+
+The figure displays g2,p , not the complete update coefficient. After the patchwise gated update is accepted at the loop endpoint, the frozen suffix is recomputed to obtain Ggated 2 .The final column displays 
+
+rgated 2,p = 1
+
+N
+
+> N
+
+X
+
+> q=1
+
+
+
+Ggated 2,pq − G0,pq 
+
+2
+
+.
+
+Each patchwise scalar map is restored to the spatial patch grid. Proposal and post-gating drift use the same fixed color range, 0 to 1.76 × 10 −4, across all rows, while the gate uses 
+
+[0 , 1] .Shifted input Ground truth DINOv3 GramLoop (Ours) 
+
+ADE20K-P · Gaussian noise · Severity 5 
+
+COCO-P · motion blur · Severity 5  
+
+> table sink table 0.81 table 0.81 sink 0.45
+
+COCO-O · weather  
+
+> person person 0.53 person 0.42 person 0.52
+
+COCO-O · handmake  
+
+> elephant elephant elephant 0.82 elephant 0.83 elephant 0.44
+
+ADE20K-P palette: wall building sky tree grass earth mountain rock void Figure 6: Qualitative shifted-input predictions from the same frozen task heads used for evaluation. Columns compare the input, annotation, DINOv3, and GramLoop; rows cover ADE20K-P, COCO-P, and two COCO-O domains. 
+
+Detailed Compute Accounting 
+
+Let B(T, C ) denote the cost of one transformer block for all T encoder tokens and channel width C, W = e − s + 1 
+
+the replay-window length, and S = L − e − 1 the suffix length. The baseline costs LB (T, C ) + Ch, where Ch is the unchanged task-head cost. The future-guided endpoint update costs 
+
+L + K(W + S) + SB(T, C ) + Ch + O (K + 1) N 2C .
+
+The final term covers one anchor Gram matrix and one pro-posal Gram matrix per replay. Since a transformer block costs O(T C 2 + T 2C), GramLoop has the same polynomial order as ordinary inference for fixed K, with an explicit test-time compute multiplier. For L = 40 , W = 3 , S = 16 ,and K = 2 , the baseline and GramLoop execute 40 and 94 equivalent backbone blocks, respectively. The analytic multiplier counts frozen transformer-block evaluations and excludes the shared task head and Gram algebra. For measured timing, GPU-equivalent time per image is the distributed wall time over the same 11,782 COCO and COCO-O images, multiplied by 64 GPUs and divided by the image count. It is therefore an accounting quantity rather than directly measured single-GPU latency. The measured multiplier includes the task head, Gram computation, and Input Proposal drift Gate Post-gating drift Impulse 3 Impulse 5 Impulse 10 
+
+0 1.76e-04 0 1.00 0 1.76e-04 Figure 7: Replay-2 diagnostic for COCO image 360325 under increasing impulse noise. Columns show the input, proposal drift, gate, and post-gating drift. 
+
+data pipeline, while peak memory is the maximum observed on any GPU. 
+
+Additional Gram-Consistency Diagnostics 
+
+We additionally define the aggregation used for the perturbation-level Gram-consistency analysis in Figure 5. For perturbation p, severity s, image i, and trajectory m ∈{raw , uniform , gated }, let dp,s,i,m denote the mean final-layer cosine-Gram discrepancy. The perturbation-level nor-malized value shown there is 
+
+Rp,m =
+
+P 
+
+> s,i
+
+dp,s,i,m 
+
+P 
+
+> s,i
+
+dp,s,i, raw 
+
+, m ∈ { uniform , gated }.
+
+Here the sums range over all five severities and 5,000 images per severity. Thus each row aggregates 25,000 paired images before normalization by its Ungated trajectory.

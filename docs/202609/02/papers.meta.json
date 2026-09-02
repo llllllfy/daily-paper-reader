@@ -1,0 +1,54 @@
+{
+  "label": "2026-09-02",
+  "date": "2026-09-02",
+  "generated_at": "2026-09-02T23:09:52",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202609/02/2608.28316v1-conditional-visual-evidence-utility-state-dependent-rank-reversals-in-frozen-vision-language-encoders",
+      "section": "deep",
+      "title_en": "Conditional Visual Evidence Utility: State-Dependent Rank Reversals in Frozen Vision-Language Encoders",
+      "authors": "Yunxuan Fang, Xinhe Wang",
+      "date": "2026-08-28",
+      "pdf": "https://arxiv.org/pdf/2608.28316v1",
+      "score": "9.0",
+      "evidence": "度量冻结视觉语言编码器中颜色、形状、纹理证据的条件效用。",
+      "tldr": "静态重要性评分将视觉证据视为固定排序，但观察一个线索后剩余证据的价值会改变。本研究在受控组合视觉搜索中，通过独立暴露颜色、形状、纹理证据，测量冻结OpenCLIP和SigLIP在不同获取状态下的条件边际效用。在800个场景的验证中，发现稳健的状态依赖排序反转，集中于候选重叠区域；该现象在多种证据累积构造和等价查询措辞下持续，但在查询-场景错配时消失。结果表明证据重要性是状态依赖的，更新证据排序可保留跨评估器的决策价值，为自适应证据选择提供可测量目标。",
+      "tags": "query:cp",
+      "abstract_en": "Static importance scores compress visual evidence into a single ranking, but the value of remaining evidence can change after one cue has been observed. We study this possibility in controlled compositional visual search, where color, shape, and texture evidence can be independently exposed and their conditional marginal utility measured across acquisition states. In a held-out confirmation on 800 scenes, frozen OpenCLIP and SigLIP exhibit robust state-dependent rank reversals that concentrate in candidate-overlap regimes designed to induce ordering changes. The structure persists across two evidence-accumulation constructions and ten equivalent query wordings, but disappears under query-scene derangement. We also ask whether these reversals matter for decisions. In a post-confirmation exploratory matched-first-action analysis, reranking only after the first acquisition yields positive step-2 utility when decisions are selected under one evidence mode, wording, or backbone and evaluated under another. Together, these results show that evidence importance is state-dependent in this controlled setup and that updating an evidence ordering can retain decision-relevant value across evaluator changes. They motivate evaluating vision-language evidence use conditionally rather than through a single static ranking, while providing a measurable target for future adaptive evidence-selection methods.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/02/2608.29113v1-gramloop-training-free-gram-gated-replay-for-robust-dense-prediction",
+      "section": "deep",
+      "title_en": "GramLoop: Training-Free Gram-Gated Replay for Robust Dense Prediction",
+      "authors": "Yang Chen, Canyu Shen, Xinzhe Rao, Yuanyi Yan, Yunlu Chen, Meng Tang, Teng Long, Vincent Tao Hu",
+      "date": "2026-08-29",
+      "pdf": "https://arxiv.org/pdf/2608.29113v1",
+      "score": "8.0",
+      "evidence": "冻结骨干内通过Gram门控重放进行训练无关的隐空间特征干预以增强鲁棒稠密预测",
+      "tldr": "针对冻结DINOv3密集预测模型在分布偏移下的性能退化，GramLoop提出训练自由框架，在视觉骨干内重放短transformer窗口并通过最终层余弦Gram一致性进行patchwise门控。该方法不改变模型权重、任务适配器或预测头，通过重复计算细化密集特征同时保持空间结构。在目标检测和语义分割的五个偏移基准上，GramLoop均超越基线，COCO-O mAP提升0.252、有效鲁棒性提升0.250，并保持clean ADE20K性能。贡献在于无需训练即显著增强密集预测模型鲁棒性。",
+      "tags": "query:cp",
+      "abstract_en": "We aim to improve frozen DINOv3 dense-prediction models under distribution shift by adding inference computation inside the visual backbone, without changing model weights, task adapters, or prediction heads. The challenge is that repeated transformer-block computation must refine dense features without disrupting the pairwise patch relations that DINOv3 uses to preserve spatial structure. We introduce GramLoop, a training-free framework that replays a short transformer window and controls each replay through final-layer cosine-Gram consistency. Each proposal is propagated through the frozen suffix, measured against the standard DINOv3 trajectory, and accepted through a patchwise gate at the replay-window endpoint. Across object detection and semantic segmentation under corruptions, perturbations, and natural shifts, GramLoop improves all five shifted benchmarks over the paired DINOv3 baseline. On COCO-O, it improves mAP by +0.252 and Effective Robustness by +0.250, while preserving clean ADE20K performance. Code will be released.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/02/2608.28991v1-jigsaw-crl-recovering-global-latent-causal-order-from-fragmented-multi-client-interventions",
+      "section": "quick",
+      "title_en": "Jigsaw-CRL: Recovering Global Latent Causal Order from Fragmented Multi-Client Interventions",
+      "authors": "Haijie Xu, Chen Zhang",
+      "date": "2026-08-29",
+      "pdf": "https://arxiv.org/pdf/2608.28991v1",
+      "score": "6.0",
+      "evidence": "研究因果表示学习中跨客户端对潜在变量子集的干预问题",
+      "tldr": "现有因果表示学习方法假设所有环境共享相同潜在变量，难以处理多客户端各自仅能干预部分潜在变量的碎片化场景。本文提出Jigsaw-CRL框架，利用软干预下跨环境精度矩阵差异的低秩结构，为每个客户端恢复块划分、块级祖先顺序和潜在子空间，再拼装成全局节点级潜在因果顺序。理论建立了可识别性保证，合成数据实验验证了框架有效性。该方法解决了碎片化多客户端干预下的全局因果顺序恢复难题，拓展了CRL应用范围。",
+      "tags": "query:cp",
+      "abstract_en": "Causal representation learning (CRL) aims to recover latent causal variables and their structural relations from high-dimensional observations. Existing CRL methods typically assume that all environments are defined over the same latent variables, or at least share a common latent representation space. We study a fragmented multi-client setting, where multiple clients interact with the same global latent causal system but each client only accesses and intervenes on a subset of the latent variables. In this regime, marginalizing unused latent variables induces bidirected edges, so a single client no longer admits a node-wise latent causal graph, and the global latent causal order must be recovered by assembling client-specific structural fragments. We propose \\textbf{Jigsaw-CRL}, a framework for recovering global latent causal order from such fragmented interventions. Under soft interventions, differences between precision matrices across environments exhibit a low-rank structure governed by latent ancestor relations. This enables recovery, for each client, of a block partition, the corresponding block-level ancestral order, and latent subspaces, and then assembly of these fragments into the global node-level latent causal order. We establish identifiability guarantees, develop practical algorithms, and validate the framework on synthetic data. Our codes are available on https://anonymous.4open.science/r/code-for-Jigsaw-CRL-7B26",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

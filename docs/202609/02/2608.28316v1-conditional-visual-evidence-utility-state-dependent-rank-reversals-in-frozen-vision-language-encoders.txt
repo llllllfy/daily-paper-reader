@@ -1,0 +1,198 @@
+Title: Conditional Visual Evidence Utility: State-Dependent Rank Reversals in Frozen Vision-Language Encoders
+
+URL Source: https://arxiv.org/pdf/2608.28316v1
+
+Published Time: Mon, 31 Aug 2026 00:59:56 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# Conditional Visual Evidence Utility: State-Dependent Rank Reversals in Frozen Vision-Language Encoders 
+
+Yunxuan Fang 
+
+Beihang University 
+
+micro@buaa.edu.cn 
+
+Xinhe Wang 
+
+Beihang University 
+
+xinhe@buaa.edu.cn 
+
+## Abstract 
+
+Static importance scores compress visual evidence into a single ranking, but the value of remaining evidence can change after one cue has been observed. We study this possibility in controlled compositional visual search, where color, shape, and texture evidence can be independently exposed and their conditional marginal utility measured across acquisition states. In a held-out confirmation on 800 scenes, frozen OpenCLIP and SigLIP exhibit robust state-dependent rank reversals that concentrate in candidate-overlap regimes designed to induce ordering changes. The structure persists across two evidence-accumulation constructions and ten equivalent query wordings, but disappears under query-scene derangement. We also ask whether these reversals matter for decisions. In a post-confirmation exploratory matched-first-action analysis, reranking only after the first acquisition yields positive step-2 utility when decisions are selected under one evidence mode, wording, or backbone and evaluated under another. Together, these results show that evidence importance is state-dependent in this controlled setup and that updating an evidence ordering can retain decision-relevant value across evaluator changes. They motivate evaluating vision-language evidence use conditionally rather than through a single static ranking, while providing a measurable target for future adaptive evidence-selection methods. 
+
+## 1 Introduction 
+
+Vision-language evidence use depends not only on whether relevant evidence is present, but also on how its value changes as other evidence becomes available. Most importance summaries are static: a region, token, feature, or modality receives a score that is interpreted without reference to the evidence already acquired. In this paper, we ask whether that abstraction is sufficient: Does visual evidence have a fixed importance ordering, or can its marginal utility change with the current evidence state? 
+
+This distinction matters whenever evidence interacts. An attribute that is highly diagnostic at the start can become redundant once another attribute narrows the candidate set. Conversely, a previously weak attribute can become the most useful next observation. In such cases, the relevant quantity is not a static score I(k) but the conditional marginal utility ∆k(S, q ) of evidence type k given acquired evidence S and query q. If that ordering changes with S, a decision rule that commits to one ranking at the start can become stale. Sequential feature-acquisition methods already optimize information value conditioned on the current acquisition state. Here, we use conditional utility for a different purpose: as an empirical diagnostic of whether frozen vision-language encoders exhibit structured, state-dependent changes in the value of visual evidence. We study this behavior with a controlled intervention setup. Each synthetic search scene contains 25 objects composed from color, shape, and texture. For every scene and query, we render isolated views that expose one evidence type at a time, evaluate every acquisition subset, and measure target 
+
+> Preprint. arXiv:2608.28316v1 [cs.CV] 28 Aug 2026
+
+utility with frozen vision-language encoders. The scene generator controls candidate overlap so that some regimes predict a change in the relative value of evidence while others do not. The controlled regimes specify when rank reversals should arise from candidate-overlap structure. We then test whether model-derived utilities reproduce these regime-dependent patterns, providing a behavioral test of state-dependent evidence valuation in frozen encoders. Across two frozen backbones and two evidence-accumulation constructions, held-out confirmation shows the same qualitative pattern: robust reversals concentrate in the regimes that symbolically predict them, remain stable under changes in wording and evidence construction, and lose that structure when the query-scene relation is deliberately broken. A separate earlier frozen confirmation additionally shows that, within a fixed scene, the preferred next evidence changes with the semantic target query. The result therefore concerns conditional evidence use as a function of both acquired state and query, rather than a large but uninterpretable aggregate reversal rate. We also ask whether the change in ordering has a decision consequence. Since a global order also ignores scene/query differences already visible before acquisition, a prospectively specified adaptive-versus-global-fixed comparison was positive overall but did not isolate replanning. We therefore add a clearly labeled post-confirmation exploratory matched-first-action analysis: both policies make the same first acquisition, and differ only in whether the remaining evidence is reranked afterwards. The updated decisions remain beneficial when selected under one evidence mode, wording, or backbone and evaluated under another. These tests preserve scenes and targets, they measure robustness to evaluator changes instead of distributional generalization. Our contributions are as follows: • a controlled intervention framework for measuring conditional utility over isolated, non-spatial visual evidence types; • held-out evidence that state-dependent rank reversal is margin-robust, regime-specific, oracle-aligned, and stable across evidence construction, wording, and backbone, together with a separate prior frozen confirmation of semantic-target dependence; • a clearly labeled exploratory matched-first-action analysis showing decision-relevant value from updating the evidence ordering after acquisition, including positive cross-condition evaluation. 
+
+## 2 Related work 
+
+Sequential evidence acquisition and active vision. Sequential acquisition has a long history in dynamic feature selection, where the next observation is chosen from the current acquisition state, including conditional-information formulations such as DIME [Covert et al., 2023, Gadgil et al., 2024]. Active-vision systems extend this idea to visual evidence, adapting spatial location, scale, frame, or temporal interval during inference [Wu and Xie, 2023, Liu et al., 2026, Wang et al., 2025]. Our setting differs in the object being measured: with spatial correspondence held fixed, we examine how the marginal utility ordering over distinct types of visual evidence changes as evidence accumulates. 
+
+History-conditioned multimodal reasoning. Recent multimodal agents use accumulated observa-tions to guide subsequent retrieval, inspection, or refinement, often through iterative plan-observe-reflect loops [Wang et al., 2025]. These systems operationalize history-conditioned decision making at the policy level. We study the underlying utility structure directly, using controlled evidence states to measure when the preferred next observation changes and whether those changes follow an independently specified candidate-overlap structure. 
+
+Visual-token routing and static importance. Token-pruning methods such as FastV and Sparse-VLM rank or route spatial visual tokens to reduce computation [Chen et al., 2024, Zhang et al., 2025]. Related diagnostic work has shown that static importance estimates can be fragile, with heuristic or text-guided scores sometimes failing to outperform simple baselines or suffering from cross-modal misalignment [Xu et al., 2026, Wen et al., 2025]. Our analysis addresses a complementary issue: whether evidence utility itself is state dependent, such that a single fixed ranking cannot describe all acquisition states. Instead of treating an attention or saliency score as evidence utility, we directly 2vary the available color, shape, and texture evidence and measure the resulting target utility across acquisition states. 
+
+## 3 Formulation and Setup 
+
+3.1 Problem formulation 
+
+Let q denote a unique target among N = 25 candidate objects. The evidence universe is E = {c, s, t }
+
+for color, shape, and texture, and S ⊆ E denotes acquired evidence. For each rendered evidence state, we crop the same 25 candidate cells, encode each crop with the frozen image encoder, encode the text query once, and use the model’s image-text similarity logits as candidate scores. A softmax over the 25 candidate logits defines the target probability. We then define 
+
+U (S, q ) = log p(y∗ | S, q ), ∆k(S, q ) = U (S ∪ { k}, q ) − U (S, q ). (1) Thus ∆k is both the increase in target log probability and the decrease in target negative log likelihood. For two available evidence groups i, j / ∈ S, write dij (S, q ) = ∆ i(S, q )−∆j (S, q ). A state-dependent rank reversal occurs between the empty state and an acquired state H when dij (∅, q )dij (H, q ) < 0.Our robust definition additionally requires 
+
+|dij (∅, q )| > ϵ and |dij (H, q )| > ϵ, (2) with prospectively fixed primary threshold ϵ = 0 .05 . A sample reverses if any of its three attribute pairs satisfies Eq. 2 using the third attribute as history. We emphasize this margin-based statistic because unthresholded any-pair rates are permissive. 
+
+3.2 Controlled compositional setup 
+
+Each scene contains a 5 × 5 grid of objects sampled from six colors, six shapes, and four textures. The query is a conjunction such as “the red striped triangle”. We generate isolated views in which only the named attribute varies across candidate locations while the other two attributes are rendered canonically. Consequently, each intervention preserves spatial correspondence but controls which information type distinguishes candidates. Full construction and sanity checks are in Appendix A. Four regimes manipulate symbolic candidate overlap. In color-initially-strongest-then-redundant and 
+
+shape-initially-strongest-then-redundant , the initially diagnostic attribute becomes redundant after another attribute is acquired. These are oracle-positive. Matched singleton discriminativeness and 
+
+weak complementary attributes are oracle-negative under the non-tied definition. The symbolic oracle is a design diagnostic computed only from candidate-set cardinalities, without using OpenCLIP or SigLIP outputs. The generator therefore specifies where an ordering change should be structurally expected, but the model is free to agree or disagree. Agreement with the oracle does not imply that a model implements its symbolic rule internally. Let R+ and R− denote sample-level robust reversal rates in oracle-positive and oracle-negative regimes. We summarize regime specificity with 
+
+Γrev = R+ − R−, (3) reported in percentage points. A large positive Γrev indicates that reversals follow the intended candidate-overlap manipulation rather than appearing uniformly across scenes. 
+
+3.3 Evaluation protocol and controls Frozen confirmation. The held-out split contains 800 new scenes, exactly 200 per regime, disjoint from all exploratory and development scenes. The analysis protocol, scene manifests, query templates, controls, and hashes were frozen before inference on this split. We evaluate OpenCLIP ViT-B/32 (laion2B-s34B-b79K ) [Ilharco et al., 2021] and SigLIP base patch16-224 [Zhai et al., 2023], both remain frozen, with no calibration or fine-tuning. 
+
+Evidence accumulation. In additive logits , we sum candidate logits from separately encoded singleton views. The empty state uses an all-zero candidate-logit vector, yielding a uniform distri-bution over the 25 candidates. We use the same empty-state baseline for direct render ; non-empty 3(a) Full scene (b) Color view (c) Shape view (d) Texture view 
+
+Empty state: ∆c > ∆t −→ acquire shape Conditioned state: ∆c({s}) < ∆t({s}).Figure 1: Controlled evidence intervention and rank reversal. Isolated views preserve candidate locations while exposing one attribute type. The schematic ordering is illustrative, reported reversals are computed from frozen-model utilities. Table 1: Frozen confirmation at ϵ = 0 .05 on 800 scenes. RR is sample-level robust reversal rate, BA is sample-level oracle balanced accuracy, CIs are scene-bootstrap intervals.                          
+
+> Backbone Evidence mode RR positive (%) RR negative (%) Difference (pp) [95% CI] Oracle BA (%) OpenCLIP additive 84.2 8.2 76.0 [71.5, 80.2] 88.0 OpenCLIP direct render 96.5 15.5 81.0 [77.0, 85.0] 90.5 SigLIP additive 96.0 22.5 73.5 [69.0, 78.0] 86.8 SigLIP direct render 96.0 23.2 72.7 [68.0, 77.2] 86.4
+
+accumulated subsets are jointly rendered and encoded. Thus the two constructions share the same initial state and singleton evidence, while direct rendering additionally permits interactions within combined visual inputs. Agreement across them tests whether the reversal depends on one particular evidence construction. 
+
+Statistics. Primary results use template T1 (“the {color} {texture} {shape}”) and ϵ = 0 .05 . We report Γrev together with sample-level oracle balanced accuracy. All 95% intervals use 10,000 percentile bootstrap repetitions with scene as the resampling cluster, regime contrasts resample within positive and negative strata. Secondary analyses cover ϵ ∈ { 0, . 1, . 25 , . 5}, ten equivalent wordings, cross-mode agreement, controls, and selectivity. 
+
+Setup validity and controls. Each isolated view must decode its intended attribute above a frozen threshold. Both backbones obtain 100% color, 100% shape, and 74.86% texture accuracy. The prespecified removed-attribute diagnostic does not trigger its predefined strong-leakage flag. This result rules out the prespecified strong-leakage condition but does not establish that removed attributes are at chance (Appendix B). A query-scene derangement preserves recipient images and target indices but replaces the query with an absent conjunction from another scene. A uniform-target implementation sanity check is reported in the appendix. 
+
+## 4 Results 
+
+4.1 State-dependent utility reversals are regime-specific 
+
+Table 1 and Fig. 2 show the confirmatory result. Across all four backbone/mode cells, robust reversals are concentrated in oracle-positive regimes, not uniformly across scenes. The resulting regime contrast Γrev is 72.7–81.0 percentage points, with every 95% interval excluding zero, while oracle balanced accuracy remains high across both backbones and evidence constructions. The key result is therefore not merely that reversals occur, but that their occurrence follows the candidate-overlap manipulation designed to change the relative value of evidence. Pair-level analysis further localizes the effect: robust reversals concentrate in the two attribute comparisons for which the symbolic construction predicts ordering changes, whereas color-versus-shape reversals remain uncommon (Appendix B). 4Color strong then redundant Shape strong then redundant Matched singleton discriminativeness Weak complementary attributes         
+
+> 85.5 83.0 8.0 8.5
+> OpenCLIP · Additive logits
+> 94.5 98.5 14.5 16.5
+> OpenCLIP · Direct render
+> 025 50 75 100
+> Robust reversal rate (%)
+> Color strong then redundant Shape strong then redundant Matched singleton discriminativeness Weak complementary attributes
+> 94.0 98.0 19.0 26.0
+> SigLIP · Additive logits
+> 025 50 75 100
+> Robust reversal rate (%)
+> 93.5 98.5 19.5 27.0
+> SigLIP · Direct render
+
+History-dependent reversals track controlled candidate-overlap structure  
+
+> Points are scene rates at the frozen margin ε = 0.05; bars are scene-bootstrap 95% CIs (n = 200 per regime).
+> Oracle-positive regimes Oracle-negative regimes
+
+Figure 2: Confirmed state-dependent rank reversal across backbones and evidence constructions. Robust reversal rates are substantially higher in oracle-positive than oracle-negative regimes, error bars show scene-bootstrap 95% confidence intervals. 
+
+4.2 Reversals are robust to evidence construction and sensitive to query semantics 
+
+Two complementary checks test whether the result is tied to one evidence construction. Reversal labels, conditional utilities, and preferred next actions agree strongly between additive and jointly rendered accumulation for both backbones. Direct rendering changes some individual decisions, as expected from visual interactions, but preserves the same regime-level structure. The reversal phenomenon is therefore not an artifact of simply summing singleton logits. Every frozen wording template in the 800-scene confirmation preserves a positive Γrev , showing that the effect is not tied to one surface form of the query. Surface-form robustness does not by itself establish semantic query dependence. A separate earlier frozen confirmation on 400 scenes varied the semantic target while holding the scene fixed. Across 20,670 matched scene-state-target observations, query-specific symbolic-oracle action agreement was 92.06–94.84%, versus 61.44% for a query-independent per-scene/state modal-oracle baseline. This corresponds to an improvement of 30.62–33.40 percentage points across both backbones and evidence modes; all scene-bootstrap 95% confidence intervals excluded zero. We report this as prior frozen confirmation; full cells and switch-direction statistics are in Appendix C. Conversely, in the current confirmation, query-scene derangement destroys localization and returns oracle alignment and the regime contrast to approximately chance-scale behavior. As recipient images and target indices are preserved, this control shows that the regime-level structure depends on the intended query-scene relation rather than recipient layout or target-index statistics alone. Together, the wording, semantic-target, and derangement controls support query-sensitive conditional evidence use rather than dependence on a particular prompt template. Exact agreement statistics, threshold sensitivities, and current-run control values are reported in Appendix B. 
+
+4.3 Exploratory value of replanning 
+
+The prospectively specified adaptive-versus-global-fixed comparison showed an overall utility advan-tage, but no planned regime interaction (Appendix D). To isolate updating after evidence acquisition from differences already present at the initial state, we performed a post-confirmation exploratory analysis in which the competing policies are constrained to take the same first action. 5Table 2: Post-confirmation exploratory matched-first-action results. Ranges cover all directional backbone/mode cells, every individual 95% CI is positive. Full cells are in Appendix E. 
+
+Evaluation Cells Step-2 utility gain Action agreement (%) Cross mode 4 0.623–0.730 88.5–94.5 T1 → held-out wording 4 0.534–0.586 88.4–92.1 Cross backbone 4 0.587–0.701 85.4–89.9 a Matched-first-action comparison            
+
+> Empty-state utilities Δc(∅), Δs(∅), Δt(∅)
+> Same first action a₁ Commit-once keep empty-state second choice
+> Replan rerank remaining Δk({a₁})
+> step-2 utility step-2 utility
+> Same cost · same first state · same final state
+> 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8
+> Step-2 target log-probability gain (replan − commit-once)
+> Same-condition opportunity
+> Cross mode Cross wording Cross backbone
+> 95% scene-bootstrap CIs
+> bTransferable decision value
+> OpenCLIP SigLIP Additive Direct render
+
+Replanning changes only the second decision and transfers across evaluators 
+
+Figure 3: Post-confirmation exploratory value of replanning. Commit-once and replan share the same first action and differ only at step 2. Cross-condition gains evaluate actions selected under one evidence mode, wording, or backbone with a different evaluator, error bars show scene-bootstrap 95% confidence intervals. Both policies choose 
+
+a1 = arg max  
+
+> k∈E
+
+∆k(∅, q ). (4) Commit-once then follows the second-ranked remaining group from the empty-state order. Replan instead selects 
+
+a2 = arg max  
+
+> k̸=a1
+
+∆k({a1}, q ). (5) The two policies have identical costs, first states, and final all-evidence states, only the second acquisition differs. Same-condition gains provide an opportunity upper bound because the replan action is selected using the evaluator’s own counterfactual utilities. Cross-condition evaluation provides a stricter test: the second action is selected under one evidence mode, wording, or backbone and scored under another. All 12 cross-condition scene-bootstrap intervals remain above zero (Table 2 and Fig. 3), with substantially larger gains in oracle-positive regimes than in oracle-negative regimes. This supports the presence of decision-relevant structure that persists across evaluator changes in this setup, beyond the same-condition maximization effect. Because these comparisons preserve the same scenes and semantic targets, they assess robustness to evaluator changes, not out-of-distribution generalization. 
+
+## 5 Discussion and Future Directions 
+
+Grounded evaluation should test importance conditionally. The main implication is method-ological. A single evidence ordering assigned to an entire decision episode can represent at most one acquisition state; it cannot express state-specific reorderings. Evaluations of grounding, attribution, 6or evidence selection should therefore report how evidence value changes across matched acquisition states, for example through conditional marginal-utility curves, rank-stability statistics, or reversal rates. The controlled positive/negative regimes in our setup also show why aggregate reversal counts are insufficient: a useful evaluation should ask whether ordering changes occur where the evidence structure predicts an interaction, rather than merely whether any pair flips somewhere. 
+
+Faithful decision-making should allow priorities to be updated. For systems that acquire or inspect evidence sequentially, the practical consequence is that evidence priority should not automati-cally be treated as a one-shot decision. A selector can instead be evaluated on whether it updates its next choice after the evidence state changes. Our matched-first-action comparison provides one such test, holding the first decision fixed so that the policy difference arises entirely from replanning. The positive cross-condition results suggest a concrete next step: learn a low-cost predictor of ∆k(S, q )
+
+or of the preferred next evidence type, then compare it against a commit-once policy under the same matched-first-action protocol. These cross-condition evaluations preserve scenes and targets and therefore measure robustness across evaluators within this setup, not distributional generalization. This turns the present diagnostic into a falsifiable target for future routing or active-perception methods instead of presuming that dynamic selection will help by construction. 
+
+Scope and extensions. The controlled construction is intentionally narrow. Both oracle-positive regimes involve texture as one side of the reversing comparison, and isolated texture evidence is decoded less accurately than color or shape. The present setup therefore does not establish invariance to permutations of attribute roles. Role-balanced constructions that rotate which attribute is initially strong, later redundant, and used as the common comparator are needed to test that generality. More broadly, color, shape, and texture are controlled input interventions, so the present results characterize behavioral evidence use without implying an internal processing order, separable latent concepts, or independently executable compute units. Natural next steps are to extend the matched-state intervention design to richer evidence sources in natural images and generative VLMs, such as OCR, object state, relations, motion, or audio; to test learned or architecturally structured evidence groups that can be executed independently; and to prospectively evaluate the replanning signal with a learned selector under real acquisition or compute costs. These extensions would test how far conditional evidence utility transfers beyond the current controlled setting and whether it can support grounded perception or efficient routing. 
+
+## 6 Conclusion 
+
+Visual evidence importance is not necessarily a property of the evidence alone. In our controlled setup, it depends on both the acquired evidence state and the semantic target query. Across two frozen vision-language encoders, robust rank reversals follow the candidate-overlap regimes designed to change evidence utility, persist across evidence constructions and query wordings, and disappear when the query-scene relation is broken. A separate prior frozen confirmation shows that preferred next evidence also changes with the semantic target within a fixed scene. A post-confirmation exploratory matched-first-action analysis further shows that updating the remaining evidence order carries decision value across evidence-mode, wording, and backbone evaluator changes on the same scenes and targets. These findings motivate a shift in how vision-language evidence use is evaluated: ask not only which evidence is important, but also how its value changes after other evidence is acquired. Conditional evidence utility provides a measurable target for that question and a concrete foundation for future predictors, active acquisition policies, and executable evidence-routing mechanisms. 
+
+## References 
+
+Liang Chen et al. An image is worth 1/2 tokens after layer 2: Plug-and-play inference acceleration for large vision-language models. arXiv preprint arXiv:2403.06764 , 2024. Ian Connick Covert, Wei Qiu, Mingyu Lu, Na Yoon Kim, Nathan J. White, and Su-In Lee. Learning to maximize mutual information for dynamic feature selection. In International Conference on Machine Learning , 2023. 7Soham Gadgil, Ian Covert, and Su-In Lee. Estimating conditional mutual information for dynamic feature selection. In International Conference on Learning Representations , 2024. Gabriel Ilharco, Mitchell Wortsman, Ross Wightman, Cade Gordon, Nicholas Carlini, Rohan Taori, Achal Dave, Vaishaal Shankar, Hongseok Namkoong, John Miller, Hannaneh Hajishirzi, Ali Farhadi, and Ludwig Schmidt. Openclip. Zenodo , 2021. doi: 10.5281/zenodo.5143773. Yiming Liu et al. The perceptual bandwidth bottleneck in vision-language models. arXiv preprint arXiv:2605.01345 , 2026. Ziyang Wang, Honglu Zhou, Shijie Wang, Junnan Li, Caiming Xiong, Silvio Savarese, Mohit Bansal, Michael S. Ryoo, and Juan Carlos Niebles. Active video perception: Iterative evidence seeking for agentic long video understanding. arXiv preprint arXiv:2512.05774 , 2025. Zichen Wen, Yifeng Gao, Weijia Li, Conghui He, and Linfeng Zhang. Token pruning in multimodal large language models: Are we solving the right problem? In Findings of the Association for Computational Linguistics: ACL 2025 , pages 15537–15549, 2025. Penghao Wu and Saining Xie. V*: Guided visual search as a core mechanism in multimodal llms. 
+
+arXiv preprint arXiv:2312.14135 , 2023. Rui Xu, Yunke Wang, Yong Luo, and Bo Du. Rethinking visual token reduction in lvlms under cross-modal misalignment. In Proceedings of the AAAI Conference on Artificial Intelligence ,volume 40, pages 27323–27331, 2026. Xiaohua Zhai, Basil Mustafa, Alexander Kolesnikov, and Lucas Beyer. Sigmoid loss for language image pre-training. In International Conference on Computer Vision , 2023. Yuan Zhang et al. Sparsevlm: Visual token sparsification for efficient vision-language model inference. 
+
+arXiv preprint arXiv:2410.04417 , 2025. 
+
+## A Setup construction and reproducibility 
+
+The held-out confirmation split uses base seed 20280823 and deterministic sample seeds. It contains 200 scenes in each of four regimes. Every target conjunction is unique in its scene. Ten query tem-plates express the same conjunction; T1 is primary and T2–T10 are repeated wording measurements. All scene metadata, exact symbolic transitions, query strings, controls, configuration, and SHA256 hashes were frozen before model inference. Raw saved outputs contain 384,000 transition rows and 3.2 million candidate-logit rows per backbone. Analysis loads no model. The two evidence modes produce the same subset lattice. For each state rendering, the 25 spatially corresponding candidate cells are cropped and independently encoded by the frozen image encoder; the text query is encoded once, and image-text similarity logits provide the 25 candidate scores. Additive logits sum scores from separately encoded singleton views. Both modes use the same all-zero candidate-logit empty state. For non-empty subsets, direct rendering constructs the accumulated evidence jointly before cropping and encoding. In both cases, U (S, q ) is target log probability after a softmax over the same 25 candidate locations. Frozen-model assertions verify evaluation mode, inference mode, and no trainable parameters. The frozen confirmation bootstrap uses 10,000 repeats and seed 20280826. 
+
+## B Robustness and controls 
+
+The primary threshold was chosen in an earlier exploratory forensic analysis and fixed before the 800-scene run. Sensitivity thresholds 0, . 1, . 25 , . 5 were also frozen; none may replace the primary endpoint. The sample-level primary reversal rates (without regime aggregation) are 46.3%, 56.0%, 59.2%, and 59.6% for OpenCLIP-additive, OpenCLIP-direct, SigLIP-additive, and SigLIP-direct. Pair-level rates are 29.8%, 36.0%, 36.7%, and 41.0%. We report these only as scale summaries because regime specificity and oracle agreement are more diagnostic than a permissive any-pair aggregate. 8Table 3: Pair-specific robust reversal rates at ϵ = 0 .05 on the 800-scene confirmation. Each cell has n = 800 scenes; intervals use 10,000 scene-bootstrap repeats. The conditioning attribute is the acquired evidence state used to compare the remaining pair. 
+
+Comparison OpenCLIP Add OpenCLIP Direct SigLIP Add SigLIP Direct color ↔ shape, after texture 7.0 [5.2, 8.8] 15.4 [12.9, 18.0] 5.8 [4.2, 7.5] 17.0 [14.4, 19.6] color ↔ texture, after shape 41.0 [37.6, 44.5] 45.6 [42.1, 49.1] 52.2 [48.8, 55.6] 52.8 [49.4, 56.1] shape ↔ texture, after color 41.5 [38.1, 44.9] 47.0 [43.5, 50.4] 52.0 [48.5, 55.2] 53.2 [49.8, 56.8] 
+
+The pair breakdown matches the symbolic construction at a finer granularity. The oracle predicts no color-shape reversal for any of the 800 scenes, whereas in the 400 oracle-positive scenes it predicts reversals for both texture-containing comparisons. Correspondingly, color-shape reversals are uncommon while both texture-containing pairs replicate across backbones and evidence modes. Because texture is the common comparator in both positive constructions, this table localizes the present effect but does not establish attribute-role invariance. The uniform-target control is an implementation sanity check rather than evidence for the behavioral claim. It contains 8,000 target draws per backbone and yields a 3.6125% true-target draw rate against the exact 4% reference. Deranged queries are deterministically matched across scenes without fixed points, and their conjunction is absent from the recipient scene. For OpenCLIP, deranged oracle BA is 50.25%/52.63% (additive/direct), versus 88.0%/90.5% normally. For SigLIP it is 48.88%/51.0%, versus 86.75%/86.38%. Deranged positive-minus-negative reversal contrasts are 0.5, 5.25, −2.25 ,and 2.0 percentage points, respectively. The 3-by-3 selectivity setup evaluates intended and removed attributes without a trained probe. Both backbones score 100% on isolated color and shape and 74.86% on isolated texture. The prespecified diagnostic flags strong leakage only when a removed-attribute balanced-accuracy lower confidence bound exceeds chance by 0.10; no cell triggers that flag. This criterion is a one-sided screen for detectable strong leakage, not an equivalence test, so its failure to trigger should not be read as evidence that removed-attribute decoding is exactly at chance. 
+
+## C Prior frozen semantic-target confirmation 
+
+A separate earlier frozen confirmation tested semantic query dependence by changing the target query while holding each scene fixed. This experiment used 400 scenes and 20,670 matched observations and was specified prospectively as primary criterion P3 in its own frozen protocol. It is not part of the later 800-scene confirmation reported as the main result. Evaluation includes only matched scene/state units containing at least two semantic target queries with different non-tied oracle-optimal actions; two-attribute states with only one available action are excluded. Table 4: Prior frozen semantic-target confirmation. Agreement measures whether the model’s marginal-utility-maximizing next evidence type matches the query-specific non-tied symbolic-oracle action. The query-independent baseline assigns one modal oracle action to each matched scene/state without using the current target query. Improvements are percentage points; intervals use scene-bootstrap resampling.                     
+
+> Backbone Evidence mode Query-specific oracle-action agreement (%) uery-independent modal baseline (%) Improvement (pp) [95% CI] OpenCLIP additive 92.06 61.44 30.62 [29.97, 31.28] OpenCLIP direct render 92.75 61.44 31.31 [30.65, 31.97] SigLIP additive 94.74 61.44 33.30 [32.66, 33.95] SigLIP direct render 94.84 61.44 33.40 [32.78, 34.01]
+
+Among matched query pairs for which the symbolic oracle requires the preferred next action to change, model switch rates are 85.6–90.4%, and agreement with the oracle’s switch direction is 82.0– 87.1% across backbone/mode cells. These results directly test semantic-target dependence rather than paraphrase robustness: the same visual scene can induce a different preferred next evidence type when the target query changes. 9D Planned adaptive comparison and its negative interaction 
+
+The frozen protocol enumerated all six global fixed orders and compared them with a sample-wise measured-utility adaptive order. The best global fixed order by mean target-log-probability AUC was color-texture-shape in all four backbone/mode cells. Adaptive-minus-best-fixed AUC was positive: 0.562 [0.504, 0.621], 0.447 [0.394, 0.501], 0.441 [0.400, 0.482], and 0.447 [0.401, 0.491]. However, the planned mechanism-relevant interaction, whether this advantage is larger in oracle-positive regimes, was −0.075 , −0.072 , 0.003, and −0.002 . We retain this negative result. A global order cannot adapt even to information already present at the empty state, so its overall disadvantage does not isolate the value of updating after acquisition. 
+
+## E Full exploratory replanning transfers 
+
+This analysis was specified after the confirmation results were inspected, uses only saved transitions, and was not part of the frozen confirmation protocol. Bootstrap resampling uses 10,000 repeats, seed 20280827, and scenes as clusters. Table 5 gives all cross-condition cells. Table 5: Exploratory cross-condition step-2 target-log-probability gain, replan minus commit-once. OC and SL denote OpenCLIP and SigLIP; Add and Dir denote additive and direct-render modes.                                                   
+
+> Transfer Direction Gain [95% CI] Mode OC Add →Dir 0.689 [0.639, 0.740] Mode OC Dir →Add 0.623 [0.567, 0.678] Mode SL Add →Dir 0.730 [0.684, 0.777] Mode SL Dir →Add 0.714 [0.668, 0.761] Wording OC Add, T1 →T2–T10 0.560 [0.506, 0.614] Wording OC Dir, T1 →T2–T10 0.582 [0.532, 0.631] Wording SL Add, T1 →T2–T10 0.534 [0.494, 0.575] Wording SL Dir, T1 →T2–T10 0.586 [0.542, 0.630] Backbone OC →SL, Add 0.642 [0.596, 0.689] Backbone OC →SL, Dir 0.701 [0.655, 0.748] Backbone SL →OC, Add 0.587 [0.525, 0.649] Backbone SL →OC, Dir 0.693 [0.636, 0.748]
+
+Opportunity gains under same-condition selection/evaluation are 0.698 [0.650, 0.749], 0.752 [0.704, 0.800], 0.727 [0.682, 0.772], and 0.745 [0.700, 0.790]. Robust on-policy switch rates are 42.5%, 46.6%, 52.9%, and 53.5%. These are upper bounds because replan directly observes the evaluator’s counterfactual utilities. Cross-condition cells instead select the order under one condition and evaluate it under another; their positivity is not guaranteed by construction. These evaluations preserve scenes and semantic targets, so they test robustness across evaluator changes rather than distribution shift. None of these analyses tests whether a selector can predict the choices cheaply or whether an encoder can execute the evidence groups independently. 10

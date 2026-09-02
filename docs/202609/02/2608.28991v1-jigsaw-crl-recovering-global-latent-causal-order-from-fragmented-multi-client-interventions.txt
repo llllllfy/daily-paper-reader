@@ -1,0 +1,4738 @@
+Title: Jigsaw-CRL: Recovering Global Latent Causal Order from Fragmented Multi-Client Interventions
+
+URL Source: https://arxiv.org/pdf/2608.28991v1
+
+Published Time: Tue, 01 Sep 2026 00:28:20 GMT
+
+Number of Pages: 43
+
+Markdown Content:
+# Jigsaw-CRL: Recovering Global Latent Causal Order from Fragmented Multi-Client Interventions 
+
+Haijie Xu 
+
+Department of Industrial Engineering Tsinghua University Beijing 100084, China 
+
+xu-hj22@mails.tsinghua.edu.cn 
+
+Chen Zhang ∗
+
+Department of Industrial Engineering Tsinghua University Beijing 100084, China 
+
+zhangchen01@tsinghua.edu.cn 
+
+## Abstract 
+
+Causal representation learning (CRL) aims to recover latent causal variables and their structural relations from high-dimensional observations. Existing CRL meth-ods typically assume that all environments are defined over the same latent variables, or at least share a common latent representation space. We study a fragmented multi-client setting, where multiple clients interact with the same global latent causal system but each client only accesses and intervenes on a subset of the latent variables. In this regime, marginalizing unused latent variables induces bidirected edges, so a single client no longer admits a node-wise latent causal graph, and the global latent causal order must be recovered by assembling client-specific structural fragments. We propose Jigsaw-CRL , a framework for recovering global latent causal order from such fragmented interventions. Under soft interventions, differences between precision matrices across environments exhibit a low-rank structure governed by latent ancestor relations. This enables recovery, for each client, of a block partition, the corresponding block-level ancestral order, and latent subspaces, and then assembly of these fragments into the global node-level latent causal order. We establish identifiability guarantees, develop practical algo-rithms, and validate the framework on synthetic data. Our codes are available on 
+
+https://anonymous.4open.science/r/code-for-Jigsaw-CRL-7B26 
+
+## 1 Introduction 
+
+Causal representation learning (CRL) aims to recover high-level latent causal variables and their structural relations from high-dimensional observations [Schölkopf et al., 2021, Jin and Syrgkanis, 2024, Buchholz et al., 2023, Varici et al., 2024]. Most existing CRL frameworks assume that all observations are defined over the same latent variables, or at least share a common latent representation space [Zhang et al., 2024, Buchholz et al., 2023]. Under this shared-space assumption, the natural target is typically a node-level latent causal structure, or a standard equivalence class thereof. We call this single-client setting. In many multi-client systems, however, no single client has access to the full latent causal system. Instead, multiple clients interact with the same global latent causal system, while each client accesses and intervenes on only a subset of the latent variables. Each client therefore provides only a fragmented structural view of the global system, as illustrated in Figure 1a. We call this multi-client setting. This raises a basic question: can we recover the global latent causal order by assembling fragmented causal information from multiple clients? 
+
+This question is not a straightforward multi-client extension of existing CRL, because fragmented access changes the local causal object itself. From the perspective of a client, the latent variables outside its accessed subset are marginalized out, which can induce directed shortcuts and bidirected dependencies among the remaining latent variables. Thus, the client-specific latent structure is no 
+
+> ∗Corresponding author Preprint. arXiv:2608.28991v1 [stat.ML] 29 Aug 2026
+
+longer an ordinary DAG, and node-wise latent causal recovery is generally impossible from a single fragmented client. This differs from standard CRL methods [Schölkopf et al., 2021, Squires et al., 2023, Buchholz et al., 2023, Varici et al., 2024, Zhang et al., 2024], which assume a shared latent variable set across environments. It also differs from recent multi-domain or multi-view CRL works [Sturma et al., 2023, Yao et al., 2024]: Sturma et al. [2023] assume causally separated shared and client-specific components, as illustrated in Figure 1b, while Yao et al. [2024] allow subset-dependent views but focus on shared latent information rather than ancestral relations or global causal structure. This leads to a first question: when missing latent variables induce bidirected dependencies through marginalization, what causal structure remains identifiable to a fragmented client? 
+
+We show that the natural client-level identifiable object is not a node-wise causal graph, but a block-structured mixed object: a block partition induced by directed ancestry and bidirected dependencies, together with a block-level ancestral order. Nodes within a block are structurally entangled for a single client, whereas ancestral relations between blocks remain identifiable. To recover this object, we propose Jigsaw-CRL , which exploits the fact that single-node soft interventions induce low-rank precision perturbations whose row spaces follow block-level ancestor relations. Jigsaw-CRL first extracts from each client a block-level causal fragment, including locally inseparable latent groups, their block-level order, and the associated latent subspaces. It then assembles complementary fragments across clients: a Hasse edge hidden inside a non-singleton block for one client may appear as a singleton-block parent relation for another, enabling recovery of the global node-level latent causal order. Thus, Jigsaw-CRL yields a two-level identifiability picture: each client reveals a block-level causal fragment, while multiple complementary fragments recover the global node-level causal order .
+
+Our Contributions. 1) Fragmented multi-client CRL. We introduce a setting where multiple clients partially access and intervene on the same global latent causal system, and show that marginalizing unused latent variables changes each client’s local causal object from a DAG to a block-structured mixed graph; 2) Client-level block identifiability. We study client-level identifiability in the presence of bidirected dependencies induced by latent marginalization, a regime not covered by prior CRL methods. We prove that soft interventions induce low-rank precision perturbations that identify each client’s block partition, block-level ancestral order, and latent subspaces up to intrinsic block-level ambiguity in Theorem 1 and Corollary 1; 3) Local-to-global assembly. We show that complementary client fragments can recover the global latent ancestral relation in Theorem 2: under a cross-client coverage condition, each direct step in the global causal order is resolved by at least one client; 
+
+4) Algorithms and experiments. We develop recovery algorithms based on projected low-rank precision perturbations and validate Jigsaw-CRL on synthetic fragmented multi-client systems. 
+
+Organization. Due to space constraints, we defer related work to Appendix A. Section 2 introduces the fragmented multi-client CRL setting and the induced block structure. Sections 3 and 4 establish client-level identifiability and global assembly, respectively. Section 5 reports experimental results, and Section 6 concludes. 
+
+## 2 Problem Setup and Client-Specific Block Structure 
+
+This section formalizes the fragmented multi-client CRL setting and identifies the causal object that is locally visible to each client. We first define the global latent causal system and the client-specific observation model. We then show that marginalizing the latent variables unused by a client induces a mixed graph rather than a DAG. This motivates a client-specific block structure, which will be the basic unit of local identifiability in the sequel. 
+
+Notation. In the rest of the paper, we use non-bold lowercase letters to denote scalars (e.g., p), bold lowercase letters to denote vectors (e.g., d), non-bold uppercase letters to denote random variables (e.g., Z), and bold uppercase letters to denote matrices (e.g., A). For an index set S, [A]S, : and [A]:,S 
+
+denote the submatrices of A consisting of the rows and columns indexed by S, respectively, and [d]S
+
+denotes the subvector of d consisting of the elements indexed by S. We use row( {A1, . . . , Ap}) to denote the row space jointly spanned by the rows of the matrices A1, . . . , Ap, and use rank( A) to denote the rank of the matrix A. We use ⟨ai|i = 1 , . . . , p ⟩ to denote the space spanned by {ai}pi=1 .For a positive integer p, let [p] ≜ {1, . . . , p }.2(a) Multi-client setting (our setting) (b) Multi-domain setting 
+
+Figure 1: Fragmented client views of latent causal systems under different multi-client settings. 
+
+All nodes in the figure represent latent variables. For client k, X(j) 
+
+> k
+
+denotes the observed data after intervention j. Purple highlights the intervened node 2 together with the edges affected by the intervention. (a) Multi-client setting. Different clients use different subsets of latent variables from the same global causal system. Marginalizing the missing latent variables induces client-specific mixed graphs, where bidirected edges appear in addition to directed relations. In a client-specific induced graph, the intervention on node 2 may manifest as changes in directed edges (blue) and bidirected edges (red), corresponding to d(j) 
+
+> k
+
+and u(j) 
+
+> k
+
+in Assumption 2. (b) Multi-domain setting. 
+
+Adopted in Sturma et al. [2023], latent variables are partitioned into a shared global component (e.g., 
+
+{1, 2, 3}) and client-specific local components (e.g., {4, 5, 6} and {7, 8}). No edges exist across different local components, nor between global and local components. Consequently, client-specific induced graphs do not generate bidirected edges or extra directed edges after marginalization. This can be viewed as a special case of our more general setting. 
+
+2.1 Problem formulation: fragmented multi-client CRL Global latent SEM. Let Z = ( Z(1) , . . . , Z (p)) denote the global latent variables, generated by the linear structural equation model 
+
+Z = AZ + E. (1) Since Z is latent, we may assume without loss of generality that Zj → Zi implies j > i . Under this ordering, A ∈ Rp×p is strictly upper triangular. The noise vector E has mean zero and diagonal covariance matrix Σ ≜ Cov (E). The matrix A defines a global latent DAG G = ( V, E) with V = [ p]
+
+and E = {j → i : Aij ̸ = 0 }. It induces the global ancestral relation ≺ on V: we write i ≺ j if there exists a directed path from j to i in G, and write i ⪯ j if either i ≺ j or i = j.
+
+Fragmented clients. We consider K clients. For client k ∈ [K], the index set Ok ⊂ [p] specifies the latent variables directly used by client k, and Mk = [ p] \ Ok denotes the latent variables not directly used by this client. Let Zk ≜ (Z(i))i∈Ok ∈ R|Ok |, p k ≜ |Ok|. The client-specific observation is 
+
+Xk = GkZk, (2) where Gk ∈ Rnk ×pk is full column rank with nk > p k. We write Hk = G† 
+
+> k
+
+for its Moore–Penrose pseudoinverse. Thus all clients share the same global latent system, but each client directly uses only a subset of the latent variables. 
+
+Soft interventions. For each client k, we observe one observational regime indexed by 0 and multiple soft interventional regimes indexed by j ∈ J k ⊂ [p]. We assume that client k only intervenes on nodes in Ok, and that each intervention targets a single node. Let tj denote the unknown target node of intervention j. We model the corresponding intervention on the global latent system by 
+
+˜A(j) 
+
+> k
+
+= A + etj ∆a(j)
+
+> kT
+
+, ˜Σ(j) 
+
+> k
+
+= Σ + ∆ σ(j) 
+
+> k
+
+etj eTtj ,
+
+where etj is the vector whose tj -th entry is 1 and all others are 0, ∆a(j) 
+
+> k
+
+∈ Rp is supported on pa (tj )
+
+and represents the intervention-induced perturbation of the parent effects of node tj , and ∆σ(j) 
+
+> k
+
+∈ R
+
+perturbs its exogenous noise variance. We write X(j) 
+
+> k
+
+for the observation of client k under intervention 
+
+j. Throughout the paper, we work with the second-order information Θ(j) 
+
+> k
+
+≜ E(X(j) 
+
+> k
+
+X(j)
+
+> k
+> ⊤
+
+)† for 
+
+j ∈ J k ∪ { 0}, where X(0)  
+
+> k
+
+≜ Xk denotes the observational regime. 
+
+Recovery goal. Given the collection of precision matrices {Θ(j) 
+
+> k
+
+}k=1 ,...,K, j ∈J k ∪{ 0}, the fragmented multi-client CRL problem has two recovery levels. At the client level, we first characterize and 3recover the structural information that remains identifiable from each client’s fragmented access to the global latent system. At the global level, we assemble these client-specific fragments across 
+
+k = 1 , . . . , K to recover the global latent ancestral relation ≺.
+
+2.2 Client-specific induced graph and block structure 
+
+Since client k directly uses only Zk = ZOk , the variables in Mk = [ p] \ Ok are marginalized out from this client’s perspective. This marginalization has two effects. First, directed paths that pass through variables in Mk can appear as directed shortcuts among variables in Ok. Second, shared dependence through the marginalized variables can induce correlated effective noises, represented as bidirected edges. After the normalization discussed in Appendix B, we work with Σ = I. Thus the client-level latent object is generally a mixed graph rather than a DAG. 
+
+Proposition 1. For Z generated by Eq. (1) , let Zk = ( Z(i))i∈Ok . Then 
+
+Zk = AkZk + Ek, (3) 
+
+where 
+
+Ak = [ A]Ok ,O k + [ A]Ok ,M k (I − [A]Mk ,M k )−1[A]Mk ,O k , (4) 
+
+Ek = EOk + [ A]Ok ,M k (I − [A]Mk ,M k )−1EMk . (5) 
+
+Moreover, Ek has mean zero and covariance 
+
+Σk = [ Σ]Ok ,O k + [ A]Ok ,M k (I − [A]Mk ,M k )−1[Σ]Mk ,M k (I − [A]Mk ,M k )−T [A]TOk ,M k . (6) Proposition 1 shows that after marginalizing out Mk, client k no longer inherits a latent DAG on 
+
+Ok. Instead, it induces a mixed graph Gk = ( Vk, Ek, Dk) with Vk = Ok, directed edges Ek = {j →
+
+i : [Ak]ρk (i),ρ k (j)̸ = 0 }, and bidirected edges Dk = {j ↔ i : i̸ = j, [Σk]ρk (i),ρ k (j)̸ = 0 }, where 
+
+ρk denotes the local index map from nodes in Ok to coordinates in Zk. This mixed graph induces a client-specific ancestral relation ≺k on Vk: we write i ≺k j if there exists a directed path from j to 
+
+i in Gk, and i ⪯k j if either i ≺k j or i = j. By the proof of Proposition 1 in Appendix D, ≺k is exactly the restriction of the global ancestral relation ≺ to Ok.For notational consistency, set A(0)  
+
+> k
+
+≜ Ak and Σ(0)  
+
+> k
+
+≜ Σk. For j ∈ J k, marginalizing out Mk under intervention j yields A(j) 
+
+> k
+
+and Σ(j) 
+
+> k
+
+by replacing A and Σ in Eqs. (4) and (6) with ˜A(j) 
+
+> k
+
+and ˜Σ(j) 
+
+> k
+
+,respectively. Then, by Proposition 1 and Lemma A.3, for all j ∈ J k ∪ { 0},
+
+Θ(j) 
+
+> k
+
+= H⊤ 
+
+> k
+
+(I − A(j) 
+
+> k
+
+)Σ(j)
+
+> k
+> −1
+
+(I − A(j) 
+
+> k
+
+)⊤Hk. (7) The mixed graph Gk contains both directed ancestral relations and bidirected dependencies induced by latent marginalization. Consequently, node-wise structure is no longer the right unit of description at the client level. We therefore introduce a client-specific block structure. 
+
+Definition 1 (Reachability and mutual reachability) . For two nodes i, j ∈ V k, we say that i is 
+
+reachable to j, written i ⇝k j, if there exists a sequence of nodes i = v0, v 1, . . . , v m = j, such that for every ℓ = 0 , . . . , m − 1, either vℓ ≺k vℓ+1 or vℓ ↔ vℓ+1 ∈ D k. Two nodes i, j ∈ V k are said to be mutually reachable if i ⇝k j and j ⇝k i.
+
+Definition 2 (Block) . For client k, a block is a maximal subset C ⊆ V k such that every pair of nodes in C is mutually reachable. 
+
+Since mutual reachability is an equivalence relation, all blocks form a partition Ck =
+
+{Ck, 1, . . . , C k,m k } of Vk. For example, in Figure 1, the block partition for client k is Ck ={1, 2}, {5}, {6}, {7} .Intuitively, nodes within the same block are structurally entangled by directed ancestry and bidirected confounding, while a meaningful ancestral order remains well defined across blocks. 
+
+Definition 3 (Block-level order) . For two distinct blocks Ck,a , C k,b ∈ C k, write Ck,a ≺blk  
+
+> k
+
+Ck,b 
+
+if there exist u ∈ Ck,a and v ∈ Ck,b such that u ≺k v. Also write Ck,a ⪯blk  
+
+> k
+
+Ck,b if either 
+
+Ck,a ≺blk  
+
+> k
+
+Ck,b or Ck,a = Ck,b . A block Ck,b is a block-level parent of Ck,a if Ck,a ≺blk  
+
+> k
+
+Ck,b and there is no block Ck,m ∈ C k such that Ck,a ≺blk  
+
+> k
+
+Ck,m ≺blk  
+
+> k
+
+Ck,b .
+
+4Ancestor set notation. For the global graph, define anc (i) ≜ {j ∈ V : i ≺ j} and pa (i) ≜ {j ∈V : j → i ∈ E} , together with Anc (i) ≜ anc (i) ∪ { i} and P a (i) ≜ pa (i) ∪ { i}. For client k
+
+and node i ∈ V k, define anc k(i) ≜ {j ∈ V k : i ≺k j}, pa k(i) ≜ {j ∈ V k : j → i ∈ E k},
+
+Anc k(i) ≜ anc k(i) ∪ { i}, and P a k(i) ≜ pa k(i) ∪ { i}. We further define the spouse set sp k(i) ≜
+
+{j ∈ V k : j ↔ i ∈ D k}. For any block C ∈ C k, define anc blk  
+
+> k
+
+(C) ≜ {C′ ∈ C k : C ≺blk  
+
+> k
+
+C′},
+
+pa blk  
+
+> k
+
+(C) ≜ {C′ ∈ C k : C′ is a block-level parent of C}, Anc blk  
+
+> k
+
+(C) ≜ anc blk  
+
+> k
+
+(C) ∪ { C}, and 
+
+P a blk  
+
+> k
+
+(C) ≜ pa blk  
+
+> k
+
+(C) ∪ { C}. For a node v ∈ V k, let Ck(v) denote the block containing v.The next proposition clarifies why block ancestry is the right coarse structural object: across blocks, non-ancestral relations remain absent, while block-level parents still witness genuine node-level parent relations. 
+
+Proposition 2. For each client k, let Ck,i , C k,j ∈ C k be two blocks. (i) If Ck,j /∈ anc blk  
+
+> k
+
+(Ck,i ), then for ∀u ∈ Ck,j and v ∈ Ck,i , we have u / ∈ anc k(v).(ii) If Ck,j ∈ pa blk  
+
+> k
+
+(Ck,i ), then there ∃u ∈ Ck,j and v ∈ Ck,i such that u ∈ pa k(v).
+
+For example, in client k = 1 of Figure 1a, {7} ∈ pa blk  
+
+> k
+
+({1, 2}), {7} ∈ anc blk  
+
+> k
+
+({5}), but {7} /∈
+
+pa blk  
+
+> k
+
+({5}). Without loss of generality, for each client k, we assume that if Ck,i ≺blk  
+
+> k
+
+Ck,j , then 
+
+ρk(v) < ρ k(u) for all v ∈ Ck,i and u ∈ Ck,j .
+
+## 3 Client-level Identifiability from Low-rank Precision Perturbations 
+
+Section 2 shows that latent marginalization changes each client’s local object from a node-wise DAG to a block-structured mixed graph. This section answers the client-level question raised in Section 1: 
+
+when missing latent variables induce bidirected dependencies through marginalization, what causal structure remains identifiable to a fragmented client? We show that a single client can identify its block partition, block-level ancestral order, and associated latent subspaces up to intrinsic block-level ambiguity. The argument combines a block-adapted coordinate system, low-rank precision perturbations under soft interventions, and an iterative recovery rule based on projected row-space dimensions. 
+
+3.1 Client-level assumptions 
+
+We first state the assumptions for client-level identifiability. 
+
+Assumption 1 (Intervention indexing and coverage) . We assume: (i) client-level intervention cov-erage: for each client k, Jk is in bijection with Vk, so each node in Vk is targeted by exactly one intervention label; and (ii) cross-client label alignment: interventions from different clients that target the same global latent node share the same label. 
+
+Let ψ : j 7 → tj denote the mapping from the global intervention index to its target node, so that ψ is a permutation on [p].
+
+Assumption 2 (Intervention genericity) . For each client k and intervention j ∈ J k with target 
+
+tj ∈ Ck,ℓ ⊆ Ok, define 
+
+d(j) 
+
+> k
+
+≜ [∆ a(j) 
+
+> k
+
+]Ok + [ A]TMk ,O k (I − [A]Mk ,M k )−T [∆ a(j) 
+
+> k
+
+]Mk ,
+
+u(j) 
+
+> k
+
+≜ [A]Ok ,M k (I − [A]Mk ,M k )−1[Σ]Mk ,M k (I − [A]Mk ,M k )−T [∆ a(j) 
+
+> k
+
+]Mk .
+
+We assume that the intervention parameters are chosen such that: (i) [d(j) 
+
+> k
+
+]ρk (p)̸ = 0 for every p ∈ pa k(tj );(ii) [u(j) 
+
+> k
+
+]ρk (s)̸ = 0 for every s ∈ sp k(tj );(iii) for any B ⊊ Ck,ℓ and any i ∈ B , let Ni be the support of 
+
+[u(ψ−1(i))  
+
+> k
+
+]ρk (Ck,ℓ ) + [ Σk]ρk (Ck,ℓ ),ρ k (Ck,ℓ )
+
+ I − [Ak]Tρk (Ck,ℓ ),ρ k (Ck,ℓ )
+
+−1[d(ψ−1(i))  
+
+> k
+
+]ρk (Ck,ℓ ).
+
+Then S 
+
+> i∈B
+
+Ni > |B| .
+
+5Assumption 1 ensures that intervention environments are sufficiently informative and consistently indexed across clients. Assumption 2 is a genericity condition that rules out pathological cancellations in the directed, bidirected, and within-block effects induced by soft interventions. The two assump-tions are standard in spirit, and closely related conditions appear frequently in intervention-based latent causal discovery and CRL [Varici et al., 2025, Buchholz et al., 2023, Squires et al., 2023]. More detailed discussion and motivation for these assumptions are provided in Appendix C. 
+
+3.2 Analytical coordinates: block RQ decomposition 
+
+To relate observable precision perturbations to the client-specific block structure, we introduce a block-adapted factorization of Hk. This factorization is not computed by the learner, since Hk is unknown. Rather, it provides a coordinate system in which row spaces can be described according to the block ancestral order. Its construction and further discussion are deferred to Appendix F. 
+
+Definition 4 (Block RQ decomposition) . For client k ∈ [K] with block ancestor structure (≺blk  
+
+> k
+
+, Ck),a block RQ decomposition of Hk ∈ Rpk ×nk is a factorization 
+
+Hk = RkQk,
+
+where Rk ∈ Rpk ×pk is block upper triangular with respect to Ck, namely [Rk]ρk (Ck,i ),ρ k (Ck,j ) =0 unless Ck,i ⪯blk  
+
+> k
+
+Ck,j , and Qk ∈ Rpk ×nk is row full-rank with unit-norm rows. Moreover, for every block C ∈ C k and every i ∈ ρk(C), the row [Qk]i, : is orthogonal to every row of 
+
+[Qk]S   
+
+> C′∈anc blk
+> k(C)ρk(C′),:
+
+.
+
+Although this decomposition is generally not unique, any such factorization is sufficient for our analysis. Intuitively, Rk records block-ancestor mixing, while Qk isolates block-associated row directions. 
+
+Proposition 3. For every block C ∈ Ck and every i ∈ ρk(C), we have [Hk]i, : ∈
+
+row([ Qk]S   
+
+> C′∈Anc blk
+> k(C)ρk(C′),:
+
+).
+
+Thus, the rows of Hk are organized according to the block ancestral relation in the Qk coordi-nates, which will allow us to interpret observable precision perturbations in terms of block-ancestor subspaces. 
+
+3.3 Low-rank perturbation of the precision matrix 
+
+Client-level recovery is driven not by a single precision matrix, but by how the precision matrix changes across intervention environments. We therefore study the perturbation Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+. The next two lemmas show that such perturbations are low-rank and that their row spaces are confined to block-ancestor subspaces. 
+
+Lemma 1 (Rank-2 perturbation) . For each client k and each intervention j targeting node tj (which is unknown to the learner), we have 
+
+row( Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+) ⊆
+
+D
+
+HTk (I − Ak)T Σ−1 
+
+> k
+
+eρk (tj ), HTk
+
+
+
+(I − Ak)T Σ−1 
+
+> k
+
+u(j) 
+
+> k
+
++ d(j)
+
+> k
+
+E 
+
+, (8) 
+
+where u(j) 
+
+> k
+
+and d(j) 
+
+> k
+
+are defined as in Assumption 2. In particular, rank( Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+) ≤ 2.
+
+Thus, a single-node soft intervention affects only a two-dimensional row space, despite producing a pk × pk perturbation matrix. To use this fact for recovery, we must further locate this row space relative to the client-specific block structure. 
+
+Lemma 2 (Row-space characterization via Qk). For each client k and intervention j, suppose that the intervention target node tj belongs to block Ck,a ∈ C k. Then 
+
+row( Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+) ⊆ [Qk]ρk (i),: i ∈ Ck,b , C k,b ∈ Anc blk  
+
+> k
+
+(Ck,a ) .
+
+Lemma 2 shows that if the intervention target lies in block Ck,a , then the resulting perturbation only involves row directions associated with Ck,a and its block ancestors. In this sense, soft interventions reveal ancestor-closed portions of the client-specific block structure. For example, in Figure 1a, if intervention j for client k = 1 targets node tj = 2 , then row( Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+) ⊆ ⟨ [Qk]i, : | i =
+
+ρk(1) , ρ k(2) , ρ k(7) ⟩. Combined with the orthogonality relations in Definition 4, this implies that after projecting out the directions of recovered ancestor blocks, the remaining perturbation isolates the next unrecovered block. 6Algorithm 1: ID-Block-Ancestor 
+
+Input: ˆC ⊆ J k , {Θ(j) 
+
+> k
+
+}j∈{ 0}∪ ˆC , I, {ˆqk,i }i∈I 
+
+Output: {ˆqk,i }i∈ ˆC , A
+
+1: A ← I 
+
+2: for each block B ∈ I do 
+
+3: W−B ← ⟨ ˆqk,i : i ∈ I\ B⟩
+
+4: V−B ← P k ( ˆC; W−B )
+
+5: if dim( V−B ) = | ˆC| then 
+
+6: A ← A\ B
+
+7: end if 
+
+8: end for 
+
+9: W ← ⟨ ˆqk,i : i ∈ A⟩ ; V ← P k ( ˆC; W )
+
+10: Construct normalized vectors {ˆqk,i }i∈ ˆC such that 
+
+V = ⟨ˆqk,i : i ∈ ˆC⟩
+
+11: return {ˆqk,i }i∈ ˆC , A
+
+Algorithm 3: ID-Global-Causal-Order 
+
+Input: { ˆCk , ˆ≺blk  
+
+> k
+
+}Kk=1 
+
+Output: ˆ≺
+
+1: Initialize ˜≺ ← ∅ 
+
+2: for k = 1 , 2, . . . , K do 
+
+3: Find all pairs of blocks Ck,i , C k,j ∈ ˆCk such that 
+
+|Ck,i | = |Ck,j | = 1 and Ck,j ∈ ˆpa blk  
+
+> k
+
+(Ck,i )
+
+4: For each such pair Ck,i = {i} and Ck,j = {j}, add 
+
+i ˜≺ j
+
+5: end for 
+
+6: ˆ≺ ← the transitive closure of ˜≺
+
+7: return ˆ≺
+
+Algorithm 2: ID-Block-Causal-Order 
+
+Input: {Θ(j) 
+
+> k
+
+}j∈{ 0}∪J k , pk
+
+Output: ˆCk , ˆ≺blk  
+
+> k
+
+, ˆQk
+
+1: I0 ← ∅ , R0 ← J k , ˆQk ← 0pk ×nk , t ← 1
+
+2: while Rt−1̸ = ∅ do 
+
+3: r ← 1, flag ← True 
+
+4: while flag do 
+
+5: Wt ← ⟨ ˆqk,i : i ∈ I t−1⟩
+
+6: R ← { C ⊆ Rt−1 : |C| = r}
+
+7: if there exists ˆC ∈ R such that 
+
+dim( Pk ( ˆC; Wt)) = r then 
+
+8: Pick one such ˆC, flag ← False 
+
+9: else 
+
+10: r ← r + 1 
+
+11: end if 
+
+12: end while 
+
+13: ({ˆqk,i }i∈ ˆC , A) ← ID -Block -Ancestor( ˆC, 
+
+{Θ(j) 
+
+> k
+
+}j∈{ 0}∪ ˆC , It−1, {ˆqk,i }i∈I t−1 )
+
+14: Add ˆC ˆ≺blk  
+
+> k
+
+C′ for any ˜C ˆ⪯blk  
+
+> k
+
+C′ with ˜C ∈ A .15: Update ˆQk ← [ ˜Qk, ˆC ; ˆQk ], where ˜Qk, ˆC stacks 
+
+{ˆqk,i }i∈ ˆC .16: It ← { ˆC} ∪ I t−1
+
+17: Rt ← Rt−1\ ˆC
+
+18: t ← t + 1 
+
+19: end while 
+
+20: ˆCk ← I t−1
+
+21: return ˆCk , ˆ≺blk  
+
+> k
+
+, ˆQk
+
+3.4 Client-level recovery algorithms and identifiability result 
+
+The preceding lemmas yield the population recovery rule behind Algorithms 1 and 2. For a label set C ⊆ J k and a row subspace W , define Pk(C; W ) ≜ ΠW ⊥
+
+
+
+row {Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+: j ∈ C}
+
+
+
+. Once the row spaces of ancestor blocks are included in W , the intervention labels of the next block are exactly the smallest set C satisfying dim Pk(C; W ) = |C|. Algorithm 2 iteratively applies this rule to recover blocks, while Algorithm 1 determines which previously recovered blocks are ancestors of the newly found block. Combining Lemmas 1 and 2 with the orthogonality structure in Definition 4 yields the following client-level identifiability result. 
+
+Theorem 1 (Client-level recovery) . Assume Assumptions 1 and 2. Let ( ˆCk, ˆ≺blk  
+
+> k
+
+, ˆQk) be the output of Algorithm 2 for client k. Then: (i) ( ˆCk, ˆ≺blk  
+
+> k
+
+) recovers (Ck, ≺blk  
+
+> k
+
+) up to relabeling under the bijection ψ : j 7 → tj .(ii) For each true block C ∈ C k, let ˆC = ψ−1(C) denote the corresponding estimated block. Then 
+
+⟨ˆqk,i : i ∈ ˆC⟩ = row([ Qk]ρk (C),:).
+
+Consequently, ˆQk = SkPσ,k Qk, where Sk is an invertible block-diagonal norm-preserving matrix and Pσ,k is a row permutation matrix preserving the block ancestral order. 
+
+Theorem 1 shows that a single fragmented client cannot generally recover a node-wise latent DAG, but can exactly recover the client-specific block structure, block-level ancestral relation, and row subspaces of Qk. The relabeling by ψ : j 7 → tj only changes the names of recovered latent targets. The additional ambiguity, captured by Sk and Pσ,k , is intrinsic to the non-uniqueness of the block RQ decomposition: it only changes the within-block basis and order-preserving block labels, while preserving the identifiable block-associated row subspaces and causal structure. Applying the recovered rows of ˆQk in Theorem 1 to Xk therefore yields the corresponding client-specific latent variables, up to the intrinsic ambiguity induced by block-level ancestors, as follows. 7Corollary 1 (Recovery of Zk up to block-level ancestral ambiguity) . Assume Assumptions 1 and 2 hold. Let ˆQk be the output of Algorithm 2, and define 
+
+ˆZk = ˆQkXk.
+
+For each true block C ∈ C k, let ˆC = ψ−1(C) denote the corresponding estimated block. Then, for every i ∈ ˆC, the estimated latent variable ˆZk, (i) lies in the span of the true latent variables indexed by the block ancestors of C, namely 
+
+ˆZk, (i) ∈ span {Z(j) : j ∈ C′, C ′ ∈ Anc blk  
+
+> k
+
+(C)}.
+
+Thus, up to the relabeling induced by ψ, each estimated latent variable is identified up to block-level ancestor mixing. 
+
+Corollary 1 gives the latent-level interpretation of the client-specific recovery result. For a single fragmented client, exact node-wise latent recovery is generally impossible because marginalizing unobserved latent variables induces bidirected dependencies and merges nodes into block-structured objects. Nevertheless, the recovered intervention-induced subspaces identify the latent variables at the finest level permitted by the model, namely up to block-level ancestor mixing. This completes the client-level part of the identifiability picture: from a single client, one can recover its block structure, the associated block-level ancestral relation, and the corresponding latent subspaces up to block-level ancestral ambiguity. In the next section, we show how such client-specific fragments can be assembled to recover the global latent causal order. 
+
+## 4 Global Ancestral Recovery Across Clients 
+
+Section 3 shows that each client recovers a correct block-structured fragment of the global latent system. We now return to the question raised in Section 1: can we recover the global latent causal order by assembling fragmented causal information from multiple clients? This is not possible from a single client in general: marginalization may merge several global latent variables into one client-specific block. The key observation is that different clients may induce different blockings. Thus, two latent variables that are entangled in one client’s view may be separated and ordered in another client’s recovered block structure. We first formalize the cross-client visibility needed for global assembly. 
+
+Assumption 3 (Cross-client coverage for global assembly) . If j → i is a Hasse edge of the global latent DAG G, namely j ≺ i and there exists no node m such that j ≺ m ≺ i, there exists a client 
+
+k ∈ [K] such that (i) i, j ∈ Ok; (ii) {i}, {j} ∈ C k; (iii) {j} ∈ pa blk  
+
+> k
+
+({i}).
+
+Under Assumption 3, every global Hasse edge is witnessed by at least one client as a parent relation between singleton blocks. Thus Algorithm 3 assembles the global order by collecting all recovered singleton-block parent relations Ck,j ∈ ˆpa blk  
+
+> k
+
+(Ck,i ) with Ck,i = {i} and Ck,j = {j}, and then taking their transitive closure. Theorem 2 shows that this procedure recovers the global latent ancestral relation, up to the intervention-target relabeling ψ : j 7 → tj .
+
+Theorem 2 (Correctness of global ancestral recovery) . Assume Assumptions 1–3 hold. Let 
+
+{( ˆCk, ˆ≺blk  
+
+> k
+
+)}Kk=1 be the outputs of Algorithm 2 and the input to Algorithm 3. Let ˆ≺ be the out-put of Algorithm 3. Then (V, ˆ≺) recovers (V, ≺) up to relabeling under the bijection ψ : j 7 → tj .
+
+Remark 1. Theorems 1 and 2, together with Corollary 1, yield a two-level identifiability picture: a single client recovers only a block-structured fragment and the corresponding latent variables up to block-level ancestor mixing, whereas multiple such fragments can be assembled to recover the global node-level ancestral relation. This local-to-global gap is intrinsic to the fragmented multi-client setting. 
+
+## 5 Finite-sample Method and Experiments 
+
+The preceding sections establish population-level identifiability from exact precision matrices. We now evaluate a finite-sample implementation of the proposed recovery procedure on synthetic 8fragmented multi-client systems, and include the population case n = ∞ to verify the theoretical recovery guarantees. 
+
+Finite-sample implementation. In finite samples, each population precision matrix Θ(j) 
+
+> k
+
+is replaced by an estimator ˆΘ(j) 
+
+> k
+
+. Since exact row-space dimensions are unstable under estimation noise, we use a thresholded singular-value criterion: for a matrix M , its effective row-space dimension is taken as the smallest r such that      
+
+> Pri=1 σi(M)
+> P
+> iσi(M)
+
+> 1 − τ , where σi(M ) is the i-th largest singular value and τ is a tuning parameter. This gives finite-sample versions of Algorithms 1 and 2; details are deferred to Appendix M. 
+
+Setup. We consider three different global causal network structures A together with different client-specific missing patterns {Ok}Kk=1 , representing different network scales and sparsity levels. We consider two noise distributions, Gaussian and Laplace. For each graph setting and noise setting, the full specifications are deferred to Appendix M. We report results for sample sizes n ∈ { 10 3, . . . , 10 6}
+
+together with the population case n = ∞.
+
+Evaluation metrics. We use three metrics. For ease of exposition, we first align the row ordering of 
+
+ˆQk with that of Qk according to the permutation induced by Pσ,k ; this does not affect the evaluation itself. The first metric, E1, is the F1-score between the true global partial order ≺ and the estimate 
+
+ˆ≺. The second metric, E2, measures the average block-level row-subspace error between the true and estimated rows of Qk. The third metric, E3, measures support leakage in the estimated latent variables ˆZk = ˆQkXk, namely the fraction of nonzero coefficients appearing outside the block-level ancestral support allowed by Corollary 1. All three metrics take values in [0 , 1] , where larger E1
+
+indicates better performance, while smaller E2 and E3 indicate more accurate recovery. Complete formulas are given in Appendix M. 
+
+Results. For the six scenarios induced by three graph settings and two noise settings, Figure 2 and Figures A.1-A.5 in Appendix M plot E1, E 2, E 3 against the sample size n. Across all scenarios, performance improves as n increases: the estimated global ancestor relation becomes more accurate, the client-specific subspace error decreases, and the support leakage becomes smaller. In the population case n = ∞, where the estimated precision matrices are replaced by the corresponding population precision matrices, we obtain E1 = 1 and E2 = E3 = 0 . This exactly matches Theorems 1 and 2 together with Corollary 1, and confirms that the finite-sample implementation converges to the population recovery guaranteed by the theory. The same qualitative behavior is observed across all three graph settings and under both Gaussian and Laplace noise, indicating that the method is robust to variations in graph scale, sparsity, and noise distribution. ∞   
+
+> 0.7 0.8 0.9 1.0 10 310 410 510 6nE1
+> (a) Global ancestral F1.
+
+# ∞       
+
+> 0.0 0.2 0.4 0.6 10 310 410 510 6nE2 (b) Subspace error of {ˆQk}Kk=1 .
+
+# ∞       
+
+> 0.0 0.2 0.4 0.6 0.8 10 310 410 510 6nE3 (c) Support error of {ˆZk}Kk=1 .
+
+Figure 2: Finite-sample performance under one graph setting A and Gaussian noise. As n increases, global ancestral recovery improves while subspace and support errors decrease. The rightmost marker at ∞ corresponds to the population-level precision-matrix input. 
+
+## 6 Conclusion 
+
+We study causal representation learning in a fragmented multi-client setting, where clients share a global latent causal system but each accesses and intervenes on only a subset of latent variables. We show that latent marginalization changes the client-level identifiable object from a node-wise latent DAG to a block structure, a block-level ancestral relation, and latent subspaces up to block-level 9ancestor mixing. We further show that these client-specific fragments can be assembled across clients to recover the global node-level latent causal order. Future directions include finite-sample guarantees, extensions to nonlinear models and more general observation mappings, and stronger identifiability under hard interventions, potentially including exact recovery of A and H.
+
+## References 
+
+Kartik Ahuja, Divyat Mahajan, Yixin Wang, and Yoshua Bengio. Interventional causal representation learning. In International conference on machine learning , pages 372–407. PMLR, 2023. Simon Bing, Urmi Ninad, Jonas Wahl, and Jakob Runge. Identifying linearly-mixed causal represen-tations from multi-node interventions. In Causal Learning and Reasoning , pages 843–867. PMLR, 2024. Simon Buchholz, Goutham Rajendran, Elan Rosenfeld, Bryon Aragam, Bernhard Schölkopf, and Pradeep Ravikumar. Learning linear causal representations from interventions under general nonlinear mixing. Advances in Neural Information Processing Systems , 36:45419–45462, 2023. David Danks, Clark Glymour, and Robert Tillman. Integrating locally learned causal structures with overlapping variables. In Advances in Neural Information Processing Systems , volume 21, 2008. Amit Dhir, Ciarán M. Lee, Alexander M. Franks, Max A. Little, Ethem Murat Elci, Seungjin Choi, and Stephen J. Roberts. Integrating overlapping datasets using bivariate causal discovery. In 
+
+Proceedings of the AAAI Conference on Artificial Intelligence , volume 34, pages 3781–3790, 2020. doi: 10.1609/aaai.v34i04.5798. Mathias Drton, Rina Foygel, and Seth Sullivant. Global identifiability of linear structural equation models. The Annals of Statistics , 39(2):865–886, 2011. doi: 10.1214/10-AOS859. Rina Foygel, Jan Draisma, and Mathias Drton. Half-trek criterion for generic identifiability of linear structural equation models. The Annals of Statistics , 40(3):1682–1713, 2012. doi: 10.1214/ 12-AOS1012. Thomas Nall Eden Greville. Note on the generalized inverse of a matrix product. Siam Review , 8(4): 518–521, 1966. Jikai Jin and Vasilis Syrgkanis. Learning linear causal representations from general environments: Identifiability and intrinsic ambiguity. Advances in Neural Information Processing Systems , 37: 63466–63509, 2024. Yuhang Liu, Zhen Zhang, Dong Gong, Mingming Gong, Biwei Huang, Anton van den Hengel, Kun Zhang, and Javen Qinfeng Shi. Identifiable latent polynomial causal models through the lens of change. In The Twelfth International Conference on Learning Representations , 2024. Yuhang Liu, Zhen Zhang, Dong Gong, Mingming Gong, Biwei Huang, Anton van den Hengel, Kun Zhang, and Javen Qinfeng Shi. Identifying weight-variant latent causal models. Journal of Machine Learning Research , 27(4):1–49, 2026. Ignavier Ng, Shaoan Xie, Xinshuai Dong, Peter Spirtes, and Kun Zhang. Causal representation learning from general environments under nonparametric mixing. In The 28th International Conference on Artificial Intelligence and Statistics , 2025. Thomas S. Richardson and Peter Spirtes. Ancestral graph markov models. The Annals of Statistics ,30(4):962–1030, 2002. doi: 10.1214/aos/1031689015. Bernhard Schölkopf, Francesco Locatello, Stefan Bauer, Nan Rosemary Ke, Nal Kalchbrenner, Anirudh Goyal, and Yoshua Bengio. Toward causal representation learning. Proceedings of the IEEE , 109(5):612–634, 2021. Chandler Squires, Anna Seigal, Salil S Bhate, and Caroline Uhler. Linear causal disentanglement via interventions. In International conference on machine learning , pages 32540–32560. PMLR, 2023. 10 Nils Sturma, Chandler Squires, Mathias Drton, and Caroline Uhler. Unpaired multi-domain causal representation learning. Advances in Neural Information Processing Systems , 36:34465–34492, 2023. Jin Tian and Judea Pearl. A general identification condition for causal effects. In Proceedings of the Eighteenth National Conference on Artificial Intelligence , pages 567–573. AAAI Press, 2002. Sofia Triantafillou and Ioannis Tsamardinos. Constraint-based causal discovery from multiple interventions over overlapping variable sets. Journal of Machine Learning Research , 16(66): 2147–2205, 2015. Sofia Triantafillou, Ioannis Tsamardinos, and Ioannis G. Tollis. Learning causal structure from overlapping variable sets. In Proceedings of the Thirteenth International Conference on Artificial Intelligence and Statistics , pages 860–867. PMLR, 2010. Burak Varici, Emre Acartürk, Karthikeyan Shanmugam, and Ali Tajer. General identifiability and achievability for causal representation learning. In International Conference on Artificial Intelligence and Statistics , pages 2314–2322. PMLR, 2024. Burak Varici, Emre Acartürk, Karthikeyan Shanmugam, Abhishek Kumar, and Ali Tajer. Score-based causal representation learning: Linear and general transformations. Journal of Machine Learning Research , 26(112):1–90, 2025. Julius von Kügelgen, Michel Besserve, Liang Wendong, Luigi Gresele, Armin Keki´ c, Elias Barein-boim, David Blei, and Bernhard Schölkopf. Nonparametric identifiability of causal representations from unknown interventions. Advances in Neural Information Processing Systems , 36:48603– 48638, 2023. Dingling Yao, Danru Xu, Sébastien Lachapelle, Sara Magliacane, Perouz Taslakian, Georg Martius, Julius von Kügelgen, and Francesco Locatello. Multi-view causal representation learning with partial observability. In 12th International Conference on Learning Representations , 2024. Jiaqi Zhang, Kristjan Greenewald, Chandler Squires, Akash Srivastava, Karthikeyan Shanmugam, and Caroline Uhler. Identifiability guarantees for causal disentanglement from soft interventions. 
+
+Advances in Neural Information Processing Systems , 36:50254–50292, 2023. Jiji Zhang. On the completeness of orientation rules for causal discovery in the presence of latent confounders and selection bias. Artificial Intelligence , 172(16–17):1873–1896, 2008. doi: 10. 1016/j.artint.2008.08.001. Kun Zhang, Shaoan Xie, Ignavier Ng, and Yujia Zheng. Causal representation learning from multiple distributions: A general setting. arXiv preprint arXiv:2402.05052 , 2024. 11 Appendix Contents 
+
+A Related Work 12 B Normalization of the Noise Covariance 13 C Discussion of Assumptions 13 D Proof of Proposition 1 14 E Proof of Proposition 2 16 F Block RQ Decomposition 17 G Proof of Lemma 1 19 H Proof of Lemma 2 21 I Proof of Theorem 1 22 J Proof of Corollary 1 30 K Proof of Theorem 2 31 L Auxiliary Lemmas 33 M Additional finite-sample details 37 
+
+## A Related Work 
+
+Intervention-based CRL in a shared latent space. A central line of CRL studies identifiability from interventions or multiple environments under a shared latent space [Schölkopf et al., 2021, Squires et al., 2023, Buchholz et al., 2023, Varici et al., 2024, 2025, Zhang et al., 2024, Liu et al., 2026, Zhang et al., 2023, Liu et al., 2024, Ahuja et al., 2023, Ng et al., 2025, Bing et al., 2024, von Kügelgen et al., 2023]. These works differ in intervention regimes, mixing assumptions, and identifiability targets, but they typically assume that all environments are defined over the same latent variables. Consequently, the target remains a node-level latent causal structure, or an ambiguity class thereof, in a single latent space. In contrast, we consider fragmented clients that access and intervene on only subsets of a common global latent causal system. Marginalizing the unused latent variables induces client-specific bidirected dependencies, making the local identifiable object block-structured rather than a node-wise latent DAG. 
+
+CRL under multi-view or multiple domains. A related line studies CRL with multiple views or multiple domains. Yao et al. [2024] consider multi-view CRL where each view depends on a subset of latent variables and identify shared latent information across views, while Sturma et al. [2023] recover a shared causal representation from unpaired multi-domain marginal distributions. These works are related to ours through partial observability or multiple clients, but they do not address how latent marginalization changes each client’s local causal object. In our setting, the unused latent variables induce bidirected dependencies, so the client-level target becomes a block-structured fragment that must be assembled to recover the global latent causal order. 
+
+Latent confounding and mixed graphs. Our client-specific induced graphs are related to causal models with latent confounders, where ancestral graphs and acyclic directed mixed graphs (ADMGs) use bidirected edges to encode dependencies induced by marginalization or unobserved common 12 causes [Richardson and Spirtes, 2002, Zhang, 2008, Tian and Pearl, 2002]. In linear structural equation models, mixed graphs have also been used to study global or generic parameter identifiability [Drton et al., 2011, Foygel et al., 2012]. These works provide important graphical languages for latent confounding, but they mainly concern observed-variable causal structure or parameter identifiability. In contrast, our mixed graphs arise over client-specific latent variables accessed only through high-dimensional observations, and our target is block-level latent identifiability from interventional precision perturbations rather than observed-variable ADMG discovery. 
+
+Causal discovery from overlapping variable sets. Another related line studies causal discovery from multiple datasets with overlapping variable sets, including methods that integrate locally learned structures or constraints across observational and interventional datasets [Danks et al., 2008, Triantafillou et al., 2010, Triantafillou and Tsamardinos, 2015, Dhir et al., 2020]. These works also assemble information from partial views of a system, but they typically operate on observed variables and target a graph or equivalence class over the union of measured variables. In contrast, our clients observe high-dimensional mixtures of latent variables, and missing latent variables induce bidirected dependencies and block-level ambiguity. Our task is therefore not to merge overlapping observed-variable graphs, but to recover a global latent causal order from block-structured latent fragments. 
+
+## B Normalization of the Noise Covariance 
+
+In the main text, we work under the normalized parametrization Σ = I. In this appendix, we explain why this assumption is made without loss of generality. Suppose there exists an alternative parameterization 
+
+n
+
+A′, Σ′, {H′
+
+> k
+
+}k∈[K], { ˜A(j)′
+
+, ˜Σ(j)′
+
+}j∈[p]
+
+o
+
+with Σ′̸ = I. Let 
+
+D = ( Σ′)−1/2,
+
+and define the transformed parameters 
+
+A = DA ′D−1, Σ = I, Hk = [ D]Ok ,O k H′
+
+> k
+
+,
+
+together with 
+
+˜A(j) = D ˜A(j)′
+
+D−1, ˜Σ(j) = D ˜Σ(j)′
+
+D.
+
+Under this transformation, the latent variables are rescaled but the induced second-order information of the observed variables remains unchanged. In particular, the collection of observed distributions 
+
+{X(j) 
+
+> k
+
+}k∈[K], j ∈J k ∪{ 0}
+
+generated by the transformed parameterization is identical to that generated by the original one. Therefore, the two parameterizations are observationally equivalent. Hence, whenever a model with general noise covariance Σ′ is observationally feasible, there exists an equivalent reparameterization with identity noise covariance. It is therefore sufficient to analyze the normalized case Σ = I throughout the paper. 
+
+## C Discussion of Assumptions 
+
+Discussion of Assumption 1. Assumption 1 combines a standard within-client coverage require-ment with a cross-client label alignment condition. The coverage part requires that, for each client 
+
+k, the intervention set Jk is in bijection with the client-specific node set Vk, so that every node is targeted by exactly one intervention environment. Such assumptions are standard in single-client CRL and intervention-based latent causal discovery, where sufficiently rich intervention coverage is needed to identify causal order or ancestral relations in the worst case [Varici et al., 2025, Buchholz et al., 2023, Squires et al., 2023]. In our setting, this requirement is especially natural because each client only observes a subset of the global latent system, and marginalizing the missing latent variables induces bidirected edges, so that even a single client can typically recover only a block-structured 13 object. The additional cross-client alignment condition ensures that intervention environments refer-ring to the same global latent target share a common label across clients. This does not strengthen within-client recovery, but is needed to place the client-specific structural fragments into a common global coordinate system for subsequent assembly. Under this assumption, we define ψ : j 7 → tj as the map from the global intervention index to its target node. 
+
+Discussion of Assumption 2. Assumption 2 is a standard genericity condition in intervention-based causal discovery and related CRL work, used to rule out pathological intervention choices that create exceptional cancellations in the structural signal [Varici et al., 2025, Squires et al., 2023]. The first two parts correspond to non-degeneracy of the directed and bidirected components, respectively. In view of Lemma A.4, the supports of d(j) 
+
+> k
+
+and u(j) 
+
+> k
+
+are structurally constrained by the underlying graph, and these two conditions require that the entries which can be nonzero are, generically, indeed nonzero. Intuitively, this means that the intervention sufficiently excites all directed and bidirected directions that are structurally reachable, rather than being canceled by special parameter choices; such cancellations can typically be regarded as measure-zero pathologies. The third part imposes a non-degeneracy condition within each block. Combining the first two parts, for any i ∈ Ck,ℓ , the possible elements of Ni lie in ρk
+
+ (sp k(Anc k(i)) ∪ Anc k(i)) ∩ Ck,ℓ 
+
+. Hence, for any proper subset 
+
+B ⊊ Ck,ℓ , the union S 
+
+> i∈B
+
+Ni typically extends beyond B itself. Indeed, by the definition of the block structure, any two nodes in the same block are connected through a combination of ancestral relations and bidirected connectivity, so the set of potentially nonzero coordinates necessarily reaches nodes in Ck,ℓ \ B as well. Therefore, as long as one avoids further pathological cancellations on these potentially active coordinates, one expects S 
+
+> i∈B
+
+Ni > |B| . In this sense, the third part likewise excludes degenerate interventions that collapse the within-block information. Overall, Assumption 2 only requires that interventions generically reveal the structural signal allowed by the graph, rather than imposing any strong additional structural restriction. 
+
+Discussion of Assumption 3. Assumption 3 is a cross-client coverage condition tailored to global recovery. Its role is to constrain the missingness patterns {Ok}Kk=1 across clients so that the client-specific structural fragments can be assembled into a global latent causal order. Some such condition is unavoidable in our setting. On the one hand, if Ok = [ p] for every client k, then the problem essentially reduces to the single-client case, and there is no nontrivial fragmented multi-client assembly. On the other hand, if ∪Kk=1 Ok ⊊ [p], then at least one global latent node is never observed by any client, and its ancestral relations with the remaining nodes are clearly unidentifiable. Assumption 3 adopts a relatively weak intermediate condition: rather than requiring some client to observe all nodes, or requiring every global ancestral relation to be directly recovered in a single client, it only requires each global Hasse edge to be witnessed in some client through a block-level parent relation between singleton blocks. Since the global ancestral order is the transitive closure of the Hasse edges, this provides exactly the level of visibility needed for the subsequent global assembly step. 
+
+## D Proof of Proposition 1 
+
+Proposition A.1 (Proposition 1 in the main text) . For Z generated by Eq. (1) , let Zk = ( Z(i))i∈Ok .Then 
+
+Zk = AkZk + Ek, (9) 
+
+where 
+
+Ak = [ A]Ok ,O k + [ A]Ok ,M k (I − [A]Mk ,M k )−1[A]Mk ,O k , (10) 
+
+Ek = EOk + [ A]Ok ,M k (I − [A]Mk ,M k )−1EMk . (11) 
+
+Moreover, Ek has mean zero and covariance 
+
+Σk = [ Σ]Ok ,O k + [ A]Ok ,M k (I − [A]Mk ,M k )−1[Σ]Mk ,M k (I − [A]Mk ,M k )−T [A]TOk ,M k . (12) 
+
+Furthermore ≺k, which is induced by Ak, is exactly the restriction of the ≺, which is induced by A,to Vk = Ok.
+
+14 Proof. For client k, partition the global latent vector and exogenous noise as 
+
+Z =
+
+ZOk
+
+ZMk
+
+
+
+, E =
+
+EOk
+
+EMk
+
+
+
+.
+
+Then the global latent SEM in Eq. (1) can be written in block form as 
+
+ZOk
+
+ZMk
+
+
+
+=
+
+[A]Ok ,O k [A]Ok ,M k
+
+[A]Mk ,O k [A]Mk ,M k
+
+  ZOk
+
+ZMk
+
+
+
++
+
+EOk
+
+EMk
+
+
+
+.
+
+Equivalently, 
+
+ZOk = [ A]Ok ,O k ZOk + [ A]Ok ,M k ZMk + EOk , (13) 
+
+ZMk = [ A]Mk ,O k ZOk + [ A]Mk ,M k ZMk + EMk . (14) Since A is strictly upper triangular under a topological order, the principal submatrix [A]Mk ,M k is also strictly upper triangular. Hence I − [A]Mk ,M k is invertible, and Eq. (14) gives 
+
+ZMk = ( I − [A]Mk ,M k )−1[A]Mk ,O k ZOk + ( I − [A]Mk ,M k )−1EMk . (15) Substituting Eq. (15) into Eq. (13), we obtain 
+
+ZOk = [ A]Ok ,O k ZOk + [ A]Ok ,M k (I − [A]Mk ,M k )−1[A]Mk ,O k ZOk
+
++ [ A]Ok ,M k (I − [A]Mk ,M k )−1EMk + EOk .
+
+Therefore, 
+
+Zk = AkZk + Ek, Zk = ZOk ,
+
+where 
+
+Ak = [ A]Ok ,O k + [ A]Ok ,M k (I − [A]Mk ,M k )−1[A]Mk ,O k ,
+
+and 
+
+Ek = EOk + [ A]Ok ,M k (I − [A]Mk ,M k )−1EMk .
+
+This proves the claimed induced structural equation. It remains to compute the covariance of Ek. Let 
+
+Bk ≜ [A]Ok ,M k (I − [A]Mk ,M k )−1.
+
+Then 
+
+Ek = EOk + BkEMk .
+
+Since the global exogenous noise covariance is Σ and the coordinates of E are mutually uncorrelated, we have 
+
+Cov (EOk , E Mk ) = 0.
+
+Hence 
+
+Σk ≜ Cov (Ek) = Cov (EOk + BkEMk )= [ Σ]Ok ,O k + Bk[Σ]Mk ,M k BTk .
+
+Substituting the definition of Bk yields 
+
+Σk = [ Σ]Ok ,O k + [ A]Ok ,M k (I − [A]Mk ,M k )−1[Σ]Mk ,M k (I − [A]Mk ,M k )−T [A]TOk ,M k ,
+
+which is exactly Eq. (12). Finally, we justify the statement on the ancestral relation ≺k. By construction, the directed edge set of the induced mixed graph Gk is determined by the nonzero entries of Ak. From the formula above, a directed edge in Gk arises either from a directed edge already present in [A]Ok ,O k , or from a directed path in the global DAG whose endpoints lie in Ok and whose internal nodes lie in Mk.Indeed, since [A]Mk ,M k is strictly upper triangular, it is nilpotent, and thus 
+
+(I − [A]Mk ,M k )−1 = I + [ A]Mk ,M k + [ A]2  
+
+> Mk,M k
+
++ · · · ,
+
+where the sum is finite. Therefore, 
+
+[A]Ok ,M k (I − [A]Mk ,M k )−1[A]Mk ,O k
+
+15 collects exactly the contributions of all directed paths whose endpoints lie in Ok and whose internal nodes lie in Mk. It follows that every directed path in Gk corresponds to a directed path in the global latent DAG. Hence, for any i, j ∈ Ok,
+
+i ≺k j =⇒ i ≺ j. 
+
+Conversely, suppose i, j ∈ Ok and i ≺ j in the global latent DAG. Then there exists a directed path from j to i in the global graph. Removing from this path all intermediate nodes that lie in Ok
+
+decomposes it into consecutive segments whose endpoints lie in Ok and whose internal nodes lie in 
+
+Mk. Each such segment induces a directed edge in Gk through the effective coefficient matrix Ak,possibly together with edges already present in [A]Ok ,O k . Chaining these induced directed edges yields a directed path from j to i in Gk, and therefore 
+
+i ≺ j, i, j ∈ Ok =⇒ i ≺k j. 
+
+Combining the two directions, we conclude that ≺k is exactly the restriction of the global ancestral relation ≺ to Vk = Ok.
+
+## E Proof of Proposition 2 
+
+Proposition A.2 (Proposition 2 in the main text) . For each client k, let Ck,i , C k,j ∈ C k be two blocks. (i) If Ck,j /∈ anc blk  
+
+> k
+
+(Ck,i ), then for ∀u ∈ Ck,j and v ∈ Ck,i , we have u / ∈ anc k(v).(ii) If Ck,j ∈ pa blk  
+
+> k
+
+(Ck,i ), then there ∃u ∈ Ck,j and v ∈ Ck,i such that u ∈ pa k(v).Proof. We prove the two claims separately. For the first claim, suppose Ck,j /∈ Anc blk  
+
+> k
+
+(Ck,i ). We show that there do not exist u ∈ Ck,j and 
+
+v ∈ Ck,i such that u ∈ Anc k(v). Indeed, if such a pair existed, then by the definition of the block-level ancestral relation, the existence of u ≺k v would imply 
+
+Ck,j ≺blk  
+
+> k
+
+Ck,i ,
+
+or equivalently Ck,j ∈ Anc blk  
+
+> k
+
+(Ck,i ), which contradicts the assumption. Therefore, for any u ∈ Ck,j 
+
+and v ∈ Ck,i , we must have u / ∈ Anc k(v).We next prove the second claim. Suppose Ck,j ∈ P a blk  
+
+> k
+
+(Ck,i ). By definition of the block parent relation, there exist u ∈ Ck,j and v ∈ Ck,i such that u ∈ Anc k(v), that is, there exists a directed path from u to v in the directed part of Gk. Among all such directed paths from a node in Ck,j to a node in Ck,i , choose one of shortest length, and write it as 
+
+u = w0 → w1 → · · · → wm = v. 
+
+Consider the sequence of blocks containing these nodes: 
+
+Ck(w0), C k(w1), . . . , C k(wm),
+
+where Ck(wℓ) denotes the block in Ck containing wℓ. Since w0 = u ∈ Ck,j and wm = v ∈ Ck,i ,the path starts in Ck,j and ends in Ck,i . We claim that no intermediate node wℓ can belong to a block different from both Ck,j and Ck,i . Otherwise, for some 1 ≤ ℓ ≤ m − 1, there exists a block 
+
+Ck,m ′ ∈ C k such that 
+
+wℓ ∈ Ck,m ′ , Ck,m ′̸ = Ck,j , Ck,m ′̸ = Ck,i .
+
+Then the directed path above implies 
+
+Ck,j ≺blk  
+
+> k
+
+Ck,m ′ ≺blk  
+
+> k
+
+Ck,i ,
+
+which contradicts the assumption that Ck,j ∈ P a blk  
+
+> k
+
+(Ck,i ), since a block parent cannot have another block strictly between it and Ck,i in the block-level partial order. Hence the path cannot pass through any third block. It follows that along the chosen directed path, once the path leaves Ck,j , it must enter Ck,i immediately. Therefore, there exists an index 
+
+r ∈ { 1, . . . , m } such that 
+
+wr−1 ∈ Ck,j , wr ∈ Ck,i ,
+
+16 and 
+
+wr−1 → wr
+
+is a directed edge in Gk. Consequently, 
+
+wr−1 ∈ P a k(wr ).
+
+Setting 
+
+u⋆ ≜ wr−1 ∈ Ck,j , v⋆ ≜ wr ∈ Ck,i ,
+
+we obtain a pair of nodes such that u⋆ ∈ P a k(v⋆), as required. 
+
+## F Block RQ Decomposition 
+
+We now give a constructive procedure for the block-RQ decomposition introduced in Section 3.2. Given Hk, a block topological order, and the corresponding block ancestral relation, the algorithm builds Qk block by block in reverse topological order. At each step, the current block row of Hk is projected onto the orthogonal complement of the row space already explained by its ancestor blocks, and the resulting innovation component is used to define the new block row of Qk. The coefficient matrix Rk is then obtained by expressing each block row of Hk in the row span of the corresponding ancestor blocks together with its own newly added block. 
+
+Algorithm 4 Block-RQ decomposition 
+
+Input: Hk ∈ Rpk ×nk , block topological order Cr , C r−1, . . . , C 1, block ancestor relation 
+
+anc blk  
+
+> k
+
+(Cℓ) for each block Cℓ
+
+Output: Rk ∈ Rpk ×pk , Qk ∈ Rpk ×nk 
+
+> 1:
+
+Initialize Rk = 0pk ×pk , Qk = 0pk ×nk 
+
+> 2:
+
+for ℓ = r, r − 1, . . . , 1 do  
+
+> 3:
+
+Let eHℓ = [ Hk]Cℓ,: 
+
+> 4:
+
+Let Wℓ = [ Qk]anc blk   
+
+> k(Cℓ),:
+> 5:
+
+if Wℓ is empty then  
+
+> 6:
+
+eH⊥ 
+
+> ℓ
+
+= eHℓ 
+
+> 7:
+
+else  
+
+> 8:
+
+eH⊥ 
+
+> ℓ
+
+= Π W⊥ 
+
+> ℓ
+
+( eHℓ) 
+
+> 9:
+
+end if  
+
+> 10:
+
+Normalize each row of eH⊥ 
+
+> ℓ
+
+to unit norm, and denote the resulting matrix by [Qk]Cℓ,: 
+
+> 11:
+
+Let Jℓ = Cℓ ∪ Anc (Cℓ) 
+
+> 12:
+
+Set 
+
+[Rk]Cℓ,J ℓ = eHℓ
+
+ [Qk]Jℓ,:
+
+† 
+
+> 13:
+
+Set Rk[Cℓ, J cℓ ] = 0  
+
+> 14:
+
+end for  
+
+> 15:
+
+return Rk, Qk
+
+The next proposition shows that the above procedure indeed produces a valid block-RQ decomposition in the sense of Section 3.2. 
+
+Proposition A.3. The output (Rk, Qk) of Algorithm 4 satisfies the block-RQ requirements in Section 3.2. In particular, 1. Hk = RkQk;2. for each block Cℓ, the row block [Rk]Cℓ,: is supported only on Jℓ = Anc blk  
+
+> k
+
+(Cℓ), namely 
+
+[Rk]Cℓ,J cℓ = 0 ;3. for each block Cℓ, the row block [Qk]Cℓ,: is orthogonal to the row space generated by its strict block ancestors, i.e. 
+
+row  [Qk]Cℓ,:
+
+ ⊥ row  [Qk]anc blk  
+
+> k(Cℓ),:
+
+,
+
+and 
+
+row  [Qk]Cℓ,:
+
+ = row 
+
+
+
+Πrow([ Qk ]anc blk  
+
+> k(Cℓ),:)⊥
+
+ [Hk]Cℓ,:
+
+
+
+.
+
+17 Proof. Fix a block Cℓ. By construction, 
+
+eH⊥ 
+
+> ℓ
+
+= Π row([ Qk ]anc blk  
+
+> k(Cℓ),:)⊥
+
+ [Hk]Cℓ,:
+
+,
+
+with the convention that eH⊥ 
+
+> ℓ
+
+= [ Hk]Cℓ,: if anc blk  
+
+> k
+
+(Cℓ) = ∅. Since Step 10 only normalizes the rows of eH⊥ 
+
+> ℓ
+
+, it does not change its row space. Therefore 
+
+row  [Qk]Cℓ,:
+
+ = row   eH⊥
+
+> ℓ
+
+ = row 
+
+
+
+Πrow([ Qk ]anc blk  
+
+> k(Cℓ),:)⊥
+
+ [Hk]Cℓ,:
+
+
+
+.
+
+Because eH⊥ 
+
+> ℓ
+
+is defined as the orthogonal projection onto 
+
+row([ Qk]anc blk  
+
+> k(Cℓ),:
+
+)⊥,
+
+its row space is orthogonal to row([ Qk]anc blk  
+
+> k(Cℓ),:
+
+). Hence 
+
+row  [Qk]Cℓ,:
+
+ ⊥ row  [Qk]anc blk  
+
+> k(Cℓ),:
+
+,
+
+which proves the third claim. Next, by the orthogonal decomposition of [Hk]Cℓ,: with respect to 
+
+row  [Qk]anc blk  
+
+> k(Cℓ),:
+
+,
+
+we have 
+
+[Hk]Cℓ,: = Π row([ Qk ]anc blk  
+
+> k(Cℓ),:)
+
+ [Hk]Cℓ,:
+
+ + eH⊥ 
+
+> ℓ
+
+.
+
+Therefore, 
+
+row  [Hk]Cℓ,:
+
+ ⊆ row  [Qk]Jℓ,:
+
+, Jℓ = Anc blk  
+
+> k
+
+(Cℓ).
+
+It follows that 
+
+[Hk]Cℓ,: = [ Rk]Cℓ,J ℓ [Qk]Jℓ,:,
+
+where 
+
+[Rk]Cℓ,J ℓ = [ Hk]Cℓ,:
+
+ [Qk]Jℓ,:
+
+†.
+
+Together with the assignment [Rk]Cℓ,J cℓ = 0 , this gives 
+
+[Hk]Cℓ,: = [ Rk]Cℓ,:Qk.
+
+Stacking over all blocks yields 
+
+Hk = RkQk,
+
+which proves the first claim. Finally, the second claim follows directly from the construction of Rk, since Step 13 explicitly sets 
+
+[Rk]Cℓ,J cℓ = 0 
+
+for every block Cℓ. Thus each block row of Rk is supported only on the current block and its block ancestors. This decomposition is generally not unique, since the algorithm only determines each block through its row space, while different normalized bases of the same subspace lead to different matrix repre-sentatives Qk and hence different Rk. However, for Theorem 1, the relevant object is precisely the family of block row spaces {row([ Qk]Cℓ,:)}ℓ, rather than a particular matrix representative. These block row spaces are uniquely determined by Hk, the prescribed block order, and the block ancestral relation, since each step extracts the orthogonal innovation subspace relative to already determined ancestor blocks. In this subspace sense, the decomposition is unique, which is sufficient for the identifiability argument in Theorem 1. 
+
+Proposition A.4 (Proposition 3 in the main text) . For every block C ∈ C k and every i ∈ ρk(C), we have [Hk]i, : ∈ row([ Qk]S   
+
+> C′∈Anc blk
+> k(C)ρk(C′),:
+
+).
+
+18 Proof. Fix a block C ∈ C k and an index i ∈ ρk(C). By Definition 2, the block-RQ decomposition satisfies 
+
+Hk = RkQk.
+
+Hence the ith row of Hk can be written as 
+
+[Hk]i, : =
+
+> pk
+
+X
+
+> m=1
+
+[Rk]i,m [Qk]m, :.
+
+That is, [Hk]i, : is a linear combination of the rows of Qk, with coefficients given by the ith row of 
+
+Rk.Since i ∈ ρk(C), the ith row belongs to the block row indexed by C. By the block support property in Definition 2, this block row of Rk can be nonzero only on the column blocks corresponding to 
+
+Anc blk  
+
+> k
+
+(C). Equivalently, for any block C′ /∈ Anc blk  
+
+> k
+
+(C),
+
+[Rk]i,ρ k (C′) = 0 .
+
+Therefore, the above sum reduces to 
+
+[Hk]i, : = X 
+
+> C′∈Anc blk
+> k(C)
+
+X 
+
+> m∈ρk(C′)
+
+[Rk]i,m [Qk]m, :.
+
+This shows that [Hk]i, : lies in the row space generated by the rows of Qk indexed by the ancestor blocks of C, namely 
+
+[Hk]i, : ∈ row 
+
+
+
+[Qk]∪C′∈Anc blk   
+
+> k(C)ρk(C′),:
+
+
+
+.
+
+The claim follows. 
+
+## G Proof of Lemma 1 
+
+Lemma A.1 (Lemma 1 in the main text) . For each client k and each intervention j targeting node tj
+
+(which is unknown to the learner), we have 
+
+row( Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+) ⊆ ⟨ HTk (I − Ak)T Σ−1 
+
+> k
+
+eρk (tj ), HTk
+
+
+
+(I − Ak)T Σ−1 
+
+> k
+
+u(j) 
+
+> k
+
++ d(j)
+
+> k
+
+
+
+⟩. (16) 
+
+where u(j) 
+
+> k
+
+, d(j) 
+
+> k
+
+have the same definition as in Assumption 2. Therefore, it immediately follows that 
+
+rank( Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+) ≤ 2.Proof. Fix a client k and an intervention j ∈ J k, and write 
+
+Bk := I − Ak, Ωk := Σ−1 
+
+> k
+
+, e := eρk (tj ), d := d(j) 
+
+> k
+
+, u := u(j) 
+
+> k
+
+.
+
+By the precision factorization established earlier, we have 
+
+Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+= HTk
+
+
+
+(I − A(j) 
+
+> k
+
+)T (Σ(j) 
+
+> k
+
+)−1(I − A(j) 
+
+> k
+
+) − BTk ΩkBk
+
+
+
+Hk.
+
+Hence it suffices to study 
+
+∆(j) 
+
+> k
+
+:= ( I − A(j) 
+
+> k
+
+)T (Σ(j) 
+
+> k
+
+)−1(I − A(j) 
+
+> k
+
+) − BTk ΩkBk.
+
+By Lemma A.4, the intervention changes only the row corresponding to the target node, so 
+
+A(j) 
+
+> k
+
+= Ak + ed T , hence I − A(j) 
+
+> k
+
+= Bk − ed T .
+
+Moreover, there exists a scalar η(j) 
+
+> k
+
+such that 
+
+Σ(j) 
+
+> k
+
+= Σk + eu T + ue T + η(j) 
+
+> k
+
+ee T .
+
+For brevity, write η := η(j) 
+
+> k
+
+, and define 
+
+V := [ e, u ], W := [ u + ηe, e ].
+
+19 Then 
+
+Σ(j) 
+
+> k
+
+= Σk + VW T .
+
+Applying the Woodbury identity gives 
+
+(Σ(j) 
+
+> k
+
+)−1 = Ωk − ΩkV I + WT ΩkV−1WT Ωk.
+
+Substituting this into ∆(j) 
+
+> k
+
+yields 
+
+∆(j) 
+
+> k
+
+= ( Bk − ed T )T Ωk(Bk − ed T ) − BTk ΩkBk
+
+− (Bk − ed T )T ΩkV I + WT ΩkV−1WT Ωk(Bk − ed T ). (17) We now introduce 
+
+q := BTk Ωke, s := BTk Ωku. 
+
+Then the first line of (17) becomes 
+
+(Bk − ed T )T Ωk(Bk − ed T ) − BTk ΩkBk = −qd T − dq T + ( eT Ωke) dd T .
+
+For the second line, direct multiplication gives 
+
+(Bk − ed T )T ΩkV = q − (eT Ωke)d, s − (eT Ωku)d,
+
+and 
+
+WT Ωk(Bk − ed T ) = 
+
+ s + ηq − (eT Ωku + η e T Ωke)dT
+
+ q − (eT Ωke)dT
+
+ .
+
+Let 
+
+τ := eT Ωke, κ := eT Ωku, ν := uT Ωku. 
+
+Then 
+
+I + WT ΩkV =
+
+1 + κ + ητ ν + ηκ τ 1 + κ
+
+
+
+,
+
+which is invertible since Σ(j) 
+
+> k
+
+is invertible. A straightforward simplification of (17) then yields 
+
+∆(j) 
+
+> k
+
+= c1 qq T + c2 q(s + d)T + c2 (s + d)qT + c3 (s + d)( s + d)T
+
+for some scalars c1, c 2, c 3 depending on (k, j ). For example, one may take 
+
+c1 = ν − η
+
+(1 + κ)2 + τ (η − ν) , c2 = − 1 + κ
+
+(1 + κ)2 + τ (η − ν) , c3 = τ
+
+(1 + κ)2 + τ (η − ν) .
+
+In particular, 
+
+row( ∆(j) 
+
+> k
+
+) ⊆ ⟨ q, s + d⟩.
+
+Recalling the definitions of q and s, this becomes 
+
+row( ∆(j) 
+
+> k
+
+) ⊆ BTk Ωke, BTk Ωku + d =
+
+D
+
+(I − Ak)T Σ−1 
+
+> k
+
+eρk (tj ), (I − Ak)T Σ−1 
+
+> k
+
+u(j) 
+
+> k
+
++ d(j)
+
+> k
+
+E
+
+.
+
+Finally, since 
+
+Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+= HTk ∆(j) 
+
+> k
+
+Hk,
+
+we conclude that 
+
+row( Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+) ⊆
+
+D
+
+HTk (I − Ak)T Σ−1 
+
+> k
+
+eρk (tj ), HTk
+
+
+
+(I − Ak)T Σ−1 
+
+> k
+
+u(j) 
+
+> k
+
++ d(j)
+
+> k
+
+E 
+
+.
+
+Therefore 
+
+rank( Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+) ≤ 2.
+
+This proves the lemma. 20 H Proof of Lemma 2 
+
+Lemma A.2 (Lemma 2 in the main text) . For each client k and intervention j, suppose that the intervention target node tj belongs to block Ck,a ∈ C k. Then 
+
+row( Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+) ⊆ [Qk]ρk (i),: i ∈ Ck,b , C k,b ∈ Anc blk  
+
+> k
+
+(Ck,a ) .
+
+Proof. Let tj ∈ Ck,a and write r = ρk(tj ). By Lemma 1, 
+
+row( Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+) ⊆
+
+D
+
+HTk (I − Ak)T Σ−1 
+
+> k
+
+er , HTk
+
+
+
+(I − Ak)T Σ−1 
+
+> k
+
+u(j) 
+
+> k
+
++ d(j)
+
+> k
+
+E 
+
+.
+
+Hence it suffices to show that both generators on the right-hand side belong to 
+
+[Qk]ρk (i),: i ∈ Ck,b , C k,b ∈ Anc blk  
+
+> k
+
+(Ck,a ) .
+
+For the first generator, define 
+
+α := ( I − Ak)T Σ−1 
+
+> k
+
+er .
+
+Then 
+
+HTk (I − Ak)T Σ−1 
+
+> k
+
+er = HTk α = X
+
+> i∈Vk
+
+αi[Hk]Ti, :.
+
+Since r = ρk(tj ) and tj ∈ Ck,a , any nonzero coefficient αi can only arise from indices i belonging to blocks in Anc blk  
+
+> k
+
+(Ck,a ). Therefore the above vector is a linear combination of rows of Hk indexed by nodes in blocks belonging to Anc blk  
+
+> k
+
+(Ck,a ).For the second generator, define 
+
+β := ( I − Ak)T Σ−1 
+
+> k
+
+u(j) 
+
+> k
+
++ d(j) 
+
+> k
+
+.
+
+Then 
+
+HTk
+
+
+
+(I − Ak)T Σ−1 
+
+> k
+
+u(j) 
+
+> k
+
++ d(j)
+
+> k
+
+
+
+= HTk β = X
+
+> i∈Vk
+
+βi[Hk]Ti, :.
+
+By Lemma A.4, 
+
+supp( d(j) 
+
+> k
+
+) ⊆ ρk
+
+ pa k(tj ), supp( u(j) 
+
+> k
+
+) ⊆ ρk
+
+ sp k(tj ).
+
+Hence the nonzero coordinates of β can only come from set ρk(P a k(dis k(tj ) ∪ { tj })) , where 
+
+dis k(i) ≜ {j ∈ V k | i and j are connected by a bidirected path in Dk}. By the definition of the block structure and the block-level ancestor relation, these nodes belong to blocks contained in 
+
+Anc blk  
+
+> k
+
+(Ck,a ). It follows that the second generator is also a linear combination of rows of Hk
+
+indexed by nodes in blocks belonging to Anc blk  
+
+> k
+
+(Ck,a ).Now apply Proposition 3. For any node i lying in a block C ∈ C k, Proposition 3 implies that 
+
+[Hk]i, : ∈ [Qk]ρk (ℓ),: ℓ ∈ Ck,b , C k,b ∈ Anc blk  
+
+> k
+
+(C) .
+
+In particular, whenever C ∈ Anc blk  
+
+> k
+
+(Ck,a ), we also have 
+
+[Hk]i, : ∈ [Qk]ρk (ℓ),: ℓ ∈ Ck,b , C k,b ∈ Anc blk  
+
+> k
+
+(Ck,a ) .
+
+Therefore both generators in Lemma 1 lie in 
+
+[Qk]ρk (i),: i ∈ Ck,b , C k,b ∈ Anc blk  
+
+> k
+
+(Ck,a ) .
+
+Taking their span proves that 
+
+row( Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+) ⊆ [Qk]ρk (i),: i ∈ Ck,b , C k,b ∈ Anc blk  
+
+> k
+
+(Ck,a ) .
+
+This completes the proof. 21 I Proof of Theorem 1 
+
+Theorem A.1 (Theorem 1 in the main text) . Assume Assumptions 1 and 2. Let ( ˆCk, ˆ≺blk  
+
+> k
+
+, ˆQk) be the output of Algorithm 2 for client k. Then: (i) ( ˆCk, ˆ≺blk  
+
+> k
+
+) recovers (Ck, ≺blk  
+
+> k
+
+) up to relabeling under the bijection ψ : j 7 → tj .(ii) For each true block C ∈ C k, let ˆC = ψ−1(C) denote the corresponding estimated block. Then 
+
+⟨ˆqk,i : i ∈ ˆC⟩ = row([ Qk]ρk (C),:).
+
+Consequently, ˆQk = SkPσ,k Qk, where Sk is an invertible block-diagonal norm-preserving matrix and Pσ,k is a row permutation matrix preserving the block ancestral order. Proof. We proceed by induction on the outer-loop index of Algorithm 2. Let T = |C k| be the number of true blocks for client k. For each t ∈ [T ], we view the t-th iteration of the outer loop as the step that recovers the t-th block in the reverse block topological order. At the beginning of iteration t, we maintain the following induction hypothesis: (IH1) It−1 consists of correctly identified blocks, and its image under ψ is closed under the true block-level ancestor relation. Namely, if C ∈ ψ(It−1), then Anc blk  
+
+> k
+
+(C) ⊆ ψ(It−1).
+
+(IH2) The last t − 1 recovered block rows of ˆQk coincide with the corresponding block rows of some matrix of the form SkPσ,k Qk, where Pσ,k is a permutation consistent with the recovered block order and Sk is a block-diagonal invertible matrix. The base case t = 1 is immediate: I0 = ∅, so (IH1) holds trivially, and (IH2) is vacuous. Now assume (IH1)–(IH2) hold at the beginning of iteration t. We prove that the t-th iteration correctly identifies one new block, correctly updates its ancestor information, and appends the corresponding correct block row space to ˆQk.
+
+Step 1: identification of the new block in Steps 4–12 of Algorithm 2. Let 
+
+Wt ≜ ⟨ˆqk,i : i ∈ I t−1⟩.
+
+We first record three claims. 
+
+Claim 1. Under Assumptions 1 and 2, let J = {j1, . . . , j r } ⊆ Rt−1. If ψ(J) is not a disjoint union of whole true blocks, then 
+
+dim  Pk(J; Wt) > r. 
+
+Claim 2. Under Assumptions 1 and 2, let J = {j1, . . . , j r } ⊆ Rt−1. Suppose that ψ(J) is a union of whole true blocks, but at least one true block parent of ψ(J) is not contained in ψ(It−1 ∪ J). Then 
+
+dim  Pk(J; Wt) > r. 
+
+Claim 3. Under Assumptions 1 and 2, let C ∈ C k satisfy C / ∈ ψ(It−1) and 
+
+anc blk  
+
+> k
+
+(C) ⊆ ψ(It−1).
+
+Let J = ψ−1(C) ⊆ Rt−1. Then 
+
+dim  Pk(J; Wt) = |J| = |C|.
+
+We postpone the proofs of the three claims and first show how they imply correctness of Steps 4–9. Since ψ(It−1) is ancestor-closed by (IH1), there exists at least one true block 
+
+C⋆ ∈ C k \ ψ(It−1)
+
+22 whose true block ancestors are all contained in ψ(It−1); equivalently, C⋆ is minimal in the remaining block partial order. By Claim 3, if J⋆ = ψ−1(C⋆), then 
+
+dim  Pk(J⋆; Wt) = |J⋆|.
+
+Hence the inner loop of Algorithm 2 must terminate. Now let ˆC be the set selected at Step 8 when the inner loop terminates. By construction, ˆC is chosen with the smallest cardinality r such that 
+
+dim  Pk( ˆC; Wt) = r. 
+
+Claim 1 rules out the possibility that ψ( ˆC) contains only part of some true block. Claim 2 rules out the possibility that ψ( ˆC) is a union of whole true blocks whose true block parents have not all been recovered already. Therefore, ψ( ˆC) must be exactly one whole true block, say Ct, and moreover 
+
+pa blk  
+
+> k
+
+(Ct) ⊆ ψ(It−1).
+
+Since ψ(It−1) is ancestor-closed by (IH1), this further implies 
+
+anc blk  
+
+> k
+
+(Ct) ⊆ ψ(It−1).
+
+Step 2: identification of the ancestor set in Algorithm 1. We next analyze the call 
+
+({ˆqk,i }i∈ ˆC , A) = ID -Block -Ancestor 
+
+ ˆC, {Θ(j) 
+
+> k
+
+}j∈{ 0}∪ ˆC , It−1, {ˆqk,i }i∈I t−1
+
+
+
+.
+
+For each block B ∈ I t−1, Algorithm 1 removes B temporarily and checks whether 
+
+dim  Pk( ˆC; W−B ) = | ˆC|, W−B ≜ ⟨ˆqk,i : i ∈ I t−1\B⟩.
+
+We use Claim 2 again. If B is a true block parent of Ct, then after removing B, the projected space still retains an unremoved parent contribution, hence 
+
+dim  Pk( ˆC; W−B ) > | ˆC|,
+
+so B cannot be deleted from A. Therefore, 
+
+pa blk  
+
+> k
+
+(Ct) ⊆ A .
+
+We also record one additional claim. 
+
+Claim 4. Under Assumptions 1 and 2, if B ∈ I t−1 is not a true block ancestor of Ct, then 
+
+dim  Pk( ˆC; W−B ) = | ˆC|,
+
+and hence Algorithm 1 removes B from A.Again postponing its proof, Claim 4 implies 
+
+A ⊆ anc blk  
+
+> k
+
+(Ct).
+
+Combining this with the previous inclusion yields 
+
+pa blk  
+
+> k
+
+(Ct) ⊆ A ⊆ anc blk  
+
+> k
+
+(Ct).
+
+Since ψ(It−1) is ancestor-closed by (IH1), every true ancestor of every block in It−1 has already been recovered. Therefore, once Algorithm 1 returns A, the update rule in Step 14 of Algorithm 2 correctly inserts all block-level ancestral relations between the newly found block Ct and the previously recovered true ancestor blocks. In particular, the recovered partial order remains correct after adding 
+
+ˆC.
+
+Step 3: update of the block row space. Let 
+
+W ≜ ⟨ˆqk,i : i ∈ A⟩ .
+
+23 By the conclusion of Step 2, W is exactly the span of the previously recovered block row spaces corresponding to true block ancestors of Ct. Hence 
+
+Pk( ˆC; W )
+
+is precisely the innovation subspace associated with the block Ct. By the uniqueness statement for the block-RQ decomposition at the level of block row spaces, this innovation subspace is uniquely determined by Hk, the true block order, and the true ancestor structure. Therefore, the normalized vectors {ˆqk,i }i∈ ˆC constructed at Step 10 of Algorithm 1 span exactly the block row space corresponding to Ct in some representation of the form SkPσ,k Qk.After Step 15 of Algorithm 2, the last t recovered block rows of ˆQk therefore coincide with the last t
+
+block rows of some SkPσ,k Qk. This proves (IH2) for the next iteration. Moreover, after Step 16, the set It consists of correctly recovered blocks and remains ancestor-closed under the true block-level partial order, proving (IH1) for the next iteration. This completes the induction. After T iterations, all true blocks of client k have been recovered, the recovered block-level ancestral relation is correct, and the recovered ˆQk agrees blockwise with 
+
+Qk up to the intrinsic permutation and blockwise invertible transformation ambiguity. Hence the conclusion of the theorem follows. 
+
+I.1 Proof of Claim 1. 
+
+Proof. Let 
+
+J = {i1, . . . , i r } ⊆ Rt−1,
+
+and suppose that the corresponding targets involve exactly the true blocks 
+
+Ck, 1, . . . , C k,q ∈ C k,
+
+with at least one of these blocks only partially selected by J. For each s ∈ [q], let ps denote the length of the shortest block-parent path from Ck,s to a root block in the true block partial order. Among all partially selected blocks, choose one, denoted by Ck,u , such that pu is maximal. Define 
+
+B1 ≜ {j ∈ J : Ck(j) = Ck,s for some s with ps ≤ pu}, B2 ≜ J \ B 1.
+
+Then Ck,u is involved in B1, every block involved in B2 is fully selected, and no block involved in B1
+
+is a descendant of Ck,u . We will show 
+
+dim  Pk(B1; Wt) > |B 1|, dim 
+
+
+
+ΠW ′⊥ 
+
+ Pk(B2; Wt)
+
+≥ |B 2|
+
+for a suitable subspace W ′ containing Pk(B1; Wt). This will imply 
+
+dim  Pk(J; Wt) > |B 1| + |B 2| = r. 
+
+Step 1: the contribution of B1. By the induction hypothesis (IH2), the subspace 
+
+Wt = ⟨ˆqk,i : i ∈ I t−1⟩
+
+coincides with the span of the corresponding true block rows of Qk, up to the intrinsic blockwise invertible transformation. Hence, for the purpose of dimension counting, we may work directly with the corresponding block rows of Qk and suppress this equivalence in the notation. Set 
+
+S1 ≜ ρk
+
+ [ 
+
+> j∈B 1
+
+Anc blk  
+
+> k
+
+(Ck(j)) \ ψ(It−1)
+
+
+
+.
+
+By Lemma A.5, 
+
+Pk(B1; Wt)
+
+is contained in the span of the vectors 
+
+[ ¯Hk]TS1,:(I − [Ak]S1,S 1 )T [Σk]−1 
+
+> S1,S 1
+
+[eρk (tj )]S1 ,
+
+24 and 
+
+[ ¯Hk]TS1,:
+
+
+
+(I − [Ak]S1,S 1 )T [Σk]−1 
+
+> S1,S 1
+
+[u(j) 
+
+> k
+
+]S1 + [ d(j) 
+
+> k
+
+]S1
+
+
+
+, j ∈ B 1.
+
+Moreover, by the block-RQ property, the projected rows [ ¯Hk]S1,: remain row independent on the residual innovation subspace. Therefore it suffices to prove that 
+
+dim 
+
+D
+
+(I − [Ak]S1,S 1 )T [Σk]−1 
+
+> S1,S 1
+
+[eρk (tj )]S1 ,
+
+(I − [Ak]S1,S 1 )T [Σk]−1 
+
+> S1,S 1
+
+[u(j) 
+
+> k
+
+]S1 + [ d(j) 
+
+> k
+
+]S1 j ∈ B 1
+
+E
+
+> |B 1|. (18) The first family, 
+
+(I − [Ak]S1,S 1 )T [Σk]−1 
+
+> S1,S 1
+
+[eρk (tj )]S1 , j ∈ B 1,
+
+already consists of |B 1| linearly independent vectors, since the standard basis vectors [eρk (tj )]S1 are distinct and 
+
+(I − [Ak]S1,S 1 )T [Σk]−1
+
+> S1,S 1
+
+is invertible. It remains to show that at least one vector from the second family is not in the span of the first family. Since Ck,u is only partially selected by J, there exists an index 
+
+b ∈ ρk(Ck,u )
+
+such that b is not the target coordinate of any intervention in B1 ∩ ψ−1(Ck,u ). By construction of 
+
+B1, no descendant block of Ck,u is involved in B1. Hence, after reordering the blocks in S1 so that 
+
+Ck,u appears first, the block upper-triangular structure of Ak and the block-diagonal structure of Σk
+
+imply that for every j ∈ B 1 ∩ ψ−1(Ck,u ),
+
+h
+
+[Σk]S1,S 1 (I − [Ak]TS1,S 1 )−1[d(j) 
+
+> k
+
+]S1 + [ u(j) 
+
+> k
+
+]S1
+
+i
+
+> b
+
+=
+
+h
+
+[Σk]ρk (Ck,u ),ρ k (Ck,u )(I − [Ak]Tρk (Ck,u ),ρ k (Ck,u ))−1[d(j) 
+
+> k
+
+]ρk (Ck,u ) + [ u(j) 
+
+> k
+
+]ρk (Ck,u )
+
+i
+
+> b
+
+.
+
+(19) By the third clause of Assumption 2, there exists some 
+
+j⋆ ∈ B 1 ∩ ψ−1(Ck,u )
+
+such that the quantity in (19) is nonzero at the unselected index b.Now suppose, for contradiction, that 
+
+(I − [Ak]S1,S 1 )T [Σk]−1 
+
+> S1,S 1
+
+[u(j⋆) 
+
+> k
+
+]S1 + [ d(j⋆) 
+
+> k
+
+]S1
+
+lies in the span of the first |B 1| vectors. Left-multiplying by the invertible matrix 
+
+[Σk]S1,S 1 (I − [Ak]TS1,S 1 )−1
+
+would imply that 
+
+[u(j⋆) 
+
+> k
+
+]S1 + [ Σk]S1,S 1 (I − [Ak]TS1,S 1 )−1[d(j⋆) 
+
+> k
+
+]S1
+
+lies in the span of the basis vectors [eρk (tj )]S1 for j ∈ B 1. But every such basis vector vanishes at the unselected coordinate b, whereas by construction and Assumption 2, the vector above has a nonzero 
+
+b-th entry. This is impossible. Therefore (18) holds, and hence 
+
+dim  Pk(B1; Wt) > |B 1|.
+
+Step 2: the contribution of B2. Define 
+
+W ′ ≜
+
+D
+
+[Qk]i, : i ∈ ρk
+
+ [ 
+
+> j∈B 1
+
+Anc blk  
+
+> k
+
+(Ck(j)) 
+
+
+
+∪ I t−1
+
+E
+
+.
+
+By construction, Pk(B1; Wt) ⊆ W ′, and therefore 
+
+ΠW ′⊥ 
+
+ Pk(B2; Wt) = Pk(B2; W ′).
+
+25 Let 
+
+S2 ≜ ρk
+
+ [ 
+
+> j∈B 2
+
+Anc blk  
+
+> k
+
+(Ck(j)) \
+
+ [ 
+
+> j∈B 1
+
+Anc blk  
+
+> k
+
+(Ck(j)) ∪ ψ(It−1)
+
+ 
+
+.
+
+Applying Lemma A.5 again, it suffices to study the vectors 
+
+(I − [Ak]S2,S 2 )T [Σk]−1 
+
+> S2,S 2
+
+[eρk (tj )]S2 , j ∈ B 2.
+
+Since the blocks involved in B2 are all completely selected, these vectors are linearly independent; indeed, the corresponding basis vectors [eρk (tj )]S2 are distinct, and 
+
+(I − [Ak]S2,S 2 )T [Σk]−1
+
+> S2,S 2
+
+is invertible. Hence 
+
+dim 
+
+
+
+ΠW ′⊥ 
+
+ Pk(B2; Wt)
+
+≥ |B 2|.
+
+Step 3: conclusion. Since Pk(B1; Wt) ⊆ W ′, we have 
+
+dim  Pk(J; Wt) ≥ dim  Pk(B1; Wt) + dim 
+
+
+
+ΠW ′⊥ 
+
+ Pk(B2; Wt)
+
+.
+
+Combining the bounds established above gives 
+
+dim  Pk(J; Wt) > |B 1| + |B 2| = r. 
+
+This proves Claim 1. 
+
+I.2 Proof of Claim 2. 
+
+Proof. Let 
+
+J = {i1, . . . , i r } ⊆ Rt−1,
+
+and suppose that ψ(J) is the disjoint union of whole true blocks 
+
+Ck, 1, . . . , C k,q ∈ C k.
+
+Assume further that there exists a true block parent of one of these blocks which is not yet contained in ψ(It−1) and is not among the selected blocks themselves. We will prove 
+
+dim  Pk(J; Wt) > r. 
+
+Set 
+
+S ≜ ρk
+
+
+
+Anc blk  
+
+> k
+
+(Ck, 1 ∪ · · · ∪ Ck,q ) \ ψ(It−1)
+
+
+
+.
+
+By Lemma A.5, it suffices to show that 
+
+dim 
+
+D
+
+(I − [Ak]S,S )T [Σk]−1 
+
+> S,S
+
+[eρk (tj )]S ,
+
+(I − [Ak]S,S )T [Σk]−1 
+
+> S,S
+
+[u(j) 
+
+> k
+
+]S + [ d(j) 
+
+> k
+
+]S j ∈ J
+
+E
+
+> r. (20) The first family, 
+
+(I − [Ak]S,S )T [Σk]−1 
+
+> S,S
+
+[eρk (tj )]S , j ∈ J, 
+
+already consists of r linearly independent vectors, since the basis vectors [eρk (tj )]S are distinct and 
+
+(I − [Ak]S,S )T [Σk]−1
+
+> S,S
+
+is invertible. Therefore, to prove (20), it is enough to show that at least one vector from the second family is not contained in the span of the first family. Choose a block Ck,i ∈ { Ck, 1, . . . , C k,q } and a true block parent 
+
+Ck,j ∈ P a blk  
+
+> k
+
+(Ck,i )
+
+such that 
+
+Ck,j /∈ ψ(It−1) ∪ { Ck, 1, . . . , C k,q }.
+
+26 We claim that there exist 
+
+j⋆ ∈ ψ−1(Ck,i ) and b ∈ ρk(Ck,j )
+
+such that 
+
+[Σk]S,S (I − [Ak]TS,S )−1[d(j⋆) 
+
+> k
+
+]S + [ u(j⋆) 
+
+> k
+
+]S
+
+
+
+> b
+
+̸ = 0 . (21) We prove this by contradiction. Suppose instead that for every 
+
+j ∈ ψ−1(Ck,i ) and every b ∈ ρk(Ck,j ),
+
+one has 
+
+[Σk]S,S (I − [Ak]TS,S )−1[d(j) 
+
+> k
+
+]S + [ u(j) 
+
+> k
+
+]S
+
+
+
+> b
+
+= 0 . (22) Given the block-diagonal structure of Σk and the fact that Ck,j is a block-level parent of Ck,i , it follows that 
+
+
+
+[Σk]S,S (I − [Ak]TS,S )−1[d(j) 
+
+> k
+
+]S + [ u(j) 
+
+> k
+
+]S
+
+
+
+> b
+
+=
+
+
+
+[Σk]ρk (Ck,j ),ρ k (Ck,j )(I − [Ak]TS,S )−1    
+
+> ρk(Ck,j ),ρ k(Ck,i ∪Ck,j )
+
+[d(j) 
+
+> k
+
+]ρk (Ck,i ∪Ck,j + [ u(j) 
+
+> k
+
+]ρk (Ck,i ∪Ck,j )
+
+
+
+> b
+
+.
+
+Enumerate the nodes in Ck,i according to the true topological order within the block: 
+
+v1, . . . , v m.
+
+We will show inductively that no node in Ck,j can be an ancestor of any vs, which contradicts the assumption that Ck,j ∈ P a blk  
+
+> k
+
+(Ck,i ).For the first node v1, using Lemma A.4, by the support characterization of d(v1) 
+
+> k
+
+, there is no support in the coordinates corresponding to ρk(Ck,i ), since v1 has no parent inside Ck,i . Moreover, for 
+
+b ∈ ρk(Ck,j ), the term [u(v1) 
+
+> k
+
+]b vanishes by the support description of u(v1) 
+
+> k
+
+. Hence (22) implies 
+
+[Σk]ρk (Ck,j ),ρ k (Ck,j )(I − [Ak]TS,S )−1    
+
+> ρk(Ck,j ),ρ k(Ck,j )
+
+[d(v1) 
+
+> k
+
+]ρk (Ck,j ) = 0.
+
+Since 
+
+[Σk]ρk (Ck,j ),ρ k (Ck,j )(I − [Ak]TS,S )−1    
+
+> ρk(Ck,j ),ρ k(Ck,j )
+
+is invertible, we obtain 
+
+[d(v1) 
+
+> k
+
+]ρk (Ck,j ) = 0.
+
+By Assumption 2 (the first part concerning d(j) 
+
+> k
+
+), this implies that no node in Ck,j is a parent of v1.Hence no node in Ck,j is an ancestor of v1, and therefore 
+
+(I − [Ak]S,S )−1    
+
+> ρk(Ck,j ), ρ k(v1)
+
+= 0 . (23) Now suppose inductively that for some s ≥ 2, we have already shown that for every a < s ,
+
+(I − [Ak]S,S )−1    
+
+> ρk(Ck,j ), ρ k(va)
+
+= 0 .
+
+We consider the node vs. By the support characterization of d(vs) 
+
+> k
+
+, the coordinates of 
+
+[d(vs) 
+
+> k
+
+]ρk (Ck,i )
+
+can only lie on earlier nodes v1, . . . , v s−1 inside the same block. The only new within-block support that may appear relative to previous interventions is therefore on coordinates corresponding to 
+
+v1, . . . , v s−1. By the induction hypothesis, the columns of (I − [Ak]S,S )−1 indexed by these earlier nodes vanish on the row block ρk(Ck,j ). Hence these within-block contributions do not affect the coordinates in ρk(Ck,j ).Therefore, for b ∈ ρk(Ck,j ), the identity (22) again reduces to 
+
+[Σk]ρk (Ck,j ),ρ k (Ck,j )(I − [Ak]TS,S )−1    
+
+> ρk(Ck,j ),ρ k(Ck,j )
+
+[d(vs) 
+
+> k
+
+]ρk (Ck,j ) = 0.
+
+27 Since the matrix multiplying [d(vs) 
+
+> k
+
+]ρk (Ck,j ) is invertible, we conclude 
+
+[d(vs) 
+
+> k
+
+]ρk (Ck,j ) = 0.
+
+Again by Assumption 2, no node in Ck,j is a parent of vs, and any node within Ck,i that serves as an ancestor of vs possesses no ancestors in Ck,j . Hence, no node in Ck,j is an ancestor of vs. Therefore 
+
+(I − Ak)−1    
+
+> ρk(Ck,j ), ρ k(vs)
+
+= 0 .
+
+This completes the induction. We have thus shown that no node in Ck,j is an ancestor of any node in Ck,i , contradicting the assumption that Ck,j ∈ pa blk  
+
+> k
+
+(Ck,i ). Hence the contradiction assumption (22) is false, and (21) must hold. Now fix j⋆ and b as in (21). Since b ∈ ρk(Ck,j ) and the block Ck,j is not selected, every basis vector 
+
+[eρk (tj )]S , j ∈ J, 
+
+vanishes at the coordinate b. Consequently, 
+
+[Σk]S,S (I − [Ak]TS,S )−1[d(j⋆) 
+
+> k
+
+]S + [ u(j⋆) 
+
+> k
+
+]S
+
+cannot belong to the span of {[eρk (tj )]S : j ∈ J}. Equivalently, after multiplying back by the invertible matrix 
+
+(I − [Ak]S,S )T [Σk]−1 
+
+> S,S
+
+,
+
+the vector 
+
+(I − [Ak]S,S )T [Σk]−1 
+
+> S,S
+
+[u(j⋆) 
+
+> k
+
+]S + [ d(j⋆) 
+
+> k
+
+]S
+
+cannot lie in the span of the first r vectors in (20). Therefore the whole family in (20) has rank strictly larger than r, and hence 
+
+dim  Pk(J; Wt) > r. 
+
+This proves Claim 2. 
+
+I.3 Proof of Claim 3. 
+
+Proof. Let ˆC = {i1, . . . , i r } ⊆ Rt−1,
+
+and suppose that ψ( ˆC) is exactly one whole true block, denoted by Ck,i . Assume moreover that 
+
+anc blk  
+
+> k
+
+(Ck,i ) ⊆ ψ(It−1).
+
+We show that 
+
+dim  Pk( ˆC; Wt) = | ˆC| = r. 
+
+Since all true block ancestors of Ck,i have already been recovered at the beginning of iteration t, the residual ancestor set appearing in Lemma A.5 reduces exactly to the block Ck,i itself. More precisely, 
+
+S ≜ ρk
+
+
+
+Anc blk  
+
+> k
+
+(Ck,i ) \ ψ(It−1)
+
+
+
+= ρk(Ck,i ).
+
+Therefore, by Lemma A.5, the space 
+
+Pk( ˆC; Wt)
+
+is contained in the span of the vectors 
+
+[ ¯Hk]TS, :(I − [Ak]S,S )T [Σk]−1 
+
+> S,S
+
+[eρk (tj )]S ,
+
+and 
+
+[ ¯Hk]TS, :
+
+
+
+(I − [Ak]S,S )T [Σk]−1 
+
+> S,S
+
+[u(j) 
+
+> k
+
+]S + [ d(j) 
+
+> k
+
+]S
+
+
+
+, j ∈ ˆC. 
+
+We first consider the first family. Since ˆC contains exactly all interventions corresponding to the block Ck,i , the coordinates ρk(tj ) for j ∈ ˆC exhaust all indices in S = ρk(Ck,i ). Hence the vectors 
+
+[eρk (tj )]S , j ∈ ˆC, 
+
+28 form the standard basis of R|S| = Rr . Because 
+
+(I − [Ak]S,S )T [Σk]−1
+
+> S,S
+
+is invertible, it follows that 
+
+(I − [Ak]S,S )T [Σk]−1 
+
+> S,S
+
+[eρk (tj )]S , j ∈ ˆC, 
+
+are r linearly independent vectors. Since [ ¯Hk]S, : has full row rank on the residual innovation subspace, the corresponding projected vectors 
+
+[ ¯Hk]TS, :(I − [Ak]S,S )T [Σk]−1 
+
+> S,S
+
+[eρk (tj )]S , j ∈ ˆC, 
+
+also span an r-dimensional space. Hence 
+
+dim  Pk( ˆC; Wt) ≥ r. 
+
+On the other hand, every vector appearing in the second family above belongs to the same r-dimensional ambient coordinate space indexed by S = ρk(Ck,i ). Equivalently, before multiplying by 
+
+[ ¯Hk]TS, :, all coefficient vectors lie in RS , whose dimension is exactly |S| = r. Since the first family already forms a basis of this space, each vector 
+
+(I − [Ak]S,S )T [Σk]−1 
+
+> S,S
+
+[u(j) 
+
+> k
+
+]S + [ d(j) 
+
+> k
+
+]S , j ∈ ˆC, 
+
+must be a linear combination of the first r vectors 
+
+(I − [Ak]S,S )T [Σk]−1 
+
+> S,S
+
+[eρk (tj )]S , j ∈ ˆC. 
+
+After left multiplication by [ ¯Hk]TS, :, the same linear dependence relation is preserved. Therefore, the entire projected family still spans a space of dimension at most r. Thus 
+
+dim  Pk( ˆC; Wt) ≤ r. 
+
+Combining the lower and upper bounds yields 
+
+dim  Pk( ˆC; Wt) = r. 
+
+This proves Claim 3. 
+
+I.4 Proof of Claim 4. 
+
+Proof. Let ˆC be the block identified in Step 1 of the current iteration, and let Ct = ψ( ˆC) be the corresponding true block. Let 
+
+U ˆC ≜ row 
+
+
+
+{Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+}j∈ ˆC
+
+
+
+.
+
+Fix a block B ∈ I t−1 such that 
+
+B / ∈ Anc blk  
+
+> k
+
+(Ct).
+
+Recall that Algorithm 1 defines 
+
+Wt = ⟨ˆqk,i : i ∈ I t−1⟩, W−B = ⟨ˆqk,i : i ∈ I t−1\B⟩.
+
+We will show that 
+
+dim  Pk( ˆC; W−B ) = | ˆC|.
+
+By the induction hypothesis (IH2), the recovered block row spaces in ˆQk coincide with the cor-responding true block row spaces of Qk, up to the intrinsic permutation and blockwise invertible transformation ambiguity. Hence, for the purpose of dimension counting, we may identify Wt and 
+
+W−B with the corresponding spans of true block rows of Qk.Now define 
+
+Vanc ≜
+
+D
+
+[Qk]ρk (i),: i ∈ C′, C ′ ∈ Anc blk  
+
+> k
+
+(Ct)
+
+E
+
+.
+
+29 By Lemma 2, the perturbation row space generated by the interventions in ˆC satisfies 
+
+U ˆC ⊆ Vanc .
+
+Consider the orthogonal projection maps 
+
+Tt : U ˆC → W ⊥ 
+
+> t
+
+, x 7 → ΠW ⊥ 
+
+> t
+
+(x),
+
+and 
+
+T−B : U ˆC → W ⊥−B , x 7 → ΠW ⊥−B (x).
+
+By definition, 
+
+Pk( ˆC; Wt) = Im( Tt), Pk( ˆC; W−B ) = Im( T−B ).
+
+Therefore, 
+
+dim  Pk( ˆC; Wt) = dim(Im( Tt)) , dim  Pk( ˆC; W−B ) = dim(Im( T−B )) .
+
+We next identify the kernels of these two maps. Since orthogonal projection onto W ⊥ vanishes exactly on W , we have 
+
+ker( Tt) = U ˆC ∩ Wt, ker( T−B ) = U ˆC ∩ W−B .
+
+Thus, by the rank-nullity theorem, it is enough to prove 
+
+U ˆC ∩ Wt = U ˆC ∩ W−B .
+
+To see this, note first that W−B ⊆ Wt, so it suffices to show that removing the block B does not remove any direction lying in U ˆC . Since B / ∈ Anc blk  
+
+> k
+
+(Ct), the block row space associated with B
+
+does not enter the ancestor-generated subspace Vanc for Ct. Hence 
+
+Wt ∩ Vanc = W−B ∩ Vanc .
+
+Because U ˆC ⊆ Vanc , it follows that 
+
+U ˆC ∩ Wt = U ˆC ∩ (Wt ∩ Vanc ) = U ˆC ∩ (W−B ∩ Vanc ) = U ˆC ∩ W−B .
+
+Therefore, 
+
+ker( Tt) = ker( T−B ).
+
+Applying rank-nullity to Tt and T−B gives 
+
+dim(Im( Tt)) = dim( U ˆC ) − dim(ker Tt) = dim( U ˆC ) − dim(ker T−B ) = dim(Im( T−B )) .
+
+Hence 
+
+dim  Pk( ˆC; Wt) = dim  Pk( ˆC; W−B ).
+
+Finally, by Claim 3, 
+
+dim  Pk( ˆC; Wt) = | ˆC|.
+
+Therefore, 
+
+dim  Pk( ˆC; W−B ) = | ˆC|.
+
+This proves Claim 4. 
+
+## J Proof of Corollary 1 
+
+Corollary A.1 (Corollary 1 in the main text) . Assume Assumptions 1 and 2 hold. Let ˆQk be the output of Algorithm 2, and define 
+
+ˆZk = ˆQkXk.
+
+For each true block C ∈ C k, let ˆC = ψ−1(C) denote the corresponding estimated block. Then, for every i ∈ ˆC, the estimated latent variable ˆZk, (i) lies in the span of the true latent variables indexed by the block ancestors of C, namely 
+
+ˆZk, (i) ∈ span {Z(j) : j ∈ C′, C ′ ∈ Anc blk  
+
+> k
+
+(C)}.
+
+Thus, up to the relabeling induced by ψ, each estimated latent variable is identified up to block-level ancestor mixing. 
+
+30 Proof. By Theorem 1, there exist a block-diagonal invertible matrix Sk and a block permutation matrix Pσ,k such that 
+
+ˆQk = SkPσ,k Qk.
+
+Therefore, ˆZk = ˆQkXk = SkPσ,k QkXk.
+
+Next, recall that the block-RQ decomposition of Hk is 
+
+Hk = RkQk.
+
+Since HkXk = Zk, we have 
+
+RkQkXk = Zk.
+
+Because Rk is invertible, it follows that 
+
+QkXk = R−1 
+
+> k
+
+Zk.
+
+Substituting this into the previous display yields 
+
+ˆZk = SkPσ,k R−1 
+
+> k
+
+Zk.
+
+Now fix a block Ck,i . By Lemma A.6, 
+
+[R−1 
+
+> k
+
+]Ck,i ,C k,j = 0 whenever Ck,j /∈ Anc blk  
+
+> k
+
+(Ck,i ).
+
+Hence the block (R−1 
+
+> k
+
+Zk)Ck,i depends only on the blocks Zk,C k,j with 
+
+Ck,j ∈ Anc blk  
+
+> k
+
+(Ck,i ).
+
+Equivalently, (R−1 
+
+> k
+
+Zk)Ck,i is a linear combination of the latent blocks associated with the block ancestors of Ck,i , including Ck,i itself. Finally, left multiplication by the block-diagonal invertible matrix Sk only applies an invertible linear transformation within each recovered block, while Pσ,k only permutes the block order. Therefore, neither operation changes the ancestor-restricted block dependence pattern; they only change the within-block coordinates and the block ordering. It follows that each recovered block ˆZk, (i) is a linear combination of the true latent blocks corresponding to the block ancestors of its matched true block (including itself), exactly as claimed. 
+
+## K Proof of Theorem 2 
+
+Theorem A.2 (Theorem 2 in the main text) . Assume Assumptions 1–3 hold. Let {( ˆCk, ˆ≺blk  
+
+> k
+
+)}Kk=1 be the outputs of Algorithm 2 and the input to Algorithm 3. Let ˆ≺ be the output of Algorithm 3. Then 
+
+(V, ˆ≺) recovers (V, ≺) up to relabeling under the bijection ψ : j 7 → tj .Proof. We prove that, under the bijection ψ : j 7 → tj , the output ˆ≺ of Algorithm 3 coincides exactly with the true global ancestral relation ≺. It suffices to show the two inclusions 
+
+≺⊆ ˆ≺, ˆ≺ ⊆≺ .
+
+We first prove ≺⊆ ˆ≺. Take any two global nodes u, v ∈ V such that 
+
+u ≺ v. 
+
+If u = v, then the claim is trivial. Assume u̸ = v. Since ≺ is the ancestral relation of the global DAG, there exists a directed path from u to v. Equivalently, there exists a sequence of nodes 
+
+u = v0 → v1 → · · · → vm = v
+
+such that each edge vr−1 → vr is a cover edge in the Hasse diagram of ≺, namely there is no node w
+
+satisfying 
+
+vr−1 ≺ w ≺ vr .
+
+31 Fix any such cover edge vr−1 → vr . By Assumption 3, there exists some client k such that both vr−1
+
+and vr appear as singleton blocks in the client-specific block structure, and moreover 
+
+{vr−1} ∈ pa blk  
+
+> k
+
+({vr }).
+
+By Theorem 1, Algorithm 2 recovers the client-level block structure and block-level ancestral relation correctly. Hence its output satisfies 
+
+{vr−1} ∈ ˆpa blk  
+
+> k
+
+({vr }).
+
+Therefore, Algorithm 3 adds 
+
+vr−1 ˜≺vr
+
+to ˜≺ at Lines 2–3. Since this holds for every cover edge along the above path, we obtain 
+
+v0 ˜≺v1, v1 ˜≺v2, . . . , vm−1 ˜≺vm.
+
+Algorithm 3 then defines ˆ≺ as the transitive closure of ˜≺. Hence 
+
+u = v0 ˆ≺v1 ˆ≺ · · · ˆ≺vm = v, 
+
+which implies 
+
+u ˆ≺v. 
+
+Since u ≺ v was arbitrary, we conclude that 
+
+≺⊆ ˆ≺.
+
+Next we prove ˆ≺ ⊆≺ . Take any two nodes u, v ∈ V such that 
+
+u ˆ≺v. 
+
+Since ˆ≺ is the transitive closure of ˜≺, there exists a sequence of nodes 
+
+u = v0, v 1, . . . , v m = v
+
+such that 
+
+vr−1 ˜≺vr , r = 1 , . . . , m. 
+
+It therefore suffices to show that every relation inserted into ˜≺ is a true global ancestral relation. Fix any pair a, b ∈ V such that 
+
+a ˜≺b. 
+
+By the construction of Algorithm 3, there exists some client k such that 
+
+{a}, {b} ∈ ˆCk, {a} ∈ ˆpa blk  
+
+> k
+
+({b}).
+
+Again by Theorem 1, the estimated client-level structure is correct, so in the true client-specific structure we also have 
+
+{a} ∈ pa blk  
+
+> k
+
+({b}).
+
+Since both blocks are singletons, Proposition 2 implies that this block-level parent relation corresponds to a genuine node-level parent-child relation in client k. In particular, 
+
+a ≺k b, 
+
+where ≺k denotes the node-level ancestral relation in the induced graph for client k. On the other hand, the proof of Proposition 1 shows that ≺k is exactly the restriction of the global ancestral relation 
+
+≺ to Ok. Therefore 
+
+a ≺k b =⇒ a ≺ b. 
+
+This proves that ˜≺ ⊆≺ .
+
+Since ≺ is transitive and ˆ≺ is the transitive closure of ˜≺, it follows immediately that 
+
+ˆ≺ ⊆≺ .
+
+Combining the two inclusions yields ˆ≺ =≺ .
+
+Therefore, under the bijection ψ : j 7 → tj , the recovered structure (V, ˆ≺) coincides exactly with the true global ancestral structure (V, ≺), up to relabeling. 32 L Auxiliary Lemmas 
+
+Lemma A.3. Let X = GZ, where G ∈ Rn×p has full column rank. Assume that Cov (Z) is nonsingular, and define 
+
+K ≜ Cov (Z)−1, H ≜ G†.
+
+Then 
+
+Cov (X)† = HT KH .
+
+Proof. Since X = GZ, its covariance matrix is 
+
+Cov (X) = G Cov (Z) GT .
+
+Because G has full column rank, GT has full row rank. Moreover, Cov (Z) is invertible by assump-tion. According to Greville [1966], we can apply the standard pseudoinverse identity for a matrix product to obtain 
+
+Cov (X)† =  G Cov (Z) GT † = ( GT )†Cov (Z)†G†.
+
+Using Cov (Z)† = Cov (Z)−1 = K and (GT )† = ( G†)T = HT , we conclude that 
+
+Cov (X)† = HT KH .
+
+Lemma A.4 (Support of d(j) 
+
+> k
+
+and u(j) 
+
+> k
+
+). Under the setup of Proposition 1, for each client k ∈ [K]
+
+and intervention j ∈ J k targeting tj ∈ Ok, let r = ρk(tj ). Then the vectors d(j) 
+
+> k
+
+and u(j) 
+
+> k
+
+defined in Assumption 2 satisfy 
+
+supp( d(j) 
+
+> k
+
+) ⊆ ρk
+
+ pa k(tj ), supp( u(j) 
+
+> k
+
+) ⊆ ρk
+
+ sp k(tj ).
+
+Equivalently, for any v ∈ Ok,
+
+v / ∈ pa k(tj ) =⇒ [d(j) 
+
+> k
+
+]ρk (v) = 0 , v / ∈ sp k(tj ) =⇒ [u(j) 
+
+> k
+
+]ρk (v) = 0 .
+
+Proof. Fix k ∈ [K] and j ∈ J k. For notational simplicity, write 
+
+O = Ok, M = Mk, t = tj , r = ρk(t),
+
+and let 
+
+B := ( I − [A]M,M )−1.
+
+Since intervention j acts only on the structural equation of node t in the global latent SEM, after partitioning according to (O, M ), the only changed blocks of the structural matrix are the r-th row blocks in [ · ]O,O and [ · ]O,M . More precisely, 
+
+[ eA(j)]O,O = [ A]O,O + er [∆ a(j)]⊤ 
+
+> O
+
+, [ eA(j)]O,M = [ A]O,M + er [∆ a(j)]⊤ 
+
+> M
+
+,
+
+whereas 
+
+[ eA(j)]M,O = [ A]M,O , [ eA(j)]M,M = [ A]M,M .
+
+By the expression of the induced client-specific SEM in Proposition 1, 
+
+Ak = [ A]O,O + [ A]O,M (I − [A]M,M )−1[A]M,O ,
+
+and similarly, 
+
+A(j) 
+
+> k
+
+= [ eA(j)]O,O + [ eA(j)]O,M (I − [ eA(j)]M,M )−1[ eA(j)]M,O .
+
+Substituting the above block relations yields 
+
+A(j) 
+
+> k
+
+= Ak + er
+
+
+
+[∆ a(j)]⊤ 
+
+> O
+
++ [∆ a(j)]⊤ 
+
+> M
+
+B[A]M,O 
+
+
+
+.
+
+Hence 
+
+A(j) 
+
+> k
+
+= Ak + er (d(j) 
+
+> k
+
+)⊤, (d(j) 
+
+> k
+
+)⊤ = [∆ a(j)]⊤ 
+
+> O
+
++ [∆ a(j)]⊤ 
+
+> M
+
+B[A]M,O .
+
+33 Therefore, d(j) 
+
+> k
+
+parameterizes the perturbation of the r-th row of Ak, namely the perturbation of the incoming directed coefficients of node t in the induced client graph. By definition of the induced graph Gk, for any v ∈ Ok,
+
+v ∈ pa k(t) ⇐⇒ [Ak]r,ρ k (v)̸ = 0 .
+
+It follows that an admissible nonzero entry of d(j) 
+
+> k
+
+can only appear at coordinates indexed by 
+
+ρk(pa k(t)) , i.e., 
+
+supp( d(j) 
+
+> k
+
+) ⊆ ρk
+
+ pa k(t).
+
+Next consider u(j) 
+
+> k
+
+. By Proposition 1, the induced noise covariance satisfies 
+
+Σk = I + [ A]O,M (I − [A]M,M )−1(I − [A]M,M )−T [A]⊤ 
+
+> O,M
+
+.
+
+Under intervention j, only the r-th row of [A]O,M is perturbed, while the M × M block remains unchanged. Therefore the perturbation of Σk has the form 
+
+Σ(j) 
+
+> k
+
+= Σk + er (u(j) 
+
+> k
+
+)⊤ + u(j) 
+
+> k
+
+e⊤ 
+
+> r
+
++ η(j) 
+
+> k
+
+er e⊤ 
+
+> r
+
+,
+
+for some scalar η(j) 
+
+> k
+
+, where 
+
+u(j) 
+
+> k
+
+= [ A]O,M (I − [A]M,M )−1(I − [A]M,M )−T [∆ a(j)]M .
+
+Thus u(j) 
+
+> k
+
+parameterizes the off-diagonal perturbation in the r-th row and column of Σk, namely the perturbation of the bidirected part incident to node t in the induced mixed graph. By definition of Gk,for any v ∈ Ok,
+
+v ∈ sp k(t) ⇐⇒ [Σk]r,ρ k (v)̸ = 0 ⇐⇒ [Σk]ρk (v),r ̸ = 0 .
+
+Hence a nonzero entry of u(j) 
+
+> k
+
+can only appear at coordinates indexed by ρk(sp k(t)) , and therefore 
+
+supp( u(j) 
+
+> k
+
+) ⊆ ρk
+
+ sp k(t).
+
+Combining the two parts proves the claim. 
+
+Lemma A.5. Fix a client k ∈ [K]. Let I ⊆ C k be a collection of blocks that is closed under block ancestors, namely 
+
+C ∈ I , C ′ ∈ Anc blk  
+
+> k
+
+(C) =⇒ C′ ∈ I .
+
+Define 
+
+W ≜
+
+D
+
+[Qk]ρk (i),: i ∈ [
+
+> C∈I
+
+C
+
+E
+
+.
+
+Let j1, . . . , j ℓ be intervention indices such that 
+
+Ck(jr ) /∈ I , r = 1 , . . . , ℓ, 
+
+where Ck(jr ) denotes the block in Ck containing the target tjr . Define 
+
+SI ≜
+
+ ℓ[
+
+> r=1
+
+Anc blk 
+
+> k
+
+ Ck(jr )
+
+\ I , S ≜ ρk
+
+ [
+
+> C∈S I
+
+C
+
+
+
+.
+
+For each s ∈ S, let [ ¯Hk]s, : be the projection of [Hk]s, : onto W ⊥, and let [ ¯Hk]S, : be the matrix formed by stacking these projected rows. Then 
+
+ΠW ⊥
+
+
+
+row 
+
+
+
+{Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+}j∈{ j1,...,j ℓ}
+
+ 
+
+is contained in 
+
+D
+
+[ ¯Hk]TS, :(I−[Ak]S,S )T [Σk]−1 
+
+> S,S
+
+[eρk (tj )]S , [ ¯Hk]TS, :
+
+
+
+(I−[Ak]S,S )T [Σk]−1 
+
+> S,S
+
+[u(j) 
+
+> k
+
+]S +[ d(j) 
+
+> k
+
+]S
+
+
+
+j ∈ { j1, . . . , j ℓ}
+
+E
+
+.
+
+34 Proof. For each intervention index j, define 
+
+α(j) 
+
+> k
+
+≜ (I − Ak)T Σ−1 
+
+> k
+
+eρk (tj ), β(j) 
+
+> k
+
+≜ (I − Ak)T Σ−1 
+
+> k
+
+u(j) 
+
+> k
+
++ d(j) 
+
+> k
+
+.
+
+By Lemma 1, 
+
+row( Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+) ⊆ ⟨ HTk α(j) 
+
+> k
+
+, HTk β(j) 
+
+> k
+
+⟩.
+
+Hence 
+
+row 
+
+
+
+{Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+}j∈{ j1,...,j ℓ}
+
+
+
+⊆
+
+D
+
+HTk α(j) 
+
+> k
+
+, HTk β(j) 
+
+> k
+
+j ∈ { j1, . . . , j ℓ}
+
+E
+
+.
+
+Since orthogonal projection is linear, it suffices to analyze 
+
+ΠW ⊥ (HTk α(j) 
+
+> k
+
+) and ΠW ⊥ (HTk β(j) 
+
+> k
+
+)
+
+for each j ∈ { j1, . . . , j ℓ}.Now fix such a j, and write 
+
+Tj ≜ ρk
+
+ [  
+
+> C∈Anc blk
+> k(Ck(j))
+
+C
+
+
+
+.
+
+By the support characterization of u(j) 
+
+> k
+
+and d(j) 
+
+> k
+
+in Lemma A.4, together with the block upper-triangular structure of Ak and the block-diagonal structure of Σk, we have 
+
+supp( eρk (tj )) ⊆ Tj , supp( u(j) 
+
+> k
+
+) ⊆ Tj , supp( d(j) 
+
+> k
+
+) ⊆ Tj ,
+
+and therefore 
+
+supp( α(j) 
+
+> k
+
+) ⊆ Tj , supp( β(j) 
+
+> k
+
+) ⊆ Tj .
+
+Consequently, 
+
+HTk α(j) 
+
+> k
+
+= [ Hk]TTj ,:[α(j) 
+
+> k
+
+]Tj , HTk β(j) 
+
+> k
+
+= [ Hk]TTj ,:[β(j) 
+
+> k
+
+]Tj .
+
+Thus, rows of Hk indexed outside Tj do not contribute at all, regardless of whether we project onto 
+
+W ⊥.Next, because I is closed under block ancestors and 
+
+W =
+
+D
+
+[Qk]ρk (i),: i ∈ [
+
+> C∈I
+
+C
+
+E
+
+,
+
+the block-RQ construction implies that every row of Hk indexed by 
+
+ρk
+
+ [ 
+
+> C∈I
+
+C
+
+
+
+already lies in W . Hence these rows vanish after projection onto W ⊥. On the other hand, for rows indexed by Tj \ ρk(∪C∈I C), the projection may change the row vectors, but only through their projections onto W ⊥. Therefore, 
+
+ΠW ⊥ (HTk α(j) 
+
+> k
+
+) = [ ¯Hk]TS, :[α(j) 
+
+> k
+
+]S , ΠW ⊥ (HTk β(j) 
+
+> k
+
+) = [ ¯Hk]TS, :[β(j) 
+
+> k
+
+]S .
+
+In words, the orthogonal projection acts only on the Hk-side of the generators from Lemma 1, while the coefficient vectors remain unchanged. Moreover, rows indexed by blocks in I vanish after projection because they already lie in the previously extracted subspace W , whereas rows outside the relevant block ancestors never contribute in the first place by the support characterization above. It remains to identify the restricted coefficient vectors on S. We claim that 
+
+[α(j) 
+
+> k
+
+]S = ( I − [Ak]S,S )T [Σk]−1 
+
+> S,S
+
+[eρk (tj )]S ,
+
+and 
+
+[β(j) 
+
+> k
+
+]S = ( I − [Ak]S,S )T [Σk]−1 
+
+> S,S
+
+[u(j) 
+
+> k
+
+]S + [ d(j) 
+
+> k
+
+]S .
+
+Indeed, by construction of S, the vectors eρk (tj ), u(j) 
+
+> k
+
+, and d(j) 
+
+> k
+
+have no support outside the union of blocks in Anc blk  
+
+> k
+
+(Ck(j)) , and their coordinates on blocks in I do not contribute after projection onto 35 W ⊥. Moreover, Σk is block diagonal, so applying Σ−1 
+
+> k
+
+does not mix coordinates across distinct blocks. In addition, Ak is block upper triangular with respect to the block topological order, so for rows indexed by S, the matrix (I − Ak)T only collects contributions from the same block or its block ancestors. Since S already contains precisely those relevant ancestor blocks outside I, no coordinates from Sc contribute to the restriction on S. Therefore, when evaluating the S-coordinates of α(j) 
+
+> k
+
+and 
+
+β(j) 
+
+> k
+
+, one may replace (I − Ak)T Σ−1 
+
+> k
+
+by its restriction to S, which yields the two identities above. Substituting these identities into the previous display yields 
+
+ΠW ⊥
+
+
+
+row 
+
+
+
+{Θ(j) 
+
+> k
+
+− Θ(0)  
+
+> k
+
+}j∈{ j1,...,j ℓ}
+
+ 
+
+contained in 
+
+D
+
+[ ¯Hk]TS, :(I−[Ak]S,S )T [Σk]−1 
+
+> S,S
+
+[eρk (tj )]S , [ ¯Hk]TS, :
+
+
+
+(I−[Ak]S,S )T [Σk]−1 
+
+> S,S
+
+[u(j) 
+
+> k
+
+]S +[ d(j) 
+
+> k
+
+]S
+
+
+
+j ∈ { j1, . . . , j ℓ}
+
+E
+
+.
+
+This proves the claim. 
+
+Lemma A.6. Let Rk be the matrix in the block-RQ decomposition of Hk, where the blocks are ordered according to a block topological order. Suppose that 
+
+[Rk]Ck,i ,C k,j = 0 whenever Ck,j /∈ Anc blk  
+
+> k
+
+(Ck,i ).
+
+Then the inverse matrix R−1 
+
+> k
+
+satisfies the same block support property: 
+
+[R−1 
+
+> k
+
+]Ck,i ,C k,j = 0 whenever Ck,j /∈ Anc blk  
+
+> k
+
+(Ck,i ).
+
+Proof. Write 
+
+Rk = Dk + Nk,
+
+where Dk is the block-diagonal part of Rk, and Nk := Rk − Dk is the off-diagonal part. By assumption, [Nk]Ck,i ,C k,j can be nonzero only if Ck,j ∈ anc blk  
+
+> k
+
+(Ck,i ).Since Rk is invertible, each diagonal block of Rk is invertible, and hence so is Dk. Therefore, 
+
+Rk = Dk(I + D−1 
+
+> k
+
+Nk).
+
+Let 
+
+Mk := D−1 
+
+> k
+
+Nk.
+
+Then Mk has zero diagonal blocks and satisfies 
+
+[Mk]Ck,i ,C k,j = 0 whenever Ck,j /∈ anc blk  
+
+> k
+
+(Ck,i )}.
+
+Since the blocks are arranged in a block topological order, Mk is strictly block triangular, and hence nilpotent. In particular, if mk is the number of blocks, then 
+
+Mmk 
+
+> k
+
+= 0 .
+
+It follows that 
+
+(I + Mk)−1 = I − Mk + M2 
+
+> k
+
+− · · · + ( −1) mk −1Mmk −1 
+
+> k
+
+,
+
+and thus 
+
+R−1 
+
+> k
+
+= ( I + Mk)−1D−1 
+
+> k
+
+.
+
+It remains to verify that every term in the above expression has the same block support pattern. First, D−1 
+
+> k
+
+is block diagonal, so its (i, j ) block can be nonzero only when i = j, equivalently when 
+
+Ck,j ∈ Anc blk  
+
+> k
+
+(Ck,i ). Next, Mk satisfies the same ancestor-restricted support property as above. By transitivity of the block ancestor relation, the product of two matrices with this support property again has the same support property. Hence each power Msk also satisfies 
+
+[Msk]Ck,i ,C k,j = 0 whenever Ck,j /∈ Anc blk  
+
+> k
+
+(Ck,i ).
+
+Therefore the finite sum (I + Mk)−1 satisfies the same property, and so does its product with D−1 
+
+> k
+
+.Consequently, 
+
+[R−1 
+
+> k
+
+]Ck,i ,C k,j = 0 whenever Ck,j /∈ Anc blk  
+
+> k
+
+(Ck,i ),
+
+as claimed. 36 Algorithm 5 ID-Block-Ancestor-FS 
+
+Input: ˆC ⊆ J k, { ˆΘ(j) 
+
+> k
+
+}j∈{ 0}∪ ˆC , I, {ˆqk,i }i∈I 
+
+Output: {ˆqk,i }i∈ ˆC , A 
+
+> 1:
+
+Initialize A ← I  
+
+> 2:
+
+Form 
+
+˜Mk( ˆC) ←
+
+
+
+ˆΘ(j1) 
+
+> k
+
+− ˆΘ(0) 
+
+> k
+
+ˆΘ(j2) 
+
+> k
+
+− ˆΘ(0) 
+
+> k
+
+...
+
+ˆΘ(j| ˆC|) 
+
+> k
+
+− ˆΘ(0) 
+
+> k
+
+ , ˆC = {j1, . . . , j | ˆC|} 
+
+> 3:
+
+for each block B ∈ I do  
+
+> 4:
+
+Form W−B by stacking the row vectors {ˆqk,i }i∈I\ B . 
+
+> 5:
+
+Compute 
+
+M−B ( ˆC) ← ˜Mk( ˆC)( I − WT 
+
+> −B
+
+(W−B WT 
+
+> −B
+
+)−1W−B ). 
+
+> 6:
+
+Compute 
+
+ρ(M−B ( ˆC)) = 
+
+P| ˆC| 
+
+> i=1
+
+σi(M−B ( ˆC)) 
+
+P 
+
+> i
+
+σi(M−B ( ˆC)) ,
+
+where σi(·) denotes the i-th largest singular value.  
+
+> 7:
+
+if ρ(M−B ( ˆC)) > 1 − τ then  
+
+> 8:
+
+Remove B from A 
+
+> 9:
+
+end if  
+
+> 10:
+
+end for  
+
+> 11:
+
+Form Wanc by stacking the row vectors {ˆqk,i }i∈A . 
+
+> 12:
+
+Compute 
+
+M ← ˜Mk( ˆC)( I − WT
+
+> anc
+
+(Wanc WT
+
+> anc
+
+)−1Wanc ). 
+
+> 13:
+
+Set {ˆqk,i }i∈ ˆC to be the right singular vectors of M corresponding to its top | ˆC| singular values.  
+
+> 14:
+
+return {ˆqk,i }i∈ ˆC , A
+
+## M Additional finite-sample details 
+
+This appendix collects the implementation details omitted from Section 5, including the finite-sample counterparts of the population algorithms, the full simulation setup, the exact evaluation metrics, and the hyperparameter tuning protocol. 
+
+M.1 Finite-sample algorithms 
+
+Algorithm 5 is the finite-sample counterpart of Algorithm 1. It replaces exact row-space dimension equalities by a singular-value ratio criterion controlled by the threshold τ .Algorithm 6 is the finite-sample counterpart of Algorithm 2. It searches for the smallest subset whose projected perturbation matrix is approximately rank-r under the same thresholding rule. 
+
+M.2 Additional simulation details Data generation. We consider three simulation settings with different global causal structures and client-specific missing patterns as follows. Each setting is specified by a global causal coefficient matrix A ∈ Rp×p, a collection of used latent node sets {Ok}Kk=1 with Ok ⊆ [p], and client-specific observation dimensions {nk}Kk=1 .
+
+Setting A. Here p = 5 and 
+
+A =
+
+
+
+0 1 0.7 0 00 0 0 −1 00 0 0 1.3 −0.90 0 0 0 0.60 0 0 0 0
+
+ .
+
+37 Algorithm 6 ID-Block-Causal-Order-FS 
+
+Input: { ˆΘ(j) 
+
+> k
+
+}j∈{ 0}∪J k , pk
+
+Output: ˆCk, ˆ≺blk  
+
+> k
+
+, ˆQk 
+
+> 1:
+
+Initialize I0 ← ∅ , R0 ← J k, bQk ← 0pk ×nk , t ← 1 
+
+> 2:
+
+while Rt−1̸ = ∅ do  
+
+> 3:
+
+flag ← True , r ← 1. 
+
+> 4:
+
+while flag do  
+
+> 5:
+
+Form Wt ∈ R|I t−1|× nk by stacking the row vectors {ˆqk,i }i∈I t−1 . 
+
+> 6:
+
+Define R = {C|C ⊆ Rt−1, |C| = r}. 
+
+> 7:
+
+for each subset ˜C ⊆ R with | bC| = r do  
+
+> 8:
+
+Form 
+
+˜Mk( ˜C) ←
+
+
+
+ˆΘ(j1) 
+
+> k
+
+− ˆΘ(0) 
+
+> k
+
+ˆΘ(j2) 
+
+> k
+
+− ˆΘ(0) 
+
+> k
+
+...
+
+ˆΘ(jr ) 
+
+> k
+
+− ˆΘ(0) 
+
+> k
+
+ , ˜C = {j1, . . . , j r } 
+
+> 9:
+
+Compute 
+
+Mt( ˜C) ← ˜Mk( ˜C)( I − WTt (WtWTt )−1Wt). 
+
+> 10:
+
+Compute 
+
+ρr (Mt( ˜C)) = 
+
+Pri=1 σi(Mt( ˜C)) 
+
+P 
+
+> i
+
+σi(Mt( ˜C)) ,
+
+where σi(·) denotes the i-th largest singular value.  
+
+> 11:
+
+end for  
+
+> 12:
+
+if there exists at least one subset ˜C with ρr (Mt( ˜C)) ≥ 1 − τ then  
+
+> 13:
+
+Among all such subsets of size r, choose ˆC = ˜C which maximizes ρr (Mt( ˆC))  
+
+> 14:
+
+Set flag ← False  
+
+> 15:
+
+else  
+
+> 16:
+
+Set r ← r + 1  
+
+> 17:
+
+end if  
+
+> 18:
+
+end while  
+
+> 19:
+
+({ˆqk,i }i∈ ˆC , A) ← ID-Block-Ancestor-FS ( ˆC, { ˆΘ(j) 
+
+> k
+
+}j∈{ 0}∪ ˆC , It−1, {ˆqk,i }i∈I t−1 ) 
+
+> 20:
+
+Add ˆC ˆ≺blk  
+
+> k
+
+C′ for any ˜C ˆ⪯blk  
+
+> k
+
+C′, ˜C ∈ A . 
+
+> 21:
+
+Update ˆQk ← [ ˜Qk, ˆC ; ˆQk] where ˜Qk, ˆC ∈ R| ˆC|× nk is the matrix formed by stacking the row vectors {ˆqk,i }i∈ ˆC . 
+
+> 22:
+
+Update It ← { ˆC} ∪ I t−1, Rt ← Rt−1 \ ˆC, t ← t + 1 . 
+
+> 23:
+
+end while  
+
+> 24:
+
+Set bCk ← I t−1 
+
+> 25:
+
+return ˆCk, ˆ≺blk  
+
+> k
+
+, ˆQk.We take K = 5 clients, with O1 = {1, 3, 4, 5}, O2 = {1, 2, 4, 5}, O3 = {1, 2, 3, 4}, O4 =
+
+{1, 2, 3}, O5 = {2, 3, 5}, and observation dimensions (n1, n 2, n 3, n 4, n 5) = (8 , 6, 7, 6, 5) .
+
+Setting B. Here p = 8 and 
+
+A =
+
+
+
+0 −0.8 0.1 0 0 0 0 00 0 0.6 1.2 0 0 0 00 0 0 0 0 0 0 10 0 0 0 0 0 −0.9 00 0 0 0 0 1.1 0 00 0 0 0 0 0 0.7 00 0 0 0 0 0 0 00 0 0 0 0 0 0 0
+
+
+
+.
+
+38 We take K = 4 clients, with O1 = {2, 3, 4, 7, 8}, O2 = {1, 2, 3, 5, 6, 7}, O3 =
+
+{1, 2, 4, 5, 6, 8}, O4 = {1, 3, 4, 5, 7, 8}, and observation dimensions (n1, n 2, n 3, n 4) =(9 , 10 , 8, 9) .
+
+Setting C. Here p = 10 and 
+
+A =
+
+
+
+0 0 −0.9 0 0 0 0 0 0 00 0 1 0 0 0.7 0 0 0 00 0 0 1.2 0 0 0 0 0 −0.80 0 0 0 0 0 0 0 0 −10 0 0 0 0 0 0 0 0 1.30 0 0 0 0 0 1.1 0.9 0 00 0 0 0 0 0 0 −0.5 0 00 0 0 0 0 0 0 0 0 00 0 0 0 0 0 0 0 0 00 0 0 0 0 0 0 0 0 0
+
+
+
+.
+
+We take K = 5 clients, with O1 = {1, 2, 3, 4, 5, 6, 7, 9}, O2 = {3, 5, 6, 7, 8, 10 }, O3 =
+
+{1, 2, 4, 7, 8, 9, 10 }, O4 = {1, 3, 4, 5, 6, 7, 10 }, O5 = {1, 2, 3, 6, 8, 9}, and observation dimen-sions (n1, n 2, n 3, n 4, n 5) = (12 , 10 , 9, 11 , 8) .We consider two types of noise distributions, namely Gaussian noise and Laplace noise. For each network setting and each noise setting, the intervention magnitudes on the intervened entries of 
+
+A and Σ are independently drawn from the uniform distribution on [2 , 3] . By construction, the baseline nonzero entries of A have magnitudes strictly smaller than the intervention range, which helps separate the observational structural coefficients from the intervention effects. For each client 
+
+k ∈ [K], we independently generate a column full-rank matrix Gk with entries sampled from the uniform distribution on [−1, 1] .
+
+Sample sizes. We evaluate the method under finite sample sizes n ranging from 10 3 to 10 6, and also include the population case n = ∞, where the estimated precision matrices are replaced by the corresponding population precision matrices. 
+
+M.3 Evaluation metrics 
+
+For all metrics, for ease of exposition, we first align the row ordering of ˆQk with that of Qk according to the permutation induced by Pσ . This alignment is used only for presentation and does not affect the evaluation result. 
+
+Metric E1: global ancestor recovery. We compare the true partial order ≺ and the estimated partial order ˆ≺ on the node set V, and report their F1-score: 
+
+E1 ≜ F1( ≺, ˆ≺).
+
+Metric E2: block-level subspace error. For each client k and each true block C ∈ C k, let 
+
+ˆC = ψ−1(C) be the corresponding estimated block. We compare the row spaces of [Qk]ρk (C),: and 
+
+[ ˆQk]ρk (ψ( ˆC)) ,: through their projection matrices 
+
+Pk,C = [ Qk]ρk (C),:[Qk]Tρk (C),:, ˆPk,C = [ ˆQk]ρk (ψ( ˆC)) ,:[ ˆQk]Tρk (ψ( ˆC)) ,:.
+
+We define 
+
+Ek,C ≜ ∥ ˆPk,C − Pk,C ∥2
+
+> F
+
+√2 , E2 ≜ 1
+
+K
+
+> K
+
+X
+
+> k=1
+
+1
+
+|C k|
+
+X
+
+> C∈C k
+
+Ek,C .
+
+Metric E3: support leakage error. Since ˆZk = ˆQkXk = ˆQkGkZk, Corollary 1 implies that 
+
+[ ˆQkGk]ρk (i),ρ k (j) can be nonzero only if the block containing j is a block-level ancestor of the block containing i. Let 
+
+ˆNk ≜ ˆQkGk, supp ( ˆNk) ≜ {(i, j ) : |[ ˆNk]ρk (i),ρ k (j)| > ϵ },
+
+39 where ϵ = 10 −2. Define the violation set 
+
+Tk ≜ {(i, j ) : Ck(i)̸ ⪯blk  
+
+> k
+
+Ck(j), i, j ∈ Ok}.
+
+Then the leakage error for client k is 
+
+E3,k ≜ |supp ( ˆNk) ∩ T k||T k| , E3 ≜ 1
+
+K
+
+> K
+
+X
+
+> k=1
+
+E3,k .
+
+Interpretation. The three metrics quantify complementary aspects of recovery: E1 measures the accuracy of the global ancestral relation, E2 measures the recovery of client-specific block-associated subspaces, and E3 measures whether the estimated latent variables respect the block-level ancestral support implied by Corollary 1. All three metrics take values in [0 , 1] , where larger E1 indicates better performance, while smaller E2 and E3 indicate more accurate recovery. 
+
+M.4 Hyperparameter tuning 
+
+The hyperparameter τ is chosen according to the sample size n. For each n, we conduct 10 additional independent runs of data generation and estimation, and search over 
+
+τ ∈ { 0.01 , 0.02 , . . . , 0.10 }.
+
+For each candidate value, we compute 
+
+Score = E1 − E2 − E3,
+
+and select the τ that achieves the highest average score over these runs. The resulting value is then used in the final evaluation for that sample size. When such simulation-based calibration is unavailable, we recommend τ = 0 .05 as a robust default. 
+
+M.5 Additional experimental results 
+
+For the six scenarios induced by three graph settings and two noise settings, we plot the three evaluation metrics as functions of the sample size n in Figure 2 and Figures A.1–A.5. Across all scenarios, recovery improves steadily as n increases. In the population case n = ∞, we obtain 
+
+E1 = 1 and E2 = E3 = 0 , which exactly matches the population-level guarantees in Theorems 1 and 2 together with Corollary 1. ∞   
+
+> 0.4 0.6 0.8 1.0 10 310 410 510 6nE1
+> (a) Global ancestral F1.
+
+# ∞       
+
+> 0.00 0.25 0.50 0.75 10 310 410 510 6nE2 (b) Subspace error of {ˆQk}Kk=1 .
+
+# ∞       
+
+> 0.0 0.2 0.4 0.6 0.8 10 310 410 510 6nE3 (c) Support error of {ˆZk}Kk=1 .
+
+Figure A.1: Finite-sample performance under one graph setting A and laplace noise. As n increases, global ancestral recovery improves while subspace and support errors decrease. The rightmost marker at ∞ corresponds to the population-level precision-matrix input. 
+
+M.6 Sensitivity and scalability analysis 
+
+We further evaluate sensitivity to the global latent dimension p, the number of clients K, and the client coverage pattern. For each p, we generate an Erd˝ os–Rényi DAG under a fixed topological order, include each admissible edge independently with probability 3/p , and sample its coefficient from Unif[ −1, 1] . Each node is independently included in Ok with probability q, and the observation dimension is set to nk = ⌈1.5pk⌉, where pk = |Ok|. The remaining parameters follow the simulation 40 ∞   
+
+> 0.00 0.25 0.50 0.75 1.00 10 310 410 510 6nE1
+
+(a) Global ancestral F1. ∞    
+
+> 0.0 0.2 0.4 0.6 10 310 410 510 6nE2
+
+(b) Subspace error of { ˆQk }Kk=1 .∞    
+
+> 0.00 0.25 0.50 0.75 10 310 410 510 6nE3
+
+(c) Support error of { ˆZk }Kk=1 .
+
+Figure A.2: Finite-sample performance under one graph setting B and gaussian noise. As n increases, global ancestral recovery improves while subspace and support errors decrease. The rightmost marker at ∞ corresponds to the population-level precision-matrix input. ∞   
+
+> 0.00 0.25 0.50 0.75 1.00 10 310 410 510 6nE1
+
+(a) Global ancestral F1. ∞    
+
+> 0.0 0.2 0.4 10 310 410 510 6nE2
+
+(b) Subspace error of { ˆQk }Kk=1 .∞    
+
+> 0.00 0.25 0.50 0.75 10 310 410 510 6nE3
+
+(c) Support error of { ˆZk }Kk=1 .
+
+Figure A.3: Finite-sample performance under one graph setting B and laplace noise. As n increases, global ancestral recovery improves while subspace and support errors decrease. The rightmost marker at ∞ corresponds to the population-level precision-matrix input. protocol above. Because pk, cross-client overlap, and the maximum induced block size are jointly determined by the missingness pattern, we use q as the coverage control: E[pk] = qp and E[|Ok ∩
+
+Oℓ|] = q2p, while larger q generally reduces marginalization-induced block ambiguity. We conduct three controlled experiments: (i) p ∈ { 10 , 20 , 30 , 40 } with K = 15 and q = 0 .6; (ii) 
+
+K ∈ { 5, 10 , 15 , 20 } with p = 20 and q = 0 .6; and (iii) q ∈ { 0.5, 0.6, 0.7, 0.8} with p = 20 and 
+
+K = 15 . We report E1, E 2, E 3 for n ∈ { 10 4, 5 × 10 4, 10 5, 5 × 10 5, 10 6, ∞} in Tables 1–3. Runtime is measured from population precision-matrix inputs and therefore excludes data generation and precision estimation. Across all settings, recovery improves with the sample size: E1 increases, while E2 and E3 generally decrease. Because the random client subsets do not enforce Assumption 3, global recovery can remain incomplete even at n = ∞; for example, the population E1 decreases from 1.00 to 0.77 
+
+as p increases from 10 to 40 . Nevertheless, the population client-level errors remain small, with 
+
+E2 ≤ 0.05 and E3 ≤ 0.02 across these values of p, confirming that incomplete coverage primarily affects global assembly rather than client-level recovery. Increasing either the number of clients or their coverage improves global recovery. At n = ∞, E1
+
+increases from 0.34 to 1.00 as K increases from 5 to 20 , and from 0.82 to 1.00 as q increases from 
+
+0.5 to 0.8, consistent with Assumption 3 being satisfied more frequently. Runtime increases from 
+
+0.17 to 4.23 seconds as p grows from 10 to 40 , but only from 0.25 to 0.49 seconds as K grows from 5 to 20 . This agrees with the fact that computation depends more strongly on the client-level dimensions and block search, while its dependence on K is at most linear. Runtime is not necessarily monotone in q: increasing q enlarges pk and nk, but generally reduces the induced block sizes and hence the combinatorial block search. 41 ∞   
+
+> 0.00 0.25 0.50 0.75 1.00 10 310 410 510 6
+
+nE1 (a) Global ancestral F1. ∞   
+
+> 0.0 0.2 0.4 10 310 410 510 6
+
+nE2 (b) Subspace error of { ˆQk }Kk=1 .∞   
+
+> 0.00 0.25 0.50 0.75 10 310 410 510 6
+
+nE3 (c) Support error of { ˆZk }Kk=1 .
+
+Figure A.4: Finite-sample performance under one graph setting C and gaussian noise. As n increases, global ancestral recovery improves while subspace and support errors decrease. The rightmost marker at ∞ corresponds to the population-level precision-matrix input. ∞   
+
+> 0.00 0.25 0.50 0.75 1.00 10 310 410 510 6
+
+nE1 
+
+(a) Global ancestral F1. ∞   
+
+> 0.0 0.2 0.4 10 310 410 510 6
+
+nE2 (b) Subspace error of { ˆQk }Kk=1 .∞   
+
+> 0.00 0.25 0.50 0.75 10 310 410 510 6
+
+nE3 (c) Support error of { ˆZk }Kk=1 .
+
+Figure A.5: Finite-sample performance under one graph setting C and laplace noise. As n increases, global ancestral recovery improves while subspace and support errors decrease. The rightmost marker at ∞ corresponds to the population-level precision-matrix input. Table 1: Sensitivity to the global latent dimension p (K = 15 , q = 0 .6). Runtime is measured at 
+
+n = ∞.
+
+p Metric 10 4 5×10 4 10 5 5×10 5 10 6 ∞
+
+10 E1 0.19 0.45 0.56 0.58 0.81 1.00 
+
+E2 0.32 0.30 0.24 0.14 0.00 0.00 
+
+E3 0.57 0.39 0.25 0.18 0.07 0.00 Runtime (s) – – – – – 0.17 20 E1 0.17 0.49 0.50 0.62 0.85 0.93 
+
+E2 0.45 0.28 0.27 0.18 0.10 0.00 
+
+E3 0.48 0.38 0.27 0.14 0.04 0.01 Runtime (s) – – – – – 0.44 30 E1 0.17 0.38 0.47 0.55 0.71 0.82 
+
+E2 0.49 0.38 0.30 0.11 0.08 0.03 
+
+E3 0.50 0.42 0.31 0.09 0.05 0.01 Runtime (s) – – – – – 2.67 40 E1 0.13 0.41 0.45 0.55 0.69 0.77 
+
+E2 0.38 0.34 0.25 0.20 0.07 0.05 
+
+E3 0.49 0.37 0.24 0.14 0.06 0.02 Runtime (s) – – – – – 4.23 
+
+42 Table 2: Sensitivity to the number of clients K (p = 20 , q = 0 .6). Runtime is measured at n = ∞.
+
+K Metric 10 4 5×10 4 10 5 5×10 5 10 6 ∞
+
+5 E1 0.13 0.18 0.19 0.24 0.32 0.34 
+
+E2 0.42 0.34 0.22 0.18 0.10 0.00 
+
+E3 0.58 0.48 0.34 0.11 0.00 0.00 Runtime (s) – – – – – 0.25 10 E1 0.15 0.44 0.46 0.55 0.76 0.81 
+
+E2 0.36 0.28 0.27 0.14 0.10 0.00 
+
+E3 0.48 0.39 0.28 0.13 0.08 0.00 Runtime (s) – – – – – 0.37 15 E1 0.17 0.49 0.50 0.62 0.85 0.93 
+
+E2 0.45 0.28 0.27 0.18 0.10 0.00 
+
+E3 0.48 0.38 0.27 0.14 0.04 0.01 Runtime (s) – – – – – 0.44 20 E1 0.18 0.52 0.54 0.67 0.92 1.00 
+
+E2 0.50 0.29 0.21 0.14 0.05 0.00 
+
+E3 0.47 0.36 0.25 0.17 0.04 0.00 Runtime (s) – – – – – 0.49 
+
+Table 3: Sensitivity to the client coverage probability q (p = 20 , K = 15 ). Runtime is measured at 
+
+n = ∞.
+
+q Metric 10 4 5×10 4 10 5 5×10 5 10 6 ∞
+
+0.5 E1 0.12 0.46 0.46 0.57 0.75 0.82 
+
+E2 0.55 0.36 0.29 0.15 0.08 0.00 
+
+E3 0.47 0.39 0.18 0.10 0.08 0.00 Runtime (s) – – – – – 0.53 0.6 E1 0.17 0.49 0.50 0.62 0.85 0.93 
+
+E2 0.45 0.28 0.27 0.18 0.10 0.00 
+
+E3 0.48 0.38 0.27 0.14 0.04 0.01 Runtime (s) – – – – – 0.44 0.7 E1 0.18 0.54 0.54 0.73 0.91 1.00 
+
+E2 0.44 0.29 0.22 0.14 0.10 0.00 
+
+E3 0.49 0.36 0.26 0.15 0.00 0.00 Runtime (s) – – – – – 0.82 0.8 E1 0.17 0.52 0.59 0.69 0.94 1.00 
+
+E2 0.41 0.32 0.27 0.18 0.10 0.00 
+
+E3 0.46 0.38 0.27 0.09 0.00 0.00 Runtime (s) – – – – – 0.77 
+
+43

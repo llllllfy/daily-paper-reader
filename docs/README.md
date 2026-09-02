@@ -6,34 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-01
-- 运行时间：2026-09-01 22:11:04 UTC
+- 最新运行日期：2026-09-02
+- 运行时间：2026-09-02 23:09:22 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：1
-- 速读区：3
+- 本次总论文数：3
+- 精读区：2
+- 速读区：1
 
 ### 今日简报（AI）
-今日精读一篇语义引导物理解耦的多模态图像融合，并速读分割脆弱性、视觉语言模型幻觉缓解与视频表示学习共4篇。  
-最值得关注：SGPDFuse用语义引导与物理解耦做通用多模态融合；分割模型存在数据集相关、架构定位明确的光谱脆弱性。  
-建议读者优先跟进多模态融合的“语义-物理解耦”思路，并关注分割脆弱性在不同架构中的定位差异。
-- 详情：[/202609/01/README](/202609/01/README)
+- 今日共生成 3 篇推荐（精读 2 篇，速读 1 篇）
+- 精读：《Conditional Visual Evidence Utility: State-Dependent Rank Reversals in Frozen Vision-Language Encoders》（9.0/10）, 《GramLoop: Training-Free Gram-Gated Replay for Robust Dense Prediction》（8.0/10）
+- 速读：《Jigsaw-CRL: Recovering Global Latent Causal Order from Fragmented Multi-Client Interventions》（6.0/10）
+- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
+- 详情：[/202609/02/README](/202609/02/README)
 
 ### 精读区论文标签
-1. [SGPDFuse: Semantically-Guided Physics-Disentanglement General Multi-Modal Image Fusion](/202609/01/2608.29220v1-sgpdfuse-semantically-guided-physics-disentanglement-general-multi-modal-image-fusion)  
+1. [Conditional Visual Evidence Utility: State-Dependent Rank Reversals in Frozen Vision-Language Encoders](/202609/02/2608.28316v1-conditional-visual-evidence-utility-state-dependent-rank-reversals-in-frozen-vision-language-encoders)  
+   标签：评分：9.0/10、query:cp
+   evidence：度量冻结视觉语言编码器中颜色、形状、纹理证据的条件效用。
+2. [GramLoop: Training-Free Gram-Gated Replay for Robust Dense Prediction](/202609/02/2608.29113v1-gramloop-training-free-gram-gated-replay-for-robust-dense-prediction)  
    标签：评分：8.0/10、query:cp
-   evidence：解耦不变场景属性与瞬态环境因素以保持本质语义
+   evidence：冻结骨干内通过Gram门控重放进行训练无关的隐空间特征干预以增强鲁棒稠密预测
 
 ### 速读区论文标签
-1. [Feature-Spectral Fragility in Segmentation: Dataset Dependence, Architecture-Specific Localization, and Spectral Correlates](/202609/01/2608.29167v1-feature-spectral-fragility-in-segmentation-dataset-dependence-architecture-specific-localization-and-spectral-correlates)  
-   标签：评分：7.0/10、query:cp
-   evidence：对内部表征进行训练后低通干预以探查鲁棒性
-2. [Hallucination Mitigation for Large Vision-Language Models via Implicit Feature Stabilization](/202609/01/2608.29924v1-hallucination-mitigation-for-large-vision-language-models-via-implicit-feature-stabilization)  
+1. [Jigsaw-CRL: Recovering Global Latent Causal Order from Fragmented Multi-Client Interventions](/202609/02/2608.28991v1-jigsaw-crl-recovering-global-latent-causal-order-from-fragmented-multi-client-interventions)  
    标签：评分：6.0/10、query:cp
-   evidence：在语义保持扰动下稳定特征，将不稳定性与幻觉关联
-3. [PRISM: Predictive Recomposition via Semantic Latent Decomposition for View-invariant Video Representation Learning](/202609/01/2608.30388v1-prism-predictive-recomposition-via-semantic-latent-decomposition-for-view-invariant-video-representation-learning)  
-   标签：评分：6.0/10、query:cp
-   evidence：语义潜在分解为不变和变化因素，类比颜色-形状解耦
+   evidence：研究因果表示学习中跨客户端对潜在变量子集的干预问题
 
 
 <div class="dpr-home-promo-card">
