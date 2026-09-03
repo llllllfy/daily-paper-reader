@@ -1,0 +1,39 @@
+{
+  "label": "2026-09-03",
+  "date": "2026-09-03",
+  "generated_at": "2026-09-03T23:07:15",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202609/03/2608.29026v1-disentangling-representation-using-attributes-based-gaussian-estimation-for-medical-sound-diagnosis",
+      "section": "quick",
+      "title_en": "Disentangling Representation using Attributes-based Gaussian Estimation for Medical Sound Diagnosis",
+      "authors": "Ke Zhao",
+      "date": "2026-08-29",
+      "pdf": "https://arxiv.org/pdf/2608.29026v1",
+      "score": "6.0",
+      "evidence": "在 VAE 潜在空间中基于属性的解耦表示学习",
+      "tldr": "医学声音诊断中深度模型缺乏公平性与可解释性，阻碍临床落地。本文提出AGEDR框架，通过属性映射嵌入和互信息最小化实现潜在表征解耦，并利用VAE均值参数训练分类器。实验表明其性能超越传统分类和现有解耦方法，且具备较好的公平性。该工作为医学声音诊断提供了可解释且公平的深度学习方案。",
+      "tags": "query:cp",
+      "abstract_en": "Deep learning has a powerful capability of feature extraction. However, the lack of fairness and interpretability in deep neural networks poses limitations to their adoption in the medical domain. This paper proposes a disentangled representation learning (DisenRL) framework, named the Attributes-based Gaussian Estimation for Disentangled Representation (AGEDR), which incorporates Attribute Mapping Embedding (AME) modules designed to map attributes into vectors and align them with a subset of the latent vectors in a Variational AutoEncoder (VAE). This part of the latent vector will be disentangled from the remaining latent vectors by minimizing mutual information. A classifier is then trained using the mean parameters of the latent vectors from the VAE. Extensive experiments demonstrate that AGEDR outperforms both conventional classification models and existing disentangled representation learning methods. The ablation experiments also indicate the disentangling capability and fairness of AGEDR. The source code is publicly available at https://github.com/ZhaoKe1024/DisentangledRepr.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/03/2609.02772v1-hyperstyler-low-resource-authorship-style-transfer-via-context-aware-style-navigation-and-hypernetworks",
+      "section": "quick",
+      "title_en": "HyperStyler: Low-resource Authorship Style Transfer via Context-aware Style Navigation and Hypernetworks",
+      "authors": "Jongkyung Shin, Minguk Jeon, Chanwoo Park, Chiehyeon Lim",
+      "date": "2026-09-02",
+      "pdf": "https://arxiv.org/pdf/2609.02772v1",
+      "score": "6.0",
+      "evidence": "风格与内容解耦以实现风格迁移中的语义保持",
+      "tldr": "低资源作者风格迁移要求仅用少量参考样例重写文本并保持语义，现有方法因静态作者嵌入与隐状态注入难以兼顾风格保真和内容保留。HyperStyler将该任务解耦为风格选择与实现，通过Stylo-navigator预测风格坐标、Stylo-hypernet动态调制参数。在Reddit、Blog、News数据集上全面超越已有方法和LLM方案，仅增加2.4%参数且推理快1.8倍以上。该方法为轻量高效的风格迁移提供了新架构。",
+      "tags": "query:cp",
+      "abstract_en": "Low-resource authorship style transfer (LAST) aims to rewrite text into the style of an arbitrary target author using only a few reference examples while preserving the original meaning. Existing methods often struggle to achieve both high style fidelity and semantic preservation because they compress diverse references into a single static author embedding, which averages out context-dependent stylistic variation, and rely on hidden representations for style control, which entangle style with content. We propose HyperStyler, a novel architecture that decouples LAST into style selection and style realization. Stylo-navigator predicts style coordinates by jointly modeling the source context and target-author references, and Stylo-hypernet realizes them via dynamic parameter modulation instead of hidden-state injection. Our experiments on Reddit, Blog, and News datasets demonstrate that HyperStyler consistently outperforms prior methods including LLM-based approaches and generalizes robustly across domains. Notably, HyperStyler achieves superior performance with as few as 2.4% additional parameters over T5-large, while being over 1.8x faster than LLMs at inference.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

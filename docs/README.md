@@ -6,32 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-02
-- 运行时间：2026-09-02 23:09:22 UTC
+- 最新运行日期：2026-09-03
+- 运行时间：2026-09-03 23:06:42 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：2
-- 速读区：1
+- 本次总论文数：2
+- 精读区：0
+- 速读区：2
 
 ### 今日简报（AI）
-- 今日共生成 3 篇推荐（精读 2 篇，速读 1 篇）
-- 精读：《Conditional Visual Evidence Utility: State-Dependent Rank Reversals in Frozen Vision-Language Encoders》（9.0/10）, 《GramLoop: Training-Free Gram-Gated Replay for Robust Dense Prediction》（8.0/10）
-- 速读：《Jigsaw-CRL: Recovering Global Latent Causal Order from Fragmented Multi-Client Interventions》（6.0/10）
+- 今日共生成 2 篇推荐（精读 0 篇，速读 2 篇）
+- 速读：《Disentangling Representation using Attributes-based Gaussian Estimation for Medical Sound Diagnosis》（6.0/10）, 《HyperStyler: Low-resource Authorship Style Transfer via Context-aware Style Navigation and Hypernetworks》（6.0/10）
 - 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202609/02/README](/202609/02/README)
+- 详情：[/202609/03/README](/202609/03/README)
 
 ### 精读区论文标签
-1. [Conditional Visual Evidence Utility: State-Dependent Rank Reversals in Frozen Vision-Language Encoders](/202609/02/2608.28316v1-conditional-visual-evidence-utility-state-dependent-rank-reversals-in-frozen-vision-language-encoders)  
-   标签：评分：9.0/10、query:cp
-   evidence：度量冻结视觉语言编码器中颜色、形状、纹理证据的条件效用。
-2. [GramLoop: Training-Free Gram-Gated Replay for Robust Dense Prediction](/202609/02/2608.29113v1-gramloop-training-free-gram-gated-replay-for-robust-dense-prediction)  
-   标签：评分：8.0/10、query:cp
-   evidence：冻结骨干内通过Gram门控重放进行训练无关的隐空间特征干预以增强鲁棒稠密预测
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Jigsaw-CRL: Recovering Global Latent Causal Order from Fragmented Multi-Client Interventions](/202609/02/2608.28991v1-jigsaw-crl-recovering-global-latent-causal-order-from-fragmented-multi-client-interventions)  
+1. [Disentangling Representation using Attributes-based Gaussian Estimation for Medical Sound Diagnosis](/202609/03/2608.29026v1-disentangling-representation-using-attributes-based-gaussian-estimation-for-medical-sound-diagnosis)  
    标签：评分：6.0/10、query:cp
-   evidence：研究因果表示学习中跨客户端对潜在变量子集的干预问题
+   evidence：在 VAE 潜在空间中基于属性的解耦表示学习
+2. [HyperStyler: Low-resource Authorship Style Transfer via Context-aware Style Navigation and Hypernetworks](/202609/03/2609.02772v1-hyperstyler-low-resource-authorship-style-transfer-via-context-aware-style-navigation-and-hypernetworks)  
+   标签：评分：6.0/10、query:cp
+   evidence：风格与内容解耦以实现风格迁移中的语义保持
 
 
 <div class="dpr-home-promo-card">

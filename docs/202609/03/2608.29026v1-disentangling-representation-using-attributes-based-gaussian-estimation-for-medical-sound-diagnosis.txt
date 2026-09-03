@@ -1,0 +1,249 @@
+Title: Disentangling Representation using Attributes-based Gaussian Estimation for Medical Sound Diagnosis
+
+URL Source: https://arxiv.org/pdf/2608.29026v1
+
+Published Time: Tue, 01 Sep 2026 00:26:20 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+# Disentangling Representation using Attributes-based Gaussian Estimation for Medical Sound Diagnosis 
+
+Ke Zhao 
+
+Shenyang Institute of Computing Technology, Chinese Academy of Science , Shenyang 110168, China 
+
+University of Chinese Academy of Science , Beijing 100049, China zhaoke22@mails.ucas.ac.cn 
+
+Abstract —Deep learning has a powerful capability of feature extraction. However, the lack of fairness and interpretability in deep neural networks poses limitations to their adoption in the medical domain. This paper proposes a disentangled representa-tion learning (DisenRL) framework, named the Attributes-based Gaussian Estimation for Disentangled Representation (AGEDR), which incorporates Attribute Mapping Embedding (AME) mod-ules designed to map attributes into vectors and align them with a subset of the latent vectors in a Variational AutoEncoder (VAE). This part of the latent vector will be disentangled from the remaining latent vectors by minimizing mutual information. A classifier is then trained using the mean parameters of the latent vectors from the VAE. Extensive experiments demonstrate that AGEDR outperforms both conventional classification models and existing disentangled representation learning methods. The ablation experiments also indicate the disentangling capability and fairness of AGEDR. The source code is publicly available at https://github.com/ZhaoKe1024/DisentangledRepr 
+
+Index Terms —disentangled representation, mutual informa-tion, medical information, attribute embedding, fairness classifi-cation. 
+
+I. I NTRODUCTION 
+
+The extensive application of machine learning and deep learning in medical signal analysis has significantly con-tributed to the development of medical diagnosis and medical equipment. Nevertheless, machine learning demands high-quality features, while deep learning lacks interpretability for automatically extracted features. Given the wide variations in human constitution, differences in age, gender, lifestyle, medical history, and regional environments may affect model performance, resulting in reduced applicability. This phe-nomenon is commonly referred to as domain shift and poses a major challenge for domain generalization. Current deep learning algorithms often exhibit these problems in practical applications, exhibiting biases towards individuals with differ-ent genders or medical histories, as well as lifestyle habits. Disentangled representation learning (DisenRL) is a tech-nique that uses specific methods to obtain latent vectors with decomposable structures, addressing the issues of the biases in the model and domain shift in the prediction task. Supervised disentangled methods, in particular, enable the alignment of latent vectors with actual semantics, thereby genuinely solving the problem of lack of interpretability. To incorporate additional attribute features other than the data labels into the latent vectors, a common approach is to concatenate the attributes into the latent vectors as InfoGAN [1]. Wu et al. directly trained multiple prediction models to derive the latent vectors corresponding to different attributes [2]. GSL sets an exchangeable structure for the representations and obtains latent vector with equivariance during training [3]. Kota Dohi et al. employed a Normalizing Flow model, incor-porating an additional rotational speed attribute, and combined them through information-theoretic methods to achieve param-eter disentanglement [4]. It is evident that DisenRL inevitably necessitates the introduction of prior knowledge, including attributes or structures, which have been proven essential [5]. The above methods all reflect this idea, which disentangles the attributes by fitting the distribution of attributes so as to improve the generalization on the data of different attributes and solve the problem of domain shift between different attribute values. After introducing additional attributes, it is necessary to align them with a part of the latent vector obtained by audio feature extraction, i.e., to disentangle them from the rest of the latent vector. InfoGAN disentangles the labels and latent vectors by minimizing mutual information (MI) using evidence lower bounds (ELBO), thereby obtaining an equivariant struc-ture [1]. IDB-SR aiming to disentangle sensitive attributes, trains a sensitive attribute prediction task in conjunction with MI disentanglement [6]. Furthermore, to ensure orthogonality, i.e., disentanglement, between different attributes, diagonaliza-tion of the correlation coefficient matrix can also be adopted [7]. From the perspective of data augmentation, constructing sample-label pairs with equivariant transformations to derive equivariant relationships, the disentangled representation mod-els can be obtained [8], [9]. For classification tasks, if the attributes of data samples are given, the information carried by that attribute is inherently present within the data samples. Through deep neural networks and classification task training, latent vectors related to that attribute can be extracted. However, these latent vectors are not subject to any prior distribution, making it impossible to perform probabilistic density estimation as in Variational Au-toEncoder (VAE) [10]. This limitation hinders the calculation of relative entropy (i.e., Kullback-Leibler divergence ( DKL )) and mutual information (MI) [11]. This paper proposes a method that comprises two parts: the Attribute Mapping Em-bedding (AME) modules and a VAE. The AME is responsible arXiv:2608.29026v1 [cs.AI] 29 Aug 2026 for mapping scalar values of different categories into normal parameters, which are then used to obtain the attribute latent vector ˆzα through the reparameterization trick. The VAE, on the other hand, extracts the latent vector z consisting of two parts {zβ , z α} from the original data, which serve as the input of the VAE’s Decoder. We refer to zα as the attribute latent representation, and the non-attribute latent vector zβ can be viewed as the joint distribution encompassing all attributes other than the zα. They are disentangled using MI minimizing. This framework is named Attributes-based Gaussian Estima-tion for Disentangled Representation (AGEDR). The contributions of this paper are as follows: 1) We propose an Attribute Mapping Embedding (AME) module that transforms scalar semantic attributes into Gaussian latent representations, to restore the deep fea-tures of attributes and simplify the calculation of DKL ,which is used to align the latent vector with the part of the latent vector of VAE. 2) Based on the above, we introduce the concepts of at-tribute latent vectors and non-attribute latent vectors and disentangle them using the ELBO of mutual information minimizing. A series of experiments are conducted on the COVID-19 cough dataset COUGHVID to compare the proposed method with previous approaches. 3) Through a series of comparative experiments and two ablation experiments, we not only illustrate the classifi-cation performance of AGEDR, but also provide empir-ical evidence of attribute-related information reduction, so as to mitigate attribute-related domain shifts and reduce unnecessary sensitive information in the dataset. II. P ROPOSED METHOD 
+
+The method proposed in this paper is a model based on the Variational AutoEncoder (VAE) architecture, where the latent vectors follow a normal distribution N (0 , 1) . To embed the semantics of specific attributes within the latent vectors, semantic alignment and disentangled representation are achieved through information-theoretic approaches. 
+
+A. Attributes Mapping Embedding 
+
+Similar to data annotations, attributes are often presented in scalar type. To transform them into deep representations that contain richer information, a mapping function with learnable parameters is employed to convert scalar attribute values into vector types, then, the latent vector is obtained through a multi-layer neural network [12], which is used to adjust the density distribution of the vector to fit the Gaussian distribution. This module is called Attributes Mapping Embedding (AME), as shown in Fig.1. The mapping function is described as Eq.1, and Eq.2 denotes the reparameterization trick: 
+
+( ˆμ(i), ˆσ(i)) = 
+
+ est (M dis · onehot (ai)) , if a ∈ N+
+
+est (M con · ai) , if a ∈ R ,i = 1 , 2, . . . , r, 
+
+(1) 
+
+ˆz(i) = ˆμ(i) + ˆσ(i) ⊙ ϵ(i), i = 1 , 2, . . . , r, ϵ(i) ∼ N (0 , 1) , (2) AME Module         
+
+> 𝑎 (𝑖 )𝜇 (𝑖 )
+> 𝑙𝑜𝑔 (𝜎 2)(𝑖 )
+> 𝑧 (𝑖 )Reparameterization Mapping Estimator
+> Fig. 1. The AME module comprises three components: (1) the scalar-valued attributes are transformed into vectors through a mapping function as Eq.1. (2) an estimator, which is a two-layer neural network to estimate the parameters
+> ˆμ(i)and ˆσ(i)of a normal distribution. (3) The latent vector ˆz(i)is derived through the reparameterization trick.
+
+Where M dis ∈ Rn(i)×c(i)
+
+is a matrix, with c(i) repre-senting the number of categories for the categorical attribute 
+
+a(i), and r being the number of attributes in the dataset. 
+
+n(i) denotes the dimensionality of the resulting vector after transformation, i.e., ˆz(i) ∈ Rn(i)
+
+. The function onehot (·)
+
+converts scalar values into one-hot vectors to select a column from the matrix M dis n(i)×c(i) as a vector. M con is a column matrix that transforms continuous attributes into a vector. The function est (·) represents a neural network used for estimating Gaussian parameters ˆμ(i) and ˆσ(i), and subsequently, the latent vector ˆz(i) is derived through the reparameterization trick [10], as the Eq.2. Assuming the dimensionality of the latent vector z in VAE is N , we partition it into two components: the attribute latent vector zα and the non-attributes latent vector zβ . The zα
+
+encompasses r latent vector z(i), i = 1 , 2, . . . , r with cor-responding dimensions n(1) , n (2) , . . . , n (r) by concatenating them by dimension, as shown in Eq.4. The non-attribute latent vector zβ contains all the information in sample X except the above r attributes, which is a part that lacks explicability, and its dimension is n(0) . This gives us the equation as Eq.3: 
+
+> r
+
+X
+
+> i=0
+
+n(i) = N, (3) 
+
+zα = concat (z(1) , z (2) , . . . , z (r)), (4) In order for VAE to learn the distribution obtained by the AME module, the alignment of the two can be achieved directly by minimizing DKL , so that VAE can directly extract all attribute information contained in zα from the original data without additional attribute annotation. The DKL is proposed as the regular term of the loss function as Eq.5: 
+
+L(i) 
+
+> attri
+
+=
+
+> r
+
+X
+
+> i=1
+
+DKL (z(i), ˆz(i))=
+
+> r
+
+X
+
+> i=1
+
+(log 
+
+ˆσ(i)
+
+σ(i) ) + 
+
+> r
+
+X
+
+> i=1
+
+( (σ(i))2 + ( μ(i) − ˆμ(i))2
+
+2( ˆσ(i))2 ) − r
+
+2 ,
+
+(5) Cough Audio Signal Cough Audio Spectrogram 
+
+Original Data Attributes Mapping Embeddings 
+
+> VAE Encoder
+
+AME Encoder 
+
+> ………………
+
+AME 
+
+Decoder            
+
+> ……………
+> 𝑝 (𝑧 (1) )
+> 𝑝 (𝑧 (2) )
+> 𝑝 (𝑧 (𝑖 ))
+> 𝑝 (𝑧 (𝑖 ))
+> 𝑝 (𝑧 (2) )
+> 𝑝 (𝑧 (1) )
+> 𝑝 (𝑧 |𝑥 )
+> Log-Mel Filter Bank Attributes Labels of Experts (1) cough_type (2) dyspnea (3) wheezing (4) stridor (5) choking (6) congestion (7) severity
+> 𝑝 (𝑧 𝛽 )
+> 𝑝 (𝑧 𝛼 )
+> 𝑝 (𝑥 |𝑧 )
+> 𝑧 =𝑐𝑜𝑛𝑐𝑎𝑡 (𝑧 𝛽 ,𝑧 𝛼 )
+> Encoder Classifier
+> Pretrained VAE and Classfication
+> VAE Decoder and Reconstruction
+
+Fig. 2. Proposed Framework: (1) The employed COUGHVID dataset [13] comprises audio signals and annotations for seven attributes. The output of the encoder is a latent vector z. Meanwhile, the attributes undergo transformation via the AME module into a vector ˆzα. Both latent vectors, zβ and zα,are obtained through the reparameterization trick. Alignment between ˆzα and zα is achieved by minimizing the DKL .(2) The VAE is trained through a reconstruction task.(3) After pre-training, the normal mean parameters output by the encoder are extracted and utilized as the input for the final disease prediction task. 
+
+B. Disentangled Latent Vector 
+
+Although we distinguish between attribute latent vector and non-attribute latent vector through the above definition, which respectively represent the vector segment containing some attributes and the other hybrid vector segments, as shown in formula 6, they are still entangled before trying to disentangle them, because the input samples X encompass information about all attributes of the data, there exists information overlap between the latent vectors obtained from attribute encoding 
+
+zα and the remaining latent vector zβ . This overlap not only reduces the robustness of the model but also diminishes its interpretability. To mitigate this entanglement, mutual in-formation ( M I ) minimization is employed to decrease the information overlap between the two [1], [6], serving as the disentanglement loss function as Eq.7. 
+
+z = Encoder (X) = concat (zβ , z α), (6) 
+
+M I (zα, z β ) = M I (zα, x ) + M I (zβ , x ) − M I (z, x ), (7) The MI is difficult to calculate due to the unknown joint distribution of zα and zβ , and in our method, the length n(i) of the different attribute latent vector z(i) is different (depending on the number of categories of a certain attribute), so we can not directly calculate the KL divergence of the two as a regular term to control the entanglement degree of the two. Because the mutual information between zα and zβ is difficult to compute directly, we optimize a evidence lower bound (ELBO) [6] following, a variational method of neural estimation for MI. Therefore, the loss function Eq.7 is transformed into the following loss function Ldisen as Eq.8. 
+
+M I (zα, z β ) ≤ LDisen 
+
+= Ex∼p(x)Ex′∼p(x)KL (p(zα|x)|| p(zα|x′)) + Ex∼p(x)Ex′∼p(x)KL (p(zβ |x)|| p(zβ |x′)) 
+
+− Ex∼p(x)Ezα,z β ∼p(z|x)logq (x|z),
+
+(8) where the first and second terms are derived based on the definition of mutual information combined with Jensen’s inequality [6], where p(x) represents the input sample set and 
+
+p(zα|x) signifies the process of extracting the latent vectors zα
+
+from samples x using an encoder, sample x′ represents another batch of samples, with similar interpretations for the latent vector zβ . The third term can be obtained through the ELBO of MI [1], q(x|z) is considered as the process of reconstructing 
+
+x from the latent vector z.
+
+C. The Classification Task 
+
+Due to the presence of reparameterization, the latent vectors of VAE carry randomness caused by noise ϵ(i) ∼ N (0 , 1) ,which is beneficial for generation tasks but has a negative impact on prediction tasks [14]. Therefore, for the trained VAE model, the mean parameter μ output by the encoder is directly utilized as the input for the classifier, and the classification loss function is denoted as Lcls , In this paper, we use the focalloss function [15] for the classification task. The framework of the final model is depicted in Figure 2. Finally, we obtain the loss function as Eq.9 consisting of four terms, where w1, w 2, w 3, w 4, v 1, v 2, v 3 represent the weights of different terms. 
+
+Ltotal = w1Lcls + w2Lvae + w3
+
+> r
+
+X
+
+> i=1
+
+L(i) 
+
+> attri
+
+− w4LDisen 
+
+= w1Lcls + w2Lvae + w3
+
+> r
+
+X
+
+> i=1
+
+L(i)
+
+> attri
+
+− w4v1M I (zα|x) − w4v2M I (zβ , x )+ w4v3M I (z, x ),
+
+(9) III. E XPERIMENTS AND RESULTS 
+
+A. Dataset 
+
+The dataset employed in this paper is COUGHVID [13], which comprises 34,434 cough audios and the corresponding user’s own annotation obtained through network crowdsourc-ing. In addition, there are more than 2800 samples with expert annotation. Since the data are not collected by professional means, there are many unreliable samples. Orlandic et al. [13] further annotated the data set and gave the probability that an audio contains cough samples. In this paper, the data is clear according to this field. The steps are as follows: 1) Only the columns that retain all expert annotations are left. 2) Filter out samples without field ”status”. 3) Filter out samples whose ”cough detected” field is less than 0.8. 4) Filter out samples whose ”quality” field is not ”good”. After filtering, 720 samples remained. Preprocess the 720 samples by following these steps. First, the audio sample is divided into multiple cough audio segments according to the mute clips, and the cough audio less than 0.36s is discarded. This procedure yielded 2,850 cough segments. Then, set the standard audio sample length to 32360 and the sampling rate to 22050, i.e., 1.46s. For longer ones, take the middle 1.46s and fill 0 on both sides of the insufficient length. Finally, 2076 samples labeled ”health” and 774 samples labeled ”covid-19” were obtained. Then the audio signal is converted into a log-Mel spectrogram, and the size of the spec-trum is 64 in length and 128 in dimension. In addition, select ”cough type” and ”severity”, and the number of categories is 3 and 4, respectively. 
+
+B. Model Settings 
+
+We employ convolutional networks to implement the VAE, where the latent vector is designed to have 30 dimensions. Among them, 6 dimensions correspond to the ’cough type’ attribute, and 8 dimensions correspond to the ’severity’ at-tribute, leaving 16 dimensions for non-attribute latent vectors. The classifier also adopts a two-layer fully connected neural network by default. The weights w1, w 2, w 3, w 4 are set to 2.0, 0.3, 0.0025, and 0.01, and v1, v 2, v 3 are set to 1.0, 1.25, and 5.0, respectively. The learning rates of the AME module, VAE, and classifier are 0.0003, 0.0001, and 0.0002, respectively. All modules are optimized using the Adam optimizer [16]. Due to the imbalanced class distribution in the classification task, the ratio of health and COVID-19 samples is about 2.68:1. To mitigate this issue, the classification loss function Lcls adopts the focal loss function [15]. After 370 epochs of training, the model parameters tend to converge, and the values of each part of the loss function are shown in Figure 3. 
+
+C. Performance Comparision 
+
+For comparative performance evaluation on the classifica-tion task, this paper selects classification models MobileNetV2 [17], AST [18], and DisenRL-based methods DisenIB [19] and IDB-SR [6] as baselines. The results of precision, recall, and AUC (Area under ROC) are presented in Table.I. It can be observed that AGEDR outperforms the classification models such as MobileNetV2 and AST. The group using latent vectors z = concat (zα, z β )        
+
+> Fig. 3. The decreasing trend of each part of the loss function in the iteration process. (a) Is the loss function value Lvae of VAE, (b) is the value of the loss function Ldisen part, (c) is the value of the loss function Lattri part, (d) is the value of the classification loss Lcls .
+
+achieved an accuracy of 92.52% and the highest recall of 99%. Compared to similar DisenRL-based methods as DisenIB and IBD-SR, higher performance has been achieved. Further, the classification heads of AGEDR were tested using a 2-layer neural network and SVM, similar performance was achieved, SVM even achieved higher classification ability, indicating the effectiveness of various classifier types.                        
+
+> TABLE I CLASSIFICATION ABILITY OF DIFFERENT MODELS ON THE VALIDATION SET .
+> Models Precision Recall AUC
+> MobileNetV2 88.42% 84.68% 86.51% AST 91.32% 82.24% 86.54% DisenIB 90.12% 91.58% 90.84% IDB-SR 94.23% 92.43% 93.32% AGEDR NN( {zβ, z α)}92.52% 99.00% 95.50% AGEDR SVM( {zβ, z α})97.23% 96.65% 97.06%
+
+D. Disentanglement Study 
+
+To evaluate the disentangled ability of the AME module, we conduct an experiment by ignoring the attribute latent vector 
+
+zα and solely utilizing the non-attribute latent vector zβ for classification. The classification performance using the latent vector {zβ , z α} is compared, and the results are shown in Table.II. The precision dropped down to 91.45%. Notably, a decline in prediction performance is observed, with a particularly significant drop in recall, which decreased to 75.87%. This suggests two key insights: (1) The AME module carries information related to different attributes that indicate domain shift, and (2) the Ldisen term successfully disentangles the zα
+
+and zβ components. TABLE II CLASSIFICATION ABILITY OF DIFFERENT LATENT VECTORS ON THE VALIDATION SET .
+
+Models Precision Recall AUC 
+
+AGEDR NN( {zβ , z α)} 92.52% 99.00% 95.50% AGEDR NN( zβ ) 91.45% 75.87% 84.02% 
+
+To validate the fairness of the model, we visualize the latent vectors through t-SNE dimensionality reduction clustering. As shown in Figure.4, it is evident that the disease classification results correspond solely to the classification labels, whereas the attribute annotations are evenly distributed across the entire sample space, exhibiting no discernible clustering trend. Therefore, AGEDR has been proven to have an attribute desensitization effect on the classification result. 
+
+(a) (b) (c) 
+
+Fig. 4. The t-SNE visualization of z = {zβ , z α} under labels and different attributes. Where (a) represents the distribution of z under classification labels, (b) denotes the distribution of z under the attribute ’cough type’, and (c) shows the distribution of z under the attribute ’severity’. 
+
+E. Alignment Effect 
+
+In this paper, we use the AME module to map attributes into the implicit vector space to get ˆ(z(i)), which is converted from scalar to vector through a series of transformations through attribute labels, so it is naturally separable in theory. By using KL divergence to align it with a part of the VAE latent vector, we can make the VAE have the ability to extract the attribute latent vector, and after the adjustment of the loss function, its separability should be better. In order to detect the effect, we use the k-means algorithm to cluster the latent vector 
+
+z(i). Through experiments, our k-means algorithm achieves 99.21% clustering accuracy for both cough type and severity attributes. IV. C ONCLUSION 
+
+This paper proposes a disentangled representation learning method named AGEDR that not only disentangles attributes in the latent vectors but also maintains classification accuracy. Specifically, we introduce the AME module, which maps scalar attributes into vectors and aligns them with the VAE latent vectors through an information-theoretic approach. Fur-thermore, we disentangle the latent vectors of VAE using mutual information. This method holds significant importance in medical audio signal diagnosis, offering interpretability, fairness, and reliability. In the future, we will use the deep Gaussian mixture model to deal with unstructured data and integrate its probability estimation parameters into the hidden vector, so as to mine high-order combination features and achieve stronger disentanglement capability and diagnostic performance on more complex data. REFERENCES [1] X. Chen, Y. Duan, R. Houthooft, J. Schulman, I. Sutskever, and P. Abbeel, “Infogan: interpretable representation learning by information maximizing generative adversarial nets,” in Proceedings of the 30th International Conference on Neural Information Processing Systems ,ser. NIPS’16. Red Hook, NY, USA: Curran Associates Inc., 2016, p. 2180–2188. [2] X. Wu, C. Luu, P. Bell, and A. Rajan, “Explainable attribute-based speaker verification,” arXiv preprint arXiv:2405.19796 , 2024. [3] Y. Ge, S. Abu-El-Haija, G. Xin, and L. Itti, “Zero-shot synthesis with group-supervised learning,” in International Conference on Learning Representations , 2021. [Online]. Available: https://openreview.net/ forum?id=8wqCDnBmnrT [4] K. Dohi, T. Endo, and Y. Kawaguchi, “Disentangling physical param-eters for anomalous sound detection under domain shifts,” 2022 30th European Signal Processing Conference (EUSIPCO) , pp. 279–283, 08 2021. [5] F. Locatello, S. Bauer, M. Lucic, G. Raetsch, S. Gelly, B. Sch¨ olkopf, and O. Bachem, “Challenging common assumptions in the unsupervised learning of disentangled representations,” in International Conference on Machine Learning , 2019, pp. 4114–4124. [6] X. Lu, Y. Rong, Y. Chen, and S. Xiong, “Information bottleneck dis-entanglement based sparse representation for fair classification,” Pattern Recognit. Lett. , vol. 174, pp. 85–91, 2023. [7] F. Lv, J. Liang, S. Li, B. Zang, C. H. Liu, Z. Wang, and D. Liu, “Causality inspired representation learning for domain generalization,” 
+
+2022 IEEE/CVF Conference on Computer Vision and Pattern Recogni-tion (CVPR) , pp. 8036–8046, 2022. [8] G.-J. Qi, L. Zhang, F. Lin, and X. Wang, “Learning generalized transformation equivariant representations via autoencoding transforma-tions,” IEEE Transactions on Pattern Analysis and Machine Intelligence ,vol. 44, no. 4, pp. 2045–2057, 2020. [9] G.-J. Qi, L. Zhang, C. W. Chen, and Q. Tian, “Avt: Unsupervised learning of transformation equivariant representations by autoencoding variational transformations,” in Proceedings of the IEEE/CVF Interna-tional Conference on Computer Vision , 2019, pp. 8130–8139. [10] D. P. Kingma and M. Welling, “Auto-encoding variational bayes,” in 
+
+Proceedings of the International Conference on Learning Representa-tions (ICLR) , 2014. [11] A. Alemi, I. Fischer, J. Dillon, and K. Murphy, “Deep variational information bottleneck,” in ICLR , 2017. [12] T. Karras, S. Laine, and T. Aila, “A style-based generator architecture for generative adversarial networks,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2019, pp. 4401– 4410. [13] L. Orlandic, T. Teijeiro, and D. Atienza, “The COUGHVID crowdsourcing dataset, a corpus for the study of large-scale cough analysis algorithms,” Scientific Data , vol. 8, no. 1, p. 156, Jun. 2021. [Online]. Available: https://doi.org/10.1038/s41597-021-00937-4 [14] I. Higgins, L. Matthey, A. Pal, C. Burgess, X. Glorot, M. Botvinick, S. Mohamed, and A. Lerchner, “beta-VAE: Learning basic visual concepts with a constrained variational framework,” in International Conference on Learning Representations , 2017. [Online]. Available: https://openreview.net/forum?id=Sy2fzU9gl [15] T.-Y. Lin, P. Goyal, R. Girshick, K. He, and P. Doll´ ar, “Focal loss for dense object detection,” in Proceedings of the IEEE international conference on computer vision , 2017, pp. 2980–2988. [16] D. P. Kingma, “Adam: A method for stochastic optimization,” arXiv preprint arXiv:1412.6980 , 2014. [17] M. Sandler, A. Howard, M. Zhu, A. Zhmoginov, and L.-C. Chen, “Mobilenetv2: Inverted residuals and linear bottlenecks,” in Proceedings of the IEEE conference on computer vision and pattern recognition ,2018, pp. 4510–4520. [18] Y. Gong, Y.-A. Chung, and J. Glass, “AST: Audio Spectrogram Trans-former,” in Proc. Interspeech 2021 , 2021, pp. 571–575. [19] Z. Pan, L. Niu, J. Zhang, and L. Zhang, “Disentangled information bottleneck,” in Proceedings of the AAAI Conference on Artificial In-telligence , vol. 35, no. 10, 2021, pp. 9285–9293.
