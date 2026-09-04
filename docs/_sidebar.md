@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-09-04 <!--dpr-date:20260904-->
+    * 速读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202609/04/2609.01146v1-stainpresetnet-stain-preset-network-for-fast-multi-to-multi-stain-normalization" data-sidebar-item="{&quot;title&quot;: &quot;StainPresetNet: Stain Preset Network for Fast Multi-to-Multi Stain Normalization&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2609.01146v1-stainpresetnet-stain-preset-network-for-fast-multi-to-multi-stain-normalization&quot;, &quot;score&quot;: &quot;6.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;染色归一化减少由染色方案引起的颜色变化，从而提升诊断性能。&quot;}">StainPresetNet: Stain Preset Network for Fast Multi-to-Multi Stain Normalization</a>
   * 2026-09-03 <!--dpr-date:20260903-->
     * 速读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202609/03/2608.29026v1-disentangling-representation-using-attributes-based-gaussian-estimation-for-medical-sound-diagnosis" data-sidebar-item="{&quot;title&quot;: &quot;Disentangling Representation using Attributes-based Gaussian Estimation for Medical Sound Diagnosis&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2608.29026v1-disentangling-representation-using-attributes-based-gaussian-estimation-for-medical-sound-diagnosis&quot;, &quot;score&quot;: &quot;6.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;在 VAE 潜在空间中基于属性的解耦表示学习&quot;}">Disentangling Representation using Attributes-based Gaussian Estimation for Medical Sound Diagnosis</a>

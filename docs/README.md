@@ -6,29 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-03
-- 运行时间：2026-09-03 23:06:42 UTC
+- 最新运行日期：2026-09-04
+- 运行时间：2026-09-04 22:16:22 UTC
 - 运行状态：成功
-- 本次总论文数：2
+- 本次总论文数：1
 - 精读区：0
-- 速读区：2
+- 速读区：1
 
 ### 今日简报（AI）
-- 今日共生成 2 篇推荐（精读 0 篇，速读 2 篇）
-- 速读：《Disentangling Representation using Attributes-based Gaussian Estimation for Medical Sound Diagnosis》（6.0/10）, 《HyperStyler: Low-resource Authorship Style Transfer via Context-aware Style Navigation and Hypernetworks》（6.0/10）
-- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202609/03/README](/202609/03/README)
+今日速读了一篇病理图像染色归一化论文，用“染色预设”思路把多对多转换做得更快。  
+最值得看的是 StainPresetNet 一次适配多种染色风格、避免逐对训练，但评分仅 6.0，属于效率优先的轻量方案。  
+建议关注它能否在不同医院、不同扫描仪数据上保持稳定，后续再判断是否值得深入。
+- 详情：[/202609/04/README](/202609/04/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Disentangling Representation using Attributes-based Gaussian Estimation for Medical Sound Diagnosis](/202609/03/2608.29026v1-disentangling-representation-using-attributes-based-gaussian-estimation-for-medical-sound-diagnosis)  
+1. [StainPresetNet: Stain Preset Network for Fast Multi-to-Multi Stain Normalization](/202609/04/2609.01146v1-stainpresetnet-stain-preset-network-for-fast-multi-to-multi-stain-normalization)  
    标签：评分：6.0/10、query:cp
-   evidence：在 VAE 潜在空间中基于属性的解耦表示学习
-2. [HyperStyler: Low-resource Authorship Style Transfer via Context-aware Style Navigation and Hypernetworks](/202609/03/2609.02772v1-hyperstyler-low-resource-authorship-style-transfer-via-context-aware-style-navigation-and-hypernetworks)  
-   标签：评分：6.0/10、query:cp
-   evidence：风格与内容解耦以实现风格迁移中的语义保持
+   evidence：染色归一化减少由染色方案引起的颜色变化，从而提升诊断性能。
 
 
 <div class="dpr-home-promo-card">

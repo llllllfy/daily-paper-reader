@@ -1,0 +1,24 @@
+{
+  "label": "2026-09-04",
+  "date": "2026-09-04",
+  "generated_at": "2026-09-04T22:16:46",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202609/04/2609.01146v1-stainpresetnet-stain-preset-network-for-fast-multi-to-multi-stain-normalization",
+      "section": "quick",
+      "title_en": "StainPresetNet: Stain Preset Network for Fast Multi-to-Multi Stain Normalization",
+      "authors": "Hongtao Kang, Die Luo, Li Chen, Jing Cai, Junbo Hu, Xiuli Liu, Shenghua Cheng",
+      "date": "2026-09-01",
+      "pdf": "https://arxiv.org/pdf/2609.01146v1",
+      "score": "6.0",
+      "evidence": "染色归一化减少由染色方案引起的颜色变化，从而提升诊断性能。",
+      "tldr": "染色归一化减少染色协议和成像条件差异，但传统方法色彩映射不准，深度学习方法计算量大且方向固定。StainPresetNet 提出预设参考图像引导的逐像素归一化，在保持结构的同时实现数据集级色彩映射，并支持多方向无需重训。在细胞病理与组织病理数据集上取得更高色彩映射精度，分类器泛化能力提升，计算开销减少90%。该预设机制克服了深度学习方法的单向刚性，实现灵活方向调整。",
+      "tags": "query:cp",
+      "abstract_en": "Stain normalization reduces color variations caused by variations in staining protocols and imaging conditions, thereby enhancing computer-aided diagnostic system performance. Traditional methods derive mapping relationships from individual or limited reference images through pixel-wise transformation, offering style flexibility but suffering from inaccurate color mapping extraction. While existing deep-learning-based approaches achieve accurate dataset-wide color mapping through complex neural networks, they face challenges including computational inefficiency, artifact generation, and fixed normalization directions requiring model retraining for directional changes. To address these limitations, we propose StainPresetNet - a novel framework that combines structural preservation with dataset-level color mapping while maintaining computational efficiency. Our method implements pixel-wise normalization guided by preset reference images, enabling multi-directional adaptability without retraining. Evaluations on cytopathology and histopathology datasets demonstrate that StainPresetNet achieves superior color mapping accuracy compared to conventional methods, effectively improves classifier generalization in diagnostic tasks, and reduces computational overhead by 90\\% versus existing deep learning approaches. The proposed preset-guided mechanism facilitates flexible adjustment of normalization directions through simple reference image replacement, overcoming the directional rigidity of current deep-learning-based solutions.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
