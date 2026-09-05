@@ -1,0 +1,54 @@
+{
+  "label": "2026-09-05",
+  "date": "2026-09-05",
+  "generated_at": "2026-09-05T22:12:47",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202609/05/2609.02247v1-sauf-net-structure--appearance-representation-learning-with-uncertainty-feedback-for-semi-supervised-medical-image-segmentation",
+      "section": "deep",
+      "title_en": "SAUF-Net: Structure--Appearance Representation Learning with Uncertainty Feedback for Semi-Supervised Medical Image Segmentation",
+      "authors": "Qin Lu, Zheyang Jing, Yujie Yang, Jianwang Li, Chen Yi, Shaofeng Jiang",
+      "date": "2026-09-02",
+      "pdf": "https://arxiv.org/pdf/2609.02247v1",
+      "score": "8.0",
+      "evidence": "分解结构-外观特征以分离稳定结构线索与不稳定外观变化，直接支持颜色与形状解耦",
+      "tldr": "半监督医学图像分割中，现有方法多依赖预测级一致性，忽视内部特征可靠性，且结构线索易与外观变化纠缠，导致伪标签不可靠。SAUF-Net提出结构-外观分解模块和解耦引导模块，将特征分离为结构与外观表示，并通过外观交换一致性和不确定性反馈提升分割稳定性。在ISIC-2016和Kvasir-SEG上，SAUF-Net优于现有半监督方法，尤其在低标签场景下优势明显。该工作为医学图像分割的可靠表示学习提供了新途径。",
+      "tags": "query:cp",
+      "abstract_en": "Semi-supervised learning has shown great potential for reducing annotation costs in medical image segmentation. However, most existing methods mainly exploit unlabeled data through prediction-level consistency, while the reliability of internal feature representations is often overlooked. In medical images, target-related structural cues are easily entangled with unstable appearance variations, which may lead to unreliable pseudo labels and error accumulation during training. To address these issues, we propose SAUF-Net, a Structure--Appearance Representation Learning with Uncertainty Feedback Network for semi-supervised medical image segmentation. SAUF-Net uses the Structure--Appearance Decomposition Module (SADM) to separate bottleneck features into structural and appearance representations. The Disentangled Guidance Module (DGM) injects these representations into the decoding process to enhance structure-aware segmentation. Meanwhile, the Auxiliary Decoder produces branch-specific predictions for reliability estimation and a fused prediction for appearance-swapped consistency. Furthermore, we introduce an Appearance-Swapped Consistency branch to encourage structural representations to remain stable under appearance variations. We also introduce a reliability-map-guided dual-head discriminator with a Validity Head and an Uncertainty Head to provide feature-level uncertainty feedback. Extensive experiments on ISIC-2016 and Kvasir-SEG demonstrate that SAUF-Net outperforms state-of-the-art semi-supervised methods, especially under low-label settings.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/05/2608.29923v1-towards-continual-test-time-adaptation-of-vision-language-models-in-open-vocabulary-semantic-segmentation",
+      "section": "quick",
+      "title_en": "Towards Continual Test-Time Adaptation of Vision-Language Models in Open-Vocabulary Semantic Segmentation",
+      "authors": "Chandler Timm C. Doloriel, Yunbei Zhang, Sarthak Kumar Maharana, Muhammad Salman Siddiqui, Tor Kristian Stevik, Fadi Al Machot, Kristian Hovde Liland, Habib Ullah",
+      "date": "2026-08-30",
+      "pdf": "https://arxiv.org/pdf/2608.29923v1",
+      "score": "7.0",
+      "evidence": "提出在测试时适应中通过边际多样性损失和跨模态锚点一致性损失稳定潜在空间",
+      "tldr": "开放词汇语义分割依赖视觉语言对齐，在持续测试分布偏移下易崩溃。本文提出DAF框架，利用边际多样性损失抵抗类别崩溃、跨模态锚点一致性损失约束特征漂移，并通过特征显著性过滤减少低效计算。在五个数据集及损坏变体上，DAF较源模型提升mIoU超8点（VOC20-C）、9点（LoveDA）和3点（Foggy Cityscapes），显著增强了持续测试时适应的稳定性与鲁棒性。",
+      "tags": "query:cp",
+      "abstract_en": "Open-vocabulary semantic segmentation (OVSS) relies on vision-language alignment to recognize arbitrary text-defined categories, yet this alignment is fragile under continual test-time distribution shift. Our diagnostic analysis reveals that entropy minimization drives patch-level class collapse, continual updates erode vision-language alignment, and redundant gradients from low-shift samples waste computation. We propose Diversify, Anchor, and Filter (DAF), a stabilization framework that augments entropy-based adaptation with a marginal diversity loss that resists collapse, a cross-modal anchor consistency loss that constrains feature drift relative to a frozen source model, and feature salience filtering that skips low-value backward passes to offset part of the source-anchor overhead. We evaluate on five datasets spanning natural scenes, autonomous driving, underwater imagery, and remote sensing with their corrupted variants. Across the evaluated continual shifts, DAF remains stable where entropy minimization collapses, improving mIoU by over 8 points on Pascal VOC20-C, over 9 points on LoveDA, and over 3 points on Foggy Cityscapes compared to the source model, and is robust to aggressive adaptation and learning rate choices.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/05/2609.01806v1-consistency-as-regularization-for-unsupervised-shadow-removal",
+      "section": "quick",
+      "title_en": "Consistency as Regularization for Unsupervised Shadow Removal",
+      "authors": "Anh-Kiet Duong, Petra Gomez-Krämer, Jean-Michel Carozza",
+      "date": "2026-09-01",
+      "pdf": "https://arxiv.org/pdf/2609.01806v1",
+      "score": "6.0",
+      "evidence": "跨阴影观测一致性以保持场景内容并去除阴影变化",
+      "tldr": "阴影去除是许多视觉任务的重要预处理步骤，但监督方法需要成对数据，无监督方法常依赖阴影掩膜或无阴影参考。本文提出ShadowCLR，一种无监督框架，直接从未配对的阴影图像中学习阴影去除，利用阴影随观察变化而场景内容一致这一特性，将跨观察一致性作为正则化。该方法无需阴影掩膜或参考图像，在多个基准上取得与现有无监督方法竞争且更优的性能，证明了一致性正则化的有效性。",
+      "tags": "query:cp",
+      "abstract_en": "Shadow removal is an important preprocessing step for many vision tasks, yet existing supervised methods require paired shadow and shadow-free images, while unsupervised approaches often still rely on shadow masks or shadow-free references. We propose ShadowCLR, an unsupervised framework that learns shadow removal directly from shadow images. Our key observation is that shadows vary across observations while the underlying scene content remains largely consistent. We therefore use consistency across shadow observations as regularization, encouraging the model to recover scene-consistent appearance while suppressing shadow-specific variations. Global and local consistency further enable us to explore visually related images, learn from imperfectly aligned observations, and focus the representation on shared scene information. Experiments on multiple benchmarks show that ShadowCLR achieves competitive and often superior performance over state-of-the-art unsupervised methods, demonstrating that consistency can provide regularization for shadow removal without shadow masks or shadow-free images.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

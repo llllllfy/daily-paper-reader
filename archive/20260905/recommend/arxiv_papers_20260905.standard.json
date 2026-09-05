@@ -1,0 +1,138 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-05T22:09:16.950328+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2609.02247v1",
+      "source": "arxiv",
+      "title": "SAUF-Net: Structure--Appearance Representation Learning with Uncertainty Feedback for Semi-Supervised Medical Image Segmentation",
+      "abstract": "Semi-supervised learning has shown great potential for reducing annotation costs in medical image segmentation. However, most existing methods mainly exploit unlabeled data through prediction-level consistency, while the reliability of internal feature representations is often overlooked. In medical images, target-related structural cues are easily entangled with unstable appearance variations, which may lead to unreliable pseudo labels and error accumulation during training. To address these issues, we propose SAUF-Net, a Structure--Appearance Representation Learning with Uncertainty Feedback Network for semi-supervised medical image segmentation. SAUF-Net uses the Structure--Appearance Decomposition Module (SADM) to separate bottleneck features into structural and appearance representations. The Disentangled Guidance Module (DGM) injects these representations into the decoding process to enhance structure-aware segmentation. Meanwhile, the Auxiliary Decoder produces branch-specific predictions for reliability estimation and a fused prediction for appearance-swapped consistency. Furthermore, we introduce an Appearance-Swapped Consistency branch to encourage structural representations to remain stable under appearance variations. We also introduce a reliability-map-guided dual-head discriminator with a Validity Head and an Uncertainty Head to provide feature-level uncertainty feedback. Extensive experiments on ISIC-2016 and Kvasir-SEG demonstrate that SAUF-Net outperforms state-of-the-art semi-supervised methods, especially under low-label settings.",
+      "authors": [
+        "Qin Lu",
+        "Zheyang Jing",
+        "Yujie Yang",
+        "Jianwang Li",
+        "Chen Yi",
+        "Shaofeng Jiang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-09-02T07:54:49+00:00",
+      "link": "https://arxiv.org/pdf/2609.02247v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "decomposes structure and appearance features to disentangle stable structural cues from unstable appearance variations, directly supporting color/shape disentanglement",
+      "llm_evidence_cn": "分解结构-外观特征以分离稳定结构线索与不稳定外观变化，直接支持颜色与形状解耦",
+      "llm_evidence": "分解结构-外观特征以分离稳定结构线索与不稳定外观变化，直接支持颜色与形状解耦",
+      "canonical_evidence": "分解结构-外观特征以分离稳定结构线索与不稳定外观变化，直接支持颜色与形状解耦",
+      "llm_tldr_en": "SAUF-Net addresses unreliable pseudo labels caused by entanglement of structural cues and appearance variations in semi-supervised medical segmentation, using structure-appearance decomposition and uncertainty feedback to improve feature reliability.",
+      "llm_tldr_cn": "该工作针对半监督医学图像分割中结构线索与外观变化纠缠导致伪标签不可靠的问题，提出SAUF-Net，通过结构-外观分解模块解耦稳定结构与不稳定外观，并引入不确定性反馈抑制错误累积。实验表明该网络能提升半监督分割性能。其解耦思路可迁移到颜色与形状特征的表示分离，与需求高度相关。",
+      "llm_tldr": "该工作针对半监督医学图像分割中结构线索与外观变化纠缠导致伪标签不可靠的问题，提出SAUF-Net，通过结构-外观分解模块解耦稳定结构与不稳定外观，并引入不确定性反馈抑制错误累积。实验表明该网络能提升半监督分割性能。其解耦思路可迁移到颜色与形状特征的表示分离，与需求高度相关。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.29923v1",
+      "source": "arxiv",
+      "title": "Towards Continual Test-Time Adaptation of Vision-Language Models in Open-Vocabulary Semantic Segmentation",
+      "abstract": "Open-vocabulary semantic segmentation (OVSS) relies on vision-language alignment to recognize arbitrary text-defined categories, yet this alignment is fragile under continual test-time distribution shift. Our diagnostic analysis reveals that entropy minimization drives patch-level class collapse, continual updates erode vision-language alignment, and redundant gradients from low-shift samples waste computation. We propose Diversify, Anchor, and Filter (DAF), a stabilization framework that augments entropy-based adaptation with a marginal diversity loss that resists collapse, a cross-modal anchor consistency loss that constrains feature drift relative to a frozen source model, and feature salience filtering that skips low-value backward passes to offset part of the source-anchor overhead. We evaluate on five datasets spanning natural scenes, autonomous driving, underwater imagery, and remote sensing with their corrupted variants. Across the evaluated continual shifts, DAF remains stable where entropy minimization collapses, improving mIoU by over 8 points on Pascal VOC20-C, over 9 points on LoveDA, and over 3 points on Foggy Cityscapes compared to the source model, and is robust to aggressive adaptation and learning rate choices.",
+      "authors": [
+        "Chandler Timm C. Doloriel",
+        "Yunbei Zhang",
+        "Sarthak Kumar Maharana",
+        "Muhammad Salman Siddiqui",
+        "Tor Kristian Stevik",
+        "Fadi Al Machot",
+        "Kristian Hovde Liland",
+        "Habib Ullah"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-08-30T17:39:14+00:00",
+      "link": "https://arxiv.org/pdf/2608.29923v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "proposes latent-space stabilization via marginal diversity and cross-modal anchor consistency losses during test-time adaptation",
+      "llm_evidence_cn": "提出在测试时适应中通过边际多样性损失和跨模态锚点一致性损失稳定潜在空间",
+      "llm_evidence": "提出在测试时适应中通过边际多样性损失和跨模态锚点一致性损失稳定潜在空间",
+      "canonical_evidence": "提出在测试时适应中通过边际多样性损失和跨模态锚点一致性损失稳定潜在空间",
+      "llm_tldr_en": "The paper tackles drift of vision-language alignment in continual test-time adaptation for open-vocabulary segmentation, proposing DAF to add diversity loss, anchor consistency, and salience filtering to stabilize latent features.",
+      "llm_tldr_cn": "该工作针对开放词汇语义分割在持续测试时适应中视觉-语言对齐漂移和类别崩塌问题，提出DAF框架，在熵最小化基础上引入边际多样性损失、跨模态锚点一致性损失和特征显著性过滤。实验表明这些干预能稳定潜在特征、抵抗崩塌并提升适应鲁棒性。该方法为特征级干预以维持语义一致性提供了新思路。",
+      "llm_tldr": "该工作针对开放词汇语义分割在持续测试时适应中视觉-语言对齐漂移和类别崩塌问题，提出DAF框架，在熵最小化基础上引入边际多样性损失、跨模态锚点一致性损失和特征显著性过滤。实验表明这些干预能稳定潜在特征、抵抗崩塌并提升适应鲁棒性。该方法为特征级干预以维持语义一致性提供了新思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.01806v1",
+      "source": "arxiv",
+      "title": "Consistency as Regularization for Unsupervised Shadow Removal",
+      "abstract": "Shadow removal is an important preprocessing step for many vision tasks, yet existing supervised methods require paired shadow and shadow-free images, while unsupervised approaches often still rely on shadow masks or shadow-free references. We propose ShadowCLR, an unsupervised framework that learns shadow removal directly from shadow images. Our key observation is that shadows vary across observations while the underlying scene content remains largely consistent. We therefore use consistency across shadow observations as regularization, encouraging the model to recover scene-consistent appearance while suppressing shadow-specific variations. Global and local consistency further enable us to explore visually related images, learn from imperfectly aligned observations, and focus the representation on shared scene information. Experiments on multiple benchmarks show that ShadowCLR achieves competitive and often superior performance over state-of-the-art unsupervised methods, demonstrating that consistency can provide regularization for shadow removal without shadow masks or shadow-free images.",
+      "authors": [
+        "Anh-Kiet Duong",
+        "Petra Gomez-Krämer",
+        "Jean-Michel Carozza"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-01T19:26:25+00:00",
+      "link": "https://arxiv.org/pdf/2609.01806v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Consistency across shadow observations to preserve scene content while removing shadow variations",
+      "llm_evidence_cn": "跨阴影观测一致性以保持场景内容并去除阴影变化",
+      "llm_evidence": "跨阴影观测一致性以保持场景内容并去除阴影变化",
+      "canonical_evidence": "跨阴影观测一致性以保持场景内容并去除阴影变化",
+      "llm_tldr_en": "This paper proposes ShadowCLR, an unsupervised shadow removal framework that uses consistency across shadow observations as regularization to recover scene-consistent appearance while suppressing shadow-specific variations. It learns directly from shadow images without paired data or masks. The consistency principle is analogous to preserving semantic content under appearance changes, offering transferable insights for color perturbation robustness.",
+      "llm_tldr_cn": "针对阴影去除依赖配对数据和阴影掩码的问题，本文提出无监督框架ShadowCLR。其核心观察是阴影在不同观测中变化而底层场景内容保持一致，因此使用跨观测一致性作为正则化，结合全局与局部一致性恢复场景一致外观并抑制阴影特定变化。实验表明该方法无需阴影掩码或参考即可有效去除阴影，同时保持场景内容。该一致性思想对于颜色扰动下的语义保持具有方法借鉴意义。",
+      "llm_tldr": "针对阴影去除依赖配对数据和阴影掩码的问题，本文提出无监督框架ShadowCLR。其核心观察是阴影在不同观测中变化而底层场景内容保持一致，因此使用跨观测一致性作为正则化，结合全局与局部一致性恢复场景一致外观并抑制阴影特定变化。实验表明该方法无需阴影掩码或参考即可有效去除阴影，同时保持场景内容。该一致性思想对于颜色扰动下的语义保持具有方法借鉴意义。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
