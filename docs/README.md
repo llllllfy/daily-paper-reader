@@ -6,32 +6,28 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-05
-- 运行时间：2026-09-05 22:12:23 UTC
+- 最新运行日期：2026-09-06
+- 运行时间：2026-09-06 21:53:57 UTC
 - 运行状态：成功
-- 本次总论文数：3
+- 本次总论文数：2
 - 精读区：1
-- 速读区：2
+- 速读区：1
 
 ### 今日简报（AI）
-- 今日共生成 3 篇推荐（精读 1 篇，速读 2 篇）
-- 精读：《SAUF-Net: Structure--Appearance Representation Learning with Uncertainty Feedback for Semi-Supervised Medical Image Segmentation》（8.0/10）
-- 速读：《Towards Continual Test-Time Adaptation of Vision-Language Models in Open-Vocabulary Semantic Segmentation》（7.0/10）, 《Consistency as Regularization for Unsupervised Shadow Removal》（6.0/10）
-- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202609/05/README](/202609/05/README)
+今日聚焦图像光照与密集预测：精读《Dior》的光照解耦表示，速读《GramLoop》的免训练回放方法。  
+最值得关注的是《Dior》用材质解耦的光照表示来编辑/绘制图像光影，以及《GramLoop》用 Gram 门控回放提升密集预测鲁棒性。  
+普通读者可先从《Dior》的光照效果入手，若对高效持续学习感兴趣再补读《GramLoop》。
+- 详情：[/202609/06/README](/202609/06/README)
 
 ### 精读区论文标签
-1. [SAUF-Net: Structure--Appearance Representation Learning with Uncertainty Feedback for Semi-Supervised Medical Image Segmentation](/202609/05/2609.02247v1-sauf-net-structure--appearance-representation-learning-with-uncertainty-feedback-for-semi-supervised-medical-image-segmentation)  
+1. [Dior: Drawing the Light of Image via Material-Decoupled Illumination Representation](/202609/06/2608.29925v1-dior-drawing-the-light-of-image-via-material-decoupled-illumination-representation)  
    标签：评分：8.0/10、query:cp
-   evidence：分解结构-外观特征以分离稳定结构线索与不稳定外观变化，直接支持颜色与形状解耦
+   evidence：材质解耦的光照表示将光照/颜色与材质/形状解耦
 
 ### 速读区论文标签
-1. [Towards Continual Test-Time Adaptation of Vision-Language Models in Open-Vocabulary Semantic Segmentation](/202609/05/2608.29923v1-towards-continual-test-time-adaptation-of-vision-language-models-in-open-vocabulary-semantic-segmentation)  
-   标签：评分：7.0/10、query:cp
-   evidence：提出在测试时适应中通过边际多样性损失和跨模态锚点一致性损失稳定潜在空间
-2. [Consistency as Regularization for Unsupervised Shadow Removal](/202609/05/2609.01806v1-consistency-as-regularization-for-unsupervised-shadow-removal)  
+1. [GramLoop: Training-Free Gram-Gated Replay for Robust Dense Prediction](/202609/06/2608.29113v2-gramloop-training-free-gram-gated-replay-for-robust-dense-prediction)  
    标签：评分：6.0/10、query:cp
-   evidence：跨阴影观测一致性以保持场景内容并去除阴影变化
+   evidence：在视觉骨干内部进行无训练重放以细化密集特征，是用于鲁棒性的潜在空间干预
 
 
 <div class="dpr-home-promo-card">

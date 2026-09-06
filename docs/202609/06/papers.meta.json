@@ -1,0 +1,39 @@
+{
+  "label": "2026-09-06",
+  "date": "2026-09-06",
+  "generated_at": "2026-09-06T21:54:22",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202609/06/2608.29925v1-dior-drawing-the-light-of-image-via-material-decoupled-illumination-representation",
+      "section": "deep",
+      "title_en": "Dior: Drawing the Light of Image via Material-Decoupled Illumination Representation",
+      "authors": "Xuanpu Zhang, Xuesong Niu, Haoxiang Cao, Ruidong Chen, Jianhao Zeng, Changqian Yu",
+      "date": "2026-08-30",
+      "pdf": "https://arxiv.org/pdf/2608.29925v1",
+      "score": "8.0",
+      "evidence": "材质解耦的光照表示将光照/颜色与材质/形状解耦",
+      "tldr": "手绘涂鸦为图像重光照提供了直观界面，但现有方法难以在涂鸦输入与光照结果之间建立一致映射，限制了光照强度、色度及复杂空间分布的控制。本文提出材料解耦的光照表示Lumi Map，通过渲染器合成三元组并辅以真实数据重建训练，显式关联用户涂鸦与目标光照。基于此开发的Dior-Light方法在重光照准确性和可控性上显著超越现有工作，并能对自然图像精细调节光照属性，为交互式图像编辑提供了有效工具。",
+      "tags": "query:cp",
+      "abstract_en": "Controllable image relighting is an important problem in image editing, and hand-drawn scribbles provide an intuitive interface for specifying the desired illumination. However, existing methods do not establish a consistent and effective mapping between scribble inputs and relighting results, limiting their ability to control illumination intensity, chromaticity, and complex spatial distributions. We address this limitation by introducing a material-decoupled illumination representation, termed the Lumi Map, which establishes an explicit mapping between user scribbles and the resulting illumination, thereby improving both relighting accuracy and controllability. Specifically, we use a renderer to synthesize source image-Lumi Map-relit image triplets and train the model to predict the target relighting result conditioned on the Lumi Map. To mitigate the domain gap introduced by synthetic data, we further perform reconstruction training on real relighting pairs, improving the model's generalization to real-world images. Finally, we present Dior-Light, an image relighting method controlled by hand-drawn strokes. Extensive experiments demonstrate that our method outperforms existing approaches in relighting accuracy and enables effective control over illumination intensity and chromaticity on in-the-wild images.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/06/2608.29113v2-gramloop-training-free-gram-gated-replay-for-robust-dense-prediction",
+      "section": "quick",
+      "title_en": "GramLoop: Training-Free Gram-Gated Replay for Robust Dense Prediction",
+      "authors": "Yang Chen, Canyu Shen, Xinzhe Rao, Yuanyi Yan, Yunlu Chen, Meng Tang, Teng Long, Vincent Tao Hu",
+      "date": "2026-08-29",
+      "pdf": "https://arxiv.org/pdf/2608.29113v2",
+      "score": "6.0",
+      "evidence": "在视觉骨干内部进行无训练重放以细化密集特征，是用于鲁棒性的潜在空间干预",
+      "tldr": "DINOv3等冻结密集预测模型在分布偏移下鲁棒性不足，但直接增加推理计算易破坏空间结构。GramLoop引入训练无关的门控重放机制，在冻结主干内重放短Transformer窗口，利用末层余弦-Gram一致性逐patch门控筛选特征。在COCO-O等五个偏移基准上，目标检测与语义分割性能全面提升，COCO-O mAP提高0.252且有效鲁棒性提高0.250，同时保持ADE20K干净性能。该方法无需训练或修改权重即可增强密集预测鲁棒性。",
+      "tags": "query:cp",
+      "abstract_en": "We aim to improve frozen DINOv3 dense-prediction models under distribution shift by adding inference computation inside the visual backbone, without changing model weights, task adapters, or prediction heads. The challenge is that repeated transformer-block computation must refine dense features without disrupting the pairwise patch relations that DINOv3 uses to preserve spatial structure. We introduce GramLoop, a training-free framework that replays a short transformer window and controls each replay through final-layer cosine-Gram consistency. Each proposal is propagated through the frozen suffix, measured against the standard DINOv3 trajectory, and accepted through a patchwise gate at the replay-window endpoint. Across object detection and semantic segmentation under corruptions, perturbations, and natural shifts, GramLoop improves all five shifted benchmarks over the paired DINOv3 baseline. On COCO-O, it improves mAP by +0.252 and Effective Robustness by +0.250, while preserving clean ADE20K performance. Code will be released at https://github.com/cheyan9/GramLoop.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
