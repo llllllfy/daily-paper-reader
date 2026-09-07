@@ -6,28 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-06
-- 运行时间：2026-09-06 21:53:57 UTC
+- 最新运行日期：2026-09-07
+- 运行时间：2026-09-07 23:16:44 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：1
+- 本次总论文数：1
+- 精读区：0
 - 速读区：1
 
 ### 今日简报（AI）
-今日聚焦图像光照与密集预测：精读《Dior》的光照解耦表示，速读《GramLoop》的免训练回放方法。  
-最值得关注的是《Dior》用材质解耦的光照表示来编辑/绘制图像光影，以及《GramLoop》用 Gram 门控回放提升密集预测鲁棒性。  
-普通读者可先从《Dior》的光照效果入手，若对高效持续学习感兴趣再补读《GramLoop》。
-- 详情：[/202609/06/README](/202609/06/README)
+- 今日共生成 1 篇推荐（精读 0 篇，速读 1 篇）
+- 速读：《OrnaStyler: Ornament-Aware Latent Editing for Content-Preserving 3D Stylization》（6.0/10）
+- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
+- 详情：[/202609/07/README](/202609/07/README)
 
 ### 精读区论文标签
-1. [Dior: Drawing the Light of Image via Material-Decoupled Illumination Representation](/202609/06/2608.29925v1-dior-drawing-the-light-of-image-via-material-decoupled-illumination-representation)  
-   标签：评分：8.0/10、query:cp
-   evidence：材质解耦的光照表示将光照/颜色与材质/形状解耦
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [GramLoop: Training-Free Gram-Gated Replay for Robust Dense Prediction](/202609/06/2608.29113v2-gramloop-training-free-gram-gated-replay-for-robust-dense-prediction)  
+1. [OrnaStyler: Ornament-Aware Latent Editing for Content-Preserving 3D Stylization](/202609/07/2608.29905v1-ornastyler-ornament-aware-latent-editing-for-content-preserving-3d-stylization)  
    标签：评分：6.0/10、query:cp
-   evidence：在视觉骨干内部进行无训练重放以细化密集特征，是用于鲁棒性的潜在空间干预
+   evidence：内容保持的3D风格化中进行潜在空间编辑
 
 
 <div class="dpr-home-promo-card">

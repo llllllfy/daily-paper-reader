@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-09-07 <!--dpr-date:20260907-->
+    * 速读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202609/07/2608.29905v1-ornastyler-ornament-aware-latent-editing-for-content-preserving-3d-stylization" data-sidebar-item="{&quot;title&quot;: &quot;OrnaStyler: Ornament-Aware Latent Editing for Content-Preserving 3D Stylization&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2608.29905v1-ornastyler-ornament-aware-latent-editing-for-content-preserving-3d-stylization&quot;, &quot;score&quot;: &quot;6.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;内容保持的3D风格化中进行潜在空间编辑&quot;}">OrnaStyler: Ornament-Aware Latent Editing for Content-Preserving 3D Stylization</a>
   * 2026-09-06 <!--dpr-date:20260906-->
     * 精读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202609/06/2608.29925v1-dior-drawing-the-light-of-image-via-material-decoupled-illumination-representation" data-sidebar-item="{&quot;title&quot;: &quot;Dior: Drawing the Light of Image via Material-Decoupled Illumination Representation&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2608.29925v1-dior-drawing-the-light-of-image-via-material-decoupled-illumination-representation&quot;, &quot;score&quot;: &quot;8.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;材质解耦的光照表示将光照/颜色与材质/形状解耦&quot;}">Dior: Drawing the Light of Image via Material-Decoupled Illumination Representation</a>

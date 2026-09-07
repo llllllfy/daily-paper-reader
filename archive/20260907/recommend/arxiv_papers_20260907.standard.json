@@ -1,0 +1,54 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-07T23:15:14.715643+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.29905v1",
+      "source": "arxiv",
+      "title": "OrnaStyler: Ornament-Aware Latent Editing for Content-Preserving 3D Stylization",
+      "abstract": "Text-guided style editing of 3D assets is essential for adapting existing objects to diverse visual aesthetics in digital content creation. Despite rapid progress in 3D shape modeling, faithfully stylizing an existing asset remains challenging when the desired stylization involves fine-grained structural ornamentation, which requires the model to preserve the source geometry and object identity, while coherently integrating new style-specific details. We propose \\textbf{OrnaStyler}, a zero-shot framework for text-guided ornament-aware 3D stylization. Built upon rectified flow-based generative modeling, OrnaStyler introduces an inversion-guided editing strategy that recovers content-aware latent representations at both geometry and appearance levels in a staged manner to facilitate faithful editing. Our core idea is to explicitly model the spatial configuration of stylistic elements, thereby mitigating the fundamental tension between content preservation and style expression in the voxel space. Specifically, at the geometry level, we manipulate voxel representations through flow inversion to synthesize ornament-enhanced structures while preserving the spatial identity of the source asset. Then, at the appearance level, we introduce an adjacency-aware feature inpainting mechanism to harmonize newly generated ornaments with the original content, yielding coherent geometry-appearance integration. Our approach operates solely in the inference phase and enables selective editing over geometric augmentation or appearance stylization. Extensive experiments on both generated and real-world 3D assets against prior methods demonstrate that OrnaStyler achieves state-of-the-art editing performance in terms of content preservation, style fidelity, and overall visual realism. Code is available at: https://github.com/tomohiro0427/OrnaStyler",
+      "authors": [
+        "Tomohiro Aizawa",
+        "Shigeru Kuriyama",
+        "Chunzhi Gu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-30T17:00:39+00:00",
+      "link": "https://arxiv.org/pdf/2608.29905v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "latent editing for content-preserving 3D stylization",
+      "llm_evidence_cn": "内容保持的3D风格化中进行潜在空间编辑",
+      "llm_evidence": "内容保持的3D风格化中进行潜在空间编辑",
+      "canonical_evidence": "内容保持的3D风格化中进行潜在空间编辑",
+      "llm_tldr_en": "OrnaStyler tackles ornament-aware 3D stylization with content preservation. It uses rectified-flow latent editing via inversion to recover geometry/appearance representations and inject style details. The zero-shot method keeps source identity while stylizing.",
+      "llm_tldr_cn": "该论文针对细粒度装饰感知的3D风格化中难以在保持源几何和物体身份的同时融入新风格细节的问题，提出零样本框架OrnaStyler。该方法基于矫正流生成模型，利用反演引导的编辑策略在几何和外观层面恢复内容感知的潜在表示，并注入风格特定细节。实验表明该方法能够实现文本引导的3D资产风格化，同时保持内容不变。该工作为内容保持的3D编辑提供了有效思路。",
+      "llm_tldr": "该论文针对细粒度装饰感知的3D风格化中难以在保持源几何和物体身份的同时融入新风格细节的问题，提出零样本框架OrnaStyler。该方法基于矫正流生成模型，利用反演引导的编辑策略在几何和外观层面恢复内容感知的潜在表示，并注入风格特定细节。实验表明该方法能够实现文本引导的3D资产风格化，同时保持内容不变。该工作为内容保持的3D编辑提供了有效思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
