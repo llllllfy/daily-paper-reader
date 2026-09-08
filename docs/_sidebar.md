@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-09-08 <!--dpr-date:20260908-->
+    * 速读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202609/08/2608.30263v1-centering-before-pruning-lightweight-geometry-correction-for-diversity-based-visual-token-pruning-in-lvlms" data-sidebar-item="{&quot;title&quot;: &quot;Centering before Pruning: Lightweight Geometry Correction for Diversity-Based Visual Token Pruning in LVLMs&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2608.30263v1-centering-before-pruning-lightweight-geometry-correction-for-diversity-based-visual-token-pruning-in-lvlms&quot;, &quot;score&quot;: &quot;7.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;在 LVLM 视觉 token 剪枝前对特征进行中心化&quot;}">Centering before Pruning: Lightweight Geometry Correction for Diversity-Based Visual Token Pruning in LVLMs</a>
   * 2026-09-07 <!--dpr-date:20260907-->
     * 速读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202609/07/2608.29905v1-ornastyler-ornament-aware-latent-editing-for-content-preserving-3d-stylization" data-sidebar-item="{&quot;title&quot;: &quot;OrnaStyler: Ornament-Aware Latent Editing for Content-Preserving 3D Stylization&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2608.29905v1-ornastyler-ornament-aware-latent-editing-for-content-preserving-3d-stylization&quot;, &quot;score&quot;: &quot;6.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;cp&quot;}], &quot;evidence&quot;: &quot;内容保持的3D风格化中进行潜在空间编辑&quot;}">OrnaStyler: Ornament-Aware Latent Editing for Content-Preserving 3D Stylization</a>
