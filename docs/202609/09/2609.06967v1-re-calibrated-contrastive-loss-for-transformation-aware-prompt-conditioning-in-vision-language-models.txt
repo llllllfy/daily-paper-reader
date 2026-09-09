@@ -1,0 +1,587 @@
+Title: Re-calibrated Contrastive Loss for Transformation-Aware Prompt Conditioning in Vision-Language Models
+
+URL Source: https://arxiv.org/pdf/2609.06967v1
+
+Published Time: Wed, 09 Sep 2026 01:45:12 GMT
+
+Number of Pages: 20
+
+Markdown Content:
+> arXiv:2609.06967v1 [cs.CV] 7 Sep 2026
+
+OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING 1
+
+# Re-calibrated Contrastive Loss for Transformation-Aware Prompt Conditioning in Vision-Language Models 
+
+Seungmin Oh 1
+
+seungminoh@ajou.ac.kr 
+
+Seunghun Kang 1
+
+seunghun.kang@ajou.ac.kr 
+
+Jongbin Ryu ∗1,2 
+
+jongbinryu@ajou.ac.kr  
+
+> 1
+
+Department of Artificial Intelligence, Ajou University, Suwon, South Korea  
+
+> 2
+
+Department of Computer Engineering, Ajou University, Suwon, South Korea 
+
+Abstract 
+
+Ensuring effective transfer learning for vision-language models without compromising their generalization performance is crucial. However, many existing methods overlook data characteristics and simply reuse the training strategies adopted during pre-training. Specifically, they treat same-class samples as distinct instances and transform images independently of their paired text prompts, which makes model learning more difficult. We address these limitations through transformation-aware prompt conditioning and a re-calibrated contrastive loss. Fixed text descriptors identify the transformations applied to paired images, providing transformation-level consistency without altering class semantics. This design aligns the image and text branches at the transformation level, enabling richer representations while preserving the models’ ability to generalize. In addition, our loss function mitigates positive-gradient dilution in soft-target cross-entropy when each anchor has multiple valid positives. During transfer, our approach treats same-class samples as positives rather than distinct instances, enabling the model to learn domain-specific features more effectively. Experiments across distribution shift, transfer learning, and few-shot settings demonstrate consistent improvements over existing approaches. Source code for our method is available at https://github.com/SoongE/ReCalCon .
+
+# 1 Introduction 
+
+Interest in Vision-Language Models (VLMs) has increased due to their capacity for gener-alized vision-language representation. This capability enables efficient adaptation to target domains through fine-tuning [15, 16, 27, 42, 48, 49, 50]. However, it is important to point out that the current transfer learning approach presents two challenges: 1) overfitting to the target domain and 2) a discrepancy between augmented images and their text prompts. The first problem arises when fine-tuning the pre-trained model to a specific domain, as this may result in subpar performance in other domains due to distribution shifts, as shown in Figure 1. 
+
+© 2026. The copyright of this document resides with its authors. It may be distributed unchanged freely in print or electronic forms.  
+
+> ∗
+
+Corresponding author. 2 OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING 62    
+
+> OOD Accuracy (%)
+> 60
+> 59
+> 61
+> 58
+> 54
+> 68.5 81.5
+> Zero-shot
+> (ICML' 21)
+> RAda-FT
+> (ICCV' 25)
+> (ICML' 21)
+> FFT
+> (ICLR' 22)
+> LP-FT
+> ID Accuracy (%)
+> 82.0 82.5
+> (CVPR' 22)
+> WiseFT
+> (CVPR' 23)
+> FLYP
+> (CVPR' 24)
+> ARF
+> 83.0 83.5
+> Lipsum-FT
+> (ICLR' 24)
+> Ours
+
+Figure 1: ID and OOD accuracy (%) of state-of-the-art models fine-tuned on the ImageNet dataset using CLIP ViT-B/16. Ours (red star) achieves the best ID-OOD performance. Full fine-tuning (FFT) of zero-shot models can create a trade-off between in-distribution (ID) and out-of-distribution (OOD) accuracy. For several transfer base-lines, this trade-off becomes more pro-nounced as training continues. The second challenge arises because text prompts often do not describe image transformations. Most models directly adopt the contrastive learning approach used during pre-training, which is typically based on a single image-text posi-tive pair. As a result, while images undergo various augmentations, text prompts either remain fixed, rely on generative models, or include meaningless random words. Conse-quently, visual data is typically trained using extensive augmentation techniques, whereas text prompts fail to reflect these augmentations accurately. We address this discrepancy by conditioning each text prompt on the transformation ap-plied to its paired image. We call the method Transformation-Aware Prompt Conditioning .Transformation-level consistency pairs each augmented image with a fixed descriptor of the applied transformation without implying a change in class semantics. As shown in Figure 2, we expand the contrastive space to include augmented images and transformation-conditioned prompts. The expanded space contains four types of contrastive matches. While only the contrastive match between clean images and prompts (red in Figure 2) has been used in previous VLM transfer learning approaches, we exploit additional matches in the augmented space (blue in Figure 2). We also include cross-pairs between the clean and augmented data (yellow in Figure 2). These additional matches provide regularization during VLM transfer. Expanding the contrastive space introduces multiple valid positives for each anchor, whereas the pre-training objective uses only one paired positive. A uniform soft target dis-tributes the target probability mass equally across these positives. The learning signal assigned to each positive therefore decreases as the number of positives increases. We refer to this effect as positive-gradient dilution. To address this, we propose a Re-calibrated Contrastive Loss function that adds an adaptive positive-versus-negative evidence margin while leaving the normalized softmax distribution unchanged. Our loss function effectively accounts for multiple positive pairs within a single logit vector, enabling the learning of both symmet-ric and asymmetric contrastive matches. Together, the re-calibrated contrastive loss and transformation-aware prompt conditioning transfer VLMs to target domains, demonstrating strong performance on out-of-distribution data. We also show that our approach performs much better, as the networks are trained longer without overfitting the target training data. This is because our approach to VLM transfer learning effectively regularizes, leading to performance improvements on out-of-distribution data, even with longer training. We perform various experiments evaluating transfer learning using ImageNet [11] and iWildCam [4] datasets for in- and out-of-distribution data classification. We also provide experimental results for transfer learning and few-shot scenarios across diverse downstream datasets. OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING 3Image Encoder Text Encoder      
+
+> (,)Adaptive Re-calibration Augmented Contrastive Space Learnable Text Prompts
+> Image-Text
+> Text-Image softmax Loss
+> (,)0.0 0.2 0.4 0.6 0.8 1.0 0.0 0.2 0.4 0.6 0.8 1.0 re-cal. target target non-target
+
+Figure 2: Overview of the proposed training scheme. Each clean image and prompt produces a transformed image and a transformation-conditioned prompt. The encoders extract four types of contrastive matches: clean features (FI , FT ) and augmented features (FI′ , FT ′ ). These features construct an augmented contrastive space. We apply a re-calibrated contrastive loss to update the networks. In learnable text prompts, [v1, v2, . . . , vn] and [a1, a2, . . . , ak] denote learnable context vectors and fixed transformation descriptor embeddings, respectively. 
+
+## 1.1 Contributions 
+
+Generic method. We combine the re-calibrated contrastive loss with transformation-aware prompt conditioning for VLM transfer learning. The framework jointly optimizes clean, transformed, and cross-paired image-text matches in a transformation-consistent space. Our experiments show that the proposed approach improves performance across various transfer learning tasks compared to the previous state-of-the-art methods. 
+
+Simplicity. The proposed transformation-aware prompt conditioning method follows a straightforward strategy, making it easy to integrate existing visual augmentation techniques into our approach. The re-calibrated contrastive loss requires only a few lines of code. 
+
+Regularization. Overfitting under distribution shift often becomes more severe as training continues. Several existing VLM transfer baselines therefore degrade under extended training, whereas our regularization allows performance to continue improving. 
+
+# 2 Related Work 
+
+## 2.1 Transferring Vision-Language Models 
+
+Pre-trained Vision-Language Models (VLMs) can be adapted to downstream tasks with limited target-domain data. Image classification is a common setting for this transfer. Studies on image classification transfer learning can be categorized into prompt tuning [24, 37, 49], network adapters [15, 48, 50], and full fine-tuning [16, 27, 42]. Prompt tuning is often used for parameter-efficient transfer learning, while network adapters are primarily employed for few-shot learning when the model is transferred with limited training samples. This VLM-based transfer learning strategy offers the advantage of efficient and fast adaptation to various domains by leveraging the general knowledge learned from image-text pairs. 4 OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING Identity positive Neighbor positive Augmented positive   
+
+> (a) CLIP (b) CLIP w/ SoftCE (c) Ours
+
+Figure 3: Illustration of positive sampling used by different contrastive objectives. (a) CLIP uses only paired samples as positives. (b) CLIP with soft cross-entropy adds same-class positives. (c) Ours augments the positive samples in the contrastive space from FI′ and FT ′ .
+
+## 2.2 Distribution Shift 
+
+The primary challenge in transferring pre-trained VLMs [1, 29, 35] is that the generalized feature distribution can shift toward a particular domain. Therefore, it is critical to ensure that the distribution remains general while enabling model transferability. WiseFT [42] uses a weight ensemble method for shifted distributions after transfer learning to preserve the generalized distribution. LP-FT [27] first trains only a linear classifier and then fine-tunes the entire network to balance generalization and transferability. Neither of these methods updates the text encoder during the transfer learning of the pre-trained VLM. Lipsum-FT [32] adds random text while freezing the text encoder, and RAda-FT [7] applies a learnable attention mask to the final fused representation. In contrast, FLYP [16] updates both encoders using a CLIP-style contrastive objective on image-text pairs. ARF [18] enriches text prompts with context generated by large language models while updating the network. 
+
+## 2.3 Parameter-Efficient Transfer Learning 
+
+Fine-tuning all layers of a network involves a large number of trainable parameters. However, numerous studies [13, 17, 44] have shown that models pre-trained on large-scale datasets can be adapted without fine-tuning every layer. Adapters [15, 45] introduce small, learnable modules that capture task-specific features while leveraging frozen pre-trained weights. By combining features with newly learned adapter features via a residual connection, these approaches maintain VLMs’ zero-shot capability while enhancing performance in few-shot scenarios. Prompt tuning [37, 49] replaces manually created prompts with small learnable vectors. These vectors are refined via backpropagation on a limited number of samples, enabling the model to learn task-specific descriptions without manual prompt design. Prior-based methods [48, 50] capitalize on the inherent data distribution captured by the pre-trained model, rather than introducing new parameters. These methods create a cache model from few-shot training samples, decoupling the specific knowledge from the general cache. 
+
+## 2.4 Advances in Cross-Entropy Loss 
+
+Several studies have addressed the limitations associated with using cross-entropy loss with the softmax function. To address imbalanced class distributions, Lin et al. [30] proposed OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING 5
+
+assigning higher weights to positive samples while reducing the weights of negative samples. Chen et al. [6] introduced a noise-based regularization method to ensure continuous gradient propagation and prevent early-saturated loss values caused by the softmax function. Khosla et al. [25] extended contrastive objectives to multiple same-class positives. 
+
+# 3 Method 
+
+This section introduces transformation-aware prompt conditioning for image and text prompts in a shared space, followed by the introduction of the proposed re-calibrated contrastive loss. 
+
+## 3.1 Transformation-Aware Prompt Conditioning 
+
+A proper strategy must account for the differences between image and text data when aug-menting them in the shared space. Recent studies have demonstrated that the performance of vision-language models varies with their prompt design [2, 35, 48]. Therefore, we introduce a learnable text prompt to efficiently describe the image augmentation in a text encoder, as shown in Figure 2. We construct the learnable text prompt M by concatenating the learnable context V , fixed transformation descriptor A, and class token CLS as: 
+
+M = [ V, A, CLS ], V = [ v1, v2, . . . , vn]⊤ ∈ Rn×m,
+
+A = [ a1, a2, . . . , ak]⊤ ∈ Rk×m, CLS = [ cls ] ∈ R1×m.
+
+M differs from Zhou et al. [49] in that it includes A, which describes the augmentation applied to the image. A is a fixed, non-learnable textual descriptor from the RandAug [10] dictionary, whereas V is the learnable CoOp [49] context. Thus, only V is optimized and A is never updated. We use this learnable text prompt as input to a text encoder, allowing the learnable context vector to be optimized during training. Additionally, we develop a pool-based strategy for applying sophisticated image augmentation methods. A pool of augmentation methods is created for training deep neural networks, from which we randomly select k methods to apply combined augmentations to an image. CLS is the word embedding vector from the text encoder. We set n = 4 following Zhou et al. [49], m = 512 to match the encoder dimension, and k = 2 following Cubuk et al. [10]. 
+
+## 3.2 Re-calibrated Contrastive Loss 
+
+The contrastive loss has been used fundamentally in training VLMs. The similarity for the contrastive loss with image features III and text features TTT is computed as: 
+
+SSS = III · TTT ⊤, (1) where III,TTT ∈ RB×D and SSS ∈ RB×B. B and D represent the batch size and dimension of the feature vector. To compute the loss from the similarity, we sum the cross-entropy terms for image-text LI,Tce and text-image LT,Ice contrastive matches as: 
+
+L = ( LI,Tce + LT,Ice )/2,
+
+LI,Tce = −
+
+> B
+
+# ∑
+
+> i=1
+
+log σ I (i, i), LT,Ice = −
+
+> B
+
+# ∑
+
+> j=1
+
+log σ T ( j, j), (2) 6 OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING 
+
+where the terms σ I(i, i) and σ T( j, j) denote the probabilities of the diagonal matches. Specifi-cally, σ I(i, i) represents the probability that the i-th image is paired with its symmetric i-th text prompt, while σ T( j, j) is the probability that the j-th text prompt is paired with the symmetric 
+
+j-th image. To compute the probabilities, the raw similarity scores from matrix SSS must be normalized by applying a softmax function to the similarities as follows: 
+
+σ I(x,y) = exp (sssx,y)
+
+∑Bj=1 exp (sssx, j) , σ T(x,y) = exp (sssx,y)
+
+∑Bi=1 exp (sssi,y) , (3) where sss denotes a single similarity value and the first and second subscripts of sss represent the image and text prompt indices of the similarity matrix SSS. The text-image contrastive loss LT,Ice 
+
+is computed by permuting the indices to normalize similarity elements across text prompt data. This cross-entropy of Equation 2 assumes the unsupervised setting where the class labels are not utilized. Therefore, an image sample with its respective text prompt will only be used as a single positive pair, and all others will be negative pairs, as shown in Figure 3a. In contrast, an image sample with a different sample’s text prompt might be considered as a positive pair, as shown in Figure 3b when there are multiple same-class samples in a batch. We therefore extend the LI,Tce to the supervised setting as: 
+
+LI,Tso f tce = −
+
+> B
+
+# ∑
+
+> i=1
+
+1
+
+|PPP(i)| ∑
+
+> k∈PPP(i)
+
+log σ I (i, k), (4) where LI,Tso f tce is the soft cross-entropy loss and PPP(i) = {k|yk = yi} denotes the set of indices whose labels match yi. This soft-target cross-entropy is widely used in conjunction with MixUp [47] or CutMix [46]. This objective is also the cross-modal form of SupCon [25] because image and text anchors belong to different modalities and therefore have no self-term to exclude. Under a uniform target, each positive receives a target weight of 1/|PPP(i)|, so its gradient contribution decreases as the number of same-class positives increases. To extend this multi-positive objective to the augmented contrastive space, our loss is formulated by considering the concatenated similarity matrices of the clean and augmented data as: 
+
+Lours = ( L[II ′],[T T ′] 
+
+> ours
+
++ L[T T ′],[II ′] 
+
+> ours
+
+)/2, (5) where [II ′], [T T ′] denote the concatenated clean and augmented image and text features, respectively. The expanded contrastive space increases the number of valid positive image-text matches per anchor, exacerbating positive-gradient dilution under the uniform target. We therefore introduce loss re-calibration to mitigate this effect. We adjust the loss value as: 
+
+L[II ′],[T T ′] 
+
+> ours
+
+= −
+
+> B
+
+# ∑
+
+> i=1
+
+1
+
+|PPP(i)| ∑
+
+> k∈PPP(i)
+
+log σ I (i, k) · ψ(i) , (6) where ψ denotes the adaptive re-calibration factor. Expanding the logarithm separates it from the normalized softmax term as: 
+
+L[II ′],[T T ′] 
+
+> ours
+
+= LI,Tso f tce −
+
+> B
+
+# ∑
+
+> i=1
+
+log ψ(i), (7) where σ I (i, k) remains a valid normalized probability, and − log ψ(i) acts as an adaptive margin. We set ψ to be adaptive according to the number of positive and negative pairs of a OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING 7
+
+given sample i as: 
+
+ψ(i) = ∑k∈PPP(i) exp (sssi,k)
+
+∑t∈NNN(i) exp (sssi,t ) , (8) where sssi, j is the logit between image anchor i and text j, and NNN(i) = {t|yt̸ = yi} is the set of negative indices. Equation 8 measures the relative similarity between the positive and negative distributions for each sample. The numerator aggregates the exponential similarities over all positive pairs and grows with |PPP(i)|, while the denominator aggregates those over all negative pairs. The ratio thus quantifies how strongly positive evidence dominates negative interference for anchor i. Excluding positive pairs from the denominator is intentional. With a union denominator comprising both positive and negative pairs, ψ(i) reduces to the probability mass that σ I assigns to the positive set. It is then bounded within (0, 1) and approaches 1 as positive evidence dominates, so the adaptive margin − log ψ(i) vanishes and merely duplicates the signal of LI,Tso f tce . A denominator consisting solely of negative pairs leaves 
+
+ψ(i) unbounded above, and the margin instead grows with the gap between positive evidence and negative interference. Furthermore, because ψ(i) is independent of k, the margin in Equation 7 is not divided by |PPP(i)|. Unlike the soft-target term, it retains full strength as the number of positives increases. Since ψ(i) is unbounded above, − log ψ(i) can be negative. The objective nevertheless remains bounded below under CLIP’s standard constraints. CLIP uses L2-normalized features and caps the logit scale at 100, so sssi, j ∈ [−τ, τ] for finite τ and log ψ(i) ∈
+
+
+
+log |PPP(i)||NNN(i)| − 2τ, log |PPP(i)||NNN(i)| + 2τ
+
+
+
+. (9) As |PPP(i)|/|NNN(i)| is bounded by the size of the concatenated batch, the adaptive margin in Equation 7 has a finite lower bound. A value of ψ(i) > 1 indicates dominant positive evidence rather than an invalid probability. The objective therefore strengthens the learning signal as the number of positives increases, mitigating positive-gradient dilution. Algorithm 1 provides PyTorch-like pseudocode. Related studies have explored adaptive loss weighting and margin-based objectives [12, 30]. 
+
+## 3.3 Multi-sample Fusion 
+
+Augmentation methods, such as MixUp [47] and CutMix [46], combine multiple images into a new training sample. However, applying a similar augmentation approach to text prompts presents challenges due to the ambiguity of merging multiple distinct class words into a cohesive format. To address this, rather than merging text data at the prompt level, we adopt a feature-level fusion approach, similar to Verma et al. [40], which can effectively be applied to both image and text data. We propose multi-sample fusion on both image and text features. Let W I and W T denote the projection matrices for the image and text encoders, respec-tively. We define XI = {xI
+
+> 1
+
+, xI
+
+> 2
+
+, . . . , xIB} and XT = {xT 
+
+> 1
+
+, xT 
+
+> 2
+
+, . . . , xTB } as the output features from the respective encoders for a mini-batch of size B. The final projected image features I and text features T are represented as I = W I XI and T = W T XT . To adapt the multi-sample fusion before the projection, the fused feature for the i-th sample in the batch is defined as: ˆxmi = λ xmi + ( 1 − λ )xmB−i+1, (10) where m ∈ { I, T } represents the modality, λ ∈ [0, 1] is a randomly chosen fusion ratio, and ˆxmi denotes the fused feature. In Equation 10, we pair the i-th sample with the ( B − i + 1)-th 8 OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING 
+
+Algorithm 1. PyTorch-like pseudocode of the proposed re-calibrated contrastive loss function. 
+
+""" similarity_i: Similarities of an image to text # 2B, 2B similarity_t: Similarities of text to image # 2B, 2B targets: ground-truth of positive pairs # 2B, 2B B: batch size The comment in the middle of the code specifies the shape when computing the loss of similarity_i and targets. """ # compute: adaptive re-calibration factor 
+
+def recal(similarities, targets, eps=1e-8): exp_sim = torch.exp(similarities) pos = torch.sum(exp_sim * targets, dim=-1) neg = torch.sum(exp_sim * (1 - targets), dim=-1) 
+
+return pos / (neg + eps) # compute: our re-calibrated contrastive loss 
+
+def loss(similarities, targets, eps=1e-8): prob = torch.softmax(similarities, dim=-1) prob = torch.log(prob * recal(similarities, targets, eps) + eps) each_loss = torch.sum(-targets * prob, dim=-1) / (torch.sum(targets, dim=-1) + eps) 
+
+return torch.mean(each_loss) # compute: total re-calibrated contrastive loss 
+
+def loss_t(similarity_i, similarity_t, targets, eps=1e-8): 
+
+return (loss(similarity_i, targets, eps) + loss(similarity_t, targets, eps)) / 2 
+
+sample in the batch. The augmented image and text features in the projected contrastive space are subsequently given by: ˆI = W I ˆXI , ˆT = W T ˆXT , (11) where ˆ XI = { ˆxI
+
+> 1
+
+, ˆxI
+
+> 2
+
+, . . . , ˆxIB} and ˆ XT = { ˆxT 
+
+> 1
+
+, ˆxT 
+
+> 2
+
+, . . . , ˆxTB }. We use these projected features to compute the re-calibrated contrastive loss. 
+
+# 4 Experiments 
+
+We evaluate the proposed method on diverse VLM transfer learning tasks. Specifically, we examine its effectiveness under distribution shift, extended training, standard transfer learning, and few-shot learning. We further provide ablation studies and analyses to validate the importance of transformation-aware prompt conditioning, the re-calibrated contrastive loss, and the augmented contrastive space. 
+
+Experimental setup. We conduct experiments using pre-trained CLIP [35] models. We use ViT-B/16 [14] and ViT-B/32 as backbones for distribution shift and transfer learning OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING 9                                                                                                                    
+
+> Backbone Archi. Model ImageNet iWildCam ID RAV2 Ske. Obj. O.M. H.M. ID OOD H.M. Update B/16 FFT 81.3 65.6 36.6 70.7 45.1 50.7 53.7 64.7 50.3 34.1 40.6 LP-FT 81.7 73.5 42.5 72.1 50.3 55.1 58.7 68.3 49.7 34.7 40.9 WiseFT 82.4 72.6 44.4 72.6 49.8 54.5 58.8 68.6 48.5 37.2 42.1 FLYP 82.6 71.6 48.9 72.8 49.6 55.5 59.7 69.3 50.1 36.3 42.1 ARF 82.7 75.6 50.3 72.8 51.8 55.8 61.3 70.4 -Lipsum-FT 83.3 75.9 49.9 73.6 51.4 54.4 61.0 70.5 -RAda-FT 81.4 75.5 51.7 71.9 50.4 56.8 61.3 69.9 -Ours 83.3 71.6 54.9 74.1 51.8 58.4 62.2 71.2 51.3 37.8 43.5
+> B/32 FFT 76.2 57.2 20.3 64.3 39.5 40.6 44.4 56.1 37.2 22.6 28.1 WiseFT 77.6 65.4 28.2 66.9 45.4 45.2 50.2 61.0 40.8 27.0 32.5 FLYP 77.6 66.4 28.2 66.9 45.4 45.2 50.4 61.1 39.3 25.5 30.9 Ours 79.4 62.4 32.6 68.2 44.5 49.2 51.4 62.4 42.1 29.3 34.5
+> Freeze B/16 Zero-shot 68.3 77.7 49.9 61.9 48.3 54.0 58.4 63.0 8.7 11.0 9.7 LinearProb 79.9 70.8 46.4 69.8 46.9 52.1 57.2 66.7 44.5 31.1 36.6
+> Ours (PETL) 80.1 73.5 51.4 70.3 49.4 55.7 60.1 68.7 45.5 30.3 36.4 B/32 Zero-shot 63.4 69.3 31.6 56.0 42.3 44.4 48.7 55.1 5.3 7.3 6.1 Ours (PETL) 76.1 63.6 30.5 64.5 42.3 46.7 49.5 60.0 34.7 24.5 28.7
+
+Table 1: Experimental results of the distribution shift on ImageNet and iWildCam. We compare Ours with previous methods of backbone update and freeze training. The ‘O.M.’ and ‘H.M.’ denote the OOD mean and harmonic mean of ID and OOD mean. experiments, and ResNet50 [19] for few-shot learning experiments. For fair comparison, we follow most hyperparameter settings from a previous transfer learning method [42]. Detailed hyperparameter settings are provided in the Supplementary Material. Unless otherwise specified, we fully fine-tune the CLIP model by updating the entire network. For parameter-efficient transfer learning, we freeze the backbone and update only a single additional multi-layer perceptron (MLP) placed at the end of each image and text encoder. 
+
+## 4.1 Distribution Shift 
+
+We evaluate the proposed method under distribution shift using in-distribution (ID) datasets, in-cluding ImageNet [11] and iWildCam [4], together with their corresponding out-of-distribution (OOD) datasets. We fine-tune CLIP models only on the ID datasets and report performance on both ID and OOD datasets. For OOD evaluation, we use ImageNet-R [22], ImageNet-A [23], ImageNet-V2 [36], ImageNet-Sketch [41], and ObjectNet [3]. Following previous studies [42, 50], we report accuracy (%) except iWildCam, for which we report macro F1 (%). 
+
+Comparison with state-of-the-art methods. We compare our method with prior state-of-the-art approaches, including LinearProb [35], FFT [35], LP-FT [27], WiseFT [42], FLYP [16], ARF [18], Lipsum-FT [32], and RAda-FT [7]. As shown in Table 1, our method improves ID performance and achieves the best OOD performance. In particular, it improves OOD performance by 0.9% over the previous state-of-the-art method without sacrificing ID accuracy, which remains the highest at 83.3%. Across all ImageNet-based datasets, our 10 OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING 1 5 10 15 20 25 
+
+> Epoch
+> 0.5 0.6 0.7 0.8 0.9 1.0
+> Loss Train Eval
+
+(a) Loss (FLYP) 1 5 10 15 20 25  
+
+> Epoch
+> 3.0 3.5 4.0 4.5 5.0 5.5
+> Loss Train Eval
+
+(b) Loss (Ours) 10 15 20 25  
+
+> Epoch
+> 80 81 82 83
+> Accuracy (%)
+> FFT Wise-FT FLYP Ours
+
+(c) Accuracy (ID) 10 15 20 25  
+
+> Epoch
+> 62 64 66 68 70
+> Accuracy (%)
+> FFT Wise-FT FLYP Ours
+
+(d) Accuracy (H.M.) 
+
+Figure 4: (a-b) Training and evaluation losses for ImageNet transfer learning with ViT-B/16. 
+
+(c-d) ID accuracy and harmonic mean under extended training. method improves the harmonic mean of ID and OOD performance by 0.7% over the previous state of the art. On iWildCam, it improves the harmonic mean of macro F1 score by 1.4%. Notably, our parameter-efficient variant, denoted as Ours (PETL), achieves competitive performance compared with full backbone update methods such as FFT, LP-FT, and WiseFT on ImageNet, despite updating only a single MLP layer. This result suggests that our method can learn rich transferable representations with a minimal number of trainable parameters. 
+
+Overfitting under extended training. Figure 4 presents overfitting under extended training. In Figure 4a, the training loss continues to decrease, whereas the evaluation loss first decreases and then increases, indicating typical overfitting. This trend shows that the model increasingly fits the ID training distribution but gradually loses its ability to generalize to unseen or shifted distributions. In contrast, our method consistently reduces both training and evaluation losses, as shown in Figure 4b. This result indicates that the transformation-aware prompt conditioning and the re-calibrated contrastive loss regularize training beyond early optimization. Figures 4c and 4d illustrate the effect of overfitting on model performance. When we extend the training duration of several state-of-the-art methods, both ID performance and the harmonic mean decline as training progresses. This degradation shows that additional optimization can harm transferability when the training objective does not sufficiently regu-larize the model against distribution-specific patterns. By contrast, our method consistently improves ID performance while increasing the harmonic mean. These results indicate that our method remains effective with extended training and avoids the OOD generalization degradation observed in existing approaches. The proposed method enables longer, more stable fine-tuning, allowing the model to benefit from additional training without sacrificing robustness to distribution shift. Additional details are provided in the Supplementary Material. 
+
+## 4.2 Transfer Learning 
+
+We evaluate transfer learning performance on diverse downstream datasets. We compare our method with previous approaches on six datasets: Caltech101 [28], PCam [39], ImageNet [11], Flowers102 [33], StanfordCars [26], and iWildCam [4]. As shown in Table 2, our method achieves the best performance on most datasets and improves the average performance by 0.8% over the previous state of the art. These results demonstrate that the re-calibrated contrastive loss effectively transfers generalized representations to diverse target domains. OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING 11 
+
+Model Caltech101 PCam ImageNet Flowers102 StanfordCars iWildCam Total Mean Zero-shot 88.7 54.0 68.3 71.0 64.7 8.7 59.3 LinearProb 94.8 82.6 79.9 95.9 83.1 44.5 80.1 FFT 97.2 89.1 81.4 90.4 84.4 50.3 82.1 LP-FT 96.9 89.0 81.8 97.9 89.4 49.7 84.1 FLYP 97.6 90.3 82.6 97.7 89.6 50.1 84.6 Ours 97.9 89.4 83.3 98.9 91.4 51.3 85.4 
+
+Table 2: Experimental results of transfer learning on six downstream datasets. We use ViT-B/16 as a backbone network for all methods. 1 2 4 8 16 60 65 70 75 
+
+Average    
+
+> Zeroshot CoOp CLIP-A Tip APE Ours
+> 1 2 4816 58 60 62 64 66
+
+ImageNet    
+
+> Zeroshot CoOp CLIP-A Tip APE Ours
+> 1 2 4816 40 50 60 70
+
+DTD    
+
+> Zeroshot CoOp CLIP-A Tip APE Ours
+> 1 2 4816 10 20 30 40
+
+FGVC    
+
+> Zeroshot CoOp CLIP-A Tip APE Ours
+> 1 2 4816 84 86 88 90 92 94
+
+Caltech101    
+
+> Zeroshot CoOp CLIP-A Tip APE Ours
+> 1 2 4816 70 80 90
+
+OxfordFlowers    
+
+> Zeroshot CoOp CLIP-A Tip APE Ours
+> 1 2 4816 65 70 75 80
+
+UCF101    
+
+> Zeroshot CoOp CLIP-A Tip APE Ours
+> 1 2 4816 40 50 60 70 80
+
+EuroSat    
+
+> Zeroshot CoOp CLIP-A Tip APE Ours
+> 1 2 4816 72 74 76 78
+
+Food101    
+
+> Zeroshot CoOp CLIP-A Tip APE Ours
+> 1 2 4816 60 65 70
+
+SUN397    
+
+> Zeroshot CoOp CLIP-A Tip APE Ours
+> 1 2 4816 60 65 70 75
+
+StanfordCars     
+
+> Zeroshot CoOp CLIP-A Tip APE Ours
+> 1 2 4816 82 84 86 88 90
+
+OxfordPets 
+
+> Zeroshot CoOp CLIP-A Tip APE Ours
+
+Shots Accuracy (%) 
+
+Figure 5: Experimental results of few-shot learning using a ResNet50 backbone. We compare training-based adaptation methods with zero-shot CLIP on 11 few-shot benchmarks. 
+
+## 4.3 Few-shot Learning 
+
+We conduct few-shot learning experiments, as shown in Figure 5, to evaluate whether the proposed method can adapt a pre-trained model using limited domain-specific data. This setting represents a practical and important evaluation protocol for real-world transfer learning. We use 11 datasets: Caltech [28], Describable Textures Dataset (DTD) [8], 102 Category Flower Dataset [33], ImageNet [11], UCF101 [38], FGVC-Aircraft Benchmark [31], Eu-roSAT [20], Food101 [5], SUN397 [43], StanfordCars [26], and Oxford-IIIT Pet [34]. We evaluate five few-shot settings with 1, 2, 4, 8, and 16 shots per dataset while keeping the 12 OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING                           
+
+> Image Text ID RAV2 Ske. Obj. OOD Mean H.M. CLIP 63.4 69.3 31.6 56.0 42.3 44.4 48.7 55.1 Random Crop Fix 78.0 59.6 29.8 66.0 41.5 47.6 48.9 60.1 Random Crop Misalign. 71.2 56.6 27.1 60.5 38.0 43.4 45.1 55.2 RandAug Fix 78.6 61.7 31.8 68.2 43.5 48.3 50.7 61.6 RandAug Misalign. 73.1 58.4 29.4 63.0 40.3 44.9 47.2 57.3 RandAug Align. 79.4 62.4 32.6 68.2 44.5 49.2 51.4 62.4
+
+Table 3: Experimental results of transformation-aware prompt conditioning on ViT-B/32 backbone. A misaligned fixed descriptor consistently degrades performance, whereas the correct transformation descriptor improves performance. backbone frozen. We compare our method with state-of-the-art few-shot adaptation methods, including CLIP-Adapter [15], CoOp [49], Tip [48], and APE [50]. Our method improves performance by 0.8% in both the 1-shot and 16-shot settings compared with the previous state of the art. It also consistently performs well across diverse fine-grained classification datasets, demonstrating stronger generalization than prompt tuning and adapter-based approaches. 
+
+## 4.4 Ablation Study 
+
+We investigate the importance of transformation-aware prompt conditioning. Because VLMs depend on precise correspondence between visual and textual representations, image augmen-tations can misalign visual features with their paired text prompts. We design an ablation study to show that enforcing consistency between the image transformation and its fixed text descriptor during augmentation prevents this misalignment. We also analyze strategies for constructing the augmented contrastive space and evaluate the re-calibrated contrastive loss, then isolate the objective and components such as the loss and multi-sample fusion. 
+
+4.4.1 Transformation-Aware Prompt Conditioning 
+
+We evaluate the importance of transformation-level consistency between augmented images and text prompts. In this experiment, we transfer a ViT-B/32 backbone to ImageNet. We apply image augmentation using either random crop or RandAug [10]. Text prompts are evaluated under three conditions: fixed, misaligned, and aligned. The fixed condition uses text prompts without a transformation descriptor. The misaligned condition randomly inserts a descriptor for a different transformation into the text prompt. The aligned condition uses text prompts that correctly describe the augmentation applied to the image. As shown in Table 3, a mismatched descriptor obtains a 57.3% harmonic mean under RandAug, below the descriptor-free baseline of 61.6%, while the correct descriptor reaches 62.4%. These results show that a correct transformation descriptor is more effective than descriptor-free or mismatched conditioning for VLM transfer learning. Comprehensive results are provided in the Supplementary Material. 
+
+4.4.2 Re-calibrated Contrastive Loss and Space 
+
+We incrementally apply the proposed components, starting from the baseline in Table 4. We use the ViT-B/32 backbone and evaluate ImageNet ID performance for this ablation study. OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING 13                                       
+
+> Adaptive Re-cal. Space Combination ID RAV2 Ske. Obj. OOD Mean H.M. -I↔T77.2 61.3 31.3 66.1 42.1 47.1 49.6 60.4 -I′↔T′77.4 63.1 31.7 66.8 43.3 48.2 50.6 61.2 -+I↔T, I ′↔T′78.1 63.0 32.0 67.4 43.4 48.4 50.8 61.6 -[I I ′]↔[T T ′] 78.2 63.2 32.0 67.3 43.5 48.4 50.9 61.6
+> ✓I↔T78.5 61.9 32.3 68.0 43.5 48.0 50.7 61.6
+> ✓I′↔T′78.4 63.0 32.4 67.3 43.9 48.3 51.0 61.8
+> ✓+I↔T, I ′↔T′79.0 62.7 32.6 68.0 43.8 48.4 51.1 62.0
+> ✓[I I ′]↔[T T ′] 79.4 62.4 32.6 68.2 44.5 49.2 51.4 62.4
+
+Table 4: Experimental results of our re-calibrated contrastive loss and contrastive space on ViT-B/32 backbone. Performance is measured in terms of accuracy with respect to the applied loss function. I ↔T denotes image-text and text-image match ( e.g ., red region in Figure 2) and I′↔T′ is a transformation-conditioned augmented match ( e.g ., blue region in Figure 2). [I I′]↔[T T ′] represents the four contrastive matches of all clean and transformation-conditioned augmented image-text pairs ( e.g ., whole region of the augmented contrastive space).                           
+
+> Objective / Configuration ID RAV2 Ske. Obj. OOD Mean H.M. InfoNCE 73.7 56.3 26.1 63.1 40.4 46.1 46.4 57.0 Focal 78.5 63.3 32.8 67.5 43.3 48.3 51.0 61.8 SoftCE (=SupCon) 78.4 63.1 32.4 67.6 43.4 48.4 51.0 61.8
+> +Re-calibrated 79.0 62.6 32.6 67.8 44.1 48.6 51.1 62.1
+> +Multi-sample fusion 79.4 62.4 32.6 68.2 44.5 49.2 51.4 62.4
+
+Table 5: Objective and component comparison on ImageNet distribution using ViT-B/32. All configurations use transformation-aware prompt conditioning and the augmented contrastive space. The last two rows incrementally add re-calibration and multi-sample fusion to SoftCE. The baseline, which uses only image-text matches without adaptive re-calibration, achieves 77.2% accuracy on the ID dataset and 60.4% harmonic mean. Expanding the contrastive space, such as using + or , improves performance by approximately 1% compared with learning in a single space, such as or . This result indicates that richer supervision from augmented pairs improves generalization. A similar improvement is observed when applying the proposed re-calibrated contrastive loss. Furthermore, the re-calibrated contrastive loss consistently improves performance by approximately 1% across all contrastive space configurations. Together, these results confirm that the augmented contrastive space and re-calibrated contrastive loss provide complementary benefits, improving VLM transfer learning performance by approximately 2%. 
+
+4.4.3 Objective and Component Isolation 
+
+Table 5 compares the objective baselines and isolates the proposed components. Every configuration already includes transformation-aware prompt conditioning and the augmented contrastive space. In our cross-modal setting, SoftCE is equivalent to canonical SupCon because there is no within-modality self term to exclude. When added to the SoftCE baseline with transformation-aware prompt conditioning and the augmented contrastive space, re-14 OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING 
+
+calibration and multi-sample fusion further improve ID accuracy by 1.0% and H.M. by 0.6%. The differences in this table therefore reflect only the additional contributions of re-calibration and multi-sample fusion, rather than the total gain of our training framework. 
+
+# 5 Discussion 
+
+This section discusses the strengths and limitations to guide future research directions. Our method introduces transformation-aware prompt conditioning with image augmentation for VLM transfer learning without the need for large language models. Because augmentation is an effective regularization strategy, it should also be carefully considered in VLM training. Our approach leverages such augmentations to improve transfer learning performance and reduce overfitting, particularly under extended training settings. Notably, previous methods show degraded performance on OOD datasets as training duration increases, whereas our method remains more stable. Our re-calibrated contrastive loss strengthens the learning signal from multiple positive pairs in the augmented space, thereby mitigating positive-gradient dilution. However, con-structing the augmented contrastive space requires clean and transformed data from each training image, increasing training cost. Relative to FLYP, per-step runtime and peak memory are 1 .0× at a batch size of 8 and 1 .6× at a batch size of 64, respectively. Multi-sample fusion is applied to features only during training, so inference cost is identical to that of the backbone. Detailed analysis is provided in the Supplementary Material. We therefore argue that enabling sufficiently long training without severe overfitting provides a favorable trade-off. Moreover, the compatibility of our method with parameter-efficient transfer learning and few-shot scenarios highlights its practicality for real-world applications, where adaptation with limited labeled data is often required. Looking ahead, it would be valuable to construct a predefined set of augmentation combinations from the large space of possible image and text transformations, following strategies such as AutoAug [9] or AugMix [21]. These directions may further improve the effectiveness and robustness of Vision-Language Models across diverse transfer learning scenarios. 
+
+# 6 Conclusion 
+
+This paper presents a practical framework for transfer learning of Vision-Language Models. Our transformation-aware prompt conditioning improves model regularization while preserv-ing transformation-level consistency between image and text modalities. The augmented contrastive space further supports learning from clean, transformed, and cross-paired image-text matches. Our re-calibrated contrastive loss mitigates positive-gradient dilution under a uniform soft target as the number of positives increases, allowing the model to benefit from broader positive exposure. Multi-sample fusion provides additional regularization without introducing prompt-level ambiguity. Experiments on ImageNet and iWildCam demonstrate strong transferability in both in-distribution and out-of-distribution settings. Our method mitigates overfitting and consistently improves transfer-learning performance across diverse downstream datasets. It also performs effectively on 11 few-shot benchmarks and remains stable under extended training. These findings encourage further investigation of transformation-aware prompt conditioning and loss re-calibration for robust VLM transfer learning. OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING 15 
+
+Acknowledgments. This research was supported by the National Research Foundation of Korea (NRF), Electronics and Telecommunications Research Institute (ETRI), and Institute of Information & Communications Technology Planning & Evaluation (IITP), funded by the Korean government [26CS1100, Development of Proprietary Physical AI-based Small-scale Computers and Integrated Soft Suits], and the Korean government (MSIT) (RS-2026-25518808, RS-2026-25617480, and IITP-2026-RS-2023-00255968). 
+
+# References 
+
+[1] Jean-Baptiste Alayrac, Jeff Donahue, Pauline Luc, Antoine Miech, Iain Barr, Yana Hasson, Karel Lenc, Arthur Mensch, Katherine Millican, Malcolm Reynolds, et al. Flamingo: a visual language model for few-shot learning. Advances in Neural Informa-tion Processing Systems , 2022. [2] Bang An, Sicheng Zhu, Michael-Andrei Panaitescu-Liess, Chaithanya Kumar Mummadi, and Furong Huang. PerceptionCLIP: Visual classification by inferring and conditioning on contexts. In International Conference on Learning Representations , 2024. [3] Andrei Barbu, David Mayo, Julian Alverio, William Luo, Christopher Wang, Dan Gutfre-und, Josh Tenenbaum, and Boris Katz. Objectnet: A large-scale bias-controlled dataset for pushing the limits of object recognition models. Advances in Neural Information Processing Systems , 2019. [4] Sara Beery, Elijah Cole, and Arvi Gjoka. The iwildcam 2020 competition dataset. arXiv ,2020. [5] Lukas Bossard, Matthieu Guillaumin, and Luc Van Gool. Food-101 – mining discrimi-native components with random forests. In European Conference on Computer Vision ,2014. [6] Binghui Chen, Weihong Deng, and Junping Du. Noisy softmax: Improving the gen-eralization ability of dcnn via postponing the early softmax saturation. In IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2017. [7] Liang Chen, Ghazi Shazan Ahmad, Tianjun Yao, Lingqiao Liu, and Zhiqiang Shen. One last attention for your vision-language model. In IEEE/CVF International Conference on Computer Vision , pages 1464–1473, 2025. [8] Mircea Cimpoi, Subhransu Maji, Iasonas Kokkinos, Sammy Mohamed, and Andrea Vedaldi. Describing textures in the wild. In IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2014. [9] Ekin D Cubuk, Barret Zoph, Dandelion Mane, Vijay Vasudevan, and Quoc V Le. Autoaugment: Learning augmentation strategies from data. In IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2019. [10] Ekin D Cubuk, Barret Zoph, Jonathon Shlens, and Quoc V Le. Randaugment: Practical automated data augmentation with a reduced search space. In IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops , 2020. 16 OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING 
+
+[11] Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei. Imagenet: A large-scale hierarchical image database. In IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2009. [12] Jiankang Deng, Jia Guo, Niannan Xue, and Stefanos Zafeiriou. Arcface: Additive angular margin loss for deep face recognition. In IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2019. [13] Jeff Donahue, Yangqing Jia, Oriol Vinyals, Judy Hoffman, Ning Zhang, Eric Tzeng, and Trevor Darrell. Decaf: A deep convolutional activation feature for generic visual recognition. In International Conference on Machine Learning , 2014. [14] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Sylvain Gelly, et al. An image is worth 16x16 words: Transformers for image recognition at scale. International Conference on Learning Representations , 2020. [15] Peng Gao, Shijie Geng, Renrui Zhang, Teli Ma, Rongyao Fang, Yongfeng Zhang, Hongsheng Li, and Yu Qiao. Clip-adapter: Better vision-language models with feature adapters. International Journal of Computer Vision , 2023. [16] Sachin Goyal, Ananya Kumar, Sankalp Garg, Zico Kolter, and Aditi Raghunathan. Fine-tune like you pretrain: Improved finetuning of zero-shot vision models. In IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2023. [17] Jean-Bastien Grill, Florian Strub, Florent Altché, Corentin Tallec, Pierre Richemond, Elena Buchatskaya, Carl Doersch, Bernardo Avila Pires, Zhaohan Guo, Mohammad Gheshlaghi Azar, et al. Bootstrap your own latent-a new approach to self-supervised learning. Advances in Neural Information Processing Systems , 2020. [18] Jinwei Han, Zhiwen Lin, Zhongyisun Sun, Yingguo Gao, Ke Yan, Shouhong Ding, Yuan Gao, and Gui-Song Xia. Anchor-based robust finetuning of vision-language models. In 
+
+IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2024. [19] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep residual learning for image recognition. In IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2016. [20] Patrick Helber, Benjamin Bischke, Andreas Dengel, and Damian Borth. Introducing eurosat: A novel dataset and deep learning benchmark for land use and land cover classification. In IEEE International Geoscience and Remote Sensing Symposium , 2018. [21] Dan Hendrycks, Norman Mu, Ekin D. Cubuk, Barret Zoph, Justin Gilmer, and Balaji Lakshminarayanan. AugMix: A simple data processing method to improve robustness and uncertainty. International Conference on Learning Representations , 2020. [22] Dan Hendrycks, Steven Basart, Norman Mu, Saurav Kadavath, Frank Wang, Evan Dorundo, Rahul Desai, Tyler Zhu, Samyak Parajuli, Mike Guo, et al. The many faces of robustness: A critical analysis of out-of-distribution generalization. In IEEE/CVF International Conference on Computer Vision , 2021. OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING 17 
+
+[23] Dan Hendrycks, Kevin Zhao, Steven Basart, Jacob Steinhardt, and Dawn Song. Natural adversarial examples. In IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2021. [24] Muhammad Uzair Khattak, Hanoona Rasheed, Muhammad Maaz, Salman Khan, and Fahad Shahbaz Khan. Maple: Multi-modal prompt learning. In IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2023. [25] Prannay Khosla, Piotr Teterwak, Chen Wang, Aaron Sarna, Yonglong Tian, Phillip Isola, Aaron Maschinot, Ce Liu, and Dilip Krishnan. Supervised contrastive learning. 
+
+Advances in Neural Information Processing Systems , 2020. [26] Jonathan Krause, Michael Stark, Jia Deng, and Li Fei-Fei. 3d object representations for fine-grained categorization. In IEEE/CVF International Conference on Computer Vision Workshops , 2013. [27] Ananya Kumar, Aditi Raghunathan, Robbie Jones, Tengyu Ma, and Percy Liang. Fine-tuning can distort pretrained features and underperform out-of-distribution. arXiv ,2022. [28] Fei-Fei Li, Marco Andreeto, Marc’Aurelio Ranzato, and Pietro Perona. Caltech 101, 2022. [29] Junnan Li, Ramprasaath Selvaraju, Akhilesh Gotmare, Shafiq Joty, Caiming Xiong, and Steven Chu Hong Hoi. Align before fuse: Vision and language representation learning with momentum distillation. Advances in Neural Information Processing Systems , 2021. [30] Tsung-Yi Lin, Priya Goyal, Ross Girshick, Kaiming He, and Piotr Dollár. Focal loss for dense object detection. In IEEE/CVF International Conference on Computer Vision ,2017. [31] Subhransu Maji, Esa Rahtu, Juho Kannala, Matthew Blaschko, and Andrea Vedaldi. Fine-grained visual classification of aircraft. arXiv , 2013. [32] Giung Nam, Byeongho Heo, and Juho Lee. Lipsum-FT: Robust fine-tuning of zero-shot models using random text guidance. In International Conference on Learning Representations , 2024. [33] Maria-Elena Nilsback and Andrew Zisserman. Automated flower classification over a large number of classes. In Indian Conference on Computer Vision, Graphics and Image Processing , 2008. [34] Omkar M. Parkhi, Andrea Vedaldi, Andrew Zisserman, and C. V. Jawahar. Cats and dogs. In IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2012. [35] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, et al. Learn-ing transferable visual models from natural language supervision. In International Conference on Machine Learning , 2021. [36] Benjamin Recht, Rebecca Roelofs, Ludwig Schmidt, and Vaishaal Shankar. Do imagenet classifiers generalize to imagenet? In International Conference on Machine Learning ,2019. 18 OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING 
+
+[37] Manli Shu, Weili Nie, De-An Huang, Zhiding Yu, Tom Goldstein, Anima Anandkumar, and Chaowei Xiao. Test-time prompt tuning for zero-shot generalization in vision-language models. Advances in Neural Information Processing Systems , 2022. [38] Khurram Soomro, Amir Roshan Zamir, and Mubarak Shah. Ucf101: A dataset of 101 human actions classes from videos in the wild. arXiv , 2012. [39] Bastiaan S Veeling, Jasper Linmans, Jim Winkens, Taco Cohen, and Max Welling. Rotation equivariant cnns for digital pathology. In International Conference on Medical Image Computing and Computer-Assisted Intervention , pages 210–218. Springer, 2018. [40] Vikas Verma, Alex Lamb, Christopher Beckham, Amir Najafi, Ioannis Mitliagkas, David Lopez-Paz, and Yoshua Bengio. Manifold mixup: Better representations by interpolating hidden states. In International Conference on Machine Learning , 2019. [41] Haohan Wang, Songwei Ge, Zachary Lipton, and Eric P Xing. Learning robust global representations by penalizing local predictive power. Advances in Neural Information Processing Systems , 2019. [42] Mitchell Wortsman, Gabriel Ilharco, Jong Wook Kim, Mike Li, Simon Kornblith, Rebecca Roelofs, Raphael Gontijo Lopes, Hannaneh Hajishirzi, Ali Farhadi, Hongseok Namkoong, et al. Robust fine-tuning of zero-shot models. In IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2022. [43] Jianxiong Xiao, James Hays, Krista A Ehinger, Aude Oliva, and Antonio Torralba. Sun database: Large-scale scene recognition from abbey to zoo. In IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2010. [44] Jason Yosinski, Jeff Clune, Yoshua Bengio, and Hod Lipson. How transferable are features in deep neural networks? Advances in Neural Information Processing Systems ,2014. [45] Tao Yu, Zhihe Lu, Xin Jin, Zhibo Chen, and Xinchao Wang. Task residual for tuning vision-language models. In IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2023. [46] Sangdoo Yun, Dongyoon Han, Seong Joon Oh, Sanghyuk Chun, Junsuk Choe, and Youngjoon Yoo. Cutmix: Regularization strategy to train strong classifiers with localiz-able features. In IEEE/CVF International Conference on Computer Vision , 2019. [47] Hongyi Zhang, Moustapha Cisse, Yann N Dauphin, and David Lopez-Paz. mixup: Beyond empirical risk minimization. International Conference on Learning Representa-tions , 2018. [48] Renrui Zhang, Rongyao Fang, Wei Zhang, Peng Gao, Kunchang Li, Jifeng Dai, Yu Qiao, and Hongsheng Li. Tip-adapter: Training-free clip-adapter for better vision-language modeling. arXiv , 2021. [49] Kaiyang Zhou, Jingkang Yang, Chen Change Loy, and Ziwei Liu. Learning to prompt for vision-language models. International Journal of Computer Vision , 2022. [50] Xiangyang Zhu, Renrui Zhang, Bowei He, Aojun Zhou, Dong Wang, Bin Zhao, and Peng Gao. Not all features matter: Enhancing few-shot clip with adaptive prior refinement. 
+
+arXiv , 2023. OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING 19 
+
+# A Experiment Details 
+
+We clarify the hyperparameter settings used in our experiments. Tables 6 to 9 show the details of hyperparameters for experiments of our transfer learning, distribution shift, and PETL. †
+
+denotes PETL, which updates a few parameters, so we employ a large batch size. Few-shot classification closely follows APE, with only the learning rate and weight decay being set differently for each dataset. The transfer learning task requires approximately 6 hours on four RTX 3090 GPUs, whereas the other tasks use a single GPU. The PyTorch version is 2.2.1 + cu121, and the Python version is 3 .10. Table 6: Default hyperparameters used in our experiments. LR denotes learning rate. Hyperparameter Setting Optimizer AdamW Betas (0.9, 0.999) Scheduler cosine Warmup LR / epoch 0.0 / 1 RandAug (7, 0.5) Interpolation bicubic Table 7: Hyperparameters of the transfer learning task. Hyperparameter Setting Backbone B/16 Batch size 640 Epoch 100 LR 5.0e−6
+
+Adapter LR 4.0e−4
+
+Weight decay 1.0e−2
+
+Backbone B/16 B/16 † B/32 B/32 †
+
+Batch size 640 2048 512 2048 Epoch 25 25 25 25 LR 1.25 e−6 - 1.25 e−6 -Adapter LR 1.0e−4 1.0e−3 1.0e−4 1.0e−3
+
+Weight decay 1.0e−2 1.0e−1 1.0e−2 1.0e−2
+
+Table 8: Details of hyperparameter settings for the distribution shift experiments on ImageNet. Backbone B/16 B/16 † B/32 B/32 †
+
+Batch size 640 2048 512 2048 Epoch 45 25 45 25 LR 5.0e−6 - 5.0e−6 -Adapter LR 1.0e−4 1.0e−2 1.0e−4 1.0e−2
+
+Weight decay 1.0e−2 1.0e−2 1.0e−2 1.0e−2
+
+Table 9: Details of hyperparameter settings for the distribution shift experiments on iWildCam. 
+
+# B Additional Diagnostics and Ablations 
+
+Gradient and optimization stability. The re-calibrated objective retains a stronger gradient than SoftCE as the number of positives increases, as shown in Table 10. Across 800 random batches, both the loss and gradients remain finite, including an adversarial setting with substantially more positives than negatives, for which the gradient norm is 0.083. Over three seeds, ImageNet ID accuracy and H.M. are 79 .4% ± 0.1 and 62 .5% ± 0.1, respectively. 20 OH, KANG, RYU: RE-CALIBRATED CONTRASTIVE LOSS FOR PROMPT CONDITIONING 
+
+|PPP(i)| 1 2 4 8 16 Gradient ratio (ours / SoftCE) 1.46 1.68 1.79 1.89 1.81 
+
+Table 10: Gradient-norm ratio between the re-calibrated objective and SoftCE. 
+
+Training efficiency. The additional clean and transformed branches increase training com-putation, as quantified in Table 11. Across the evaluated batch sizes, runtime and peak memory are at most 1 .7× and 1 .6× those of FLYP, respectively. Inference uses the original encoders and therefore remains unchanged. 
+
+Batch size B 8 16 32 64 Runtime (ours / FLYP) 1.0× 1.1× 1.6× 1.7×
+
+Peak memory (ours / FLYP) 1.0× 1.2× 1.4× 1.6×
+
+Table 11: Per-step training overhead relative to FLYP. 
+
+Transformation count. We use k = 2 to follow RandAug standard two-operation policy. As shown in Table 12, performance is stable for k ∈ { 2, 3}.
+
+k ID R A V2 Ske. Obj. OOD Mean H.M. 1 75.8 61.6 31.5 64.9 41.9 48.7 49.7 60.0 2 (default) 79.4 62.4 32.6 68.2 44.5 49.2 51.4 62.4 3 79.4 63.2 32.8 68.6 44.6 49.3 51.7 62.6 
+
+Table 12: Sensitivity to the number of sampled image transformations k.
+
+# C Additional Results 
+
+We present the additional experimental results. Figure 6 illustrates overfitting under extended training on ImageNet and its distribution-shifted variants. 10 15 20 25                      
+
+> Epoch
+> 62 64 66 68 70
+> Accuracy (%)
+> Harmonic Mean
+> FFT Wise-FT FLYP Ours
+> 10 15 20 25
+> Epoch
+> 80 81 82 83
+> Accuracy (%)
+> ID
+> FFT Wise-FT FLYP Ours
+> 10 15 20 25
+> Epoch
+> 50 52 54 56 58 60 62
+> Accuracy (%)
+> OOD
+> FFT Wise-FT FLYP Ours
+> 10 15 20 25
+> Epoch
+> 60 62 64 66 68 70 72 74
+> Accuracy (%)
+> ImageNet-R
+> FFT Wise-FT FLYP Ours
+> 10 15 20 25
+> Epoch
+> 35 40 45 50 55
+> Accuracy (%)
+> ImageNet-A
+> FFT Wise-FT FLYP Ours
+> 10 15 20 25
+> Epoch
+> 70 71 72 73 74
+> Accuracy (%)
+> ImageNet-V2
+> FFT Wise-FT FLYP Ours
+> 10 15 20 25
+> Epoch
+> 42 44 46 48 50 52
+> Accuracy (%)
+> ImageNet-Sketch
+> FFT Wise-FT FLYP Ours
+> 10 15 20 25
+> Epoch
+> 48 50 52 54 56 58 60
+> Accuracy (%)
+> Objectnet
+> FFT Wise-FT FLYP Ours
+
+Figure 6: Additional experimental results of extended training with ViT-B/16.

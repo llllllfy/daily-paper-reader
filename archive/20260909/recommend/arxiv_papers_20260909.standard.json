@@ -1,0 +1,289 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-09T21:29:10.984874+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 4,
+    "deep_cap": 6,
+    "deep_selected": 4,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [
+    {
+      "id": "2609.07037v1",
+      "source": "arxiv",
+      "title": "Disentangling Steering Vectors",
+      "abstract": "Activation steering has emerged as a lightweight, inference-time approach to control the behavior of Large Language Models (LLMs). However, traditional steering vectors used to intervene in LLMs' activations, such as those derived from the difference-in-means method, tend to entangle multiple semantic and stylistic concepts into a single composite direction, leading to unpredictable steering effects. Our core objective is to disentangle this composite direction into its constituent concepts. To this end, we propose Steering Vector Dissection, a framework to explicitly isolate individual and semantically consistent features from these composite directions. Specifically, we pair positive and negative activations and take their differences to generate a set of instance-level steering vectors, and train a dedicated Sparse Autoencoder (SAE) directly on them. Quantitative evaluations across two datasets, two models, and two intervention depths show that our method yields a set of semantically consistent basis vectors whose steering effects are mutually distinguishable. Furthermore, we show that this disentanglement enables precise control over model behaviors.",
+      "authors": [
+        "Takeru Hiramatsu",
+        "Kyohei Atarashi",
+        "Koh Takeuchi",
+        "Hisashi Kashima"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-09-07T04:45:32+00:00",
+      "link": "https://arxiv.org/pdf/2609.07037v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "activation steering intervenes in latent space and disentangles composite vectors",
+      "llm_evidence_cn": "激活引导在潜空间干预并解耦复合向量",
+      "llm_evidence": "激活引导在潜空间干预并解耦复合向量",
+      "canonical_evidence": "激活引导在潜空间干预并解耦复合向量",
+      "llm_tldr_en": "The paper addresses entangled steering vectors in LLM activation steering, proposing Steering Vector Dissection to isolate individual concepts. It pairs positive and negative activations to generate instance-level vectors that are semantically consistent. Experiments show improved disentanglement and control. This provides a framework for semantic feature intervention in latent space.",
+      "llm_tldr_cn": "该论文针对大语言模型激活引导中引导向量纠缠多个概念、导致控制不可预测的问题，提出引导向量解剖框架。通过配对正负激活并取差值生成实例级引导向量，显式分离出语义一致的特征。实验表明该方法能有效解耦复合方向，为潜空间语义干预提供了新工具。",
+      "llm_tldr": "该论文针对大语言模型激活引导中引导向量纠缠多个概念、导致控制不可预测的问题，提出引导向量解剖框架。通过配对正负激活并取差值生成实例级引导向量，显式分离出语义一致的特征。实验表明该方法能有效解耦复合方向，为潜空间语义干预提供了新工具。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.07110v1",
+      "source": "arxiv",
+      "title": "Discovering Natural Transformation Vulnerabilities in Black-Box Vision Models",
+      "abstract": "Natural adversarial examples (NAEs) reveal that vision models can fail under realistic semantic changes beyond norm-bounded perturbations. However, generating NAEs in a black-box setting remains challenging because existing generative attacks often rely on surrogate models, learned attack priors, or costly query-based optimization, whereas the natural transformations that expose model vulnerabilities are unknown a priori. We propose \\textbf{Adversarial Scenario Attack (ASA)}, a query-based black-box framework that searches over natural-language editing scenarios using a multimodal language model and a modern text-guided generative editor. ASA jointly explores background, weather, and material/color transformations through winner--loser feedback, and uses a greedy explorer to compose only attack-improving scenarios. Across diverse ImageNet classifiers, ASA achieves substantially higher attack success rates than prior query-based generative attacks while requiring fewer victim-model queries and preserving competitive perceptual quality. Moreover, ASA exhibits both image-level and prompt-level transferability: its adversarial images remain effective across victim-model architectures, while its discovered editing scenarios can be reused across same-class images and, in some cases, across architectures. These findings suggest that vision models possess reusable vulnerabilities to natural transformation patterns, which ASA can efficiently identify in a black-box setting.",
+      "authors": [
+        "Dongsu Song",
+        "DaeYun GO",
+        "Jay Hoon Jung"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-09-07T06:51:08+00:00",
+      "link": "https://arxiv.org/pdf/2609.07110v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "ASA searches over color and material transformations to find natural adversarial vulnerabilities",
+      "llm_evidence_cn": "ASA搜索颜色和材质变换以发现自然对抗脆弱性",
+      "llm_evidence": "ASA搜索颜色和材质变换以发现自然对抗脆弱性",
+      "canonical_evidence": "ASA搜索颜色和材质变换以发现自然对抗脆弱性",
+      "llm_tldr_en": "Proposes ASA, a black-box attack that uses natural language editing scenarios including color transformations to discover natural adversarial examples, revealing semantic vulnerabilities.",
+      "llm_tldr_cn": "针对现有黑盒自然对抗样本生成依赖替代模型或昂贵查询优化的问题，提出ASA框架。ASA利用多模态语言模型和文本引导生成编辑器，通过赢家-输家反馈联合探索背景、天气和材质/颜色变换，以查询方式发现视觉模型的自然变换脆弱性。实验表明该框架能成功找到导致语义错误的具体自然变换，拓展了对抗鲁棒性研究中对颜色等真实扰动的理解。",
+      "llm_tldr": "针对现有黑盒自然对抗样本生成依赖替代模型或昂贵查询优化的问题，提出ASA框架。ASA利用多模态语言模型和文本引导生成编辑器，通过赢家-输家反馈联合探索背景、天气和材质/颜色变换，以查询方式发现视觉模型的自然变换脆弱性。实验表明该框架能成功找到导致语义错误的具体自然变换，拓展了对抗鲁棒性研究中对颜色等真实扰动的理解。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "Adversarial color perturbations and their effect on semantic robustness",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.03629v2",
+      "source": "arxiv",
+      "title": "EraseSAE: Surgical Concept Erasure in Text-to-Video Diffusion Models via Sparse Autoencoders",
+      "abstract": "Recent advances in text-to-video (T2V) diffusion models have demonstrated remarkable generative capabilities, yet their reliance on loosely curated training data raises pressing safety and copyright concerns. Concept erasure offers a principled remedy by removing unwanted semantics from pretrained models while preserving remaining concepts. However, existing approaches typically operate at a coarse granularity misaligned with the fine-grained, distributed nature of concept representations, leading to incomplete removal or degraded generation quality. We argue that surgical erasure fundamentally requires intervention at the level of monosemantic features, where each unit encodes a single interpretable concept. To this end, we propose EraseSAE, a novel framework that leverages sparse autoencoders to achieve surgical concept erasure in DiT-based T2V diffusion models via a principled decompose-attribute-erase pipeline. We first introduce the Partitioned Convolutional Sparse Autoencoder, which decomposes dense spatiotemporal activations into disentangled, interpretable sparse features while preserving spatiotemporal coherence. A contrastive attribution mechanism then contrasts activations from paired prompts to isolate concept-specific feature kernels. At inference, timestep-resolved spatiotemporal masks derived from the identified kernels confine erasure to regions where the target concept is active, leaving unrelated content intact. Extensive experiments across diverse diffusion models and concept erasure tasks demonstrate that EraseSAE achieves precise and robust concept removal with minimal quality degradation, substantially outperforming state-of-the-art methods. The code is available at https://github.com/HiDream-ai/EraseSAE.",
+      "authors": [
+        "Xinghao Wang",
+        "Dong Li",
+        "Wei Yu",
+        "Yingwei Pan",
+        "Tao Gong",
+        "Qi Chu",
+        "Nenghai Yu",
+        "Ting Yao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-09-03T10:23:37+00:00",
+      "link": "https://arxiv.org/pdf/2609.03629v2",
+      "tags": [
+        "keyword:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "intervenes at monosemantic features using sparse autoencoders for concept erasure, embodying latent-space intervention",
+      "llm_evidence_cn": "利用稀疏自编码器在单义特征层面干预以擦除概念，体现潜在空间干预",
+      "llm_evidence": "利用稀疏自编码器在单义特征层面干预以擦除概念，体现潜在空间干预",
+      "canonical_evidence": "利用稀疏自编码器在单义特征层面干预以擦除概念，体现潜在空间干预",
+      "llm_tldr_en": "Addresses coarse-grained concept erasure harming generation quality in T2V diffusion models; proposes EraseSAE that uses sparse autoencoders to identify and edit monosemantic features for surgical concept removal. Experiments show precise erasure while preserving other concepts. Contributes feature-level intervention method for generative safety.",
+      "llm_tldr_cn": "针对文本到视频扩散模型粗粒度概念擦除导致删除不完整或生成质量下降的问题，本文提出EraseSAE框架。该方法利用稀疏自编码器识别单义特征，并在该层面进行外科手术式干预以精确擦除目标概念。实验表明，EraseSAE能有效去除不期望的语义，同时保持其余概念的生成质量。该工作证明了在单义特征层干预是实现精细概念擦除的关键。",
+      "llm_tldr": "针对文本到视频扩散模型粗粒度概念擦除导致删除不完整或生成质量下降的问题，本文提出EraseSAE框架。该方法利用稀疏自编码器识别单义特征，并在该层面进行外科手术式干预以精确擦除目标概念。实验表明，EraseSAE能有效去除不期望的语义，同时保持其余概念的生成质量。该工作证明了在单义特征层干预是实现精细概念擦除的关键。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.09124v1",
+      "source": "arxiv",
+      "title": "Canonical Color as a Lens into Concept Decodability in Vision Encoders and VLMs",
+      "abstract": "Visual encoders construct a representation of the image input for Vision-Language models. How much conceptual, as opposed to immediately visible, information does this representation contain? We use canonical color as a controlled test case to ask whether vision encoders make canonical-color information linearly accessible, even when color is removed from the input image. We construct a dataset of objects with canonical colors, and probe vision encoders for both color and object identity using color and grayscale images. We find that canonical color remains decodable from grayscale images, and is tied to predicted object identity, indicating a conceptual link. Extending this analysis to full VLMs, we find that VLM post-training can have a surprisingly large effect on color decodability in the vision encoder. Overall, canonical color provides a usefully controllable lens for tracing object-level conceptual semantic information in vision encoders and VLMs.",
+      "authors": [
+        "Xiaofu Chen",
+        "Stella Frank",
+        "Yova Kementchedjhieva"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-09-08T17:50:09+00:00",
+      "link": "https://arxiv.org/pdf/2609.09124v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "canonical color decodable from grayscale indicating color-shape entanglement",
+      "llm_evidence_cn": "从灰度图像中能解码典型颜色，揭示颜色与形状纠缠",
+      "llm_evidence": "从灰度图像中能解码典型颜色，揭示颜色与形状纠缠",
+      "canonical_evidence": "从灰度图像中能解码典型颜色，揭示颜色与形状纠缠",
+      "llm_tldr_en": "Probes vision encoders to show canonical color remains decodable even from grayscale images, tied to object identity, revealing entanglement of color and object concepts.",
+      "llm_tldr_cn": "本文针对视觉编码器中的概念可解码性，以典型颜色为测试案例，探究即使输入图像去除颜色（灰度化），编码器是否仍线性保留典型颜色信息。通过构建典型颜色物体数据集并对视觉编码器进行探测，发现从灰度图像中仍能解码出典型颜色，且与预测的物体身份相关，表明颜色与物体概念在表示中纠缠。该研究揭示了视觉编码器中颜色与语义的深层关联，为解耦颜色与形状特征提供了新视角。",
+      "llm_tldr": "本文针对视觉编码器中的概念可解码性，以典型颜色为测试案例，探究即使输入图像去除颜色（灰度化），编码器是否仍线性保留典型颜色信息。通过构建典型颜色物体数据集并对视觉编码器进行探测，发现从灰度图像中仍能解码出典型颜色，且与预测的物体身份相关，表明颜色与物体概念在表示中纠缠。该研究揭示了视觉编码器中颜色与语义的深层关联，为解耦颜色与形状特征提供了新视角。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.03629v1",
+      "source": "arxiv",
+      "title": "EraseSAE: Surgical Concept Erasure in Text-to-Video Diffusion Models via Sparse Autoencoders",
+      "abstract": "Recent advances in text-to-video (T2V) diffusion models have demonstrated remarkable generative capabilities, yet their reliance on loosely curated training data raises pressing safety and copyright concerns. Concept erasure offers a principled remedy by removing unwanted semantics from pretrained models while preserving remaining concepts. However, existing approaches typically operate at a coarse granularity misaligned with the fine-grained, distributed nature of concept representations, leading to incomplete removal or degraded generation quality. We argue that surgical erasure fundamentally requires intervention at the level of monosemantic features, where each unit encodes a single interpretable concept. To this end, we propose EraseSAE, a novel framework that leverages sparse autoencoders to achieve surgical concept erasure in DiT-based T2V diffusion models via a principled decompose-attribute-erase pipeline. We first introduce the Partitioned Convolutional Sparse Autoencoder, which decomposes dense spatiotemporal activations into disentangled, interpretable sparse features while preserving spatiotemporal coherence. A contrastive attribution mechanism then contrasts activations from paired prompts to isolate concept-specific feature kernels. At inference, timestep-resolved spatiotemporal masks derived from the identified kernels confine erasure to regions where the target concept is active, leaving unrelated content intact. Extensive experiments across diverse diffusion models and concept erasure tasks demonstrate that EraseSAE achieves precise and robust concept removal with minimal quality degradation, substantially outperforming state-of-the-art methods. The code is available at https://github.com/HiDream-ai/EraseSAE.",
+      "authors": [
+        "Xinghao Wang",
+        "Dong Li",
+        "Wei Yu",
+        "Yingwei Pan",
+        "Tao Gong",
+        "Qi Chu",
+        "Nenghai Yu",
+        "Ting Yao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-09-03T10:23:37+00:00",
+      "link": "https://arxiv.org/pdf/2609.03629v1",
+      "tags": [
+        "keyword:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "proposes intervention at monosemantic feature level via sparse autoencoders for surgical concept erasure",
+      "llm_evidence_cn": "提出通过稀疏自编码器在单义特征层面进行干预以实现精细概念擦除",
+      "llm_evidence": "提出通过稀疏自编码器在单义特征层面进行干预以实现精细概念擦除",
+      "canonical_evidence": "提出通过稀疏自编码器在单义特征层面进行干预以实现精细概念擦除",
+      "llm_tldr_en": "This paper proposes EraseSAE, a surgical concept erasure method for text-to-video diffusion models using sparse autoencoders. It argues that intervention at monosemantic feature level, where each unit encodes a single interpretable concept, enables precise removal of unwanted semantics while preserving others. The approach targets fine-grained, distributed concept representations to overcome coarse granularity limitations.",
+      "llm_tldr_cn": "针对文本到视频扩散模型中概念擦除粒度过粗的问题，论文提出EraseSAE方法，利用稀疏自编码器提取单义特征，在外科手术式干预层面擦除不需要的概念。该方法能够精准移除目标语义，同时保留其他概念和生成质量。结果证明了在单义特征层面进行干预的有效性，为安全视频生成提供了新的技术路径。",
+      "llm_tldr": "针对文本到视频扩散模型中概念擦除粒度过粗的问题，论文提出EraseSAE方法，利用稀疏自编码器提取单义特征，在外科手术式干预层面擦除不需要的概念。该方法能够精准移除目标语义，同时保留其他概念和生成质量。结果证明了在单义特征层面进行干预的有效性，为安全视频生成提供了新的技术路径。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.05864v1",
+      "source": "arxiv",
+      "title": "Hierarchical Prompt Injector for Domain Generalization Segmentation",
+      "abstract": "Domain Generalized Semantic Segmentation (DGSS) is a challenging task, as vision models often rely on low-level appearance cues that change across domains. In contrast, structural attributes exhibit cross-domain stability, motivating the use of structural priors for DGSS. Existing methods use prompt learning to transfer such priors into DGSS models, but typically encode each class as a single holistic prompt. Moreover, these methods apply prompts uniformly to all pixels, offering no mechanism to adapt when only a subset of object regions is visible due to viewpoint changes, occlusion, and environmental variation. We address this with \\textbf{Spatial Hierarchical Prompts (SHP)} that enrich each class with region-level geometric anchors capturing structural appearance from distinct viewing angles, ensuring complementary coverage under arbitrary viewpoints. Additionally, we propose the \\textbf{Hierarchical Prompt Injector (HPI)}, which enables spatially adaptive prompt injection in foundation models. HPI spatially grounds prompts by modeling their semantic relevance and spatial influence with visual features. Considering the difficulty of learning spatially and semantically aware prompt injection, we further introduce auxiliary supervision to align hierarchical prompts with their corresponding object regions. We achieve 70.62\\% and 72.74\\% mIoU on synthetic-to-real and real-to-real benchmarks, respectively. Code and checkpoints are released at https://github.com/MosukFate/HPI",
+      "authors": [
+        "Xin Kun Lin",
+        "Ruoyu Guo",
+        "Jiaqi Guo",
+        "Maurice Pagnucco",
+        "Yang Song"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-05T03:56:00+00:00",
+      "link": "https://arxiv.org/pdf/2609.05864v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "uses structural priors via spatial hierarchical prompts to overcome appearance changes in domain generalization segmentation",
+      "llm_evidence_cn": "通过空间层次提示注入结构先验以应对域泛化分割中的外观变化",
+      "llm_evidence": "通过空间层次提示注入结构先验以应对域泛化分割中的外观变化",
+      "canonical_evidence": "通过空间层次提示注入结构先验以应对域泛化分割中的外观变化",
+      "llm_tldr_en": "Proposes Spatial Hierarchical Prompts for domain generalized semantic segmentation, injecting structural anchors to reduce reliance on low-level appearance cues like color.",
+      "llm_tldr_cn": "针对域泛化语义分割中模型依赖随域变化的低级外观线索的问题，本文提出空间层次提示（SHP），利用跨域稳定的结构属性来增强分割模型。该方法为每个类别引入区域级几何锚点，捕捉结构信息，并自适应处理部分可见对象。实验表明，SHP在多个域泛化基准上提升了分割精度。该工作表明显式结构先验能有效提升对颜色等外观变化的鲁棒性。",
+      "llm_tldr": "针对域泛化语义分割中模型依赖随域变化的低级外观线索的问题，本文提出空间层次提示（SHP），利用跨域稳定的结构属性来增强分割模型。该方法为每个类别引入区域级几何锚点，捕捉结构信息，并自适应处理部分可见对象。实验表明，SHP在多个域泛化基准上提升了分割精度。该工作表明显式结构先验能有效提升对颜色等外观变化的鲁棒性。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "papers on feature level intervention for color robustness in deep learning",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.06967v1",
+      "source": "arxiv",
+      "title": "Re-calibrated Contrastive Loss for Transformation-Aware Prompt Conditioning in Vision-Language Models",
+      "abstract": "Ensuring effective transfer learning for vision-language models without compromising their generalization performance is crucial. However, many existing methods overlook data characteristics and simply reuse the training strategies adopted during pre-training. Specifically, they treat same-class samples as distinct instances and transform images independently of their paired text prompts, which makes model learning more difficult. We address these limitations through transformation-aware prompt conditioning and a re-calibrated contrastive loss. Fixed text descriptors identify the transformations applied to paired images, providing transformation-level consistency without altering class semantics. This design aligns the image and text branches at the transformation level, enabling richer representations while preserving the models' ability to generalize. In addition, our loss function mitigates positive-gradient dilution in soft-target cross-entropy when each anchor has multiple valid positives. During transfer, our approach treats same-class samples as positives rather than distinct instances, enabling the model to learn domain-specific features more effectively. Experiments across distribution shift, transfer learning, and few-shot settings demonstrate consistent improvements over existing approaches. Source code for our method is available at https://github.com/SoongE/ReCalCon.",
+      "authors": [
+        "Seungmin Oh",
+        "Seunghun Kang",
+        "Jongbin Ryu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-09-07T03:04:38+00:00",
+      "link": "https://arxiv.org/pdf/2609.06967v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "transformation-level consistency without altering class semantics",
+      "llm_evidence_cn": "变换级一致性且不改变类别语义",
+      "llm_evidence": "变换级一致性且不改变类别语义",
+      "canonical_evidence": "变换级一致性且不改变类别语义",
+      "llm_tldr_en": "The paper proposes transformation-aware prompt conditioning and re-calibrated contrastive loss to improve transfer learning in VLMs, ensuring transformation-level consistency while preserving class semantics.",
+      "llm_tldr_cn": "针对视觉语言模型迁移学习中忽略数据变换、同类样本被独立处理的问题，提出变换感知的提示条件与重校准对比损失，通过固定文本描述符识别图像变换，在保持类别语义不变的前提下实现变换级一致性，提升模型泛化性能，为颜色扰动等变换下的语义保持提供了方法借鉴。",
+      "llm_tldr": "针对视觉语言模型迁移学习中忽略数据变换、同类样本被独立处理的问题，提出变换感知的提示条件与重校准对比损失，通过固定文本描述符识别图像变换，在保持类别语义不变的前提下实现变换级一致性，提升模型泛化性能，为颜色扰动等变换下的语义保持提供了方法借鉴。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "Methods for preserving semantic consistency under color jittering",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
