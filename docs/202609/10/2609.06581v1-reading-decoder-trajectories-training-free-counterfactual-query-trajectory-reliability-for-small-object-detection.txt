@@ -1,0 +1,611 @@
+Title: Reading Decoder Trajectories: Training-Free Counterfactual Query-Trajectory Reliability for Small-Object Detection
+
+URL Source: https://arxiv.org/pdf/2609.06581v1
+
+Published Time: Wed, 09 Sep 2026 01:19:22 GMT
+
+Number of Pages: 11
+
+Markdown Content:
+# Reading Decoder Trajectories: Training-Free Counterfactual Query-Trajectory Reliability for Small-Object Detection 
+
+Zhaoning Shi and Bo Ma 
+
+Beijing Institute of Technology 
+
+Beijing, China 
+
+{3220235133, bma000 }@bit.edu.cn 
+
+Abstract —Small-object detection remains challenging because limited pixels cause information loss and suppress the scale knowledge encoded in pretrained detectors. Existing approaches mainly improve representations through multiscale training, ar-chitecture redesign, or parameter adaptation, implicitly assuming that frozen models lack the required capability. We challenge this assumption and hypothesize that small-object knowledge already exists in frozen detectors but remains underactivated and unstable during query evolution. To test this hypothesis, we propose Counterfactual Query-Trajectory Reliability (CQTR), a training-free framework that elicits latent responses through counterfac-tual scale interventions and interprets candidate reliability from decoder-internal spatial convergence, semantic persistence, and cross-scale conflicts. A small unlabeled training subset selects the appropriate correction mechanism for each model–data stream, without parameter updates or target-domain annotations. Across 27 combinations of nine frozen detectors and three datasets, CQTR consistently improves average precision (AP) and average precision for small objects ( AP s). Closed-loop analyses further show that scale intervention activates latent responses, trajectory evidence predicts ground-truth support, and unlabeled routing selects the more effective branch. CQTR therefore reframes small-object detection from external scale augmentation to the activation and reliability assessment of latent scale knowledge. 
+
+Index Terms —Small-object detection, training-free inference, counterfactual scale intervention, query trajectory interpretation, mechanistic interpretability, frozen object detectors 
+
+I. I NTRODUCTION 
+
+Small-object detection is fundamental to visual perception systems such as autonomous driving, unmanned aerial vehicle perception, and remote-sensing analysis. Because a small ob-ject occupies only a few pixels and feature cells, its visual evidence is easily weakened by spatial downsampling and overwhelmed by background responses. Detecting such objects therefore requires not only sufficient feature resolution, but also the reliable formation of object hypotheses from limited internal evidence. This raises a fundamental question: must small-object capability be acquired through additional training, or is the required scale knowledge already encoded in a pretrained detector but insufficiently activated during standard inference? Set-prediction detectors represented by the Detection Trans-former (DETR) formulate object detection through learnable queries and global matching [1]. Subsequent studies improve their query mechanisms through deformable sampling, dy-namic anchors, query selection, and efficient encoding [2–5]. Nevertheless, their performance on small objects remains sub-stantially lower than that on larger objects. Existing approaches commonly address this gap through multiscale training, high-resolution features, image slicing, or parameter adaptation. These methods improve external representations but do not de-termine whether the resulting gains come from newly learned knowledge or the reactivation of capabilities already present in a frozen model. Meanwhile, existing interpretability methods mainly attribute final predictions to input regions or attention distributions. They provide limited insight into how queries progressively establish spatial and semantic decisions during decoding. We argue that small-object knowledge does not completely disappear from frozen detectors. Instead, spatial compression may leave this knowledge latent or unstable during query evolution. Increasing the inference scale provides a coun-terfactual observation in which compressed object evidence can be reintroduced into the decoding process. However, the same intervention may also amplify background textures and spurious candidates. The central problem is therefore not simply to combine predictions from multiple scales, but to identify which scale-activated responses reflect reliable object knowledge by examining their internal query dynamics, as illustrated in Fig. 1. To address this problem, we propose Counterfactual Query-Trajectory Reliability (CQTR), a training-free framework for activating and assessing latent scale knowledge in frozen detectors. CQTR constructs a counterfactual scale branch and interprets intermediate decoder states through spatial convergence and semantic persistence. It further detects un-reliable candidates from semantic conflicts between native-scale and counterfactual predictions. Because query trajectories and cross-scale conflicts characterize different failure modes, CQTR uses a small unlabeled subset of the corresponding training split to select the appropriate correction mechanism for each model-data stream. The entire framework keeps the detector architecture and parameters unchanged, requires no backpropagation, and accesses no target-domain training annotations. We evaluate CQTR across 27 combinations of nine frozen detectors and three datasets, including COCO2017, TinyPer-arXiv:2609.06581v1 [cs.CV] 6 Sep 2026 (a) Native Inference 
+
+> Frozen Detector
+> Coarse Feature Grid
+> Detections
+
+…
+
+> Small -object knowledge exists, but remains
+> suppressed at the native scale.
+
+(b) Counterfactual Scale 
+
+> Frozen Detector
+> Finer Feature Grid
+> Latent Responses
+
+…
+
+> New responses may also contain background
+> noise and false -positive candidates.
+
+…
+
+(c) Decoder Trajectories     
+
+> Layer1 Layer2 Layer3 Layer4
+> Reliable Query
+> Unstable Query
+> Frozen Detector
+> Decoder Layers
+> Accurate candidates exhibit consistent spatial and
+> semantic evolution. Fig. 1. Motivation for CQTR. Counterfactual scaling activates latent small-object evidence in frozen detectors, while spatial-semantic decoder trajectories distinguish reliable queries from amplified noise.
+
+son, and VisDrone2019. CQTR consistently improves AP, while AP s increases in every setting. Closed-loop analyses show that counterfactual scaling activates latent small-object responses, query-trajectory evidence predicts candidate relia-bility, and unlabeled routing selects the more effective correc-tion mechanism. Internal heatmaps and detection visualizations further connect changes in decoder states to improved small-object recall. These results support the view that small-object detection can be approached as the activation and reliability assessment of latent scale knowledge rather than solely as external scale augmentation. The main contributions are as follows:  
+
+> •
+
+We reformulate small-object failure in frozen detectors as a problem of latent scale-knowledge activation and reli-ability assessment, distinguishing underactivated knowl-edge from genuinely missing capability.  
+
+> •
+
+We introduce CQTR, a training-free framework that in-terprets and corrects scale-activated candidates through counterfactual intervention, spatial-semantic query trajec-tories, and cross-scale semantic conflicts.  
+
+> •
+
+We conduct extensive cross-model and cross-domain ex-periments. Consistent improvements, closed-loop analy-ses, and internal visualizations establish an evidence chain from latent knowledge activation to query assessment and improved small-object detection. II. R ELATED WORK 
+
+A. Small-Object Detection 
+
+Existing small-object detectors can be grouped into rep-resentation enhancement, spatial decomposition, and query optimization. Representation-enhancement methods use fea-ture pyramids, high-resolution branches, or super-resolution reconstruction to recover fine-grained information [6, 7]. Spatial-decomposition methods increase relative object reso-lution through image slicing, local magnification, or density-guided cropping [8–12]. Query-optimization methods improve sampling locations, reference points, and matching mecha-nisms to strengthen small-object modeling in set-prediction detectors [1–5]. These approaches primarily attribute the bottleneck to insufficient visible evidence and learn new scale representations through architecture design or parameter opti-mization. They do not determine whether a frozen detector has already encoded the relevant knowledge. In contrast, we add neither feature levels nor retraining. We expose latent small-object responses through counterfactual scale intervention and study their reliability during decoding. 
+
+B. Internal Model Interpretation 
+
+Existing model-interpretation methods mainly comprise post hoc attribution and internal-mechanism analysis. Post hoc methods localize image regions that influence a final prediction through attention, saliency, or gradient responses [13, 14]. They reveal what the model attends to, but provide limited ev-idence of how a prediction forms inside the network. Internal-mechanism methods analyze intermediate features, neuron activations, or computational paths to identify the internal units and evolution associated with particular behaviors [11, 15]. Most detection explanations, however, remain centered on final outputs and rarely examine how scale changes affect the positional convergence and class evolution of object queries. Rather than attributing predictions externally, CQTR reads decoder trajectories under a counterfactual scale interven-tion and jointly interprets candidate reliability through spatial convergence, semantic persistence, and cross-scale conflict. Counterfactual Scale Branch 
+
+> Frozen Detector
+
+𝐷 0
+
+Baseline Path 
+
+## …
+
+Spatial -semantic Query Trajectory 
+
+## …
+
+Cross -scale Semantic Conflict  
+
+> Input Image 𝒙
+
+𝐷 𝑐 : Counterfactual -scale predictions 𝐷 0
+
+: Native -scale predictions 
+
+> Frozen Detector
+
+## …
+
+𝐷 c
+
+Decoder States 
+
+Layer  LLayer  L-1Layer  L-2
+
+> Layer  L
+> Layer  L-1
+> Layer  L-2
+> Layer  L-3
+> Spatial
+> Convergence
+> Semantic
+> Persistence
+> Trajectory Evidence
+> Trajectory Score
+
+Coordinate 
+
+Restoration 
+
+> Spatial Overlap
+> Conflict Strength
+> Conflict Correction
+> Reliability Routing
+> NMS and Candidate Retention
+> Counterfactual
+> Scale Selection
+
+Counterfactual Image Fig. 2. Overview of CQTR. CQTR interprets native and counterfactual predictions through decoder trajectories and cross-scale semantic conflicts, then uses unlabeled reliability routing to select the correction stream for final fusion. Snowflakes denote frozen parameters. 
+
+This moves small-object explanation from output visualization toward an analysis of query-formation mechanisms. III. M ETHOD 
+
+A. Problem Formulation and Overall Architecture 
+
+Given an input image x and a detector Fθ with frozen parameters, let S0 denote the native preprocessing scale. The native branch produces D0, where each candidate contains a bounding box, class label, and confidence score in the original-image coordinate system: D0 = Fθ (TS0 (x)) . Here, 
+
+TS0 denotes the preprocessing transformation applied to the input image at native scale S0. CQTR changes only the input scale to construct a counterfactual branch and retains box and class responses from the last several decoder layers. Trajectory interpretation and cross-scale conflict interpretation then cor-rect the counterfactual candidates Dc in parallel, after which unlabeled routing selects the more reliable correction stream. We summarize the overall process as bD = F(D0, D c). Here, 
+
+F(·) denotes the training-free correction process composed of query-trajectory interpretation, cross-scale semantic-conflict interpretation, unlabeled stream routing, and candidate fusion, as shown in Fig. 2. 
+
+B. Counterfactual Scale Branch 
+
+Native-scale resizing may compress small objects into only a few feature cells, while uniformly increasing the scale can amplify interpolation redundancy and background noise. CQTR therefore selects the counterfactual scale adaptively according to the input’s spatial compression relative to the native scale. Given the height Hx and width Wx of the original image, we define the spatial compression ratio as ρ(x) = √HxWx 
+
+> S0
+
+. Alarger ratio indicates stronger information compression under native resizing. The counterfactual scale is selected as 
+
+S(x) = 
+
+(
+
+S1, ρ(x) ≤ τp,S2, ρ(x) > τ p, (1) where S1 and S2 are the lower and higher counterfac-tual scales, respectively, and τp is the spatial-compression threshold. With detector parameters frozen, the counterfactual forward pass is Dc = Fθ
+
+ TS(x)(x) . For a detector that dynamically derives spatial relations from the current feature shapes, we use its native forward pass directly. Otherwise, we save and temporarily clear the preset encoder and decoder in-ference sizes before this forward pass. This prompts the model to reconstruct positional embeddings, decoder anchors, and validity masks from the actual multiscale feature shapes. The original sizes are restored immediately afterward. Following spatial-semantic query-trajectory interpretation, counterfactual predictions are mapped back to the original-image coordinate system while the intermediate responses from the final decoder layers are retained. 
+
+C. Three-Step Spatial-Semantic Query-Trajectory Interpreta-tion 
+
+Final confidence ignores how a prediction evolves during decoding. CQTR therefore estimates reliability from spatial convergence over the last three box transitions and semantic persistence over the final four decoder layers, then continu-ously recalibrates counterfactual scores. Assume that the counterfactual branch contains L decoder layers. For final candidate i, let b(l) 
+
+> i
+
+denote its normalized box at layer l, and let p(l) 
+
+> i,y
+
+denote its class response. Its final predicted class is yi = arg max y p(L) 
+
+> i,y
+
+. First, we measure spatial convergence by the geometric mean of intersection over union (IoU) over the last three box transitions: 
+
+ai = exp 
+
+"
+
+13
+
+> L
+
+X
+
+> l=L−2
+
+log 
+
+
+
+max 
+
+
+
+IoU( b(l−1)  
+
+> i
+
+, b(l) 
+
+> i
+
+), ϵ 
+
+ #
+
+. (2) Here, ϵ is a small constant that prevents numerical instability. A larger ai indicates that the query box stabilizes toward the end of decoding, while a smaller ai indicates persistent positional jumps. Spatial convergence alone does not guarantee class re-liability. To measure persistent support for the final class throughout decoding, we compare the final-class response with the strongest class response in each of the last four layers: 
+
+ci = exp 
+
+"
+
+14
+
+> L
+
+X
+
+> l=L−3
+
+log max p(l)
+
+> i,y i
+
+max y p(l)
+
+> i,y
+
+, ϵ 
+
+!!# 
+
+. (3) When the final class remains close to the strongest class in con-secutive decoder layers, ci approaches 1. Frequent switching between classes reduces ci. We then define query-trajectory evidence as the geometric mean of spatial convergence and semantic persistence: ei = √aici. To avoid removing small objects with a fixed threshold, we recalibrate counterfactual confidence only relative to the median evidence of the current image: 
+
+straj  
+
+> i
+
+= clip [0 ,1] 
+
+
+
+siwtraj 
+
+> i
+
+
+
+, (4) where 
+
+wtraj  
+
+> i
+
+= clip [wmin ,w max ](exp[ β (ei − med( e))]) . (5) Here, si is the original confidence of counterfactual candidate i, 
+
+e is the set of trajectory-evidence values for all counterfactual candidates in the current image, and β controls the correction strength. The operator clip (a,b )(·) clips its input to the interval 
+
+(a, b ).
+
+D. Cross-Scale Semantic-Conflict Interpretation 
+
+Stable trajectories may still produce inconsistent semantic explanations across scales because of context drift or class competition. To preserve newly exposed objects, CQTR soft-suppresses only counterfactual candidates that strongly overlap high-confidence native predictions but predict different classes. For counterfactual candidate i, let bci , yci , and sci denote its box, class, and original confidence. The corresponding quantities for native candidate k are b0
+
+> k
+
+, y0
+
+> k
+
+, and s0
+
+> k
+
+. After both prediction streams are restored to the original-image coordinate system, we define confidence-weighted cross-scale spatial overlap as wik = IoU( bci , b0
+
+> k
+
+)ps0
+
+> k
+
+. The maximum overlap with a native candidate of a different class defines the conflict strength: ri = max k: y0  
+
+> k̸=yci
+
+wik . A larger conflict strength indicates a stronger contradiction between the two scale-specific interpretations of the same region. The conflict-corrected score is 
+
+sconf  
+
+> i
+
+= sci max( wmin , 1 − γr i) , (6) where γ controls the suppression strength and wmin is the minimum retention factor. Trajectory recalibration and conflict suppression form par-allel candidate streams and are not applied sequentially. The unlabeled router in the next subsection determines which stream is used. 
+
+E. Unlabeled Stream-Level Reliability Routing and Unified Output 
+
+Query trajectories and cross-scale semantic conflicts capture complementary forms of internal instability, and applying both corrections indiscriminately may suppress useful signals. CQTR therefore estimates reliability from a small unlabeled sample and selects trajectory recalibration or conflict suppres-sion for the entire model-data stream. For each model-data stream, we sample M unlabeled images from the training split using a fixed random seed. We first define stream-level trajectory dispersion as 
+
+¯d = 1
+
+> M
+
+PMm=1 Std i
+
+
+
+e(m)
+
+> i
+
+
+
+. Higher trajectory dispersion means that trajectory evidence more clearly separates can-didate reliability. We define the conflict statistic as ¯r =
+
+> 1
+> M
+
+PMm=1 max i r(m) 
+
+> i
+
+. A larger conflict statistic indicates stronger class competition caused by scale changes. Based on these statistics, we define the stream-level routing variable as 
+
+z = I ¯d ≥ τd ∧ ¯r ≥ τc
+
+ , where τd and τc are the thresholds for trajectory dispersion and conflict strength. The operator 1[ ·]
+
+is the indicator function. We apply query-trajectory recalibra-tion when z = 1 . Otherwise, we apply cross-scale semantic-conflict suppression. After unlabeled calibration, the routing variable remains fixed for the entire model-data stream. The corrected counterfactual predictions are 
+
+eDc =
+
+(
+
+{(bci , y ci , s traj  
+
+> i
+
+)}Qi=1 , z = 1 ,
+
+{(bci , y ci , s conf  
+
+> i
+
+)}Qi=1 , z = 0 . (7) DETR Def.-DETR DAB-DETR DINO RT-DETR RT-DETRv2 RT-DETRv3 D-FINE-S DEIM 
+
+> 020 40 60
+> AP (%)
+> +1.65 +1.53 +1.59 +1.61 +1.12 +0.92 +1.00 +1.09 +0.75
+
+COCO val2017 
+
+> DETR Def.-DETR DAB-DETR DINO RT-DETR RT-DETRv2 RT-DETRv3 D-FINE-S DEIM
+> 0510 15
+> AP (%)
+> +0.85 +1.53 +1.23 +2.43 +3.85 +2.21 +3.70 +2.56 +2.00
+
+TinyPerson test 
+
+> DETR Def.-DETR DAB-DETR DINO RT-DETR RT-DETRv2 RT-DETRv3 D-FINE-S DEIM
+> 0510 15 20
+> AP (%)
+> +0.81 +1.25 +1.55 +1.39 +2.12 +2.43 +2.20 +2.29 +2.66
+
+VisDrone2019-DET val 
+
+Frozen baseline + CQTR Fig. 3. Overall AP comparison on COCO, TinyPerson, and VisDrone2019. Numbers above the orange bars denote absolute AP gains. DETR Def.-DETR DAB-DETR DINO RT-DETR RT-DETRv2 RT-DETRv3 D-FINE-S DEIM 
+
+> 010 20 30 40
+> AP (%)
+> +2.12 +2.64 +2.13 +2.48 +3.81 +1.95 +3.00 +2.40 +2.19
+
+COCO val2017 
+
+> DETR Def.-DETR DAB-DETR DINO RT-DETR RT-DETRv2 RT-DETRv3 D-FINE-S DEIM
+> 0.0 2.5 5.0 7.5 10.0
+> AP (%)
+> +0.57 +0.93 +0.44 +1.78 +3.71 +1.91 +3.35 +2.40 +1.77
+
+TinyPerson test 
+
+> DETR Def.-DETR DAB-DETR DINO RT-DETR RT-DETRv2 RT-DETRv3 D-FINE-S DEIM
+> 0246810
+> AP (%)
+> +0.36 +0.70 +0.43 +1.29 +1.69 +2.08 +1.70 +1.98 +2.39
+
+VisDrone2019-DET val 
+
+Frozen baseline + CQTR 
+
+Fig. 4. Small-object AP comparison on COCO, TinyPerson, and VisDrone2019. Numbers above the orange bars denote absolute improvements over the corresponding frozen baselines. TABLE I COMPONENT ABLATION OF RT-DETR-R50 ACROSS THE THREE DATASETS .
+
+Configuration COCO AP COCO AP s Tiny AP Tiny AP s Vis AP Vis AP s
+
+Frozen baseline 53.09 34.74 9.19 5.89 15.11 6.16 Counterfactual scale only 54.18 38.51 12.99 9.41 17.13 7.88 + Trajectory recalibration 54.21 38.55 12.96 9.39 17.12 7.86 + Conflict suppression 54.16 38.44 13.04 9.60 17.23 7.85 CQTR stream routing 54.21 38.55 13.04 9.60 17.23 7.85 
+
+Finally, the spatial compression ratio ρ (x ) defined in Sec-tion III-B determines whether the native branch is retained: 
+
+bD =
+
+(TopQ 
+
+
+
+ClassNMS( D0 ∪ eDc, η )
+
+
+
+, ρ(x) ≤ τr ,
+
+eDc, ρ(x) > τ r , (8) where Q is the detector’s candidate budget and η is the threshold for class-aware non-maximum suppression (NMS). IV. E XPERIMENTS 
+
+Datasets. We evaluate on COCO val2017 [16], TinyPerson test [17], and VisDrone2019-DET val [18]. COCO contains 5,000 validation images. TinyPerson and VisDrone contain 786 and 548 evaluation images, respectively. For the latter two datasets, we directly apply COCO-pretrained weights without accessing target-domain training annotations or performing fine-tuning, thereby testing generalization to cross-domain small-object scenes. 
+
+Evaluation metrics. All three datasets use the same COCO-style bounding-box evaluator. We report AP averaged over IoU thresholds, AP at IoU thresholds of 0.50 and 0.75 ( AP 50 
+
+and AP 75 ), and AP s. TinyPerson results do not follow its official miss-rate protocol. VisDrone results are also subject to the COCO-style limit of 100 maximum detections per image (maxDets=100). We therefore compare CQTR only with its paired frozen baseline under the same protocol and do not directly compare absolute values with published results obtained under different protocols. 
+
+Implementation details. We evaluate DETR-R50 [1], De-formable DETR-R50 [2], DAB-DETR-R50 [3], DINO-R50 [4], RT-DETR-R50 [19], RT-DETRv2-R50 [20], RT-DETRv3-COCO -Small -object GT      
+
+> Frozen RT -DETR
+> TP/FP/FN: 18/82/18
+> CQTR (Trajectory Route)
+> TP/FP/FN: 23/77/13
+> TinyPerson -Small -object GT CQTR (Trajectory Route)
+> TP/FP/FN: 28/9/49
+> Frozen RT -DETR
+> TP/FP/FN: 9/30/68
+> CQTR (Trajectory Route)
+> TP/FP/FN: 61/30/113
+> Frozen RT -DETR
+> TP/FP/FN: 43/29/131 VisDrone -Small -object GT
+> Small -object GT Correct Detection Recovered by CQTR False Positive Fig. 5. Final small-object detections produced by CQTR. Automatically selected examples at a shared confidence threshold show that CQTR recovers missed objects across all three datasets and reduces false positives on COCO and TinyPerson.
+
+R50 [21], D-FINE-S [22], and DEIM-D-FINE-S [5]. These models cover fixed queries, dynamic anchors, deformable sampling, query selection, and real-time hybrid encoding. Every model uses COCO-pretrained weights and runs with frozen parameters under inference mode without gradients. TinyPerson and VisDrone experiments use no target-domain training annotations and perform no fine-tuning. We use S0/S1/S2=640/800/960, τp = 2 .0, τr = 1 .0, an NMS threshold of 0.8, and at most 300 internal candidates. The trajectory interpretation uses the last three box transitions and the last four class responses with β = 0 .05 . The semantic-conflict coefficient is γ = 0 .10 . For each model-dataset combination, we use random seed 31415 to sample 100 unlabeled images from the corresponding training split for one-time stream cali-bration, with τd = 0 .22 and τc = 0 .85 . On COCO, calibration routes RT-DETR-R50, RT-DETRv3-R50, and DEIM-D-FINE-S to query-trajectory recalibration and the remaining models to cross-scale semantic-conflict suppression. Every model on TinyPerson and VisDrone is routed to the conflict branch. The selected route remains fixed throughout full evaluation. We use the same configuration for all nine detectors and three datasets. Full evaluation covers 5,000, 786, and 548 images, respectively, for a total of 27 model-dataset combinations. All experiments run on one NVIDIA RTX 3060 GPU. 
+
+A. Results Across Detectors and Datasets 
+
+Fig. 3 and 4 compare CQTR with nine frozen detectors on COCO, TinyPerson, and VisDrone2019. The figures visualize overall AP and AP s, respectively. Complete numerical results for AP, AP 50 , AP 75 , and AP s are reported in Tables II–IV of Appendix A. As shown in Figs. 3 and 4 and detailed in Tables II–IV, CQTR improves both AP and AP s across all 27 detector-dataset combinations. On COCO, the gains reach 0.75–1.65 AP and 1.95–3.81 AP s, with RT-DETR-R50 improving from 53.09 to 54.21 AP and from 34.74 to 38.55 AP s. On TinyPer-son, CQTR yields gains of 0.85–3.85 AP and 0.44–3.71 AP s,where RT-DETR-R50 increases from 9.19 to 13.04 AP. On VisDrone2019, the improvements range from 0.81 to 2.66 AP and from 0.36 to 2.39 AP s. DEIM-D-FINE-S achieves the largest AP gain, rising from 14.50 to 17.16, while RT-DETRv2-R50 obtains the highest absolute AP of 17.49. These consistent improvements across diverse detector families and target domains demonstrate that CQTR rec is neither archi-tecture architecture-specific nor limited to the COCO scale distribution. 
+
+B. Ablation Study 
+
+Table I decomposes CQTR on RT-DETR-R50 into counter-factual scaling, trajectory recalibration, conflict suppression, and stream routing. Counterfactual scaling alone contributes most of the gain, reaching 54.18, 12.99, and 17.13 AP on COCO, TinyPerson, and VisDrone, respectively. Under overall AP, the trajectory rule performs best on COCO but is slightly below scale-only inference on TinyPerson and VisDrone. Con-flict suppression performs better on the two cross-domain datasets but slightly decreases COCO AP. Using unlabeled statistics to select the corresponding branch, stream routing improves scale-only inference by 0.03, 0.05, and 0.10 AP, respectively. These results explain why the later components should not be applied unconditionally. They are weak ranking corrections for different internal failure modes, rather than additional scale enhancers. 
+
+C. Qualitative Results 
+
+As shown in Fig. 5, CQTR recovers small objects missed by the frozen baseline on all three datasets under a shared confidence threshold. The numbers of true positives in the COCO, TinyPerson, and VisDrone examples increase from 18, 9, and 43 to 23, 28, and 61, while false negatives decrease from 18, 68, and 131 to 13, 49, and 113. False positives also decrease on COCO and TinyPerson, while VisDrone incurs only one additional false positive. CQTR therefore improves small-object recall in crowded scenes and complex backgrounds while maintaining prediction reliability. The corrections motivated by internal interpretation ultimately translate into observable detection gains. 
+
+D. Mechanistic Interpretability and Analysis 
+
+Activation of latent scale knowledge. Fig. 6 compares RT-DETR-R50 under native inference and the counterfactual scale branch alone. Without updating any parameter, scale inter-vention improves both AP and AP s on COCO, TinyPerson, and VisDrone. The AP s gain is especially pronounced on COCO. These consistent improvements show that the relevant capability can be elicited from frozen parameters rather than necessarily relearned through target-domain training. The re-sult supports our hypothesis that frozen detectors contain scale-sensitive representations that standard inference does not fully activate. 
+
+Reliability of query-trajectory evidence. We next test whether spatial-semantic trajectories explain candidate relia-bility. Using a fixed random seed, we sample 100 images COCO TinyPerson VisDrone 010 20 30 40 50              
+
+> AP (%)
+> +1.09 +3.80 +2.02
+> (a) Overall detection
+> COCO TinyPerson VisDrone 010 20 30 40
+> APs (%)
+> +3.77 +3.52 +1.72
+> (b) Small-object detection
+> Native scale Counterfactual scale
+> Fig. 6. Activation of latent scale knowledge. AP and AP sare compared between the frozen baseline and the counterfactual scale branch alone. Q1 Q2 Q3 Q4 Q5
+
+Trajectory-evidence quintile (low to high) 
+
+> 0510 15 20 25 30
+> Small-GT support rate (%)
+
+Query evidence predicts small-object support  
+
+> COCO TinyPerson VisDrone
+> Fig. 7. Query-trajectory evidence versus small-object ground-truth support. Q1 and Q5 denote the lowest and highest trajectory-evidence quintiles.
+
+from each evaluation set. Candidates with an area no greater than 32 2 and a confidence of at least 0.05 are divided into five equal-frequency bins according to trajectory evidence. A candidate receives ground-truth support when its IoU with a small ground-truth object of the same class is at least 0.5. These annotations are used only for post hoc analysis and do not participate in CQTR inference or routing. As shown in Fig. 7, the small-object support rate generally rises with trajectory evidence. From the lowest to the highest evidence bin, the support rate increases from 1.35% to 17.62% on COCO, from 0.54% to 18.98% on TinyPerson, and from 4.82% to 30.84% on VisDrone. Trajectory evidence is therefore not an arbitrary score adjustment. It is directly associated with the correctness of small-object candidates. 
+
+Closed loop of unlabeled stream routing. Fig. 8 tests whether unlabeled stream statistics identify the more effective interpretation mechanism. The left panel reports normalized trajectory-evidence dispersion ¯d/τ d and average maximum conflict strength ¯r/τ c, computed from an independent unla-beled training subset. The right panel shows the AP change of each correction branch relative to the scale-only branch. Both COCO statistics exceed their thresholds, so the router selects trajectory recalibration. TinyPerson and VisDrone are routed to conflict suppression. For these three RT-DETR-R50 streams, every routing decision agrees with the branch that performs better under full evaluation. Internal statistics derived from unlabeled images can therefore predict the effective correction COCO Trajectory TinyPerson Conflict VisDrone Conflict ̄           
+
+> d/τd̄
+> r/τc
+> 1.05 0.89 0.78 1.07 0.82 1.02
+> (a) Unlabeled routing statistics
+> COCO TinyPerson VisDrone −0.025 0.000 0.025 0.050 0.075 0.100 0.125
+> ΔAP over scale-only (points)
+> (b) Branch selection closes the loop
+> Trajectory Conflict Routed
+> 0.7 0.8 0.9 1.0 1.1
+> Normalized to threshold Fig. 8. Closed loop of unlabeled stream routing. Left: routing statistics normalized by their thresholds. Right: AP changes of the trajectory, conflict, and routed branches relative to the scale-only branch.
+
+mechanism, closing the loop from internal state to routing decision and performance improvement without selecting a branch post hoc from test AP. 
+
+Decoder-internal evidence. We further visualize seman-tic query density and spatial trajectories across the final four decoder layers. High-evidence queries remain concen-trated around small objects and converge more stably than low-evidence queries, providing direct internal support for trajectory-based reliability estimation. Detailed definitions, statistics, and visualizations are provided in Appendix B. V. C ONCLUSION 
+
+We presented CQTR, a training-free framework for improv-ing small-object detection with frozen detectors. Through a counterfactual scale branch, spatial-semantic query-trajectory interpretation, and unlabeled reliability routing, CQTR acti-vates latent scale knowledge and suppresses cross-scale con-flicts. Experiments across multiple detectors and three datasets demonstrate its effectiveness, generality, and interpretability. Future work will investigate lower-cost single-pass interven-tions and extensions to open-world detection. REFERENCES 
+
+[1] N. Carion, F. Massa, G. Synnaeve, N. Usunier, A. Kir-illov, and S. Zagoruyko, “End-to-end object detection with transformers,” in European Conference on Computer Vision , 2020, pp. 213–229. [2] X. Zhu, W. Su, L. Lu, B. Li, X. Wang, and J. Dai, “Deformable DETR: Deformable transformers for end-to-end object detection,” in International Conference on Learning Representations , 2021. [3] S. Liu, F. Li, H. Zhang, X. Yang, X. Qi, H. Su, J. Zhu, and L. Zhang, “DAB-DETR: Dynamic anchor boxes are better queries for DETR,” in International Conference on Learning Representations , 2022. [4] H. Zhang, F. Li, S. Liu, L. Zhang, H. Su, J. Zhu, L. M. Ni, and H.-Y. Shum, “DINO: DETR with improved denoising anchor boxes for end-to-end object detection,” in International Conference on Learning Representations ,2023. [5] S. Huang, Z. Lu, X. Cun, Y. Yu, X. Zhou, and X. Shen, “DEIM: DETR with improved matching for fast conver-gence,” in IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2025, pp. 15 162–15 171. [6] T.-Y. Lin, P. Doll´ ar, R. Girshick, K. He, B. Hariharan, and S. Belongie, “Feature pyramid networks for object detection,” in IEEE Conference on Computer Vision and Pattern Recognition , 2017, pp. 2117–2125. [7] C. Yang, Z. Huang, and N. Wang, “QueryDet: Cascaded sparse query for accelerating high-resolution small object detection,” in IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2022, pp. 13 668–13 677. [8] B. Singh and L. S. Davis, “An analysis of scale invariance in object detection—SNIP,” in IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2018, pp. 3578–3587. [9] B. Singh, M. Najibi, and L. S. Davis, “SNIPER: Efficient multi-scale training,” in Advances in Neural Information Processing Systems , vol. 31, 2018. [10] M. Najibi, B. Singh, and L. S. Davis, “AutoFocus: Effi-cient multi-scale inference,” in IEEE/CVF International Conference on Computer Vision , 2019, pp. 9745–9755. [11] F. C. Akyon, S. O. Altinuc, and A. Temizel, “Slicing aided hyper inference and fine-tuning for small object detection,” in IEEE International Conference on Image Processing , 2022, pp. 966–970. [12] M. Kisantal, Z. Wojna, J. Murawski, J. Naruniec, and K. J. Cho, “Augmentation for small object detection,” 
+
+arXiv preprint arXiv:1902.07296 , 2019. [13] R. R. Selvaraju, M. Cogswell, A. Das, R. Vedantam, D. Parikh, and D. Batra, “Grad-CAM: Visual explana-tions from deep networks via gradient-based localiza-tion,” in IEEE International Conference on Computer Vision , 2017, pp. 618–626. [14] H. Chefer, S. Gur, and L. Wolf, “Generic attention-model explainability for interpreting bi-modal and encoder-decoder transformers,” in IEEE/CVF International Con-ference on Computer Vision , 2021, pp. 397–406. [15] A. Dosovitskiy, L. Beyer, A. Kolesnikov, D. Weissenborn, X. Zhai, T. Unterthiner, M. Dehghani, M. Minderer, G. Heigold, S. Gelly, J. Uszkoreit, and N. Houlsby, “An image is worth 16x16 words: Transformers for image recognition at scale,” in International Conference on Learning Representations , 2021. [16] T.-Y. Lin, M. Maire, S. Belongie, J. Hays, P. Perona, D. Ramanan, P. Doll´ ar, and C. L. Zitnick, “Microsoft COCO: Common objects in context,” in European Con-ference on Computer Vision , 2014, pp. 740–755. [17] X. Yu, Y. Gong, N. Jiang, Q. Ye, and Z. Han, “Scale match for tiny person detection,” in IEEE/CVF Winter Conference on Applications of Computer Vision , 2020, pp. 1257–1265. [18] D. Du, P. Zhu, L. Wen, X. Bian, H. Lin, Q. Hu, T. Peng, J. Zheng, X. Wang, Y. Zhang, L. Bo, H. Shi, R. Zhu, A. Kumar, A. Li, A. Zinollayev, A. K. Bhakta, B. Li, H. Chang, C. Chen, B. Wang, B. Can, S. Tokmakcioglu, W. Chen, C. Fan, L. Feng, L. Gan, L. Gan, Y. Gao, F. Huang, J. Li, H. Li, Y. Li, B. Liu, C. Liu, H. Lu, Y. Lu, C. Lu, H. Ma, H. Pan, C. Gao, W. Ren, P. San-berg, B. Sanmartin, G. Sun, J. Tan, M. Tang, X. Wang, Z. Wang, Z. Wang, Y. Wu, Y. Xu, C. Yan, P. Yang, B. Yang, Z. Yang, Y. Zhang, X. Zhang, X. Zhang, Y. Zhao, Y. Zhou, D. Zhu, and J. Zhuang, “VisDrone-DET2019: The vision meets drone object detection in image challenge results,” in IEEE/CVF International Conference on Computer Vision Workshops , 2019. [19] Y. Zhao, W. Lv, S. Xu, J. Wei, G. Wang, Q. Dang, Y. Liu, and J. Chen, “DETRs beat YOLOs on real-time object detection,” in IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2024, pp. 16 965–16 974. [20] W. Lv, Y. Zhao, Q. Chang, K. Huang, G. Wang, and Y. Liu, “RT-DETRv2: Improved baseline with bag-of-freebies for real-time detection transformer,” arXiv preprint arXiv:2407.17140 , 2024. [21] S. Wang, C. Xia, F. Lv, and Y. Shi, “RT-DETRv3: Real-time end-to-end object detection with hierarchical dense positive supervision,” in IEEE/CVF Winter Conference on Applications of Computer Vision , 2025, pp. 1628–1636. [22] Y. Peng, H. Li, P. Wu, Y. Zhang, X. Sun, and F. Wu, “D-FINE: Redefine regression task of DETRs as fine-grained distribution refinement,” in International Conference on Learning Representations , 2025. APPENDIX 
+
+A. Full Quantitative Results 
+
+Figures 3 and 4 in the main paper visualize the overall AP and small-object AP trends across the three datasets. To provide complete quantitative evidence, Tables II–IV report AP, AP 50 , AP 75 , and AP s for all 27 detector-dataset combi-nations. Values in parentheses denote absolute improvements over the corresponding frozen baselines. All results are ob-tained without updating the model parameters or using target-domain training annotations. 
+
+COCO results. Table II provides the complete results on COCO val2017. CQTR improves all four evaluation metrics for every frozen detector. The highest AP of 54.32 is obtained by RT-DETRv2-R50 with CQTR. RT-DETR-R50 exhibits the largest AP s improvement, increasing from 34.74 to 38.55. These detailed results confirm the trend in Figures 3 and and 4, where the improvement in small-object detection is more pronounced than the overall AP gain. 
+
+Cross-domain TinyPerson results. Table III reports the complete cross-domain results on TinyPerson. CQTR consis-tently improves AP, AP 50 , AP 75 , and AP s across all nine detectors. RT-DETR-R50 achieves the largest improvement, with AP increasing from 9.19 to 13.04 and AP s increasing from 5.89 to 9.60. The consistent gains across different detec-tor families demonstrate that CQTR transfers scale-sensitive knowledge beyond the COCO pretraining distribution. 
+
+Cross-domain VisDrone2019 results. As reported in Ta-ble IV, CQTR also improves every detector on VisDrone2019-DET val. DEIM-D-FINE-S obtains the largest AP gain, in-creasing from 14.50 to 17.16, together with an AP s improve-ment from 6.22 to 8.61. RT-DETRv2-R50 achieves the highest absolute AP of 17.49. These results support the effectiveness of CQTR in dense aerial scenes with severe scale variation and background interference. 
+
+B. Visualization of Decoder Query Trajectories 
+
+To further explain the internal meaning of spatial-semantic trajectory evidence, we project query states from the final four decoder layers onto the original image. Let μ(l) 
+
+> q
+
+be the center of the box predicted by query q at layer l, and let p(l) 
+
+> q
+
+(yq ) denote the response at that layer to its final class yq . The semantic query density at layer l is defined as 
+
+H(l)(u, v ) = X
+
+> q∈Qs
+
+p(l) 
+
+> q
+
+(yq ) exp − ∥(u, v ) − μ(l) 
+
+> q
+
+∥22
+
+2σ2
+
+!
+
+, (9) where Qs is the set of queries whose final predicted area does not exceed the small-object threshold. All layers use a shared normalization range, allowing their colors to be compared directly. As shown in Fig. 9, decoder query responses concentrate on small-object regions such as traffic lights and vehicles, and maintain high object-to-background response ratios in later layers. The image contains 80 small-object candidate queries. Their response ratios between small-object and background re-gions are 24.58, 26.44, 26.14, and 26.06 across the four layers, showing persistent concentration around small objects during iterative decoding. The lower-right panel further compares the spatial paths of high- and low-evidence queries. High-evidence queries remain spatially convergent across the last four layers, whereas low-evidence queries move back and forth more noticeably in the dense traffic-light region. The mean trajectory length of high-evidence queries is only 0.013% of the image diagonal. The corresponding value for low-evidence queries is 0.184%, approximately 14.3 times larger. CQTR trajectory evidence thus separates stably convergent queries from spatially uncertain ones and provides observable internal support for subsequent reliability recalibration. Input and COCO -small Boxes  Decoder L3: Semantic Query Density  Decoder L4: Semantic Query Density        
+
+> Decoder L5: Semantic Query Density Decoder L6: Semantic Query Density
+> Spatial Paths of High -and Low -evidence Queries
+> Marker Size Increases with Decoder Depth
+> 0.0 0.2 0.4 0.6 0.8 1. 0
+> Jointly Normalized Semantic Query Density
+
+Fig. 9. Decoder-internal spatial-semantic query trajectories. Semantic-density maps and representative trajectories from the final four decoder layers show that high-evidence queries converge more stably around small objects than low-evidence queries, with ground truth used only for post hoc visualization. TABLE II COMPARISON ON COCO VAL 2017. 
+
+Method AP AP 50 AP 75 AP s
+
+DETR-R50 36.51 55.83 37.74 13.65 DETR-R50 + CQTR 38.16 (+1.65) 57.51 (+1.68) 40.17 (+2.43) 15.77 (+2.12) 
+
+Deformable-DETR-R50 40.45 58.58 43.83 19.44 Deformable-DETR-R50 + CQTR 41.98 (+1.53) 60.26 (+1.68) 45.78 (+1.95) 22.08 (+2.64) 
+
+DAB-DETR-R50 36.35 56.40 37.64 13.61 DAB-DETR-R50 + CQTR 37.94 (+1.59) 57.72 (+1.32) 39.97 (+2.33) 15.74 (+2.13) 
+
+DINO-R50 44.62 61.70 48.26 24.03 DINO-R50 + CQTR 46.23 (+1.61) 63.32 (+1.62) 50.33 (+2.07) 26.51 (+2.48) 
+
+RT-DETR-R50 53.09 71.23 57.73 34.74 RT-DETR-R50 + CQTR 54.21 (+1.12) 71.86 (+0.63) 59.19 (+1.46) 38.55 (+3.81) 
+
+RT-DETRv2-R50 53.40 71.56 57.48 36.06 RT-DETRv2-R50 + CQTR 54.32 (+0.92) 72.22 (+0.66) 58.88 (+1.40) 38.01 (+1.95) 
+
+RT-DETRv3-R50 52.72 70.95 57.26 35.15 RT-DETRv3-R50 + CQTR 53.72 (+1.00) 71.55 (+0.60) 58.68 (+1.42) 38.15 (+3.00) 
+
+D-FINE-S 48.49 65.42 52.58 29.30 D-FINE-S + CQTR 49.58 (+1.09) 66.48 (+1.06) 53.94 (+1.36) 31.70 (+2.40) 
+
+DEIM-D-FINE-S 48.96 65.88 53.04 30.38 DEIM-D-FINE-S + CQTR 49.71 (+0.75) 66.69 (+0.81) 54.23 (+1.19) 32.57 (+2.19) TABLE III CROSS -DOMAIN COCO-STYLE COMPARISON ON TINY PERSON TEST .
+
+Method AP AP 50 AP 75 AP s
+
+DETR-R50 1.87 5.39 1.12 0.69 DETR-R50 + CQTR 2.72 (+0.85) 8.02 (+2.63) 1.22 (+0.10) 1.26 (+0.57) 
+
+Deformable-DETR-R50 2.92 9.22 1.13 1.09 Deformable-DETR-R50 + CQTR 4.45 (+1.53) 13.37 (+4.15) 1.89 (+0.76) 2.02 (+0.93) 
+
+DAB-DETR-R50 1.78 5.34 1.11 0.67 DAB-DETR-R50 + CQTR 3.01 (+1.23) 9.72 (+4.38) 1.35 (+0.24) 1.11 (+0.44) 
+
+DINO-R50 4.28 13.56 1.98 2.11 DINO-R50 + CQTR 6.71 (+2.43) 20.50 (+6.94) 3.05 (+1.07) 3.89 (+1.78) 
+
+RT-DETR-R50 9.19 26.24 4.63 5.89 RT-DETR-R50 + CQTR 13.04 (+3.85) 34.83 (+8.59) 7.11 (+2.48) 9.60 (+3.71) 
+
+RT-DETRv2-R50 9.45 26.16 4.82 5.97 RT-DETRv2-R50 + CQTR 11.66 (+2.21) 32.23 (+6.07) 5.96 (+1.14) 7.88 (+1.91) 
+
+RT-DETRv3-R50 9.12 25.37 4.74 5.80 RT-DETRv3-R50 + CQTR 12.82 (+3.70) 33.98 (+8.61) 7.28 (+2.54) 9.15 (+3.35) 
+
+D-FINE-S 7.24 20.74 3.67 4.37 D-FINE-S + CQTR 9.80 (+2.56) 27.39 (+6.65) 4.99 (+1.32) 6.77 (+2.40) 
+
+DEIM-D-FINE-S 7.80 21.88 4.15 4.96 DEIM-D-FINE-S + CQTR 9.80 (+2.00) 27.29 (+5.41) 5.39 (+1.24) 6.73 (+1.77) TABLE IV CROSS -DOMAIN COCO-STYLE COMPARISON ON VIS DRONE 2019-DET VAL .
+
+Method AP AP 50 AP 75 AP s
+
+DETR-R50 4.31 8.95 3.65 0.60 DETR-R50 + CQTR 5.12 (+0.81) 10.86 (+1.91) 4.20 (+0.55) 0.96 (+0.36) 
+
+Deformable-DETR-R50 5.74 11.75 4.88 1.34 Deformable-DETR-R50 + CQTR 6.99 (+1.25) 14.17 (+2.42) 6.13 (+1.25) 2.04 (+0.70) 
+
+DAB-DETR-R50 4.59 9.54 4.02 0.68 DAB-DETR-R50 + CQTR 6.14 (+1.55) 12.73 (+3.19) 5.23 (+1.21) 1.11 (+0.43) 
+
+DINO-R50 7.86 15.53 7.03 2.36 DINO-R50 + CQTR 9.25 (+1.39) 18.14 (+2.61) 8.33 (+1.30) 3.65 (+1.29) 
+
+RT-DETR-R50 15.11 27.11 14.57 6.16 RT-DETR-R50 + CQTR 17.23 (+2.12) 30.80 (+3.69) 16.46 (+1.89) 7.85 (+1.69) 
+
+RT-DETRv2-R50 15.06 27.16 14.43 6.02 RT-DETRv2-R50 + CQTR 17.49 (+2.43) 30.95 (+3.79) 16.85 (+2.42) 8.10 (+2.08) 
+
+RT-DETRv3-R50 15.07 26.83 14.59 6.22 RT-DETRv3-R50 + CQTR 17.27 (+2.20) 30.81 (+3.98) 16.68 (+2.09) 7.92 (+1.70) 
+
+D-FINE-S 12.98 23.55 12.44 5.55 D-FINE-S + CQTR 15.27 (+2.29) 26.90 (+3.35) 14.87 (+2.43) 7.53 (+1.98) 
+
+DEIM-D-FINE-S 14.50 26.24 13.68 6.22 DEIM-D-FINE-S + CQTR 17.16 (+2.66) 30.05 (+3.81) 16.84 (+3.16) 8.61 (+2.39)

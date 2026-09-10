@@ -1,0 +1,134 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-10T21:14:57.160010+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2609.10292v1",
+      "source": "arxiv",
+      "title": "Isotropic Embedding Perturbations for Robust Vision Language Encoders",
+      "abstract": "Data augmentation is fundamental to training modern deep vision and multimodal models. While individual methods, such as RandAug, CutMix, Mixup, RandErase, and DropPath, offer strong regularization effects, their combined use has saturated in performance due to overlapping functionalities, and aggressive pixel-level manipulations may disrupt delicate cross-modal alignment. This saturation motivates the search for a new augmentation axis within the embedding space rather than the input space. We introduce Aether, a simple plug-in method that applies diffusion-style random perturbations in the embedding space via controlled alpha-mixing, specifically designed to provide isotropic regularization that remains semantically consistent. Inspired by feature-space perturbations in language models and image degradation in generative pretraining, Aether induces mild yet effective perturbations that smooth the representations without compromising the fine-grained structural information required for strong vision-language encoders. Across diverse architectures and across multiple recognition tasks, Aether delivers consistent gains over the advanced recipe combining CutMix, Mixup, DropPath, and RandAug---a level of improvement rarely observed with modern augmentation alternatives. Notably, Aether demonstrates superior effectiveness in multi-modal alignment, succeeding where traditional pixel-space augmentations fail by providing a stable, isotropic regularization signal that respects the integrity of the high-dimensional feature space.",
+      "authors": [
+        "Hyesong Choi",
+        "Daeun Kim",
+        "Song Park",
+        "Taekyung Kim",
+        "Byeongho Heo",
+        "Sangdoo Yun",
+        "Dongbo Min",
+        "Dongyoon Han"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-09T15:08:05+00:00",
+      "link": "https://arxiv.org/pdf/2609.10292v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Aether applies diffusion-style random perturbations in embedding space via controlled alpha-mixing, providing isotropic semantically consistent regularization",
+      "llm_evidence_cn": "Aether通过受控alpha混合在嵌入空间应用扩散式随机扰动，提供各向同性且语义一致的正则化",
+      "llm_evidence": "Aether通过受控alpha混合在嵌入空间应用扩散式随机扰动，提供各向同性且语义一致的正则化",
+      "canonical_evidence": "Aether通过受控alpha混合在嵌入空间应用扩散式随机扰动，提供各向同性且语义一致的正则化",
+      "llm_tldr_en": "The paper finds pixel-level augmentation saturates and disrupts cross-modal alignment; it introduces Aether, embedding-space perturbations via alpha-mixing for isotropic and semantically consistent regularization.",
+      "llm_tldr_cn": "现有像素级数据增强方法组合性能饱和，且激进操作可能破坏跨模态对齐。本文提出Aether，一种即插即用的嵌入空间扰动方法，通过受控alpha混合应用扩散式随机扰动，在嵌入空间提供各向同性且保持语义一致的正则化。实验表明Aether能提升视觉语言编码器的鲁棒性，同时避免输入空间操作的局限性。该方法开辟了嵌入空间增强的新维度，对特征级干预具有重要意义。",
+      "llm_tldr": "现有像素级数据增强方法组合性能饱和，且激进操作可能破坏跨模态对齐。本文提出Aether，一种即插即用的嵌入空间扰动方法，通过受控alpha混合应用扩散式随机扰动，在嵌入空间提供各向同性且保持语义一致的正则化。实验表明Aether能提升视觉语言编码器的鲁棒性，同时避免输入空间操作的局限性。该方法开辟了嵌入空间增强的新维度，对特征级干预具有重要意义。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.06288v1",
+      "source": "arxiv",
+      "title": "Object-Aware Background-Controlled Editing via Weighted Velocity Guidance",
+      "abstract": "Training-free image editing steers diffusion or flow-matching generative models at inference time by modifying prompt-conditioned denoising velocities. Existing velocity-based editors often apply prompt-induced residuals globally over the latent space and rely on the model to localize semantic changes implicitly. For object-centric edits, these residuals are rarely zero outside the target object, so small non-target components can accumulate during multi-step integration, causing background drift and unstable object boundaries. We propose Object-Aware Velocity Control (OAVC), a training-free framework that introduces object-level control into the velocity-integration process. OAVC decouples where semantic residuals are allowed to act from how they are injected into the dynamics. It constructs a background-anchored reference interface under the source prompt and then performs object-localized safe semantic injection under the target prompt. A constrained injection operator suppresses drift-inducing velocity components, while time-adaptive spatial weighting stabilizes the transition near object boundaries. OAVC requires no training or modification of pretrained model parameters. Experiments on object-centric image and video benchmarks with image and video rectified-flow backbones show improved background preservation, structural fidelity, boundary stability, and temporal consistency while retaining effective localized editability.",
+      "authors": [
+        "Wuji Wang",
+        "Yue Wu",
+        "Chenhao Yi",
+        "Shuhui Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-05T22:53:58+00:00",
+      "link": "https://arxiv.org/pdf/2609.06288v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "proposes object-aware velocity control that modifies denoising velocities in latent space for localized semantic editing",
+      "llm_evidence_cn": "提出对象感知速度控制，在潜在空间中修改去噪速度进行局部语义编辑",
+      "llm_evidence": "提出对象感知速度控制，在潜在空间中修改去噪速度进行局部语义编辑",
+      "canonical_evidence": "提出对象感知速度控制，在潜在空间中修改去噪速度进行局部语义编辑",
+      "llm_tldr_en": "The paper addresses background drift in training-free diffusion editing by introducing object-level control into velocity integration, decoupling where semantic residuals act from how they are computed.",
+      "llm_tldr_cn": "现有基于速度的图像编辑方法在潜在空间中全局应用提示诱导残差，导致背景漂移和对象边界不稳定。本文提出对象感知速度控制（OAVC），在速度积分过程中引入对象级控制，将语义残差的作用位置与计算方式解耦。实验表明OAVC能有效抑制非目标区域漂移，同时保持目标对象编辑的准确性。该方法为训练无关的潜在空间干预提供了更精细的控制手段。",
+      "llm_tldr": "现有基于速度的图像编辑方法在潜在空间中全局应用提示诱导残差，导致背景漂移和对象边界不稳定。本文提出对象感知速度控制（OAVC），在速度积分过程中引入对象级控制，将语义残差的作用位置与计算方式解耦。实验表明OAVC能有效抑制非目标区域漂移，同时保持目标对象编辑的准确性。该方法为训练无关的潜在空间干预提供了更精细的控制手段。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.06581v1",
+      "source": "arxiv",
+      "title": "Reading Decoder Trajectories: Training-Free Counterfactual Query-Trajectory Reliability for Small-Object Detection",
+      "abstract": "Small-object detection remains challenging because limited pixels cause information loss and suppress the scale knowledge encoded in pretrained detectors. Existing approaches mainly improve representations through multiscale training, architecture redesign, or parameter adaptation, implicitly assuming that frozen models lack the required capability. We challenge this assumption and hypothesize that small-object knowledge already exists in frozen detectors but remains underactivated and unstable during query evolution. To test this hypothesis, we propose Counterfactual Query-Trajectory Reliability (CQTR), a training-free framework that elicits latent responses through counterfactual scale interventions and interprets candidate reliability from decoder-internal spatial convergence, semantic persistence, and cross-scale conflicts. A small unlabeled training subset selects the appropriate correction mechanism for each model-data stream, without parameter updates or target-domain annotations. Across 27 combinations of nine frozen detectors and three datasets, CQTR consistently improves average precision (AP) and average precision for small objects (APs). Closed-loop analyses further show that scale intervention activates latent responses, trajectory evidence predicts ground-truth support, and unlabeled routing selects the more effective branch. CQTR therefore reframes small-object detection from external scale augmentation to the activation and reliability assessment of latent scale knowledge.",
+      "authors": [
+        "Zhaoning Shi",
+        "Bo Ma"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-09-06T12:59:20+00:00",
+      "link": "https://arxiv.org/pdf/2609.06581v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "counterfactual scale interventions elicit latent responses in frozen detectors",
+      "llm_evidence_cn": "反事实尺度干预在冻结检测器中激发潜在响应",
+      "llm_evidence": "反事实尺度干预在冻结检测器中激发潜在响应",
+      "canonical_evidence": "反事实尺度干预在冻结检测器中激发潜在响应",
+      "llm_tldr_en": "Proposes CQTR, a training-free framework that uses counterfactual scale interventions on decoder query trajectories to elicit underactivated small-object knowledge in frozen detectors, improving detection reliability.",
+      "llm_tldr_cn": "小目标检测因像素少导致信息损失，冻结检测器中的尺度知识被抑制。本文提出CQTR，一种训练无关框架，通过对解码器查询轨迹施加反事实尺度干预，激发潜在的尺度响应并提升可靠性。实验表明该方法无需训练即可改善小目标检测性能。这为在冻结模型潜在空间中通过干预激发知识提供了新思路。",
+      "llm_tldr": "小目标检测因像素少导致信息损失，冻结检测器中的尺度知识被抑制。本文提出CQTR，一种训练无关框架，通过对解码器查询轨迹施加反事实尺度干预，激发潜在的尺度响应并提升可靠性。实验表明该方法无需训练即可改善小目标检测性能。这为在冻结模型潜在空间中通过干预激发知识提供了新思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

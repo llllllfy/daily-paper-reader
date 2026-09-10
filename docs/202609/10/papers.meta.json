@@ -1,0 +1,54 @@
+{
+  "label": "2026-09-10",
+  "date": "2026-09-10",
+  "generated_at": "2026-09-10T21:19:55",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202609/10/2609.10292v1-isotropic-embedding-perturbations-for-robust-vision-language-encoders",
+      "section": "deep",
+      "title_en": "Isotropic Embedding Perturbations for Robust Vision Language Encoders",
+      "authors": "Hyesong Choi, Daeun Kim, Song Park, Taekyung Kim, Byeongho Heo, Sangdoo Yun, Dongbo Min, Dongyoon Han",
+      "date": "2026-09-09",
+      "pdf": "https://arxiv.org/pdf/2609.10292v1",
+      "score": "8.0",
+      "evidence": "Aether通过受控alpha混合在嵌入空间应用扩散式随机扰动，提供各向同性且语义一致的正则化",
+      "tldr": "尽管RandAug、CutMix、Mixup等像素级增强组合在深度视觉与多模态模型训练中广泛使用，但其性能趋于饱和，且激进像素操作可能破坏精细的跨模态对齐。本文提出Aether，一种即插即用方法，在嵌入空间通过受控alpha混合引入扩散式各向同性随机扰动，实现语义一致的表示平滑。跨多种网络架构与多项识别任务，Aether稳定超越包含CutMix、Mixup、DropPath、RandAug的先进增强配方，增益一致且显著。尤其在多模态对齐任务上，Aether解决了像素空间增强失效的问题，为视觉语言编码器提供稳定正则化新途径。",
+      "tags": "query:cp",
+      "abstract_en": "Data augmentation is fundamental to training modern deep vision and multimodal models. While individual methods, such as RandAug, CutMix, Mixup, RandErase, and DropPath, offer strong regularization effects, their combined use has saturated in performance due to overlapping functionalities, and aggressive pixel-level manipulations may disrupt delicate cross-modal alignment. This saturation motivates the search for a new augmentation axis within the embedding space rather than the input space. We introduce Aether, a simple plug-in method that applies diffusion-style random perturbations in the embedding space via controlled alpha-mixing, specifically designed to provide isotropic regularization that remains semantically consistent. Inspired by feature-space perturbations in language models and image degradation in generative pretraining, Aether induces mild yet effective perturbations that smooth the representations without compromising the fine-grained structural information required for strong vision-language encoders. Across diverse architectures and across multiple recognition tasks, Aether delivers consistent gains over the advanced recipe combining CutMix, Mixup, DropPath, and RandAug---a level of improvement rarely observed with modern augmentation alternatives. Notably, Aether demonstrates superior effectiveness in multi-modal alignment, succeeding where traditional pixel-space augmentations fail by providing a stable, isotropic regularization signal that respects the integrity of the high-dimensional feature space.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/10/2609.06288v1-object-aware-background-controlled-editing-via-weighted-velocity-guidance",
+      "section": "quick",
+      "title_en": "Object-Aware Background-Controlled Editing via Weighted Velocity Guidance",
+      "authors": "Wuji Wang, Yue Wu, Chenhao Yi, Shuhui Wang",
+      "date": "2026-09-05",
+      "pdf": "https://arxiv.org/pdf/2609.06288v1",
+      "score": "7.0",
+      "evidence": "提出对象感知速度控制，在潜在空间中修改去噪速度进行局部语义编辑",
+      "tldr": "现有基于速度的训练-free图像编辑方法在对象编辑时因全局应用提示条件速度残差，导致背景漂移和对象边界不稳定。本文提出对象感知速度控制（OAVC）框架，解耦语义残差的注入位置与方式，构建背景锚定参考界面，并采用约束注入算子和时间自适应空间加权实现对象局部安全语义注入。在图像和视频基准上，OAVC显著提升背景保持、结构保真度、边界稳定性和时间一致性，同时保持有效局部编辑能力。该方法无需训练或修改预训练参数，为训练-free对象编辑提供了稳定且有效的解决方案。",
+      "tags": "query:cp",
+      "abstract_en": "Training-free image editing steers diffusion or flow-matching generative models at inference time by modifying prompt-conditioned denoising velocities. Existing velocity-based editors often apply prompt-induced residuals globally over the latent space and rely on the model to localize semantic changes implicitly. For object-centric edits, these residuals are rarely zero outside the target object, so small non-target components can accumulate during multi-step integration, causing background drift and unstable object boundaries. We propose Object-Aware Velocity Control (OAVC), a training-free framework that introduces object-level control into the velocity-integration process. OAVC decouples where semantic residuals are allowed to act from how they are injected into the dynamics. It constructs a background-anchored reference interface under the source prompt and then performs object-localized safe semantic injection under the target prompt. A constrained injection operator suppresses drift-inducing velocity components, while time-adaptive spatial weighting stabilizes the transition near object boundaries. OAVC requires no training or modification of pretrained model parameters. Experiments on object-centric image and video benchmarks with image and video rectified-flow backbones show improved background preservation, structural fidelity, boundary stability, and temporal consistency while retaining effective localized editability.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/10/2609.06581v1-reading-decoder-trajectories-training-free-counterfactual-query-trajectory-reliability-for-small-object-detection",
+      "section": "quick",
+      "title_en": "Reading Decoder Trajectories: Training-Free Counterfactual Query-Trajectory Reliability for Small-Object Detection",
+      "authors": "Zhaoning Shi, Bo Ma",
+      "date": "2026-09-06",
+      "pdf": "https://arxiv.org/pdf/2609.06581v1",
+      "score": "7.0",
+      "evidence": "反事实尺度干预在冻结检测器中激发潜在响应",
+      "tldr": "小目标检测因像素少导致信息丢失，现有方法多假设冻结模型能力不足。本文提出训练无关框架 CQTR，通过反事实尺度干预激活冻结检测器中潜在的小目标知识，并基于解码器轨迹的空间收敛、语义持续和跨尺度冲突评估候选可靠性。在 9 个冻结检测器与 3 个数据集上，CQTR 一致提升 AP 与 APs，且无需参数更新或目标域标注。该工作将小目标检测从外部尺度增强转向潜在尺度知识的激活与可靠性评估。",
+      "tags": "query:cp",
+      "abstract_en": "Small-object detection remains challenging because limited pixels cause information loss and suppress the scale knowledge encoded in pretrained detectors. Existing approaches mainly improve representations through multiscale training, architecture redesign, or parameter adaptation, implicitly assuming that frozen models lack the required capability. We challenge this assumption and hypothesize that small-object knowledge already exists in frozen detectors but remains underactivated and unstable during query evolution. To test this hypothesis, we propose Counterfactual Query-Trajectory Reliability (CQTR), a training-free framework that elicits latent responses through counterfactual scale interventions and interprets candidate reliability from decoder-internal spatial convergence, semantic persistence, and cross-scale conflicts. A small unlabeled training subset selects the appropriate correction mechanism for each model-data stream, without parameter updates or target-domain annotations. Across 27 combinations of nine frozen detectors and three datasets, CQTR consistently improves average precision (AP) and average precision for small objects (APs). Closed-loop analyses further show that scale intervention activates latent responses, trajectory evidence predicts ground-truth support, and unlabeled routing selects the more effective branch. CQTR therefore reframes small-object detection from external scale augmentation to the activation and reliability assessment of latent scale knowledge.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
