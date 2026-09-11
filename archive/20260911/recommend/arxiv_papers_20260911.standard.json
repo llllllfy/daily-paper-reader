@@ -1,0 +1,92 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-11T21:19:37.163930+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2609.07504v1",
+      "source": "arxiv",
+      "title": "Mitigating Shortcut Learning: Texture-Penalized Prototype Networks",
+      "abstract": "Standard Convolutional Neural Networks (CNNs) exhibit severe performance degradation due to a strong inductive texture bias that prioritizes local, high-frequency patterns over global structural shapes. This dependency causes confident misclassifications during textural changes or environmental effects. To address this flaw, this study introduces the Texture-Penalized Prototype Network (TPPN), a novel architectural framework that shifts this inherent bias without depending on resource-intensive augmented datasets. Specifically, a Texture-Penalization Branch (TPB) imposes a penalty to suppress the extraction of local texture proxies, forcing the network backbone to discard high-frequency cues and extract purified, shape-biased representations. By evaluating similarities within a prototype-based hypersphere derived from the final convolutional features, the approach enforces strict geometric constraints, treating objects as compositions of essential parts to achieve robust classification. Evaluations on texture-shape cue-conflict datasets and synthetic noise benchmarks demonstrate the stronger shape bias of this structural disentanglement. The proposed framework reduces the inherent texture bias of a baseline ResNet-50 from 55.11% to 29.73%, surpassing the texture-suppression capabilities of an off-the-shelf Vision Transformer (ViT-B/16). Furthermore, the approach demonstrates robust generalization under cue-conflict conditions, resisting textural shortcut learning when encountering Out-of-Distribution (OOD) shapes. The model maintains stronger shape accuracy against elevated perturbations. On clean validation data, the architecture incurs a minimal drop in accuracy of 0.90 percentage points. This provides a structural, efficient solution to CNN texture bias.",
+      "authors": [
+        "Akshay Anilkumar Girija",
+        "Elena Hoemann",
+        "Frank Köster",
+        "Sven Hallerbach"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-07T13:51:49+00:00",
+      "link": "https://arxiv.org/pdf/2609.07504v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Texture-Penalization Branch suppresses local texture proxies to extract shape-biased representations",
+      "llm_evidence_cn": "纹理惩罚分支抑制局部纹理代理以提取形状偏置表征",
+      "llm_evidence": "纹理惩罚分支抑制局部纹理代理以提取形状偏置表征",
+      "canonical_evidence": "纹理惩罚分支抑制局部纹理代理以提取形状偏置表征",
+      "llm_tldr_en": "Introduces Texture-Penalized Prototype Network (TPPN) with a Texture-Penalization Branch that penalizes local high-frequency cues, forcing the CNN to learn shape-biased representations without heavy augmentation.",
+      "llm_tldr_cn": "针对 CNN 固有的纹理偏置导致在纹理变化下性能严重下降的问题，提出纹理惩罚原型网络 TPPN，通过纹理惩罚分支抑制局部纹理代理，迫使网络提取形状偏置表征。实验表明 TPPN 能有效缓解捷径学习并提升对纹理变化的鲁棒性。该工作为实现形状与外观特征解耦提供了新思路。",
+      "llm_tldr": "针对 CNN 固有的纹理偏置导致在纹理变化下性能严重下降的问题，提出纹理惩罚原型网络 TPPN，通过纹理惩罚分支抑制局部纹理代理，迫使网络提取形状偏置表征。实验表明 TPPN 能有效缓解捷径学习并提升对纹理变化的鲁棒性。该工作为实现形状与外观特征解耦提供了新思路。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "disentangling color and shape features in representations",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.09705v1",
+      "source": "arxiv",
+      "title": "Cross-Species Animal Re-Identification with Semantic Consistency Learning",
+      "abstract": "Generalizable animal Re-Identification (ReID) aims to recognize individual animals across species with diverse morphologies and ecological contexts. Unlike person ReID, where different domains share similar body structures, animal species often exhibit drastically different anatomical structures and visual patterns, making it difficult to establish shared visual correspondences. As a result, representations learned across species tend to form fragmented embedding spaces, which severely limits cross-species generalization. To address this challenge, we propose Semantic Consistency Learning (SCL), a framework designed to learn representations that remain stable across appearance variations while preserving semantic structures shared across species. SCL consists of two complementary components. Foreground-Background Decoupled Spectral Normalization (FDSNorm) stabilizes feature statistics by suppressing environment-induced style variations in a region-aware manner, while Cross-species Neighborhood Modeling (CNM) captures transferable relational structures across species through dynamic feature neighborhoods. Extensive experiments on 11 public animal ReID datasets demonstrate that SCL consistently outperforms state-of-the-art methods under multiple cross-species evaluation protocols and generalizes effectively to previously unseen species and ecological domains. Code is available at https://github.com/Kemalau/ECCV-26-SCL.",
+      "authors": [
+        "Shuoyi Chen",
+        "Yuejia Li",
+        "Mang Ye"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-09T04:41:01+00:00",
+      "link": "https://arxiv.org/pdf/2609.09705v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Semantic Consistency Learning stabilizes representations across appearance variations while preserving semantic structures",
+      "llm_evidence_cn": "语义一致性学习在保持语义结构的同时稳定外观变化下的表征",
+      "llm_evidence": "语义一致性学习在保持语义结构的同时稳定外观变化下的表征",
+      "canonical_evidence": "语义一致性学习在保持语义结构的同时稳定外观变化下的表征",
+      "llm_tldr_en": "Proposes Semantic Consistency Learning (SCL) to learn cross-species animal ReID representations that remain stable across appearance variations while preserving shared semantic structures, improving cross-species generalization.",
+      "llm_tldr_cn": "针对跨物种动物重识别中因外观和解剖结构差异导致的表征空间碎片化问题，提出语义一致性学习框架 SCL，使表征在外观变化下保持稳定并保留共享语义结构。实验表明 SCL 能有效提升跨物种泛化能力。该方法对需要在外观扰动下维持语义一致性的任务具有借鉴价值。",
+      "llm_tldr": "针对跨物种动物重识别中因外观和解剖结构差异导致的表征空间碎片化问题，提出语义一致性学习框架 SCL，使表征在外观变化下保持稳定并保留共享语义结构。实验表明 SCL 能有效提升跨物种泛化能力。该方法对需要在外观扰动下维持语义一致性的任务具有借鉴价值。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "maintaining semantic consistency after color modification",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

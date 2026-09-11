@@ -1,0 +1,39 @@
+{
+  "label": "2026-09-11",
+  "date": "2026-09-11",
+  "generated_at": "2026-09-11T21:22:45",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202609/11/2609.07504v1-mitigating-shortcut-learning-texture-penalized-prototype-networks",
+      "section": "deep",
+      "title_en": "Mitigating Shortcut Learning: Texture-Penalized Prototype Networks",
+      "authors": "Akshay Anilkumar Girija, Elena Hoemann, Frank Köster, Sven Hallerbach",
+      "date": "2026-09-07",
+      "pdf": "https://arxiv.org/pdf/2609.07504v1",
+      "score": "8.0",
+      "evidence": "纹理惩罚分支抑制局部纹理代理以提取形状偏置表征",
+      "tldr": "标准卷积神经网络存在纹理偏置，倾向局部高频纹理而非全局形状，导致纹理变化时性能严重下降。本文提出纹理惩罚原型网络TPPN，通过纹理惩罚分支抑制纹理特征提取，迫使骨干网络学习形状偏置表示，并利用原型超球面几何约束实现稳健分类。在纹理-形状冲突与噪声基准上，TPPN将ResNet-50纹理偏置从55.11%降至29.73%，优于ViT-B/16，且干净验证准确率仅下降0.90个百分点。该工作为CNN纹理偏置提供了结构高效解决方案。",
+      "tags": "query:cp",
+      "abstract_en": "Standard Convolutional Neural Networks (CNNs) exhibit severe performance degradation due to a strong inductive texture bias that prioritizes local, high-frequency patterns over global structural shapes. This dependency causes confident misclassifications during textural changes or environmental effects. To address this flaw, this study introduces the Texture-Penalized Prototype Network (TPPN), a novel architectural framework that shifts this inherent bias without depending on resource-intensive augmented datasets. Specifically, a Texture-Penalization Branch (TPB) imposes a penalty to suppress the extraction of local texture proxies, forcing the network backbone to discard high-frequency cues and extract purified, shape-biased representations. By evaluating similarities within a prototype-based hypersphere derived from the final convolutional features, the approach enforces strict geometric constraints, treating objects as compositions of essential parts to achieve robust classification. Evaluations on texture-shape cue-conflict datasets and synthetic noise benchmarks demonstrate the stronger shape bias of this structural disentanglement. The proposed framework reduces the inherent texture bias of a baseline ResNet-50 from 55.11% to 29.73%, surpassing the texture-suppression capabilities of an off-the-shelf Vision Transformer (ViT-B/16). Furthermore, the approach demonstrates robust generalization under cue-conflict conditions, resisting textural shortcut learning when encountering Out-of-Distribution (OOD) shapes. The model maintains stronger shape accuracy against elevated perturbations. On clean validation data, the architecture incurs a minimal drop in accuracy of 0.90 percentage points. This provides a structural, efficient solution to CNN texture bias.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/11/2609.09705v1-cross-species-animal-re-identification-with-semantic-consistency-learning",
+      "section": "quick",
+      "title_en": "Cross-Species Animal Re-Identification with Semantic Consistency Learning",
+      "authors": "Shuoyi Chen, Yuejia Li, Mang Ye",
+      "date": "2026-09-09",
+      "pdf": "https://arxiv.org/pdf/2609.09705v1",
+      "score": "6.0",
+      "evidence": "语义一致性学习在保持语义结构的同时稳定外观变化下的表征",
+      "tldr": "跨物种动物重识别需在不同形态差异巨大的物种间建立身份对应，但物种间解剖结构和视觉模式迥异，导致跨物种学到的表征空间碎片化，泛化能力受限。为此提出语义一致性学习框架SCL，由前景背景解耦谱归一化FDSNorm和跨物种邻域建模CNM组成；前者区域感知地抑制环境引起的风格变化以稳定特征统计，后者通过动态特征邻域捕捉跨物种可迁移的关系结构。在11个公开动物ReID数据集上，SCL在多种跨物种评估协议下一致超越现有方法，并能泛化到未见物种和生态域。",
+      "tags": "query:cp",
+      "abstract_en": "Generalizable animal Re-Identification (ReID) aims to recognize individual animals across species with diverse morphologies and ecological contexts. Unlike person ReID, where different domains share similar body structures, animal species often exhibit drastically different anatomical structures and visual patterns, making it difficult to establish shared visual correspondences. As a result, representations learned across species tend to form fragmented embedding spaces, which severely limits cross-species generalization. To address this challenge, we propose Semantic Consistency Learning (SCL), a framework designed to learn representations that remain stable across appearance variations while preserving semantic structures shared across species. SCL consists of two complementary components. Foreground-Background Decoupled Spectral Normalization (FDSNorm) stabilizes feature statistics by suppressing environment-induced style variations in a region-aware manner, while Cross-species Neighborhood Modeling (CNM) captures transferable relational structures across species through dynamic feature neighborhoods. Extensive experiments on 11 public animal ReID datasets demonstrate that SCL consistently outperforms state-of-the-art methods under multiple cross-species evaluation protocols and generalizes effectively to previously unseen species and ecological domains. Code is available at https://github.com/Kemalau/ECCV-26-SCL.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

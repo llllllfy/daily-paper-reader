@@ -6,32 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-10
-- 运行时间：2026-09-10 21:19:30 UTC
+- 最新运行日期：2026-09-11
+- 运行时间：2026-09-11 21:22:27 UTC
 - 运行状态：成功
-- 本次总论文数：3
+- 本次总论文数：2
 - 精读区：1
-- 速读区：2
+- 速读区：1
 
 ### 今日简报（AI）
-- 今日共生成 3 篇推荐（精读 1 篇，速读 2 篇）
-- 精读：《Isotropic Embedding Perturbations for Robust Vision Language Encoders》（8.0/10）
-- 速读：《Object-Aware Background-Controlled Editing via Weighted Velocity Guidance》（7.0/10）, 《Reading Decoder Trajectories: Training-Free Counterfactual Query-Trajectory Reliability for Small-Object Detection》（7.0/10）
-- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202609/10/README](/202609/10/README)
+今天精读一篇用纹理惩罚原型网络缓解捷径学习的工作，并速读一篇跨物种动物重识别的语义一致性学习方法。最值得关注的是：通过惩罚纹理偏置来抑制模型“走捷径”，以及用语义一致性拉近跨物种特征。建议从纹理与语义特征解耦入手，继续跟进提升模型泛化和跨域识别的方法。
+- 详情：[/202609/11/README](/202609/11/README)
 
 ### 精读区论文标签
-1. [Isotropic Embedding Perturbations for Robust Vision Language Encoders](/202609/10/2609.10292v1-isotropic-embedding-perturbations-for-robust-vision-language-encoders)  
+1. [Mitigating Shortcut Learning: Texture-Penalized Prototype Networks](/202609/11/2609.07504v1-mitigating-shortcut-learning-texture-penalized-prototype-networks)  
    标签：评分：8.0/10、query:cp
-   evidence：Aether通过受控alpha混合在嵌入空间应用扩散式随机扰动，提供各向同性且语义一致的正则化
+   evidence：纹理惩罚分支抑制局部纹理代理以提取形状偏置表征
 
 ### 速读区论文标签
-1. [Object-Aware Background-Controlled Editing via Weighted Velocity Guidance](/202609/10/2609.06288v1-object-aware-background-controlled-editing-via-weighted-velocity-guidance)  
-   标签：评分：7.0/10、query:cp
-   evidence：提出对象感知速度控制，在潜在空间中修改去噪速度进行局部语义编辑
-2. [Reading Decoder Trajectories: Training-Free Counterfactual Query-Trajectory Reliability for Small-Object Detection](/202609/10/2609.06581v1-reading-decoder-trajectories-training-free-counterfactual-query-trajectory-reliability-for-small-object-detection)  
-   标签：评分：7.0/10、query:cp
-   evidence：反事实尺度干预在冻结检测器中激发潜在响应
+1. [Cross-Species Animal Re-Identification with Semantic Consistency Learning](/202609/11/2609.09705v1-cross-species-animal-re-identification-with-semantic-consistency-learning)  
+   标签：评分：6.0/10、query:cp
+   evidence：语义一致性学习在保持语义结构的同时稳定外观变化下的表征
 
 
 <div class="dpr-home-promo-card">
