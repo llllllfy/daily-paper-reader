@@ -1,0 +1,39 @@
+{
+  "label": "2026-09-13",
+  "date": "2026-09-13",
+  "generated_at": "2026-09-13T21:51:37",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202609/13/2609.07874v1-influencefield-a-differentiable-field-with-interventionally-identifiable-causal-structure-for-multimodal-world-modeling",
+      "section": "deep",
+      "title_en": "InfluenceField: A Differentiable Field with Interventionally Identifiable Causal Structure for Multimodal World Modeling",
+      "authors": "Zihao Yang, Zijia Wang, Zhiqiu Huang",
+      "date": "2026-09-07",
+      "pdf": "https://arxiv.org/pdf/2609.07874v1",
+      "score": "9.0",
+      "evidence": "引入干预感知的潜在场，传播定向影响并预测深度模型中局部视觉干预效应。",
+      "tldr": "多模态大语言模型难以建模局部视觉干预如何因果传播并影响下游答案，常只捕捉视觉语言相关性。为此提出介入感知潜场InfluenceField，置于视觉编码器和语言解码器之间，通过共享转移算子进行多步有向影响传播并预测局部干预效应。在CausalVQA基准上，该方法较骨干模型准确率提升13.1个百分点，规划与假设类增益最大。容量匹配基线与结构控制表明增益来自因果目标而非参数增加，且理论证明可恢复完整有向依赖图。",
+      "tags": "query:cp",
+      "abstract_en": "Multimodal large language models often capture visual-linguistic correlations but struggle to predict how local visual interventions propagate and affect downstream answers. We introduce InfluenceField, an intervention-aware latent field inserted between the visual encoder and language decoder. It lifts patch features into a continuous spatial representation, propagates directed influence over multiple steps, and predicts local intervention effects through a shared transition operator. Training jointly optimizes language modeling, cross-environment invariance, counterfactual rollout supervision, and structural regularization. For a nonlinear finite-basis population model, we show that target-aligned interventional supervision, together with a one-step separation condition on the transition, restricts admissible representations to within-location reparameterizations, so that the directed dependency graph of the full transition is recovered exactly. A linear specialization gives an exact partial-coverage characterization and a finite-loss stability bound, and the field analysis derives the spatial profile of coefficient interventions together with a shared-channel calibration result. On CausalVQA, InfluenceField improves overall accuracy over its backbone by 13.1 percentage points, with the largest gains on the planning and hypothetical categories. Capacity-matched baselines and structural controls attribute the gains in robustness and factual-counterfactual consistency to the causal objectives rather than to added capacity.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/13/2609.08242v1-cs-clip-compositional-scene-graph-guided-clip-for-robust-compositional-reasoning",
+      "section": "quick",
+      "title_en": "CS-CLIP: Compositional Scene Graph-guided CLIP for Robust Compositional Reasoning",
+      "authors": "SeongJun Jeong, Minjoon Jung, Woo Suk Choi, Youwon Jang, Byoung-Tak Zhang",
+      "date": "2026-09-08",
+      "pdf": "https://arxiv.org/pdf/2609.08242v1",
+      "score": "6.0",
+      "evidence": "在属性/关系语义扰动下的鲁棒组合推理",
+      "tldr": "现有组合感知视觉语言模型在组合推理中常表现出元素特定偏差，某些元素性能甚至劣于原始 CLIP。为此提出 CS-CLIP，它利用场景图识别组合元素，通过选择性掩码构造结构化负样本，并保留与原文最矛盾的负样本，迫使模型关注组合结构而非表面线索。CS-CLIP 在组合推理上达到最先进水平，跨各类元素性能鲁棒，且保持通用视觉语言能力。该方法仅需更少训练样本，提升组合推理的鲁棒性与效率。",
+      "tags": "query:cp",
+      "abstract_en": "Vision-language models (VLMs) demonstrate strong performance across compositional reasoning benchmarks, which require reasoning over semantic perturbations of objects, attributes, relations, and their interactions. However, our controlled analysis reveals that existing compositionality-aware VLMs exhibit element-specific biases, often underperforming vanilla CLIP on certain compositional elements. To address this, we propose Compositional Scene Graph-guided CLIP (CS-CLIP), which uses scene graphs to identify compositional elements and construct structured negatives via selective masking. We further retain negatives that are most contradictory to the original caption, forcing the model to rely on compositional structure rather than surface cues. CS-CLIP achieves state-of-the-art compositional reasoning with robust performance across compositional elements. It also preserves general vision-language capabilities such as cross-modal retrieval and downstream visual reasoning, while requiring fewer training samples than prior methods.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

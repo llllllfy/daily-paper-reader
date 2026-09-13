@@ -1,0 +1,95 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-13T21:47:42.554021+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2609.07874v1",
+      "source": "arxiv",
+      "title": "InfluenceField: A Differentiable Field with Interventionally Identifiable Causal Structure for Multimodal World Modeling",
+      "abstract": "Multimodal large language models often capture visual-linguistic correlations but struggle to predict how local visual interventions propagate and affect downstream answers. We introduce InfluenceField, an intervention-aware latent field inserted between the visual encoder and language decoder. It lifts patch features into a continuous spatial representation, propagates directed influence over multiple steps, and predicts local intervention effects through a shared transition operator. Training jointly optimizes language modeling, cross-environment invariance, counterfactual rollout supervision, and structural regularization. For a nonlinear finite-basis population model, we show that target-aligned interventional supervision, together with a one-step separation condition on the transition, restricts admissible representations to within-location reparameterizations, so that the directed dependency graph of the full transition is recovered exactly. A linear specialization gives an exact partial-coverage characterization and a finite-loss stability bound, and the field analysis derives the spatial profile of coefficient interventions together with a shared-channel calibration result. On CausalVQA, InfluenceField improves overall accuracy over its backbone by 13.1 percentage points, with the largest gains on the planning and hypothetical categories. Capacity-matched baselines and structural controls attribute the gains in robustness and factual-counterfactual consistency to the causal objectives rather than to added capacity.",
+      "authors": [
+        "Zihao Yang",
+        "Zijia Wang",
+        "Zhiqiu Huang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "stat.ML"
+      ],
+      "published": "2026-09-07T18:36:20+00:00",
+      "link": "https://arxiv.org/pdf/2609.07874v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Introduces an intervention-aware latent field that propagates directed influence and predicts local visual intervention effects in deep models.",
+      "llm_evidence_cn": "引入干预感知的潜在场，传播定向影响并预测深度模型中局部视觉干预效应。",
+      "llm_evidence": "引入干预感知的潜在场，传播定向影响并预测深度模型中局部视觉干预效应。",
+      "canonical_evidence": "引入干预感知的潜在场，传播定向影响并预测深度模型中局部视觉干预效应。",
+      "llm_tldr_en": "This paper proposes InfluenceField, an intervention-aware latent field placed between visual encoder and language decoder to model how local visual interventions propagate and affect downstream outputs, enabling counterfactual reasoning in multimodal models.",
+      "llm_tldr_cn": "本文针对多模态大模型难以预测局部视觉干预如何传播并影响下游回答的问题，提出InfluenceField干预感知潜在场。该场将补丁特征提升为连续空间表示，通过共享转移算子传播定向影响并预测局部干预效果。训练联合优化语言建模、跨环境不变性、反事实轨迹监督和结构正则化。理论分析展示了目标对齐的可识别性，为深度模型潜在空间干预提供了新工具。",
+      "llm_tldr": "本文针对多模态大模型难以预测局部视觉干预如何传播并影响下游回答的问题，提出InfluenceField干预感知潜在场。该场将补丁特征提升为连续空间表示，通过共享转移算子传播定向影响并预测局部干预效果。训练联合优化语言建模、跨环境不变性、反事实轨迹监督和结构正则化。理论分析展示了目标对齐的可识别性，为深度模型潜在空间干预提供了新工具。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "intervention techniques applied in the latent space of deep models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.08242v1",
+      "source": "arxiv",
+      "title": "CS-CLIP: Compositional Scene Graph-guided CLIP for Robust Compositional Reasoning",
+      "abstract": "Vision-language models (VLMs) demonstrate strong performance across compositional reasoning benchmarks, which require reasoning over semantic perturbations of objects, attributes, relations, and their interactions. However, our controlled analysis reveals that existing compositionality-aware VLMs exhibit element-specific biases, often underperforming vanilla CLIP on certain compositional elements. To address this, we propose Compositional Scene Graph-guided CLIP (CS-CLIP), which uses scene graphs to identify compositional elements and construct structured negatives via selective masking. We further retain negatives that are most contradictory to the original caption, forcing the model to rely on compositional structure rather than surface cues. CS-CLIP achieves state-of-the-art compositional reasoning with robust performance across compositional elements. It also preserves general vision-language capabilities such as cross-modal retrieval and downstream visual reasoning, while requiring fewer training samples than prior methods.",
+      "authors": [
+        "SeongJun Jeong",
+        "Minjoon Jung",
+        "Woo Suk Choi",
+        "Youwon Jang",
+        "Byoung-Tak Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-09-08T04:37:06+00:00",
+      "link": "https://arxiv.org/pdf/2609.08242v1",
+      "tags": [
+        "keyword:cp",
+        "query:cp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "robust compositional reasoning under attribute/relation semantic perturbations",
+      "llm_evidence_cn": "在属性/关系语义扰动下的鲁棒组合推理",
+      "llm_evidence": "在属性/关系语义扰动下的鲁棒组合推理",
+      "canonical_evidence": "在属性/关系语义扰动下的鲁棒组合推理",
+      "llm_tldr_en": "Proposes CS-CLIP using scene graphs to identify compositional elements and construct structured negatives, improving robustness to semantic perturbations like attribute changes.",
+      "llm_tldr_cn": "该工作针对视觉语言模型在组合推理基准中存在的元素特定偏差问题，提出基于组合场景图引导的CLIP方法。该方法利用场景图识别组合元素，通过选择性掩码构造结构化负样本，迫使模型依赖组合结构而非表面线索。实验显示CS-CLIP在多种组合元素上增强了鲁棒性，并为属性（包括颜色）变化下的语义保持提供了可迁移方法。",
+      "llm_tldr": "该工作针对视觉语言模型在组合推理基准中存在的元素特定偏差问题，提出基于组合场景图引导的CLIP方法。该方法利用场景图识别组合元素，通过选择性掩码构造结构化负样本，迫使模型依赖组合结构而非表面线索。实验显示CS-CLIP在多种组合元素上增强了鲁棒性，并为属性（包括颜色）变化下的语义保持提供了可迁移方法。",
+      "llm_tags": [
+        "query:cp"
+      ],
+      "matched_query_tag": "query:cp",
+      "matched_query_text": "preserving semantic meaning under color changes",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
